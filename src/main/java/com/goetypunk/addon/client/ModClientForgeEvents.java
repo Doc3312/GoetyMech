@@ -3,8 +3,10 @@ package com.goetypunk.addon.client;
 import com.Polarice3.Goety.client.gui.screen.inventory.FocusBagScreen;
 import com.Polarice3.Goety.client.gui.screen.inventory.FocusPackScreen;
 import com.Polarice3.Goety.client.gui.screen.inventory.FocusRadialMenuScreen;
+import com.Polarice3.Goety.init.ModKeybindings;
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.item.RemoteEngineBlockItem;
+import com.goetypunk.addon.client.TimeStopUtilsWrapped;
 import com.goetypunk.addon.common.item.TimeFocusPouch;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.common.net.c2s.C2STimeStopPacket;
@@ -18,11 +20,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.ModList;
+import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 
@@ -31,10 +37,31 @@ import java.util.Optional;
 @Mod.EventBusSubscriber(modid = GoetyPunkMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModClientForgeEvents {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("GoetyPunkTG");
     private static boolean cachedPouchResult = false;
     private static long pouchCacheTime = 0;
     private static boolean anyPouchOpen = false;
     private static boolean radMenuOpen = false;
+    private static int freezePacketDelay = 0;
+
+    @SubscribeEvent
+    public static void onKeyInput(InputEvent.Key event) {
+        if (event.getAction() != GLFW.GLFW_RELEASE) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
+        if (!(mc.screen instanceof FocusRadialMenuScreen)) return;
+        int bindingCode = ModKeybindings.wandCircle().getKey().getValue();
+        if (event.getKey() != bindingCode) return;
+
+        LOGGER.info("X released (InputEvent.Key) while radial menu open");
+        if (!anyPouchOpen) {
+            radMenuOpen = false;
+            freezePacketDelay = 0;
+            mc.setScreen(null);
+        } else {
+            TimeStopUtilsWrapped.disable();
+        }
+    }
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
@@ -42,6 +69,16 @@ public class ModClientForgeEvents {
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
+
+        // === Freeze packet delay countdown ===
+        if (freezePacketDelay > 0) {
+            freezePacketDelay--;
+            if (freezePacketDelay == 0 && hasTimeFocusPouch()) {
+                LOGGER.info("freezePacketDelay reached 0, sending freeze packet");
+                anyPouchOpen = true;
+                ModNetwork.CHANNEL.sendToServer(new C2STimeStopPacket(true));
+            }
+        }
 
         if (mc.level.getGameTime() % 5 != 0) return;
 
@@ -69,10 +106,12 @@ public class ModClientForgeEvents {
                 || screen instanceof FocusPackScreen
                 || screen instanceof FocusBagScreen;
         if (isFreezeScreen) {
-            anyPouchOpen = true;
-            ModNetwork.CHANNEL.sendToServer(new C2STimeStopPacket(true));
             if (screen instanceof FocusRadialMenuScreen) {
                 radMenuOpen = true;
+                freezePacketDelay = 3;
+            } else {
+                anyPouchOpen = true;
+                ModNetwork.CHANNEL.sendToServer(new C2STimeStopPacket(true));
             }
         }
     }
@@ -80,10 +119,17 @@ public class ModClientForgeEvents {
     @SubscribeEvent
     public static void onScreenClosed(ScreenEvent.Closing event) {
         Screen screen = event.getScreen();
-        if (!anyPouchOpen) return;
+        if (!anyPouchOpen && freezePacketDelay == 0) return;
+        boolean isFreezeScreen = screen instanceof FocusRadialMenuScreen
+                || screen instanceof FocusPackScreen
+                || screen instanceof FocusBagScreen;
+        if (!isFreezeScreen) return;
+        LOGGER.info("onScreenClosed for {}", screen.getClass().getSimpleName());
         anyPouchOpen = false;
         radMenuOpen = false;
+        freezePacketDelay = 0;
         ModNetwork.CHANNEL.sendToServer(new C2STimeStopPacket(false));
+        TimeStopUtilsWrapped.disable();
     }
 
     @SubscribeEvent
