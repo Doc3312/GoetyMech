@@ -1,0 +1,82 @@
+package com.goetypunk.addon.common.block;
+
+import com.goetypunk.addon.common.block.entity.RemoteEngineBlockEntity;
+import com.goetypunk.addon.common.item.RemoteEngineBlockItem;
+import com.goetypunk.addon.init.ModBlocks;
+import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
+import com.simibubi.create.foundation.block.IBE;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
+
+public class RemoteEngineBlock extends DirectionalKineticBlock
+        implements IBE<RemoteEngineBlockEntity> {
+
+    public RemoteEngineBlock() {
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .strength(5.0f)
+                .requiresCorrectToolForDrops()
+                .sound(SoundType.METAL));
+    }
+
+    @Override
+    public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
+        return face == state.getValue(FACING);
+    }
+
+    @Override
+    public Direction.Axis getRotationAxis(BlockState state) {
+        return state.getValue(FACING).getAxis();
+    }
+
+    @Override
+    public Class<RemoteEngineBlockEntity> getBlockEntityClass() {
+        return RemoteEngineBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends RemoteEngineBlockEntity> getBlockEntityType() {
+        return ModBlocks.REMOTE_ENGINE_ENTITY.get();
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state,
+                            @Nullable LivingEntity placer, ItemStack stack) {
+        if (placer instanceof Player && !level.isClientSide
+                && RemoteEngineBlockItem.isBound(stack)) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof RemoteEngineBlockEntity engine) {
+                engine.setLinkedPos(
+                        RemoteEngineBlockItem.getBoundPos(stack),
+                        RemoteEngineBlockItem.getBoundDim(stack));
+            }
+        }
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+        return Shapes.block();
+    }
+
+    @Override
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
+        return false;
+    }
+}

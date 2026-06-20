@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down": { "model": "goetypunk:block/stress_reader", "x": 180 },
+    "facing=up": { "model": "goetypunk:block/stress_reader" },
+    "facing=north": { "model": "goetypunk:block/stress_reader", "x": 90 },
+    "facing=south": { "model": "goetypunk:block/stress_reader", "x": 90, "y": 180 },
+    "facing=west": { "model": "goetypunk:block/stress_reader", "x": 90, "y": 270 },
+    "facing=east": { "model": "goetypunk:block/stress_reader", "x": 90, "y": 90 }
+  }
+}

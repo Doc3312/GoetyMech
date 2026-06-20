@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "goetypunk:item/unstable_rift_focus"
+  }
+}

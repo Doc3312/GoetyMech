@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "goetypunk:block/remote_engine_side",
+    "down": "goetypunk:block/remote_engine_side",
+    "up": "goetypunk:block/remote_engine_front",
+    "north": "goetypunk:block/remote_engine_side",
+    "south": "goetypunk:block/remote_engine_side",
+    "west": "goetypunk:block/remote_engine_side",
+    "east": "goetypunk:block/remote_engine_side"
+  }
+}

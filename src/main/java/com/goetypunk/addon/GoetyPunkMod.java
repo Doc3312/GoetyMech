@@ -1,0 +1,43 @@
+package com.goetypunk.addon;
+
+import com.goetypunk.addon.common.menu.ModMenuTypes;
+import com.goetypunk.addon.common.net.ModNetwork;
+import com.goetypunk.addon.config.ModConfig;
+import com.goetypunk.addon.init.ModBlocks;
+import com.goetypunk.addon.init.ModCreativeTab;
+import com.goetypunk.addon.init.ModEntities;
+import com.goetypunk.addon.init.ModItems;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
+
+/**
+ * GoetyPunk 主模组类
+ */
+@Mod(GoetyPunkMod.MOD_ID)
+public class GoetyPunkMod {
+
+    public static final String MOD_ID = "goetypunk";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+    public GoetyPunkMod() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        ModLoadingContext.get().registerConfig(Type.COMMON, ModConfig.SPEC, "goetypunk-common.toml");
+        ModConfig.loadConfig(ModConfig.SPEC, FMLPaths.CONFIGDIR.get().resolve("goetypunk-common.toml").toString());
+
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModBlocks.BLOCK_ENTITIES.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        ModEntities.ENTITIES.register(modEventBus);
+        ModCreativeTab.TABS.register(modEventBus);
+        ModMenuTypes.CONTAINER_TYPE.register(modEventBus);
+
+        ModNetwork.init();
+    }
+}

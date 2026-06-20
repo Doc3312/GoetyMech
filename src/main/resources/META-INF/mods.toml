@@ -1,0 +1,60 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+issueTrackerURL=""
+
+[[mods]]
+modId="goetypunk"
+version="1.0.0-goetypunk-1.20.1"
+displayName="GoetyPunk"
+logoFile="logo.png"
+credits="GoetyPunk Team"
+authors="GoetyPunk Team"
+description='''
+GoetyPunk - A Goety addon that extends the necromancy experience with new minion types, a flesh furnace for twisted embryo cooking/transforming, and more dark content.
+
+Requires Goety 2.x, Curios, and Create as dependencies.
+'''
+updateJSONURL=""
+
+[[dependencies.goetypunk]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.goetypunk]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.goetypunk]]
+modId="curios"
+mandatory=true
+versionRange="[5.3.4,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.goetypunk]]
+modId="goety"
+mandatory=true
+versionRange="[2,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.goetypunk]]
+modId="create"
+mandatory=true
+versionRange="[6.0,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.goetypunk]]
+modId="patchouli"
+mandatory=false
+versionRange="[1.20.1-80,)"
+ordering="NONE"
+side="BOTH"
