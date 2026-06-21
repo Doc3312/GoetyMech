@@ -433,14 +433,14 @@ public class StormWingEvents {
             double t = (double)(charge - threshold) / (double)(maxTicks - threshold);
             t = Math.min(t, 1.0);
             double height = minH + t * (maxH - minH);
-            double jumpPower = Math.sqrt(2.0 * 0.08 * height);
+            double jumpPower = velocityForHeight(height);
             Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
             GoetyPunkMod.LOGGER.info("StormWing charged jump: charge={}, height={}, power={}",
                     charge, String.format("%.1f", height), String.format("%.3f", jumpPower));
         } else if (player.onGround()) {
             double tapH = ModConfig.JUMP_TAP_HEIGHT.get();
-            double jumpPower = Math.sqrt(2.0 * 0.08 * tapH);
+            double jumpPower = velocityForHeight(tapH);
             Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, jumpPower, m.z);
             GoetyPunkMod.LOGGER.info("StormWing tap jump: charge={}, height={}, power={}",
@@ -461,6 +461,19 @@ public class StormWingEvents {
 
         StormWingItem.clearJumpCharge(player);
         player.hurtMarked = true;
+    }
+
+    // Minecraft vertical jump with drag: h = 50*v - 4*ln(4/(v+4))/ln(0.98)
+    // Bisection to invert: given target height h, find initial velocity v
+    private static double velocityForHeight(double targetH) {
+        double lo = 0, hi = 10;
+        double ln098 = Math.log(0.98);
+        for (int i = 0; i < 50; i++) {
+            double v = (lo + hi) / 2;
+            double h = 50 * v - 4 * Math.log(4 / (v + 4)) / ln098;
+            if (h < targetH) lo = v; else hi = v;
+        }
+        return (lo + hi) / 2;
     }
 
     // ── Slam ──
