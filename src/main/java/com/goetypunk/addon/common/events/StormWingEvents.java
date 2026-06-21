@@ -52,6 +52,12 @@ public class StormWingEvents {
     private static final String TAG_SLAM_START_Y = "goetypunk.slam_start_y";
     private static final String TAG_PREV_CROUCH = "goetypunk.prev_crouch";
 
+    // ── Debug test tags (TODO: remove after charge jump tuning) ──
+    private static final String TAG_DBG_CHARGE = "goetypunk.dbg_charge";
+    private static final String TAG_DBG_START_Y = "goetypunk.dbg_start_y";
+    private static final String TAG_DBG_CALC_H = "goetypunk.dbg_calc_h";
+    private static final String TAG_DBG_WAS_AIRBORNE = "goetypunk.dbg_was_airborne";
+
     // ── Stored zza captured at travel() HEAD — accessible from Mixin ──
     public static final Map<java.util.UUID, Float> STORED_ZZA = new HashMap<>();
 
@@ -241,6 +247,25 @@ public class StormWingEvents {
                     GoetyPunkMod.LOGGER.info("StormWing force-flight mid-air!");
                 }
             }
+
+            // DEBUG: log actual jump height on landing (TODO: remove after tuning)
+            if (player.getPersistentData().contains(TAG_DBG_CHARGE)) {
+                if (!player.onGround()) {
+                    player.getPersistentData().putBoolean(TAG_DBG_WAS_AIRBORNE, true);
+                } else if (player.getPersistentData().getBoolean(TAG_DBG_WAS_AIRBORNE)) {
+                    int dbgC = player.getPersistentData().getInt(TAG_DBG_CHARGE);
+                    double sy = player.getPersistentData().getDouble(TAG_DBG_START_Y);
+                    double ch = player.getPersistentData().getDouble(TAG_DBG_CALC_H);
+                    double ah = Math.max(0, sy - player.getY());
+                    GoetyPunkMod.LOGGER.info("*** DEBUG ChargeJump: charge={}, calcH={}, actualH={}",
+                            dbgC, String.format("%.1f", ch), String.format("%.1f", ah));
+                    player.getPersistentData().remove(TAG_DBG_CHARGE);
+                    player.getPersistentData().remove(TAG_DBG_START_Y);
+                    player.getPersistentData().remove(TAG_DBG_CALC_H);
+                    player.getPersistentData().remove(TAG_DBG_WAS_AIRBORNE);
+                }
+            }
+
             return;
         }
 
@@ -416,6 +441,17 @@ public class StormWingEvents {
             GoetyPunkMod.LOGGER.info("StormWing tap jump: charge={}, height={}, power={}",
                     charge, String.format("%.1f", tapH), String.format("%.3f", jumpPower));
         }
+        // DEBUG: record jump params for landing logging
+        player.getPersistentData().putInt(TAG_DBG_CHARGE, charge);
+        player.getPersistentData().putDouble(TAG_DBG_START_Y, player.getY());
+        double dbgH = charge >= ModConfig.JUMP_CHARGE_THRESHOLD.get()
+                ? (ModConfig.JUMP_CHARGE_MIN_HEIGHT.get()
+                    + Math.min((double)(charge - ModConfig.JUMP_CHARGE_THRESHOLD.get())
+                        / (double)(ModConfig.JUMP_MAX_CHARGE_TICKS.get() - ModConfig.JUMP_CHARGE_THRESHOLD.get()), 1.0)
+                    * (ModConfig.JUMP_CHARGE_MAX_HEIGHT.get() - ModConfig.JUMP_CHARGE_MIN_HEIGHT.get()))
+                : ModConfig.JUMP_TAP_HEIGHT.get();
+        player.getPersistentData().putDouble(TAG_DBG_CALC_H, dbgH);
+
         StormWingItem.clearJumpCharge(player);
         player.hurtMarked = true;
     }
