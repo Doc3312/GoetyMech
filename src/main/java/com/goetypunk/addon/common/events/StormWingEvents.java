@@ -55,6 +55,7 @@ public class StormWingEvents {
     // ── Debug test tags (TODO: remove after charge jump tuning) ──
     private static final String TAG_DBG_CHARGE = "goetypunk.dbg_charge";
     private static final String TAG_DBG_START_Y = "goetypunk.dbg_start_y";
+    private static final String TAG_DBG_PEAK_Y = "goetypunk.dbg_peak_y";
     private static final String TAG_DBG_CALC_H = "goetypunk.dbg_calc_h";
     private static final String TAG_DBG_WAS_AIRBORNE = "goetypunk.dbg_was_airborne";
 
@@ -252,15 +253,19 @@ public class StormWingEvents {
             if (player.getPersistentData().contains(TAG_DBG_CHARGE)) {
                 if (!player.onGround()) {
                     player.getPersistentData().putBoolean(TAG_DBG_WAS_AIRBORNE, true);
+                    double curPeak = player.getPersistentData().getDouble(TAG_DBG_PEAK_Y);
+                    player.getPersistentData().putDouble(TAG_DBG_PEAK_Y, Math.max(curPeak, player.getY()));
                 } else if (player.getPersistentData().getBoolean(TAG_DBG_WAS_AIRBORNE)) {
                     int dbgC = player.getPersistentData().getInt(TAG_DBG_CHARGE);
                     double sy = player.getPersistentData().getDouble(TAG_DBG_START_Y);
+                    double py = player.getPersistentData().getDouble(TAG_DBG_PEAK_Y);
                     double ch = player.getPersistentData().getDouble(TAG_DBG_CALC_H);
-                    double ah = Math.max(0, sy - player.getY());
+                    double ah = Math.max(0, py - sy);
                     GoetyPunkMod.LOGGER.info("*** DEBUG ChargeJump: charge={}, calcH={}, actualH={}",
                             dbgC, String.format("%.1f", ch), String.format("%.1f", ah));
                     player.getPersistentData().remove(TAG_DBG_CHARGE);
                     player.getPersistentData().remove(TAG_DBG_START_Y);
+                    player.getPersistentData().remove(TAG_DBG_PEAK_Y);
                     player.getPersistentData().remove(TAG_DBG_CALC_H);
                     player.getPersistentData().remove(TAG_DBG_WAS_AIRBORNE);
                 }
@@ -443,7 +448,9 @@ public class StormWingEvents {
         }
         // DEBUG: record jump params for landing logging
         player.getPersistentData().putInt(TAG_DBG_CHARGE, charge);
-        player.getPersistentData().putDouble(TAG_DBG_START_Y, player.getY());
+        double sy = player.getY();
+        player.getPersistentData().putDouble(TAG_DBG_START_Y, sy);
+        player.getPersistentData().putDouble(TAG_DBG_PEAK_Y, sy);
         double dbgH = charge >= ModConfig.JUMP_CHARGE_THRESHOLD.get()
                 ? (ModConfig.JUMP_CHARGE_MIN_HEIGHT.get()
                     + Math.min((double)(charge - ModConfig.JUMP_CHARGE_THRESHOLD.get())
