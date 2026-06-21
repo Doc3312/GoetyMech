@@ -34,8 +34,9 @@ public class ModCreativeTab {
                         output.accept(ModItems.REMOTE_ENGINE.get());
                         output.accept(ModItems.UNSTABLE_RIFT_FOCUS.get());
                         output.accept(ModItems.STABLE_RIFT_FOCUS.get());
-                        output.accept(ModItems.STRESS_FOCUS.get());
                         output.accept(ModItems.TIME_FOCUS_POUCH.get());
+                        output.accept(ModItems.STORM_WING.get());
+                        output.accept(ModItems.STRESS_ARK.get());
                     })
                     .build()
     );

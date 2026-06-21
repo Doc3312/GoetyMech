@@ -69,6 +69,7 @@
   "info.goetypunk.remote_engine.bound": "§aBound to Stress Reader",
   "info.goetypunk.remote_engine.unbound": "§eUnbound",
   "info.goetypunk.remote_engine.bound_to": "§7Linked: %d, %d, %d",
+  "info.goetypunk.remote_engine.not_bound_here": "§cNot bound to this Stress Reader",
 
   "item.goetypunk.time_focus_pouch": "Temporal Focus Pouch",
 
@@ -79,5 +80,13 @@
   "info.goetypunk.rift_walk.invalid_dim": "§cRift focus can only be used in the Overworld and Nether",
   "info.goetypunk.rift_walk.rift_open": "§cRift is already open",
   "info.goetypunk.rift_walk.border_blocked": "§cTarget coordinates are outside the world border",
-  "info.goetypunk.rift_walk.return": "§7Rift closes, pulling you back to origin"
+  "info.goetypunk.rift_walk.return": "§7Rift closes, pulling you back to origin",
+
+  "block.goetypunk.stress_ark": "Stress Ark",
+  "item.goetypunk.stress_ark": "Stress Ark",
+
+  "item.goetypunk.storm_wing": "Storm Wings",
+  "info.goetypunk.storm_wing.desc": "Infinite Elytra with boost and slam attack",
+  "info.goetypunk.storm_wing.boost": "Hold W to accelerate while flying",
+  "info.goetypunk.storm_wing.slam": "Press Shift while flying to perform a ground slam"
 }

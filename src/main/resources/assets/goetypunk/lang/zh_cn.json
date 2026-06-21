@@ -69,6 +69,7 @@
   "info.goetypunk.remote_engine.bound": "§a已绑定至应力读取器",
   "info.goetypunk.remote_engine.unbound": "§e已解绑",
   "info.goetypunk.remote_engine.bound_to": "§7已连接: %d, %d, %d",
+  "info.goetypunk.remote_engine.not_bound_here": "§c此应力读取器不是绑定目标",
 
   "item.goetypunk.time_focus_pouch": "时空聚晶袋",
 
@@ -79,5 +80,13 @@
   "info.goetypunk.rift_walk.invalid_dim": "§c裂隙聚晶仅能在主世界和下界使用",
   "info.goetypunk.rift_walk.rift_open": "§c裂隙尚未闭合",
   "info.goetypunk.rift_walk.border_blocked": "§c目标坐标超出世界边界",
-  "info.goetypunk.rift_walk.return": "§7裂隙闭合，你被拉回了原点"
+  "info.goetypunk.rift_walk.return": "§7裂隙闭合，你被拉回了原点",
+
+  "block.goetypunk.stress_ark": "应力方舟",
+  "item.goetypunk.stress_ark": "应力方舟",
+
+  "item.goetypunk.storm_wing": "风暴之翼",
+  "info.goetypunk.storm_wing.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
+  "info.goetypunk.storm_wing.boost": "飞行中按住 W 可加速推进",
+  "info.goetypunk.storm_wing.slam": "飞行中按下 Shift 可施展陨星猛砸"
 }

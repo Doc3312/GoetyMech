@@ -1,6 +1,6 @@
 package com.goetypunk.addon.common.block.entity;
 
-import java.util.List;
+import java.util.*;
 
 import com.goetypunk.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
@@ -16,12 +16,40 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StressReaderBlockEntity extends KineticBlockEntity {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("TEST");
+
+    public static final Set<StressReaderBlockEntity> ACTIVE_READERS = Collections.synchronizedSet(new HashSet<>());
+    public static volatile boolean NETWORK_UPDATED = false;
 
     private float consumedRemotely;
 
     public StressReaderBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.STRESS_READER_ENTITY.get(), pos, state);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide) {
+            ACTIVE_READERS.add(this);
+        }
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        ACTIVE_READERS.remove(this);
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        ACTIVE_READERS.remove(this);
     }
 
     public float getNetworkCapacity() { return capacity; }
@@ -37,14 +65,27 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     }
 
     public void setConsumedRemotely(float amount) {
-        if (Math.abs(this.consumedRemotely - amount) <= 0.001f) return;
+        float old = this.consumedRemotely;
+        if (Math.abs(old - amount) <= 0.001f) return;
+        float capBefore = capacity;
+        float stressBefore = stress;
         this.consumedRemotely = amount;
+        float spd = Math.abs(getSpeed());
+        float stressApplied = spd < 0.001f ? 0 : amount / spd;
+        LOGGER.info("[TEST] SR{} REMOTE | old={} | new={} | stressApplied={} | speed={} | hasNet={} | capBefore={} | stressBefore={}",
+                fmtPos(worldPosition), old, amount, stressApplied, getSpeed(), hasNetwork(), capBefore, stressBefore);
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             if (hasNetwork())
                 getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
+            LOGGER.info("[TEST] SR{} REMOTE_AFTER | cap={} | stress={} | avail={}",
+                    fmtPos(worldPosition), capacity, stress, getAvailableStress());
         }
+    }
+
+    private static String fmtPos(BlockPos pos) {
+        return "[" + pos.getX() + "," + pos.getY() + "," + pos.getZ() + "]";
     }
 
     public boolean isOverStressed() { return overStressed; }
@@ -62,9 +103,15 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         float prevCapacity = this.capacity;
         float prevStress = this.stress;
         super.updateFromNetwork(capacity, stress, networkSize);
+        LOGGER.info("[TEST] SR{} NET | cap={}{} | stress={}{} | consumedRemotely={} | networkSize={}",
+                fmtPos(worldPosition),
+                this.capacity, (prevCapacity != this.capacity ? " (was " + prevCapacity + ")" : ""),
+                this.stress, (prevStress != this.stress ? " (was " + prevStress + ")" : ""),
+                consumedRemotely, networkSize);
         if ((prevCapacity != this.capacity || prevStress != this.stress) && level != null && !level.isClientSide) {
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
             setChanged();
+            NETWORK_UPDATED = true;
         }
     }
 

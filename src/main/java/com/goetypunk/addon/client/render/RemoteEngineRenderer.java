@@ -13,7 +13,11 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RemoteEngineRenderer extends KineticBlockEntityRenderer<RemoteEngineBlockEntity> {
+    private static final Logger LOGGER = LoggerFactory.getLogger("RemoteEngineRenderer");
 
     public RemoteEngineRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
@@ -22,6 +26,8 @@ public class RemoteEngineRenderer extends KineticBlockEntityRenderer<RemoteEngin
     @Override
     protected void renderSafe(RemoteEngineBlockEntity be, float partialTicks, PoseStack ms,
                               MultiBufferSource buffer, int light, int overlay) {
+        LOGGER.debug("[REMOTE_ENGINE] renderSafe called at pos={}", be.getBlockPos());
+
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);
 
         BlockState blockState = be.getBlockState();

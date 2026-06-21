@@ -41,14 +41,11 @@ public class RemoteEngineBlockItem extends BlockItem {
 
         if (player != null) {
             if (player.isShiftKeyDown()) {
-                if (isBound(stack)) {
-                    if (!level.isClientSide) {
-                        clearBinding(stack);
-                        player.displayClientMessage(
-                                Component.translatable("info.goetypunk.remote_engine.unbound"),
-                                true);
-                    }
-                    return InteractionResult.SUCCESS;
+                // Sneak + right-click on bound reader → let StressReaderBlock handle unbind
+                if (isBound(stack) && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
+                    BlockPos boundPos = getBoundPos(stack);
+                    if (boundPos.equals(clickedPos))
+                        return InteractionResult.PASS;
                 }
                 return super.useOn(ctx);
             }
@@ -69,15 +66,6 @@ public class RemoteEngineBlockItem extends BlockItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (isBound(stack)) {
-            if (!level.isClientSide) {
-                clearBinding(stack);
-                player.displayClientMessage(
-                        Component.translatable("info.goetypunk.remote_engine.unbound"), true);
-            }
-            return InteractionResultHolder.success(stack);
-        }
         return super.use(level, player, hand);
     }
 

@@ -2,6 +2,7 @@ package com.goetypunk.addon;
 
 import com.goetypunk.addon.common.menu.ModMenuTypes;
 import com.goetypunk.addon.common.net.ModNetwork;
+import com.goetypunk.addon.compat.caelus.CaelusLoaded;
 import com.goetypunk.addon.config.ModConfig;
 import com.goetypunk.addon.init.ModBlocks;
 import com.goetypunk.addon.init.ModCreativeTab;
@@ -9,10 +10,13 @@ import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModItems;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -39,5 +43,19 @@ public class GoetyPunkMod {
         ModMenuTypes.CONTAINER_TYPE.register(modEventBus);
 
         ModNetwork.init();
+        modEventBus.addListener(ModBlocks::registerStressValues);
+
+        // 条件注册 Caelus 兼容 — 避免类加载找不到 CaelusApi 导致崩溃
+        if (ModList.get().isLoaded("caelus")) {
+            try {
+                Class<?> handler = Class.forName("com.goetypunk.addon.compat.caelus.CaelusFlightHandler");
+                MinecraftForge.EVENT_BUS.register(handler);
+                LOGGER.info("Caelus detected — StormWing Curios flight enabled");
+            } catch (Throwable e) {
+                LOGGER.warn("CaelusFlightHandler not available: {}", e.getMessage());
+            }
+        } else {
+            LOGGER.info("Caelus not detected — StormWing chest slot only");
+        }
     }
 }

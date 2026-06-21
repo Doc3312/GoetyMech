@@ -3,6 +3,7 @@ package com.goetypunk.addon.common.block;
 import com.goetypunk.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetypunk.addon.common.item.RemoteEngineBlockItem;
 import com.goetypunk.addon.init.ModBlocks;
+import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
@@ -10,6 +11,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -20,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
@@ -47,6 +48,17 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
     }
 
     @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction preferred = getPreferredFacing(context);
+        if (preferred == null || (context.getPlayer() != null && context.getPlayer().isShiftKeyDown())) {
+            Direction nearestLookingDirection = context.getNearestLookingDirection();
+            return defaultBlockState().setValue(FACING, context.getPlayer() != null && context.getPlayer()
+                .isShiftKeyDown() ? nearestLookingDirection : nearestLookingDirection.getOpposite());
+        }
+        return defaultBlockState().setValue(FACING, preferred);
+    }
+
+    @Override
     public Class<RemoteEngineBlockEntity> getBlockEntityClass() {
         return RemoteEngineBlockEntity.class;
     }
@@ -59,6 +71,7 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state,
                             @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
         if (placer instanceof Player && !level.isClientSide
                 && RemoteEngineBlockItem.isBound(stack)) {
             BlockEntity be = level.getBlockEntity(pos);
@@ -72,7 +85,7 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        return Shapes.block();
+        return AllShapes.CASING_12PX.get(state.getValue(FACING));
     }
 
     @Override

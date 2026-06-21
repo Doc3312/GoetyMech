@@ -128,6 +128,18 @@ public class ModConfig {
         cachedFurnaceCookingTime = FLESH_FURNACE_COOKING_TIME.get();
     }
 
+    // ====== Storm Wing 配置 ======
+
+    public static final ForgeConfigSpec.DoubleValue BOOST_ACCELERATION;
+    public static final ForgeConfigSpec.DoubleValue SLAM_GRAVITY_PER_TICK;
+    public static final ForgeConfigSpec.DoubleValue SLAM_MAX_SPEED;
+    public static final ForgeConfigSpec.DoubleValue SLAM_DAMAGE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue SLAM_RADIUS_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue SLAM_MIN_DAMAGE;
+    public static final ForgeConfigSpec.DoubleValue SLAM_MAX_DAMAGE;
+    public static final ForgeConfigSpec.DoubleValue SLAM_MAX_RADIUS;
+    public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
+
     // ====== Time Freeze 配置 ======
 
     /** 时停总开关 */
@@ -301,6 +313,47 @@ public class ModConfig {
         STRESS_DAMAGE_DIVISOR = BUILDER
                 .comment("应力伤害除数", "绑定的应力读取器的网络容量 / 此值 = 基础伤害", "范围: 100-10000，默认 2000")
                 .defineInRange("damage_divisor", 2000, 100, 10000);
+
+        BUILDER.pop();
+
+        // ====== Storm Wing 配置 ======
+        BUILDER.push("storm_wing");
+
+        BOOST_ACCELERATION = BUILDER
+                .comment("飞行推进力：每 tick 沿视线方向施加的加速度", "范围: 0.0-1.0，默认 0.2")
+                .defineInRange("boost_acceleration", 0.2, 0.0, 1.0);
+
+        SLAM_GRAVITY_PER_TICK = BUILDER
+                .comment("Slam 每 tick 下降速度增量（5 格/秒 = 0.25/tick）", "范围: 0.01-2.0，默认 0.25")
+                .defineInRange("slam_gravity_per_tick", 0.25, 0.01, 2.0);
+
+        SLAM_MAX_SPEED = BUILDER
+                .comment("Slam 最大下降速度（120 格/秒 = 6.0/tick）", "范围: 0.5-20.0，默认 6.0")
+                .defineInRange("slam_max_speed", 6.0, 0.5, 20.0);
+
+        SLAM_DAMAGE_MULTIPLIER = BUILDER
+                .comment("Slam 伤害倍率：坠落高度 × 此值", "范围: 0.0-10.0，默认 1.0")
+                .defineInRange("slam_damage_multiplier", 1.0, 0.0, 10.0);
+
+        SLAM_RADIUS_MULTIPLIER = BUILDER
+                .comment("Slam 半径倍率：坠落高度 × 此值", "范围: 0.0-20.0，默认 1.0")
+                .defineInRange("slam_radius_multiplier", 1.0, 0.0, 20.0);
+
+        SLAM_MIN_DAMAGE = BUILDER
+                .comment("Slam 最低伤害（无论坠落多矮都有此保底）", "范围: 1-9999，默认 20")
+                .defineInRange("slam_min_damage", 20.0, 1.0, 9999.0);
+
+        SLAM_MAX_DAMAGE = BUILDER
+                .comment("Slam 伤害上限", "范围: 1-9999，默认 1200")
+                .defineInRange("slam_max_damage", 1200.0, 1.0, 9999.0);
+
+        SLAM_MAX_RADIUS = BUILDER
+                .comment("Slam AoE 半径上限（格）", "范围: 1-200，默认 100")
+                .defineInRange("slam_max_radius", 100.0, 1.0, 200.0);
+
+        SLAM_HOVER_TICKS = BUILDER
+                .comment("Slam 滞空 tick 数（越长则坠落前升得越高）", "范围: 0-100，默认 5")
+                .defineInRange("slam_hover_ticks", 5, 0, 100);
 
         BUILDER.pop();
     }

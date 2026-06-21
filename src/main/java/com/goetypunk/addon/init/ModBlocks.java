@@ -3,6 +3,7 @@ package com.goetypunk.addon.init;
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.block.FleshFurnaceBlock;
 import com.goetypunk.addon.common.block.RemoteEngineBlock;
+import com.goetypunk.addon.common.block.StressArkBlock;
 import com.goetypunk.addon.common.block.StressReaderBlock;
 import com.goetypunk.addon.common.block.Tier1SquadBarracksBlock;
 import com.goetypunk.addon.common.block.Tier2SquadBarracksBlock;
@@ -10,9 +11,12 @@ import com.goetypunk.addon.common.block.Tier3SquadBarracksBlock;
 import com.goetypunk.addon.common.block.entity.FleshFurnaceBlockEntity;
 import com.goetypunk.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetypunk.addon.common.block.entity.SquadBarracksBlockEntity;
+import com.goetypunk.addon.common.block.entity.StressArkBlockEntity;
 import com.goetypunk.addon.common.block.entity.StressReaderBlockEntity;
+import com.simibubi.create.api.stress.BlockStressValues;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -74,4 +78,23 @@ public class ModBlocks {
                     () -> BlockEntityType.Builder.of(
                             RemoteEngineBlockEntity::new,
                             REMOTE_ENGINE.get()).build(null));
+
+    // ── 应力方舟 ──
+
+    public static final RegistryObject<Block> STRESS_ARK =
+            BLOCKS.register("stress_ark", StressArkBlock::new);
+
+    public static final RegistryObject<BlockEntityType<StressArkBlockEntity>> STRESS_ARK_ENTITY =
+            BLOCK_ENTITIES.register("stress_ark",
+                    () -> BlockEntityType.Builder.of(
+                            StressArkBlockEntity::new,
+                            STRESS_ARK.get()).build(null));
+
+    public static void registerStressValues(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            BlockStressValues.IMPACTS.register(STRESS_READER.get(), () -> 0.0);
+            BlockStressValues.CAPACITIES.register(REMOTE_ENGINE.get(), () -> 0.0);
+            BlockStressValues.IMPACTS.register(REMOTE_ENGINE.get(), () -> 0.0);
+        });
+    }
 }

@@ -1,9 +1,11 @@
 package com.goetypunk.addon.common.block;
 
 import com.goetypunk.addon.common.block.entity.StressReaderBlockEntity;
+import com.goetypunk.addon.common.item.RemoteEngineBlockItem;
 import com.goetypunk.addon.common.item.StressFocus;
 import com.goetypunk.addon.config.ModConfig;
 import com.goetypunk.addon.init.ModBlocks;
+import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
@@ -13,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -25,7 +28,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class StressReaderBlock extends DirectionalKineticBlock
@@ -47,6 +49,17 @@ public class StressReaderBlock extends DirectionalKineticBlock
     @Override
     public Direction.Axis getRotationAxis(BlockState state) {
         return state.getValue(FACING).getAxis();
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction preferred = getPreferredFacing(context);
+        if (preferred == null || (context.getPlayer() != null && context.getPlayer().isShiftKeyDown())) {
+            Direction nearestLookingDirection = context.getNearestLookingDirection();
+            return defaultBlockState().setValue(FACING, context.getPlayer() != null && context.getPlayer()
+                .isShiftKeyDown() ? nearestLookingDirection : nearestLookingDirection.getOpposite());
+        }
+        return defaultBlockState().setValue(FACING, preferred);
     }
 
     @Override
@@ -77,6 +90,23 @@ public class StressReaderBlock extends DirectionalKineticBlock
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                  InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(hand);
+
+        // Sneak + RemoteEngineBlockItem on bound reader → unbind
+        if (player.isShiftKeyDown() && stack.getItem() instanceof RemoteEngineBlockItem) {
+            if (!level.isClientSide && RemoteEngineBlockItem.isBound(stack)) {
+                BlockPos boundPos = RemoteEngineBlockItem.getBoundPos(stack);
+                if (boundPos.equals(pos)) {
+                    RemoteEngineBlockItem.clearBinding(stack);
+                    player.displayClientMessage(
+                            Component.translatable("info.goetypunk.remote_engine.unbound"), true);
+                } else {
+                    player.displayClientMessage(
+                            Component.translatable("info.goetypunk.remote_engine.not_bound_here"), true);
+                }
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+
         if (stack.getItem() instanceof StressFocus && !player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 StressFocus.bindToReader(stack, level, pos);
@@ -96,7 +126,7 @@ public class StressReaderBlock extends DirectionalKineticBlock
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        return Shapes.block();
+        return AllShapes.CASING_12PX.get(state.getValue(FACING));
     }
 
     @Override
