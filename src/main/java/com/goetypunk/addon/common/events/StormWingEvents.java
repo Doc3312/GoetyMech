@@ -8,6 +8,8 @@ import com.Polarice3.Goety.utils.BlockFinder;
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.item.StormWingItem;
 import com.goetypunk.addon.common.net.ModNetwork;
+import com.goetypunk.addon.common.utils.CuriosHelper;
+import com.goetypunk.addon.common.utils.WallUtil;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
 import com.goetypunk.addon.config.ModConfig;
 import net.minecraft.core.BlockPos;
@@ -18,15 +20,19 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import top.theillusivec4.curios.api.CuriosApi;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,10 +45,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Mod.EventBusSubscriber(modid = GoetyPunkMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class StormWingEvents {
 
+    private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+
     private static final String TAG_SLAMMING = "goetypunk.slamming";
     private static final String TAG_SLAM_TICK = "goetypunk.slam_tick";
     private static final String TAG_SLAM_START_Y = "goetypunk.slam_start_y";
     private static final String TAG_PREV_CROUCH = "goetypunk.prev_crouch";
+
+    // ── Stored zza captured at travel() HEAD — accessible from Mixin ──
+    public static final Map<java.util.UUID, Float> STORED_ZZA = new HashMap<>();
 
     // ── Ring animation sequencer ──
     private static final int RINGS_DELAY = 1;
@@ -124,7 +135,18 @@ public class StormWingEvents {
 
     @SubscribeEvent
     public static void onLivingFall(LivingFallEvent event) {
-        if (event.getEntity() instanceof Player player && StormWingItem.isSlamming(player)) {
+        if (event.getEntity() instanceof Player player
+                && (StormWingItem.isSlamming(player)
+                || StormWingItem.isHoldingStormWing(player)
+                || CuriosHelper.hasStormWingInCurios(player))) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingAttack(LivingAttackEvent event) {
+        if (event.getEntity() instanceof Player player
+                && StormWingItem.getSlamInvulnTick(player) > 0) {
             event.setCanceled(true);
         }
     }
@@ -146,8 +168,12 @@ public class StormWingEvents {
             handleSlamTick(player);
         }
 
-        // 用 isShiftKeyDown 而非 isCrouching —— 后者在 isFallFlying 时恒为 false
         StormWingItem.setPrevCrouch(player, player.isShiftKeyDown());
+
+        int invuln = StormWingItem.getSlamInvulnTick(player);
+        if (invuln > 0) {
+            StormWingItem.setSlamInvulnTick(player, invuln - 1);
+        }
     }
 
     // ── PlayerTick (END): 推进 + 抗 drag（fires after travel → 修饰持久到下一 tick） ──
@@ -158,10 +184,58 @@ public class StormWingEvents {
         if (player.level().isClientSide) return;
 
         if (event.phase == TickEvent.Phase.START) {
-            if (StormWingItem.isHoldingStormWing(player) && !player.isFallFlying()) {
-                if (player.onGround() && player.zza > 0.0F) {
+            boolean hasStormWing = StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player);
+            boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
+
+            GoetyPunkMod.LOGGER.debug("StormWing START phase: zza={}, onGround={}, isFallFlying={}",
+                    player.zza, player.onGround(), player.isFallFlying());
+
+            // ── 爬墙检测（放在飞行前面） ──
+            if (hasStormWing && !isSlamming) {
+                if (StormWingItem.isWallRunning(player)) {
+                    handleWallRunTick(player);
+                } else if (player.isSprinting() && !player.onGround() && !player.isFallFlying()) {
+                    tryStartWallRun(player);
+                }
+            }
+
+            // ── 地面冲刺加速 ──
+            if (hasStormWing && !isSlamming
+                    && !StormWingItem.isWallRunning(player)
+                    && !player.isFallFlying()
+                    && player.onGround()
+                    && player.isSprinting()
+                    && player.zza > 0) {
+                int current = StormWingItem.getSprintTick(player) + 1;
+                StormWingItem.setSprintTick(player, current);
+                int level = Math.min(current / 20, 3);
+                double speed = 0.6 + level * 0.2;
+                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                if (attr != null) {
+                    attr.removeModifier(SPRINT_MODIFIER_UUID);
+                    if (level > 0) {
+                        attr.addTransientModifier(new AttributeModifier(
+                                SPRINT_MODIFIER_UUID, "storm_wing_sprint", speed - 1.0,
+                                AttributeModifier.Operation.MULTIPLY_TOTAL));
+                    }
+                }
+            } else if (player.onGround() && !player.isSprinting()) {
+                StormWingItem.setSprintTick(player, 0);
+                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                if (attr != null) {
+                    attr.removeModifier(SPRINT_MODIFIER_UUID);
+                }
+            }
+
+            // ── Ground takeoff / mid-air flight start ──
+            if (!StormWingItem.isWallRunning(player)
+                    && (StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player))
+                    && !player.isFallFlying()) {
+                int charge = StormWingItem.getJumpChargeTick(player);
+                if (player.onGround() && player.zza > 0.0F && charge == 0) {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 2.0, m.z);
+                    GoetyPunkMod.LOGGER.info("StormWing ground takeoff: zza={}, motion={}", player.zza, m);
                 } else if (!player.onGround() && player.zza > 0.0F) {
                     player.startFallFlying();
                     GoetyPunkMod.LOGGER.info("StormWing force-flight mid-air!");
@@ -171,42 +245,48 @@ public class StormWingEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
+            // ── Wall movement ──
+            if (StormWingItem.isWallRunning(player)) {
+                applyWallMovement(player);
+                return;
+            }
+
+            // ── 非飞行状态 ──
             if (!player.isFallFlying()) {
-                if (StormWingItem.isHoldingStormWing(player) && player.onGround() && player.zza > 0.0F) {
-                    Vec3 m = player.getDeltaMovement();
-                    player.setDeltaMovement(m.x, 2.0, m.z);
-                    GoetyPunkMod.LOGGER.info("StormWing ground takeoff!");
-                }
                 if (StormWingItem.getFlightTick(player) > 0) {
                     StormWingItem.setFlightTick(player, 0);
                 }
                 return;
             }
-            if (!StormWingItem.isHoldingStormWing(player)) return;
+
+            // ── 飞行加速（修复：Curios 检测） ──
+            boolean hasStormWing = StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player);
+            if (!hasStormWing) return;
 
             Vec3 motion = player.getDeltaMovement();
-
-            double drag = 0.98;
-            double anti = 1.0 / drag;
-            motion = motion.multiply(anti, 1.0, anti);
-
-            if (player.zza > 0) {
-                Vec3 look = player.getLookAngle();
-                double boost = ModConfig.BOOST_ACCELERATION.get();
-                motion = motion.add(look.x * boost, 0, look.z * boost);
-            }
-
             int currentFlightTicks = player.getFallFlyingTicks();
-            int prevFlightTicks = StormWingItem.getFlightTick(player);
-            GoetyPunkMod.LOGGER.info("StormWing flight: prev={}, cur={}, flying={}, held={}, motionY={}",
-                    prevFlightTicks, currentFlightTicks, player.isFallFlying(),
-                    StormWingItem.isHoldingStormWing(player), motion.y);
-            if (prevFlightTicks == 0 && currentFlightTicks > 0) {
-                Vec3 look = player.getLookAngle();
-                motion = motion.add(look.x * 1.25, look.y * 1.25, look.z * 1.25);
-                GoetyPunkMod.LOGGER.info("StormWing BURST applied! look={}, motion={}", look, motion);
-            }
             StormWingItem.setFlightTick(player, currentFlightTicks);
+
+            // ── W 键烟花式爆发 ──
+            float storedZza = STORED_ZZA.getOrDefault(player.getUUID(), 0.0F);
+            GoetyPunkMod.LOGGER.debug("StormWing END phase: zza={}, storedZza={}, isFallFlying={}, flightTicks={}",
+                    player.zza, storedZza, player.isFallFlying(), currentFlightTicks);
+            if (storedZza > 0.0F) {
+                int cooldown = ModConfig.FLIGHT_BOOST_COOLDOWN.get();
+                int lastBoost = StormWingItem.getLastBoostTick(player);
+                if (lastBoost == 0 || currentFlightTicks - lastBoost >= cooldown) {
+                    Vec3 look = player.getLookAngle();
+                    double strength = ModConfig.FLIGHT_BOOST_STRENGTH.get();
+                    motion = motion.add(
+                            (look.x * strength - motion.x) * 0.5,
+                            look.y * 0.1,
+                            (look.z * strength - motion.z) * 0.5
+                    );
+                    StormWingItem.setLastBoostTick(player, currentFlightTicks);
+                    GoetyPunkMod.LOGGER.info("StormWing flight boost: flightTicks={}, motion={}",
+                            currentFlightTicks, motion);
+                }
+            }
 
             player.setDeltaMovement(motion);
         }
@@ -217,17 +297,120 @@ public class StormWingEvents {
     private static boolean isFlyingWithStormWing(Player player) {
         if (!player.isFallFlying()) return false;
         if (StormWingItem.isHoldingStormWing(player)) return true;
-        return hasStormWingInCurios(player);
+        return CuriosHelper.hasStormWingInCurios(player);
     }
 
-    private static boolean hasStormWingInCurios(Player player) {
-        try {
-            var inv = CuriosApi.getCuriosInventory(player);
-            return inv.map(i -> i.findFirstCurio(
-                    s -> s.getItem() instanceof StormWingItem).isPresent()).orElse(false);
-        } catch (Exception e) {
-            return false;
+    // ── Wall-running detection ──
+
+    private static void tryStartWallRun(Player player) {
+        if (!player.isSprinting()) return;
+        Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
+        if (wallDir == null) return;
+        StormWingItem.setWallRunning(player, true);
+        StormWingItem.setWallNormal(player, wallDir);
+        GoetyPunkMod.LOGGER.info("StormWing wall-run START: normal={}", wallDir);
+    }
+
+    private static void handleWallRunTick(Player player) {
+        Vec3 wallN = StormWingItem.getWallNormal(player);
+        if (wallN.lengthSqr() < 0.5) {
+            stopWallRun(player);
+            return;
         }
+
+        if (!player.isSprinting() || player.isShiftKeyDown()
+                || player.isInWater() || player.isInLava()) {
+            stopWallRun(player);
+            return;
+        }
+
+        if (WallUtil.getWallDirection(player, 0.5) == null) {
+            stopWallRun(player);
+            return;
+        }
+
+        // Jump-off is handled via C2SWallJumpOffPacket from client
+    }
+
+    public static void handleWallJumpOff(ServerPlayer player) {
+        Vec3 wallN = StormWingItem.getWallNormal(player);
+        if (wallN.lengthSqr() < 0.5) return;
+        Vec3 launch = wallN.scale(ModConfig.WALL_JUMP_OFF_VELOCITY.get());
+        Vec3 m = player.getDeltaMovement();
+        player.setDeltaMovement(launch.x, Math.max(launch.y + 0.2, m.y + 0.2), launch.z);
+        stopWallRun(player);
+    }
+
+    private static void stopWallRun(Player player) {
+        StormWingItem.clearWallState(player);
+        StormWingItem.setWallRunning(player, false);
+    }
+
+    // ── Wall movement (applied in PlayerTick.END) ──
+
+    private static void applyWallMovement(Player player) {
+        Vec3 wallN = StormWingItem.getWallNormal(player);
+        if (wallN.lengthSqr() < 0.5) return;
+
+        Vec3 look = player.getLookAngle();
+        Vec3 forwardOnWall = look.subtract(wallN.scale(look.dot(wallN)));
+        double fwLen = forwardOnWall.length();
+        if (fwLen < 0.001) {
+            forwardOnWall = new Vec3(1, 0, 0).cross(wallN);
+            fwLen = forwardOnWall.length();
+        }
+        forwardOnWall = forwardOnWall.scale(1.0 / fwLen);
+
+        Vec3 rightOnWall = forwardOnWall.cross(wallN).normalize();
+
+        float forward = player.zza;
+        float strafe = player.xxa;
+        double speed = ModConfig.WALL_RUN_SPEED.get();
+
+        Vec3 move = forwardOnWall.scale(forward * speed)
+                .add(rightOnWall.scale(-strafe * speed));
+
+        move = move.add(0, -ModConfig.WALL_GRAVITY.get(), 0);
+        move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
+
+        player.setDeltaMovement(move.x, move.y, move.z);
+    }
+
+    // ── Jump charging (called from C2S packet handler) ──
+
+    public static void handleJumpChargeFromClient(ServerPlayer player, int action) {
+        if (player.isFallFlying() || StormWingItem.isWallRunning(player)) return;
+        boolean hasStormWing = StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player);
+        if (!hasStormWing) return;
+
+        if (action > 0) {
+            int capped = Math.min(action, ModConfig.JUMP_MAX_CHARGE_TICKS.get());
+            StormWingItem.setJumpChargeTick(player, capped);
+        } else if (action == 0) {
+            int charge = StormWingItem.getJumpChargeTick(player);
+            if (charge > 0) {
+                applyChargedJump(player, charge);
+            }
+        }
+    }
+
+    private static void applyChargedJump(Player player, int charge) {
+        if (charge >= 20) {
+            double jumpPower = ModConfig.JUMP_BASE_VELOCITY.get()
+                    + charge * ModConfig.JUMP_VELOCITY_PER_TICK.get();
+            Vec3 m = player.getDeltaMovement();
+            player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
+            GoetyPunkMod.LOGGER.info("StormWing charged jump: charge={}, power={}",
+                    charge, String.format("%.3f", jumpPower));
+        } else if (player.onGround()) {
+            double jumpPower = Math.sqrt(2.0 * 0.08 * 3.0);
+            Vec3 m = player.getDeltaMovement();
+            player.setDeltaMovement(m.x, jumpPower, m.z);
+            GoetyPunkMod.LOGGER.info("StormWing tap jump: charge={}, power={}",
+                    charge, String.format("%.3f", jumpPower));
+        }
+        StormWingItem.clearJumpCharge(player);
+        player.hurtMarked = true;
     }
 
     // ── Slam ──
@@ -245,6 +428,7 @@ public class StormWingEvents {
         StormWingItem.setSlamming(player, true);
         StormWingItem.setSlamTick(player, 0);
         StormWingItem.setSlamStartY(player, player.getY());
+        StormWingItem.setSlamInvulnTick(player, 9999);
 
         // elytraFlightTick() 返回 false → 同 tick 晚些 updateFallFlying 清除飞行标志
         Vec3 motion = player.getDeltaMovement();
@@ -330,6 +514,7 @@ public class StormWingEvents {
 
         player.fallDistance = 0;
         StormWingItem.clearSlamState(player);
+        StormWingItem.setSlamInvulnTick(player, 20);
     }
 
     private static void applyAoeDamage(Player player, ServerLevel level, float damage, float radius) {
@@ -409,7 +594,6 @@ public class StormWingEvents {
     }
 
     private static void spawnUpwardShockwave(ServerLevel level, DelayedDamageData dd) {
-        var random = level.random;
         double cx = dd.px;
         double cy = dd.groundY;
         double cz = dd.pz;
@@ -418,7 +602,7 @@ public class StormWingEvents {
         // ── 白色魔法扩张环 ──
         level.sendParticles(
                 new CircleExplodeParticleOption(0.8f, 0.8f, 1.0f, r, 1),
-                cx, cy + 0.3, cz, 1, 0, 0, 0, 0);
+                cx, cy + 1.25, cz, 1, 0, 0, 0, 0);
     }
 
     private static void spawnVisuals(Player player, ServerLevel level, float radius, float fallDistance, int rings) {

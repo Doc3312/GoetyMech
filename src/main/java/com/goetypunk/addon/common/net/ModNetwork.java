@@ -2,7 +2,9 @@ package com.goetypunk.addon.common.net;
 
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.net.c2s.C2SCancelSlamPacket;
+import com.goetypunk.addon.common.net.c2s.C2SJumpChargePacket;
 import com.goetypunk.addon.common.net.c2s.C2STimeStopPacket;
+import com.goetypunk.addon.common.net.c2s.C2SWallJumpOffPacket;
 import com.goetypunk.addon.common.net.s2c.S2CTimeStopDimensionPacket;
 import com.goetypunk.addon.common.net.s2c.S2CTimeStopStatePacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
@@ -51,6 +53,14 @@ public class ModNetwork {
                 C2SCancelSlamPacket::encode,
                 C2SCancelSlamPacket::decode,
                 C2SCancelSlamPacket::handle);
+        CHANNEL.registerMessage(idx++, C2SJumpChargePacket.class,
+                C2SJumpChargePacket::encode,
+                C2SJumpChargePacket::decode,
+                C2SJumpChargePacket::handle);
+        CHANNEL.registerMessage(idx++, C2SWallJumpOffPacket.class,
+                C2SWallJumpOffPacket::encode,
+                C2SWallJumpOffPacket::decode,
+                C2SWallJumpOffPacket::handle);
         CHANNEL.registerMessage(idx++, S2CStressArkDataPacket.class,
                 S2CStressArkDataPacket::encode,
                 S2CStressArkDataPacket::decode,

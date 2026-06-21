@@ -2,7 +2,7 @@
 
 ## 概述
 
-风暴之翼是基于 Goety 模组、通过 Curios API 装备在胸甲槽位的鞘翅类物品。核心玩法为 **飞行 → 猛击** 双阶段循环，附带逐圈扩散的方块动画和二次延迟魔法伤害。
+风暴之翼是基于 Goety 模组的鞘翅类物品，支持 **胸甲槽** 和 **Curios 背部/身体槽**。核心玩法为 **飞行→猛击→二次延迟魔法伤害** 双阶段循环，附带 **爬墙系统**、**跳跃蓄力** 和 **地面冲刺加速**。
 
 ## 文件结构
 
@@ -10,219 +10,443 @@
 src/main/java/com/goetypunk/addon/
 ├── common/
 │   ├── item/
-│   │   └── StormWingItem.java       # 物品定义 + PersistentData tag 访问器
+│   │   ├── StormWingItem.java              # 物品定义 + PersistentData tag 静态访问器
+│   │   └── curio/StormWingCurio.java       # Curios 能力附加器（curioTick / canEquip）
 │   ├── events/
-│   │   └── StormWingEvents.java     # 核心逻辑：飞行、猛击状态机、环动画、伤害
-│   └── net/
-│       ├── ModNetwork.java          # 网络通道注册
-│       ├── c2s/
-│       │   └── C2SCancelSlamPacket.java  # 客户端→服务端：取消猛击
-│       └── s2c/
-│           └── S2CSlamImpactPacket.java  # 服务端→客户端：猛击冲击粒子+音效
+│   │   └── StormWingEvents.java            # 核心逻辑：slam 状态机、爬墙、蓄力、环动画、伤害
+│   ├── utils/
+│   │   └── WallUtil.java                   # 爬墙几何工具（墙面检测、向量投影）
+│   ├── net/
+│   │   ├── ModNetwork.java                 # 网络通道注册
+│   │   ├── c2s/C2SCancelSlamPacket.java    # 客户端→服务端：取消猛击
+│   │   ├── c2s/C2SJumpChargePacket.java    # 客户端→服务端：跳跃蓄力 tick
+│   │   └── s2c/S2CSlamImpactPacket.java    # 服务端→客户端：冲击粒子+音效
+│   └── config/ModConfig.java               # 全部配置项
 ├── client/
-│   └── StormWingRenderEvents.java   # 客户端渲染 + 取消猛击按键检测
-└── config/
-    └── ModConfig.java               # 所有配置项（含 Storm Wing 参数）
+│   └── StormWingRenderEvents.java          # 客户端：翅翼渲染、爬墙镜头/模型倾斜、按键检测
+├── compat/caelus/
+│   └── CaelusFlightHandler.java            # Caelus 兼容：Curios 背部槽时添加飞行 attribute
+└── mixin/
+    └── StormWingPlayerMixin.java           # 阻止蓄力时触发 Player.jumpFromGround()
 ```
 
 ## 核心架构
 
-### 1. 物品生命周期
+### 1. 物品定义
 
-```
-StormWingItem (ElytraItem 子类)
-├── canElytraFly() = true
-├── elytraFlightTick() → 非 slam 状态时返回 true（允许飞行），slam 时返回 false（强制停飞）
-└── NBT Tag 访问器（静态方法）
-    ├── isHoldingStormWing(entity)     — 检测胸部/Curios 槽位
-    ├── isSlamming / setSlamming       — TAG_SLAMMING
-    ├── getSlamTick / setSlamTick      — TAG_SLAM_TICK
-    ├── getSlamStartY / setSlamStartY  — TAG_SLAM_START_Y
-    ├── getPrevCrouch / setPrevCrouch  — TAG_PREV_CROUCH
-    └── getFlightTick / setFlightTick  — TAG_FLIGHT_TICK
-```
+`StormWingItem extends ElytraItem`：
 
-**所有状态存于实体的 PersistentData**，而非物品 NBT。原因：
-- 玩家可切换 Curios 槽位（不同槽位是不同 ItemStack）
-- 状态绑定玩家而非物品实例
+- `canElytraFly()` → 恒 true
+- `elytraFlightTick()` → slam 时返回 false（强制停飞），否则 true
+- `isEnchantable()` → false（不可附魔）
+- **所有状态存于 entity PersistentData**，而非物品 NBT
+
+#### 状态 tag 总览（全部为静态方法，通过 entity 读写）
+
+| Tag | 访问器 | 用途 |
+|-----|--------|------|
+| `goetypunk.slamming` | `isSlamming/setSlamming` | 猛击状态标志 |
+| `goetypunk.slam_tick` | `getSlamTick/setSlamTick` | 猛击已持续 tick 数 |
+| `goetypunk.slam_start_y` | `getSlamStartY/setSlamStartY` | 猛击起始 Y 坐标 |
+| `goetypunk.prev_crouch` | `getPrevCrouch/setPrevCrouch` | 上一 tick 的 crouch 状态（上升沿检测用） |
+| `goetypunk.slam_invuln_tick` | `getSlamInvulnTick/setSlamInvulnTick` | 猛击无敌帧剩余时间（猛击全程 + 落地后 20 tick = 1 秒） |
+| `goetypunk.wall_running` | `isWallRunning/setWallRunning` | 爬墙状态标志 |
+| `goetypunk.wall_nx/ny/nz` | `getWallNormal/setWallNormal` | 墙面法线方向 |
+| `goetypunk.wall_run_tick` | `getWallRunTick/setWallRunTick` | 爬墙已持续 tick 数 |
+| `goetypunk.jump_charge_tick` | `getJumpChargeTick/setJumpChargeTick` | 跳跃蓄力 tick 数 |
+| `goetypunk.sprint_tick` | `getSprintTick/setSprintTick` | 地面冲刺已持续 tick 数 |
+
+#### 装备检测（多处使用）
+
+`isHoldingStormWing(entity)` — 仅检测 `EquipmentSlot.CHEST`
+`hasStormWingInCurios(player)` — 仅检测 Curios 任意槽位（try-catch 包裹防止 Curios 缺失 NPE）
 
 ### 2. 事件监听器（Forge 总线）
 
-所有事件在 `StormWingEvents` 中通过 `@SubscribeEvent` 注册：
+全部在 `StormWingEvents` 中通过 `@SubscribeEvent` 注册（`Mod.EventBusSubscriber` + `Bus.FORGE`）：
 
-| 事件 | 时机 | 用途 |
-|------|------|------|
-| `LivingFallEvent` | 玩家即将受到坠落伤害 | 若正在 slam 则取消坠落伤害 |
-| `LivingEvent.LivingTickEvent` | 每 tick（实体 tick 早期） | slam 状态机运转（触发、下落） |
-| `TickEvent.PlayerTickEvent.START` | 每 tick（玩家 tick 早期） | 地面起飞检测 |
-| `TickEvent.PlayerTickEvent.END` | 每 tick（玩家 tick 晚期） | 飞行加速度 + burst 检测 |
-| `TickEvent.LevelTickEvent.END` | 每 tick（世界 tick 晚期） | 环动画推进 + 延迟伤害触发 |
-| `LevelEvent.Unload` | 世界卸载 | 清理 ACTIVE_SLAMS / PENDING_DAMAGES |
+| 事件 | Phase | 用途 |
+|------|-------|------|
+| `LivingFallEvent` | — | 持有风暴之翼或正在 slam 时取消坠落伤害 |
+| `LivingAttackEvent` | — | `slam_invuln_tick > 0` 时免疫所有伤害 |
+| `LivingEvent.LivingTickEvent` | — | slam 状态机（触发/下落）；slam invuln 递减；prevCrouch 记录 |
+| `TickEvent.PlayerTickEvent` | START | 爬墙检测/状态更新、冲刺加速属性修饰器管理 |
+| `TickEvent.PlayerTickEvent` | END | 爬墙运动学应用 `applyWallMovement` |
+| `TickEvent.LevelTickEvent` | END | 环动画逐 tick 推进、延迟伤害到期触发 |
+| `LevelEvent.Unload` | — | 清理 `ACTIVE_SLAMS` / `PENDING_DAMAGES` |
 
-**注意**：slam 状态机在 `LivingTickEvent` 中处理而非 `PlayerTickEvent`，因为前者在 `updateFallFlying` 之前触发，可在同一 tick 内停止飞行。
+**关键时序**：slam 状态机在 `LivingTickEvent` 中处理（先于 `updateFallFlying`），可同 tick 停飞。爬墙运动学在 `PlayerTickEvent.END` 中应用（先于移动结算）。
 
 ### 3. 双阶段循环
 
 ```
-飞行阶段                                  猛击阶段
-┌──────────┐    shift(蹲下)    ┌──────────────────┐
-│  Elytra  │ ────────────────→ │  Hover (SLAM_HOVER_TICKS) │
-│  Flight  │                   │  水平减速，垂直悬停        │
-│  (加速/  │                   │  持续 tick++              │
-│   转向)  │                   └────────┬─────────────────┘
-└──────────┘                            │ hover 结束后
-       ↑                                ↓
-       │                        ┌──────────────────┐
-       │   空格(取消)            │  Descend (加速下落) │
-       │   ←──────────────────  │  速度 = 0.15 + gravity × tick │
-       │                        │  上限 SLAM_MAX_SPEED         │
-       │                        └────────┬─────────────────┘
-       │                                 │  onGround() || inFluid()
-       │                                 ↓
-       │                        ┌──────────────────┐
-       │                        │  Impact (冲击)     │
-       │                        │  ├ AoE 实体伤害    │
-       │                        │  ├ 方块环动画      │
-       │                        │  ├ 红色 AoE 圆形粒子│
-       │                        │  ├ 镜头震动        │
-       │                        │  ├ 爆炸音效        │
-       │                        │  ├ 发送 S2C 包     │
-       │                        │  └ 调度 60tick 后  │
-       │                        │    二次魔法伤害     │
-       │                        └──────────────────┘
+飞行阶段                                   猛击阶段
+┌──────────────┐    shift 按下             ┌─────────────────┐
+│ Elytra Flight │ ────────────────────────→ │  Hover (SLAM_HOVER_TICKS) │
+│ (无额外加速)   │                          │  水平×0.9减速，垂直悬停    │
+│ 仅抗 drag    │                          │  slam_tick++              │
+└──────────────┘                          └────────┬────────────┘
+       ↑                                           │ hover 结束
+       │                                           ↓
+       │                                   ┌─────────────────┐
+       │   jump 按下（取消）                │  Descend (加速下落) │
+       │   ←───────────────────────────    │  V(t) = 0.15 + gravity×t │
+       │                                   │  上限 SLAM_MAX_SPEED     │
+       │                                   └────────┬────────────┘
+       │                                            │ onGround() || inFluid()
+       │                                            ↓
+       │                                   ┌─────────────────┐
+       │                                   │  Impact (冲击)    │
+       │                                   │  ├ AoE 实体伤害   │
+       │                                   │  ├ 方块环升起动画  │
+       │                                   │  ├ 红色 AoE 圆形粒子│
+       │                                   │  ├ 镜头震动       │
+       │                                   │  ├ 爆炸音效       │
+       │                                   │  ├ 发送 S2C 包   │
+       │                                   │  ├ 设置 invuln=20 tick │
+       │                                   │  └ 调度 60tick 后 │
+       │                                   │    二次魔法伤害   │
+       │                                   └─────────────────┘
 ```
 
-### 4. 猛击伤害公式
+#### 3.1 进入猛击
+
+`handleSlamTrigger()`：检测 `nowCrouch && !prevCrouch`（shift 键上升沿）→ `enterSlamState()`：
+- 设置 `slamming=true`、`slam_tick=0`、`slam_start_y=player.getY()`
+- `elytraFlightTick()` 返回 false → 同 tick 停飞
+- 设置初始下速度 `-0.15`
+- **设置 invuln=9999**（猛击全程无敌）
+- 播放火箭发射音效
+
+#### 3.2 猛击下落
+
+`handleSlamTick()`：
+- `tick < SLAM_HOVER_TICKS`：水平 ×0.9 减速，垂直悬停（滞空）
+- `tick >= SLAM_HOVER_TICKS`：`速度 = 0.15 + gravity_per_tick × (tick - hover_ticks)`，上限 SLAM_MAX_SPEED
+- 强制关闭创造飞行
+
+#### 3.3 冲击
+
+`triggerSlamImpact()`：
 
 ```
 fallDistance = max(0, slamStartY - player.getY())
 
 damage = clamp(fallDistance × SLAM_DAMAGE_MULTIPLIER,
-               SLAM_MIN_DAMAGE,
-               SLAM_MAX_DAMAGE)
+               SLAM_MIN_DAMAGE, SLAM_MAX_DAMAGE)
 
 radius = clamp(fallDistance × SLAM_RADIUS_MULTIPLIER,
-               8.0,
-               SLAM_MAX_RADIUS)
+               8.0, SLAM_MAX_RADIUS)
+
+rings  = min(4 + max(0, (fallDist-10)/20), 9, maxRingsByRadius)
+       其中 maxRingsByRadius = max(0, floor(radius)-5)
 ```
 
-**关键设计**：伤害和半径在圆内**均匀分布**，无边缘衰减。
+- AoE 伤害：AABB `[x±radius, groundY-2 ~ groundY+3, z±radius]`，`DamageSource.playerAttack(player)`，均匀分布无衰减
+- 每次命中：向外击飞（水平 2.5 + 垂直 0.5~0.8）
+- **设置 slam_invuln_tick=20**（落地后 1 秒无敌，通过 `LivingAttackEvent` 实现）
+- 立即清除 slam 状态
+- 调度 `PENDING_DAMAGES`（60 tick 后二次伤害）
 
-### 5. 二次延迟伤害（Delayed Damage）
+### 4. 二次延迟伤害（Delayed Damage）
 
-- **触发时机**：首次冲击后 60 ticks（3 秒），对应 AoE 红色圆形消失时
-- **伤害类型**：`indirectMagic(player, player)` → 无视护甲的魔法伤害
-- **伤害量**：首次伤害 × 50%
-- **特效**：白色 `CircleExplodeParticleOption` 扩张环 + `SoundEvents.END_PORTAL_SPAWN` 音效
-- **击飞**：向外 3.0 格/tick 水平速度 + 1.0~1.5 垂直速度
-- **实现**：`PENDING_DAMAGES` Map 存储到期的伤害数据，`onLevelTick` 每 tick 检查
+| 属性 | 值 |
+|------|-----|
+| 触发时机 | 首次冲击后 60 ticks（3 秒） |
+| 伤害量 | 首次伤害 × 50% |
+| 伤害类型 | `indirectMagic(player, player)` — 无视护甲 |
+| 特效 | 白色 `CircleExplodeParticleOption` 扩张环 + `END_PORTAL_SPAWN` 音效 |
+| 击飞 | 水平 3.0 + 垂直 1.0~1.5 |
 
-### 6. 环动画系统（Ring Animation）
+实现：`PENDING_DAMAGES: Map<ServerLevel, List<DelayedDamageData>>`，`onLevelTick` 每 tick 检查 `gameTime >= triggerTick`。
 
-基于 `ModFallingBlock`（Goety 实体）的逐圈扩散方块动画。
+### 5. 环动画系统（Ring Animation）
+
+基于 Goety `ModFallingBlock` 实体，逐圈扩散方块动画。
 
 ```
 ACTIVE_SLAMS: Map<ServerLevel, List<SlamAnimData>>
 ```
 
-**SlamAnimData**：
-- `center`：冲击中心
-- `totalRings`：环数（默认 4-9，随坠落距离增加）
-- `nextRingToSpawn`：当前已生成的环索引
-- `blocks`：活跃中的 `BlockAnimData` 列表
-- `pendingBlocks`：待延迟生成的方块
+**`SlamAnimData`**：`center` / `floorY` / `radius` / `totalRings` / `nextRingToSpawn` / `animTick` / `blocks` / `pendingBlocks` / `allRingsSpawned`
 
-**每 tick 推进**（`onLevelTick`）：
-1. 检查是否需要生成新环（`animTick >= nextRingToSpawn × RINGS_DELAY`）
-2. 从 `pendingBlocks` 中释放到期的延迟方块
-3. 移除已死亡的方块
-4. 所有环生成完毕且方块清空后，移除该动画
+**每 tick 推进**（`onLevelTick` END）：
+1. `animTick++`
+2. 从 `pendingBlocks` 释放到期的延迟方块
+3. 若 `animTick >= nextRingToSpawn × RINGS_DELAY(1)` → `spawnSingleRing()`
+4. 移除已死亡的 `ModFallingBlock`
+5. 所有 ring 生成完毕 + 无活跃/待处理方块 → 移除该 `SlamAnimData`
 
 **环生成**（`spawnSingleRing`）：
-- 环半径 = `5.0 + ringIndex`，宽度 1 格
-- 每个环遍历 AABB 内所有方块位置
-- 非最外环 → `POPUP_ANIM` 模式（原地弹起动画，延迟 0-7 tick 错开）
-- 最外环 → `MOBILE` 模式（向外飞散，带旋转和重力）
+- 环起始半径 = `5.0 + ringIdx`，宽度 1 格
+- 通过 `findGroundPos` 找到地面方块（当前格 + 向下 3 格）
+- **非最外环** → `POPUP_ANIM` 模式：`popUp = sqrt(desiredHeight × 0.2)`，随机延迟 0-7 tick 错开
+- **最外环** → `MOBILE` 模式：向外飞散 + 旋转 + 重力
 
-### 7. 取消猛击（Cancel Slam）
+#### 同步视觉（`spawnVisuals`，冲击时触发）
+
+| 视觉 | 实现 |
+|------|------|
+| 方块升起环 | `startRingAnimation`（逐圈错开） |
+| MOBILE 飞散碎块 | 20 个 `ModFallingBlock(MOBILE)`，水平 3 格内随机 |
+| 中心 DEBRIS | 15 个 `ModFallingBlock(MOBILE)`，0.5~2.0 格向外 |
+| 红色外圈边界 | `CircleExplodeParticleOption(1,0,0, radius, 2)` — 即时爆发 |
+| 红色 AoE 圆形 | `AoEParticleOption(radius, 60)` — 持续 3 秒半透明红圈 |
+| 镜头震动 | `CameraShake.cameraShake(radius×1.5, 0.15, 15, 10)` |
+| 爆炸音效 | 服务端 + 客户端（S2C 包） |
+
+### 6. 爬墙系统（Wall-Running）
+
+#### 6.1 墙面检测（`WallUtil.getWallDirection`）
+
+取玩家两个 AABB 采样盒（脚部 30% + 头顶 15% 高度），向 ±X/±Z 各扩展 `range=0.5`，检测是否与方块碰撞：
+
+```
+脚部盒子: (x±width, y, z±width) → (x±width, y+height×0.3, z±width)
+头顶盒子: (x±width, y+height×0.85, z±width) → (x±width, y+height, z±width)
+```
+
+返回法线向量 `Vec3(wallX, 0, wallZ)` 或 null。
+
+#### 6.2 进入爬墙
+
+`tryStartWallRun()`（PlayerTick START）：
+- 条件：持有风暴之翼 + 非 slam + 非地面 + 非液体 + 有墙面
+- 设置 `wall_running=true`、`wall_normal`、`wall_run_tick=0`
+- 若正在飞行 → `stopFallFlying()`
+- **继承速度**：分解为沿墙面分量 + 入墙面分量，去掉入墙分量保留切向速度
+
+#### 6.3 维持爬墙
+
+`handleWallRunTick()`（PlayerTick START）：
+- 每 tick 检测：若 shift/液体/地面/飞行/墙壁消失 → `stopWallRun()`
+- `wall_run_tick++`
+
+#### 6.4 爬墙运动学
+
+`applyWallMovement()`（PlayerTick END）：
+
+```
+surfaceVel = 当前速度投影到墙面切平面
+forwardOnWall = 视线方向投影到墙面切平面（单位向量）
+rightOnWall = forwardOnWall × wallNormal（单位向量）
+
+inputAccel = forwardOnWall × zza × baseAccel
+           + rightOnWall × strafe × baseAccel
+           其中 baseAccel = MOVEMENT_SPEED × 0.3
+
+surfaceVel = (surfaceVel + inputAccel) × WALL_FRICTION(0.98)
+surfaceVel += (0, -WALL_SLIDE_SPEED(0.005), 0)  # 极轻微下滑
+
+最终速度 = surfaceVel + wallNormal × WALL_ADHESION(0.05)
+```
+
+#### 6.5 客户端视觉效果
+
+`StormWingRenderEvents`：
+- **Camera 60° roll**（`ViewportEvent.ComputeCameraAngles`）：根据墙面法线相对视角右方向，平滑过渡倾斜
+- **Model 60° tilt**（`RenderPlayerEvent.Pre`）：玩家 body/head/arms/legs 同步 `zRot` 倾斜
+- 平滑插值：`clientWallRoll += diff × 0.15`
+
+### 7. 跳跃蓄力（Jump Charge）
+
+#### 7.1 客户端检测
+
+`onClientTick`（`StormWingRenderEvents`）：
+- `jumpDown && hasStormWing && !isFallFlying && (onGround || wallRunning)`
+- 蓄力期间每 2 tick 发送 `C2SJumpChargePacket(tick)`（减少网络量）
+- 粒子反馈：每 3 tick 生成 `CRIT` 粒子；超过 40 tick 额外生成 `ENCHANTED_HIT` 粒子
+- jump 松开时发送 `C2SJumpChargePacket(0)` 触发跳跃
+
+#### 7.2 服务端处理
+
+`handleJumpChargeFromClient()`：
+- `action > 0`：存储蓄力 tick（上限 `JUMP_CHARGE_MAX_TICKS`）
+- `action == 0`：执行蓄力跳跃
+
+#### 7.3 跳跃高度公式
+
+```
+threshold = JUMP_THRESHOLD_TICKS(20)
+if charge < threshold:
+    height = JUMP_SMALL_HEIGHT(3.0)
+else:
+    t = (charge - threshold) / (maxTicks - threshold)
+    height = smallHeight + initialBonus + t × (maxHeight - smallHeight - initialBonus)
+
+jumpPower = sqrt(2 × 0.08 × height)
+```
+
+| 配置 | 默认值 | 说明 |
+|------|--------|------|
+| `jump_threshold_ticks` | 20 | 蓄力阈值，小于此值触发小跳 |
+| `jump_small_height` | 3.0 | 小跳高度（格） |
+| `jump_charge_initial_bonus` | 5.0 | 蓄力初始额外高度 |
+| `jump_charge_max_height` | 30.0 | 蓄力满时最大高度 |
+| `jump_charge_max_ticks` | 60 | 最长蓄力时间（3 秒） |
+
+#### 7.4 Mixin 阻止普通跳跃
+
+`StormWingPlayerMixin` → `Player.jumpFromGround()` HEAD 注入：
+- `jumpChargeTick > 0` → cancel（防止蓄力时按空格触发跳跃）
+- `jumping && 胸甲槽有风暴之翼` → cancel（防止飞行时误触）
+
+### 8. 冲刺加速（Sprint Acceleration）
+
+`onPlayerTick` START phase：
+- 条件：持有风暴之翼 + `isSprinting()` + 地面 + `zza > 0` + 非 slam + 非 wall-run + 非飞行
+- `sprint_tick++`，`level = min(sprint_tick / 20, 3)`
+- 每 tick 替换 `MOVEMENT_SPEED` attribute：`multiply_total × (0.6 + level × 0.2)`
+- sprint 停止时清除 modifier
+
+### 9. 猛击无敌帧
+
+实现两层保护：
+
+| 保护 | 实现 | 持续时间 |
+|------|------|---------|
+| 猛击中 | `enterSlamState` 时设置 `invuln=9999` | 整个猛击过程 |
+| 落地后 | `triggerSlamImpact` 时设置 `invuln=20` | 落地后 1 秒 |
+
+通过 `LivingAttackEvent` 监听：`slam_invuln_tick > 0` → `setCanceled(true)`。
+
+`LivingTickEvent` 中每 tick 递减 `invuln`（减到 0 后恢复受击）。
+
+### 10. 飞行力学
+
+飞行阶段依赖鞘翅默认物理，同时在 `PlayerTickEvent.START` 阶段注入了视线方向速度推进。
+
+#### 10.1 飞行推进（Flight Boost）
+
+每 tick 沿玩家视线方向施加固定速度脉冲（与烟花火箭推进原理一致）。
+
+**代码位置**：`StormWingEvents.onPlayerTick()` START phase，`sprint` 加速块之后、`return;` 之前。
+
+**四重闸门条件**（缺一不可）：
+
+| 条件 | 作用 |
+|------|------|
+| `hasStormWing` | 胸甲槽或 Curios 持有风暴之翼 |
+| `player.isFallFlying()` | 处于鞘翅飞行态 |
+| `!isSlamming` | 非下砸状态（同 tick `enterSlamState()` 立即设置，下沉前已排除） |
+| `!isWallRunning` | 非爬墙状态（爬墙已 `stopFallFlying()`） |
+
+**效果**：
+- 抬头看天 → 升力，缓慢爬升
+- 平视前方 → 水平加速，稳定约 2 倍原版鞘翅速度
+- 俯视地面 → 加速俯冲
+
+**平衡速度**：`v ≈ boost * cos(pitch) / (1 - drag)`，drag 来自 `travel()` 的 0.99 衰减系数。默认 `boost = 0.025` 时平飞约 2x 原版。
+
+**配置项**：
+- `flight_boost_strength`（默认 0.025，范围 0.0~0.5）— 基础推进力度
+- `flight_boost_vertical`（默认 0.20，范围 0.0~1.0）— Y 轴独立推进力度，直接沿 `look.y` 施加（不依赖水平 boost），默认 0.20 时净值约 +0.12~+0.14/tick，爬升速度约 2.4~2.8 blocks/sec
+
+**与其他系统互斥**：
+- Slam 期间 `isSlamming = true` → boost 跳过
+- 爬墙期间 `isWallRunning = true` → boost 跳过
+- 地面冲刺不受影响
+
+其他主动飞行能力：
+
+- 持有风暴之翼时 shift 进入 slam（如上所述）
+- 持有风暴之翼时靠近墙壁进入爬墙（如上所述）
+- 爬墙状态下无法 slam
+
+### 11. 取消猛击
 
 ```
 客户端：TickEvent.ClientTickEvent.END
-  └ 检测 keyJump 上升沿（按下瞬间）
-    └ 发送 C2SCancelSlamPacket → 服务端
+  └ 检测 keyJump 上升沿（wasPressed）→ 非爬墙时发送 C2SCancelSlamPacket
 
 服务端：C2SCancelSlamPacket.handle()
-  └ 校验 isSlamming()
-    └ 设置向上速度（max(0.5, currentY)）
-    └ 调用 clearSlamState()：移除 slam 标记和 tick 数据
-    └ fallDistance = 0（防止触发坠落伤害）
+  └ 校验 isSlamming() → 设置向上速度 max(0.5, currentY) → clearSlamState() → fallDistance=0
 ```
 
-**为什么不在客户端校验 isSlamming？**
-
-`onLivingTick` 首行 `if (player.level().isClientSide) return;` 导致客户端从不执行 `enterSlamState`，因此 `TAG_SLAMMING` 只存在于服务端 NBT。客户端 `isSlamming()` 恒返回 false。
-
-解决方案：**客户端不校验**，直接发送包，服务端 handler 进行真正的状态校验。
-
-### 8. 飞行力学
-
-在 `onPlayerTick`（Phase.END）中实现：
-
-```
-# 抗 drag 补偿（抵消鞘翅默认 0.98 减速）
-每 tick 将水平速度除以 0.98
-
-# 加速（玩家按住 W 时）
-沿视线方向增加 BOOST_ACCELERATION
-
-# Burst（首次进入飞行）
-横向 + 视线方向 × 1.25
-```
-
-**地面起飞逻辑**（Phase.START/END）：
-- 手持风暴之翼 + 未飞行 + 在地面 + 按住 W → 设置垂直速度 2.0
-- 手持风暴之翼 + 未飞行 + 在空中 + 按住 W → 强制 `startFallFlying()`
-
-### 9. 客户端渲染
+### 12. 客户端渲染
 
 `StormWingRenderEvents`：
 
-- **翅翼模型渲染**（`RenderPlayerEvent.Post`）：在玩家 body 位置后渲染风暴之翼纹理（`textures/entity/storm_wing.png`），附着于胸甲槽位。支持 Curios 槽位检测。
-- **冲击特效**（`S2CSlamImpactPacket` 客户端 handler）：撞击位置的 `BlockParticleOption` 雾化粒子 + `GENERIC_EXPLODE` 音效
+| 事件 | 用途 |
+|------|------|
+| `RenderPlayerEvent.Post` (LOWEST) | 玩家 body 后渲染翅翼模型（`textures/entity/storm_wing.png`），同时检测 Curios 槽位 |
+| `ViewportEvent.ComputeCameraAngles` | 爬墙时 camera roll 60° |
+| `RenderPlayerEvent.Pre` | 爬墙时 player model 整体倾斜 |
+| `TickEvent.ClientTickEvent.END` | 墙壁状态更新、取消 slam 发送、跳跃蓄力 C2S 发送 |
+| `S2CSlamImpactPacket` handle | 客户端播放 `BlockParticleOption` 雾化粒子 + `GENERIC_EXPLODE` 音效 |
 
-### 10. 配置参数（`goetypunk-common.toml`）
+### 13. Curios 兼容
+
+`StormWingCurio` → `AttachCapabilitiesEvent<ItemStack>`：
+
+| 方法 | 行为 |
+|------|------|
+| `curioTick` | 在 Curios 槽中继续飞行 tick（调用 `elytraFlightTick`） |
+| `canEquip` | 无 Caelus 时禁止放入 Curios 槽；胸甲槽已有风暴之翼时禁止放入背/胸槽 |
+| `canEquipFromUse` | 仅 Caelus 加载时可右键装备 |
+| `getEquipSound` | 鞘翅装备音效 |
+
+### 14. Caelus 兼容
+
+`CaelusFlightHandler` → 当风暴之翼在 Curios 背部槽时，通过 `caelus:flight` attribute 添加飞行能力：
+- `ADDITION` 修饰器，值 1.0
+- 每 tick 清除后重新添加（防止作弊/命令修改）
+- 通过 `ResourceLocation` 字符串查询 attribute，避免直接 import Caelus 类
+
+### 15. 配置参数（`goetypunk-common.toml`）
+
+#### Storm Wing 段
 
 | 配置项 | 默认值 | 范围 | 说明 |
 |--------|--------|------|------|
-| `boost_acceleration` | 0.2 | 0.0~1.0 | 飞行每 tick 加速度 |
-| `slam_damage_multiplier` | 1.0 | 0.0~10.0 | 伤害倍率：坠落高度 × 此值 |
-| `slam_radius_multiplier` | 1.0 | 0.0~20.0 | 半径倍率 |
-| `slam_min_damage` | 20.0 | 1.0~9999.0 | 最低伤害保底 |
-| `slam_max_damage` | 1200.0 | 1.0~9999.0 | 伤害上限 |
-| `slam_max_radius` | 100.0 | 1.0~200.0 | 半径上限 |
-| `slam_gravity_per_tick` | 0.25 | 0.01~2.0 | 每 tick 下降加速度 |
-| `slam_max_speed` | 6.0 | 0.5~20.0 | 最大下降速度 |
+| `slam_gravity_per_tick` | 0.25 | 0.01~2.0 | 每 tick 下落加速度 |
+| `slam_max_speed` | 6.0 | 0.5~20.0 | 最大下落速度 |
+| `slam_damage_multiplier` | 1.0 | 0.0~10.0 | 伤害 = 坠落高度 × 此值 |
+| `slam_radius_multiplier` | 1.0 | 0.0~20.0 | 半径 = 坠落高度 × 此值 |
+| `slam_min_damage` | 20.0 | 1~9999 | 最低伤害保底 |
+| `slam_max_damage` | 1200.0 | 1~9999 | 伤害上限 |
+| `slam_max_radius` | 100.0 | 1~200 | 半径上限 |
 | `slam_hover_ticks` | 5 | 0~100 | 下落前悬停 tick 数 |
 
-### 11. 关键设计决策
+#### Wall Run 段
+
+| 配置项 | 默认值 | 范围 | 说明 |
+|--------|--------|------|------|
+| `wall_adhesion` | 0.05 | 0.01~0.5 | 每 tick 吸附拉向墙面力度 |
+| `wall_friction` | 0.98 | 0.9~1.0 | 墙面速度衰减系数 |
+| `wall_slide_speed` | 0.005 | 0.0~0.1 | 沿墙面下滑速度 |
+
+#### Jump Charge 段
+
+| 配置项 | 默认值 | 范围 | 说明 |
+|--------|--------|------|------|
+| `jump_threshold_ticks` | 20 | 5~100 | 蓄力阈值 |
+| `jump_small_height` | 3.0 | 1.0~10.0 | 小跳高度 |
+| `jump_charge_initial_bonus` | 5.0 | 1.0~30.0 | 蓄力初始额外高度 |
+| `jump_charge_max_height` | 30.0 | 5.0~100.0 | 蓄力最大高度 |
+| `jump_charge_max_ticks` | 60 | 20~200 | 最长蓄力时间 |
+
+### 16. 关键设计决策
 
 | 决策 | 原因 |
 |------|------|
 | 状态存 PersistentData 而非物品 NBT | 玩家切换 Curios 槽位后 ItemStack 改变，但状态应跟玩家走 |
 | 环起始半径 5 格 | 避免冲击中心正下方方块被挖空，保留站脚位置 |
-| PENDING_DAMAGES 用 ConcurrentHashMap | 多线程环境安全；服务端 LevelTick 可能来自不同线程 |
-| 红圈使用 Goety 的 AoEParticleOption | 该粒子在客户端渲染为半透明圆盘，视野外隐藏 |
-| 延迟伤害用 indirectMagic | 无视护甲和附魔，玩家无法减免，与冲击的 playerAttack 形成互补 |
-| 通过 findGroundPos 找地面方块 | 允许环动画在悬空洞穴中仍能找到下方可用方块，而非凭空生成 |
-| 二次伤害取消方块上升和淡紫色范围指示 | 减少视觉杂乱，只保留圆环特效作为伤害提示 |
+| `ConcurrentHashMap` + `synchronized` | ACTIVE_SLAMS/PENDING_DAMAGES 可能被多线程访问 |
+| `indirectMagic` 二次伤害 | 无视护甲和附魔，与冲击的 `playerAttack` 形成互补 |
+| `findGroundPos` 找地面方块 | 允许环动画在悬空洞穴中找到下方可用方块 |
+| 二次伤害取消方块上升和红圈 | 减少视觉杂乱，只保留白色圆环 |
+| 爬墙两层 AABB 采样 | 脚部和头顶各采一点，避免全 AABB 误判 |
+| `try-catch` 包裹 Curios 调用 | 防止 Curios 未加载时 NPE 导致崩溃 |
 
 ## 调试日志
 
-所有关键事件均输出 INFO 级别日志（`GoetyPunkMod.LOGGER`），包括：
-- 飞行状态变化（prev/cur flight ticks）
-- 猛击触发和取消
-- Impact 时的伤害/半径/环数计算
-- 每次 AoE 命中/跳过的实体及其距离
+所有关键事件输出至 `GoetyPunkMod.LOGGER`（INFO 级别），通过 `run/logs/latest.log` 可追踪：
+- 猛击触发/取消、冲击伤害/半径/环数
+- AoE 命中/跳过实体及距离
 - 环动画的每个方块位置和 popUp 值
+- 爬墙开始/停止、墙面法线
+- 跳跃蓄力/释放/高度
+- Mixed 取消普通跳跃（`jumpChargeTick > 0`）
 
-通过 `run/logs/latest.log` 可追踪完整逻辑。
+`PlayerTickEvent.START` 还输出 `zza` / `onGround` / `isFallFlying`（DEBUG 级别），用于调试飞行状态检测。

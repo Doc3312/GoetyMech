@@ -2,9 +2,12 @@ package com.goetypunk.addon.common.item;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.phys.Vec3;
+import top.theillusivec4.curios.api.CuriosApi;
 
 public class StormWingItem extends ElytraItem {
 
@@ -13,6 +16,15 @@ public class StormWingItem extends ElytraItem {
     private static final String TAG_SLAM_START_Y = "goetypunk.slam_start_y";
     private static final String TAG_PREV_CROUCH = "goetypunk.prev_crouch";
     private static final String TAG_FLIGHT_TICK = "goetypunk.flight_tick";
+
+    private static final String TAG_WALL_RUNNING = "goetypunk.wall_running";
+    private static final String TAG_WALL_NORMAL_X = "goetypunk.wall_nx";
+    private static final String TAG_WALL_NORMAL_Y = "goetypunk.wall_ny";
+    private static final String TAG_WALL_NORMAL_Z = "goetypunk.wall_nz";
+    private static final String TAG_JUMP_CHARGE_TICK = "goetypunk.jump_charge_tick";
+    private static final String TAG_LAST_BOOST_TICK = "goetypunk.last_boost_tick";
+    private static final String TAG_SLAM_INVULN_TICK = "goetypunk.slam_invuln_tick";
+    private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
 
     public StormWingItem() {
         super(new Properties()
@@ -38,6 +50,21 @@ public class StormWingItem extends ElytraItem {
 
     public static boolean isHoldingStormWing(LivingEntity entity) {
         return entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof StormWingItem;
+    }
+
+    public static boolean hasAnyStormWing(LivingEntity entity) {
+        if (entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof StormWingItem)
+            return true;
+        if (entity instanceof Player player) {
+            try {
+                var inv = CuriosApi.getCuriosInventory(player);
+                return inv.map(i -> i.findFirstCurio(
+                        s -> s.getItem() instanceof StormWingItem).isPresent()).orElse(false);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return false;
     }
 
     public static boolean isSlamming(LivingEntity entity) {
@@ -76,6 +103,7 @@ public class StormWingItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_SLAMMING);
         entity.getPersistentData().remove(TAG_SLAM_TICK);
         entity.getPersistentData().remove(TAG_SLAM_START_Y);
+        entity.getPersistentData().remove(TAG_SLAM_INVULN_TICK);
     }
 
     public static int getFlightTick(LivingEntity entity) {
@@ -86,4 +114,79 @@ public class StormWingItem extends ElytraItem {
         entity.getPersistentData().putInt(TAG_FLIGHT_TICK, tick);
     }
 
+    // ── Wall-running ──
+
+    public static boolean isWallRunning(LivingEntity entity) {
+        return entity.getPersistentData().getBoolean(TAG_WALL_RUNNING);
+    }
+
+    public static void setWallRunning(LivingEntity entity, boolean running) {
+        entity.getPersistentData().putBoolean(TAG_WALL_RUNNING, running);
+    }
+
+    public static Vec3 getWallNormal(LivingEntity entity) {
+        var data = entity.getPersistentData();
+        return new Vec3(data.getDouble(TAG_WALL_NORMAL_X), data.getDouble(TAG_WALL_NORMAL_Y), data.getDouble(TAG_WALL_NORMAL_Z));
+    }
+
+    public static void setWallNormal(LivingEntity entity, Vec3 normal) {
+        entity.getPersistentData().putDouble(TAG_WALL_NORMAL_X, normal.x);
+        entity.getPersistentData().putDouble(TAG_WALL_NORMAL_Y, normal.y);
+        entity.getPersistentData().putDouble(TAG_WALL_NORMAL_Z, normal.z);
+    }
+
+    public static void clearWallState(LivingEntity entity) {
+        entity.getPersistentData().remove(TAG_WALL_RUNNING);
+        entity.getPersistentData().remove(TAG_WALL_NORMAL_X);
+        entity.getPersistentData().remove(TAG_WALL_NORMAL_Y);
+        entity.getPersistentData().remove(TAG_WALL_NORMAL_Z);
+    }
+
+    // ── Jump charging ──
+
+    public static int getJumpChargeTick(LivingEntity entity) {
+        return entity.getPersistentData().getInt(TAG_JUMP_CHARGE_TICK);
+    }
+
+    public static void setJumpChargeTick(LivingEntity entity, int tick) {
+        entity.getPersistentData().putInt(TAG_JUMP_CHARGE_TICK, tick);
+    }
+
+    public static void clearJumpCharge(LivingEntity entity) {
+        entity.getPersistentData().remove(TAG_JUMP_CHARGE_TICK);
+    }
+
+    // ── Flight boost ──
+
+    public static int getLastBoostTick(LivingEntity entity) {
+        return entity.getPersistentData().getInt(TAG_LAST_BOOST_TICK);
+    }
+
+    public static void setLastBoostTick(LivingEntity entity, int tick) {
+        entity.getPersistentData().putInt(TAG_LAST_BOOST_TICK, tick);
+    }
+
+    // ── Slam invulnerability ──
+
+    public static int getSlamInvulnTick(LivingEntity entity) {
+        return entity.getPersistentData().getInt(TAG_SLAM_INVULN_TICK);
+    }
+
+    public static void setSlamInvulnTick(LivingEntity entity, int tick) {
+        entity.getPersistentData().putInt(TAG_SLAM_INVULN_TICK, tick);
+    }
+
+    // ── Sprint acceleration ──
+
+    public static int getSprintTick(LivingEntity entity) {
+        return entity.getPersistentData().getInt(TAG_SPRINT_TICK);
+    }
+
+    public static void setSprintTick(LivingEntity entity, int tick) {
+        entity.getPersistentData().putInt(TAG_SPRINT_TICK, tick);
+    }
+
+    public static void clearSprint(LivingEntity entity) {
+        entity.getPersistentData().remove(TAG_SPRINT_TICK);
+    }
 }

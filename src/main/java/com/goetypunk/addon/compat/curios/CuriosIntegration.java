@@ -15,9 +15,9 @@ public class CuriosIntegration {
     @SuppressWarnings("deprecation")
     @SubscribeEvent
     public static void sendImc(InterModEnqueueEvent event) {
-        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
-                () -> SlotTypePreset.BELT.getMessageBuilder().build());
         // StormWing 需要背部槽和身体槽
+        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
+                () -> SlotTypePreset.BODY.getMessageBuilder().build());
         InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
                 () -> SlotTypePreset.BACK.getMessageBuilder().build());
     }

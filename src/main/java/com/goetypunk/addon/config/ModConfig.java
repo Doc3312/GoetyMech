@@ -130,7 +130,6 @@ public class ModConfig {
 
     // ====== Storm Wing 配置 ======
 
-    public static final ForgeConfigSpec.DoubleValue BOOST_ACCELERATION;
     public static final ForgeConfigSpec.DoubleValue SLAM_GRAVITY_PER_TICK;
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_SPEED;
     public static final ForgeConfigSpec.DoubleValue SLAM_DAMAGE_MULTIPLIER;
@@ -139,6 +138,21 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_RADIUS;
     public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
+    public static final ForgeConfigSpec.DoubleValue FLIGHT_BOOST_STRENGTH;
+    public static final ForgeConfigSpec.IntValue FLIGHT_BOOST_COOLDOWN;
+
+    // ====== Storm Wing — Wall-running 配置 ======
+
+    public static final ForgeConfigSpec.DoubleValue WALL_RUN_SPEED;
+    public static final ForgeConfigSpec.DoubleValue WALL_GRAVITY;
+    public static final ForgeConfigSpec.DoubleValue WALL_JUMP_OFF_VELOCITY;
+    public static final ForgeConfigSpec.DoubleValue WALL_PULL_SPEED;
+
+    // ====== Storm Wing — Jump Charge 配置 ======
+
+    public static final ForgeConfigSpec.DoubleValue JUMP_BASE_VELOCITY;
+    public static final ForgeConfigSpec.DoubleValue JUMP_VELOCITY_PER_TICK;
+    public static final ForgeConfigSpec.IntValue JUMP_MAX_CHARGE_TICKS;
 
     // ====== Time Freeze 配置 ======
 
@@ -319,10 +333,6 @@ public class ModConfig {
         // ====== Storm Wing 配置 ======
         BUILDER.push("storm_wing");
 
-        BOOST_ACCELERATION = BUILDER
-                .comment("飞行推进力：每 tick 沿视线方向施加的加速度", "范围: 0.0-1.0，默认 0.2")
-                .defineInRange("boost_acceleration", 0.2, 0.0, 1.0);
-
         SLAM_GRAVITY_PER_TICK = BUILDER
                 .comment("Slam 每 tick 下降速度增量（5 格/秒 = 0.25/tick）", "范围: 0.01-2.0，默认 0.25")
                 .defineInRange("slam_gravity_per_tick", 0.25, 0.01, 2.0);
@@ -354,6 +364,52 @@ public class ModConfig {
         SLAM_HOVER_TICKS = BUILDER
                 .comment("Slam 滞空 tick 数（越长则坠落前升得越高）", "范围: 0-100，默认 5")
                 .defineInRange("slam_hover_ticks", 5, 0, 100);
+
+        FLIGHT_BOOST_STRENGTH = BUILDER
+                .comment("飞行 W 加速力度（类似烟花推进）", "值越大单次爆发越强", "范围: 0.5-10.0，默认 2.5")
+                .defineInRange("flight_boost_strength", 2.5, 0.5, 10.0);
+
+        FLIGHT_BOOST_COOLDOWN = BUILDER
+                .comment("飞行 W 加速冷却（tick，20 tick = 1 秒）", "范围: 1-40，默认 10")
+                .defineInRange("flight_boost_cooldown", 10, 1, 40);
+
+        BUILDER.pop();
+
+        // ====== Wall-running 配置 ======
+        BUILDER.push("wall_run");
+
+        WALL_RUN_SPEED = BUILDER
+                .comment("墙面移动速度（blocks/tick）", "范围: 0.01-1.0，默认 0.15")
+                .defineInRange("wall_run_speed", 0.15, 0.01, 1.0);
+
+        WALL_GRAVITY = BUILDER
+                .comment("墙面下滑重力（blocks/tick）", "范围: 0.0-1.0，默认 0.03")
+                .defineInRange("wall_gravity", 0.03, 0.0, 1.0);
+
+        WALL_JUMP_OFF_VELOCITY = BUILDER
+                .comment("跳离墙面的速度", "范围: 0.1-2.0，默认 0.6")
+                .defineInRange("wall_jump_off_velocity", 0.6, 0.1, 2.0);
+
+        WALL_PULL_SPEED = BUILDER
+                .comment("吸附拉向墙面的速度", "范围: 0.05-1.0，默认 0.3")
+                .defineInRange("wall_pull_speed", 0.3, 0.05, 1.0);
+
+        BUILDER.pop();
+
+        // ====== Jump Charge 配置 ======
+        BUILDER.push("jump_charge");
+
+        JUMP_BASE_VELOCITY = BUILDER
+                .comment("基础跳跃速度（原版值为 0.42）", "范围: 0.1-2.0，默认 0.42")
+                .defineInRange("jump_base_velocity", 0.42, 0.1, 2.0);
+
+        JUMP_VELOCITY_PER_TICK = BUILDER
+                .comment("每蓄力 tick 增加的跳跃速度", "蓄力 100 tick 后总速度 ≈ 2.19 → 30 格高", "范围: 0.001-0.1，默认 0.0177")
+                .defineInRange("jump_velocity_per_tick", 0.0177, 0.001, 0.1);
+
+        JUMP_MAX_CHARGE_TICKS = BUILDER
+                .comment("最大蓄力 tick 数（20 tick = 1 秒）", "范围: 20-200，默认 100（=5秒）")
+                .defineInRange("jump_max_charge_ticks", 100, 20, 200);
 
         BUILDER.pop();
     }

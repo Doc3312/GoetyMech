@@ -29,6 +29,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     private int cachedNetworkCount;
     private int tickCounter;
     private boolean forceRefresh = true;
+    private boolean hasEverSynced;
     public long ticketTime;
 
     public StressArkBlockEntity(BlockPos pos, BlockState state) {
@@ -78,12 +79,15 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             }
         }
 
-        if (Math.abs(totalCap - cachedTotalCapacity) > 0.01f
+        boolean changed = Math.abs(totalCap - cachedTotalCapacity) > 0.01f
                 || Math.abs(totalStress - cachedTotalStress) > 0.01f
-                || netCount != cachedNetworkCount) {
+                || netCount != cachedNetworkCount;
+
+        if (changed || !hasEverSynced) {
             cachedTotalCapacity = totalCap;
             cachedTotalStress = totalStress;
             cachedNetworkCount = netCount;
+            hasEverSynced = true;
             syncToClient();
         }
     }

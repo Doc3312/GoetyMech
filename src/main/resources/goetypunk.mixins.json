@@ -23,7 +23,8 @@
     "InstantNeighborUpdaterMixin",
     "LevelMixin",
     "LivingEntityHurtMixin",
-    "LivingEntityTickMixin"
+    "LivingEntityTickMixin",
+    "StormWingPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,6 +1,6 @@
 package com.goetypunk.addon.compat.caelus;
 
-import com.goetypunk.addon.common.item.StormWingItem;
+import com.goetypunk.addon.common.utils.CuriosHelper;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -51,20 +51,11 @@ public class CaelusFlightHandler {
 
         flightAttr.removeModifier(FLIGHT_MODIFIER_UUID);
 
-        if (hasStormWingInCuriosSlot(player)) {
+        if (CuriosHelper.hasStormWingInCurios(player)) {
             flightAttr.addTransientModifier(
                     new AttributeModifier(FLIGHT_MODIFIER_UUID, FLIGHT_MODIFIER_NAME, 1.0,
                             AttributeModifier.Operation.ADDITION));
         }
     }
 
-    private static boolean hasStormWingInCuriosSlot(Player player) {
-        try {
-            var curios = top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(player);
-            return curios.map(inv -> inv.findFirstCurio(
-                    s -> s.getItem() instanceof StormWingItem).isPresent()).orElse(false);
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }
