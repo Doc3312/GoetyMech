@@ -406,16 +406,16 @@ public class ModConfig {
                 .defineInRange("jump_tap_height", 3.0, 1.0, 10.0);
 
         JUMP_CHARGE_THRESHOLD = BUILDER
-                .comment("蓄力门槛 tick（未达到此值视为短按）", "蓄力系统需 charge ≥ 此值才走蓄力公式", "范围: 5-59，默认 20（≈1秒）")
-                .defineInRange("jump_charge_threshold", 20, 5, 59);
+                .comment("蓄力门槛 tick（未达到此值视为短按）", "蓄力系统需 charge ≥ 此值才走蓄力公式", "范围: 5-59，默认 10（≈0.5秒）")
+                .defineInRange("jump_charge_threshold", 10, 5, 59);
 
         JUMP_CHARGE_MIN_HEIGHT = BUILDER
                 .comment("蓄力最低跳跃高度（格），threshold 时达到", "范围: 3.0-50.0，默认 8.0")
                 .defineInRange("jump_charge_min_height", 8.0, 3.0, 50.0);
 
         JUMP_CHARGE_MAX_HEIGHT = BUILDER
-                .comment("蓄力最高跳跃高度（格），最大蓄力时达到", "范围: 8.0-200.0，默认 30.0")
-                .defineInRange("jump_charge_max_height", 30.0, 8.0, 200.0);
+                .comment("蓄力最高跳跃高度（格），最大蓄力时达到", "范围: 8.0-200.0，默认 50.0")
+                .defineInRange("jump_charge_max_height", 50.0, 8.0, 200.0);
 
         JUMP_MAX_CHARGE_TICKS = BUILDER
                 .comment("最大蓄力 tick 数（20 tick = 1 秒）", "范围: 20-200，默认 60（=3秒）")
