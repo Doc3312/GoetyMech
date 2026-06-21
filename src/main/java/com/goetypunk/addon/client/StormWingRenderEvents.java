@@ -83,7 +83,7 @@ public class StormWingRenderEvents {
         }
 
         if (jumpDown && hasStormWing && !player.isFallFlying()) {
-            clientChargeTicks = Math.min(clientChargeTicks + 1, 100);
+            clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
             // 第一拍立即发包，不等节流
             if (clientChargeTicks == 1) {
                 ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(1));

@@ -395,19 +395,26 @@ public class StormWingEvents {
     }
 
     private static void applyChargedJump(Player player, int charge) {
-        if (charge >= 20) {
-            double jumpPower = ModConfig.JUMP_BASE_VELOCITY.get()
-                    + charge * ModConfig.JUMP_VELOCITY_PER_TICK.get();
+        int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
+        if (charge >= threshold) {
+            double minH = ModConfig.JUMP_CHARGE_MIN_HEIGHT.get();
+            double maxH = ModConfig.JUMP_CHARGE_MAX_HEIGHT.get();
+            int maxTicks = ModConfig.JUMP_MAX_CHARGE_TICKS.get();
+            double t = (double)(charge - threshold) / (double)(maxTicks - threshold);
+            t = Math.min(t, 1.0);
+            double height = minH + t * (maxH - minH);
+            double jumpPower = Math.sqrt(2.0 * 0.08 * height);
             Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
-            GoetyPunkMod.LOGGER.info("StormWing charged jump: charge={}, power={}",
-                    charge, String.format("%.3f", jumpPower));
+            GoetyPunkMod.LOGGER.info("StormWing charged jump: charge={}, height={}, power={}",
+                    charge, String.format("%.1f", height), String.format("%.3f", jumpPower));
         } else if (player.onGround()) {
-            double jumpPower = Math.sqrt(2.0 * 0.08 * 3.0);
+            double tapH = ModConfig.JUMP_TAP_HEIGHT.get();
+            double jumpPower = Math.sqrt(2.0 * 0.08 * tapH);
             Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, jumpPower, m.z);
-            GoetyPunkMod.LOGGER.info("StormWing tap jump: charge={}, power={}",
-                    charge, String.format("%.3f", jumpPower));
+            GoetyPunkMod.LOGGER.info("StormWing tap jump: charge={}, height={}, power={}",
+                    charge, String.format("%.1f", tapH), String.format("%.3f", jumpPower));
         }
         StormWingItem.clearJumpCharge(player);
         player.hurtMarked = true;

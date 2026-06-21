@@ -150,8 +150,10 @@ public class ModConfig {
 
     // ====== Storm Wing — Jump Charge 配置 ======
 
-    public static final ForgeConfigSpec.DoubleValue JUMP_BASE_VELOCITY;
-    public static final ForgeConfigSpec.DoubleValue JUMP_VELOCITY_PER_TICK;
+    public static final ForgeConfigSpec.DoubleValue JUMP_TAP_HEIGHT;
+    public static final ForgeConfigSpec.IntValue JUMP_CHARGE_THRESHOLD;
+    public static final ForgeConfigSpec.DoubleValue JUMP_CHARGE_MIN_HEIGHT;
+    public static final ForgeConfigSpec.DoubleValue JUMP_CHARGE_MAX_HEIGHT;
     public static final ForgeConfigSpec.IntValue JUMP_MAX_CHARGE_TICKS;
 
     // ====== Time Freeze 配置 ======
@@ -399,17 +401,25 @@ public class ModConfig {
         // ====== Jump Charge 配置 ======
         BUILDER.push("jump_charge");
 
-        JUMP_BASE_VELOCITY = BUILDER
-                .comment("基础跳跃速度（原版值为 0.42）", "范围: 0.1-2.0，默认 0.42")
-                .defineInRange("jump_base_velocity", 0.42, 0.1, 2.0);
+        JUMP_TAP_HEIGHT = BUILDER
+                .comment("短按跳跃高度（格）", "范围: 1.0-10.0，默认 3.0")
+                .defineInRange("jump_tap_height", 3.0, 1.0, 10.0);
 
-        JUMP_VELOCITY_PER_TICK = BUILDER
-                .comment("每蓄力 tick 增加的跳跃速度", "蓄力 100 tick 后总速度 ≈ 2.19 → 30 格高", "范围: 0.001-0.1，默认 0.0177")
-                .defineInRange("jump_velocity_per_tick", 0.0177, 0.001, 0.1);
+        JUMP_CHARGE_THRESHOLD = BUILDER
+                .comment("蓄力门槛 tick（未达到此值视为短按）", "蓄力系统需 charge ≥ 此值才走蓄力公式", "范围: 5-59，默认 20（≈1秒）")
+                .defineInRange("jump_charge_threshold", 20, 5, 59);
+
+        JUMP_CHARGE_MIN_HEIGHT = BUILDER
+                .comment("蓄力最低跳跃高度（格），threshold 时达到", "范围: 3.0-50.0，默认 8.0")
+                .defineInRange("jump_charge_min_height", 8.0, 3.0, 50.0);
+
+        JUMP_CHARGE_MAX_HEIGHT = BUILDER
+                .comment("蓄力最高跳跃高度（格），最大蓄力时达到", "范围: 8.0-200.0，默认 30.0")
+                .defineInRange("jump_charge_max_height", 30.0, 8.0, 200.0);
 
         JUMP_MAX_CHARGE_TICKS = BUILDER
-                .comment("最大蓄力 tick 数（20 tick = 1 秒）", "范围: 20-200，默认 100（=5秒）")
-                .defineInRange("jump_max_charge_ticks", 100, 20, 200);
+                .comment("最大蓄力 tick 数（20 tick = 1 秒）", "范围: 20-200，默认 60（=3秒）")
+                .defineInRange("jump_max_charge_ticks", 60, 20, 200);
 
         BUILDER.pop();
     }
