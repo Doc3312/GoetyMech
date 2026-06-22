@@ -85,8 +85,8 @@
   "block.goetypunk.stress_ark": "应力方舟",
   "item.goetypunk.stress_ark": "应力方舟",
 
-  "item.goetypunk.storm_wing": "风暴之翼",
-  "info.goetypunk.storm_wing.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
-  "info.goetypunk.storm_wing.boost": "飞行中按住 W 可加速推进",
-  "info.goetypunk.storm_wing.slam": "飞行中按下 Shift 可施展陨星猛砸"
+  "item.goetypunk.prototype": "原型",
+  "info.goetypunk.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
+  "info.goetypunk.prototype.boost": "飞行中按住 W 可加速推进",
+  "info.goetypunk.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸"
 }

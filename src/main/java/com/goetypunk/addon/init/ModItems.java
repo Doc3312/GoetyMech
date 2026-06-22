@@ -10,7 +10,7 @@ import com.goetypunk.addon.common.item.StressFocus;
 import com.goetypunk.addon.common.item.TimeFocusPouch;
 import com.goetypunk.addon.common.item.TwistedEmbryoItem;
 import com.goetypunk.addon.common.item.UnstableRiftFocus;
-import com.goetypunk.addon.common.item.StormWingItem;
+import com.goetypunk.addon.common.item.PrototypeItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -110,8 +110,8 @@ public class ModItems {
                             new Item.Properties().rarity(Rarity.EPIC))
             );
 
-    // ── 风暴之翼 — 鞘翅类物品，无限耐久，推进 + Slam 技能 ──
+    // ── 原型 — 鞘翅类物品，无限耐久，推进 + Slam 技能 ──
 
-    public static final RegistryObject<Item> STORM_WING =
-            ITEMS.register("storm_wing", StormWingItem::new);
+    public static final RegistryObject<Item> PROTOTYPE =
+            ITEMS.register("prototype", PrototypeItem::new);
 }

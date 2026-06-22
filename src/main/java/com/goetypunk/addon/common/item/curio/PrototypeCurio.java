@@ -1,6 +1,6 @@
 package com.goetypunk.addon.common.item.curio;
 
-import com.goetypunk.addon.common.item.StormWingItem;
+import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.compat.caelus.CaelusLoaded;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,12 +20,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Mod.EventBusSubscriber(modid = com.goetypunk.addon.GoetyPunkMod.MOD_ID)
-public class StormWingCurio {
+public class PrototypeCurio {
 
     @SubscribeEvent
     public static void onAttachCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
         ItemStack stack = event.getObject();
-        if (!(stack.getItem() instanceof StormWingItem)) return;
+        if (!(stack.getItem() instanceof PrototypeItem)) return;
 
         LazyOptional<ICurio> curio = LazyOptional.of(() -> new ICurio() {
             @Override
@@ -50,7 +50,7 @@ public class StormWingCurio {
                 if (!CaelusLoaded.isLoaded()) return false;
                 // 防止与胸甲槽冲突
                 ItemStack chest = slotContext.entity().getItemBySlot(EquipmentSlot.CHEST);
-                return !(chest.getItem() instanceof StormWingItem);
+                return !(chest.getItem() instanceof PrototypeItem);
             }
 
             @Override

@@ -1,8 +1,8 @@
-# 风暴之翼 (Storm Wing) 架构说明
+# 原型 (Prototype) 架构说明
 
 ## 概述
 
-风暴之翼是基于 Goety 模组的鞘翅类物品，支持 **胸甲槽** 和 **Curios 背部/身体槽**。核心玩法为 **飞行→猛击→二次延迟魔法伤害** 双阶段循环，附带 **爬墙系统**、**跳跃蓄力** 和 **地面冲刺加速**。
+原型是基于 Goety 模组的鞘翅类物品，支持 **胸甲槽** 和 **Curios 背部/身体槽**。核心玩法为 **飞行→猛击→二次延迟魔法伤害** 双阶段循环，附带 **爬墙系统**、**跳跃蓄力** 和 **地面冲刺加速**。
 
 ## 文件结构
 
@@ -10,11 +10,12 @@
 src/main/java/com/goetypunk/addon/
 ├── common/
 │   ├── item/
-│   │   ├── StormWingItem.java              # 物品定义 + PersistentData tag 静态访问器
-│   │   └── curio/StormWingCurio.java       # Curios 能力附加器（curioTick / canEquip）
+│   │   ├── PrototypeItem.java              # 物品定义 + PersistentData tag 静态访问器
+│   │   └── curio/PrototypeCurio.java       # Curios 能力附加器（curioTick / canEquip）
 │   ├── events/
-│   │   └── StormWingEvents.java            # 核心逻辑：slam 状态机、爬墙、蓄力、环动画、伤害
+│   │   └── PrototypeEvents.java            # 核心逻辑：slam 状态机、爬墙、蓄力、环动画、伤害
 │   ├── utils/
+│   │   ├── CuriosHelper.java               # Curios 槽位检测工具
 │   │   └── WallUtil.java                   # 爬墙几何工具（墙面检测、向量投影）
 │   ├── net/
 │   │   ├── ModNetwork.java                 # 网络通道注册
@@ -24,18 +25,19 @@ src/main/java/com/goetypunk/addon/
 │   │   └── s2c/S2CSlamImpactPacket.java    # 服务端→客户端：冲击粒子+音效
 │   └── config/ModConfig.java               # 全部配置项
 ├── client/
-│   └── StormWingRenderEvents.java          # 客户端：翅翼渲染、爬墙镜头/模型倾斜、按键检测
+│   └── PrototypeRenderEvents.java          # 客户端：翅翼渲染、爬墙镜头/模型倾斜、按键检测
 ├── compat/caelus/
 │   └── CaelusFlightHandler.java            # Caelus 兼容：Curios 背部槽时添加飞行 attribute
 └── mixin/
-    └── StormWingPlayerMixin.java           # 阻止蓄力时触发 Player.jumpFromGround()
+    ├── PrototypeTravelMixin.java           # Player.travel() 双注入：飞行 velocity-set + TAIL 漂移
+    └── PrototypePlayerMixin.java           # 阻止蓄力时触发 Player.jumpFromGround()
 ```
 
 ## 核心架构
 
 ### 1. 物品定义
 
-`StormWingItem extends ElytraItem`：
+`PrototypeItem extends ElytraItem`：
 
 - `canElytraFly()` → 恒 true
 - `elytraFlightTick()` → slam 时返回 false（强制停飞），否则 true
@@ -56,19 +58,21 @@ src/main/java/com/goetypunk/addon/
 | `goetypunk.wall_run_tick` | `getWallRunTick/setWallRunTick` | 爬墙已持续 tick 数 |
 | `goetypunk.jump_charge_tick` | `getJumpChargeTick/setJumpChargeTick` | 跳跃蓄力 tick 数 |
 | `goetypunk.sprint_tick` | `getSprintTick/setSprintTick` | 地面冲刺已持续 tick 数 |
+| `goetypunk.flight_forward` | `getFlightForward/setFlightForward` | 飞行 W 键输入状态（0 或 1） |
 
 #### 装备检测（多处使用）
 
-`isHoldingStormWing(entity)` — 仅检测 `EquipmentSlot.CHEST`
-`hasStormWingInCurios(player)` — 仅检测 Curios 任意槽位（try-catch 包裹防止 Curios 缺失 NPE）
+`isHoldingPrototype(entity)` — 仅检测 `EquipmentSlot.CHEST`
+`hasPrototypeInCurios(player)` — 仅检测 Curios 任意槽位（try-catch 包裹防止 Curios 缺失 NPE）
+`hasAnyPrototype(entity)` — 同时检测胸甲槽 + Curios 槽
 
 ### 2. 事件监听器（Forge 总线）
 
-全部在 `StormWingEvents` 中通过 `@SubscribeEvent` 注册（`Mod.EventBusSubscriber` + `Bus.FORGE`）：
+全部在 `PrototypeEvents` 中通过 `@SubscribeEvent` 注册（`Mod.EventBusSubscriber` + `Bus.FORGE`）：
 
 | 事件 | Phase | 用途 |
 |------|-------|------|
-| `LivingFallEvent` | — | 持有风暴之翼或正在 slam 时取消坠落伤害 |
+| `LivingFallEvent` | — | 持有原型或正在 slam 时取消坠落伤害 |
 | `LivingAttackEvent` | — | `slam_invuln_tick > 0` 时免疫所有伤害 |
 | `LivingEvent.LivingTickEvent` | — | slam 状态机（触发/下落）；slam invuln 递减；prevCrouch 记录 |
 | `TickEvent.PlayerTickEvent` | START | 爬墙检测/状态更新、冲刺加速属性修饰器管理 |
@@ -212,7 +216,7 @@ ACTIVE_SLAMS: Map<ServerLevel, List<SlamAnimData>>
 #### 6.2 进入爬墙
 
 `tryStartWallRun()`（PlayerTick START）：
-- 条件：持有风暴之翼 + 非 slam + 非地面 + 非液体 + 有墙面
+- 条件：持有原型 + 非 slam + 非地面 + 非液体 + 有墙面
 - 设置 `wall_running=true`、`wall_normal`、`wall_run_tick=0`
 - 若正在飞行 → `stopFallFlying()`
 - **继承速度**：分解为沿墙面分量 + 入墙面分量，去掉入墙分量保留切向速度
@@ -244,7 +248,7 @@ surfaceVel += (0, -WALL_SLIDE_SPEED(0.005), 0)  # 极轻微下滑
 
 #### 6.5 客户端视觉效果
 
-`StormWingRenderEvents`：
+`PrototypeRenderEvents`：
 - **Camera 60° roll**（`ViewportEvent.ComputeCameraAngles`）：根据墙面法线相对视角右方向，平滑过渡倾斜
 - **Model 60° tilt**（`RenderPlayerEvent.Pre`）：玩家 body/head/arms/legs 同步 `zRot` 倾斜
 - 平滑插值：`clientWallRoll += diff × 0.15`
@@ -253,8 +257,8 @@ surfaceVel += (0, -WALL_SLIDE_SPEED(0.005), 0)  # 极轻微下滑
 
 #### 7.1 客户端检测
 
-`onClientTick`（`StormWingRenderEvents`）：
-- `jumpDown && hasStormWing && !isFallFlying && (onGround || wallRunning)`
+`onClientTick`（`PrototypeRenderEvents`）：
+- `jumpDown && hasPrototype && !isFallFlying && (onGround || wallRunning)`
 - 蓄力期间每 2 tick 发送 `C2SJumpChargePacket(tick)`（减少网络量）
 - 粒子反馈：每 3 tick 生成 `CRIT` 粒子；超过 40 tick 额外生成 `ENCHANTED_HIT` 粒子
 - jump 松开时发送 `C2SJumpChargePacket(0)` 触发跳跃
@@ -288,14 +292,14 @@ jumpPower = sqrt(2 × 0.08 × height)
 
 #### 7.4 Mixin 阻止普通跳跃
 
-`StormWingPlayerMixin` → `Player.jumpFromGround()` HEAD 注入：
+`PrototypePlayerMixin` → `Player.jumpFromGround()` HEAD 注入：
 - `jumpChargeTick > 0` → cancel（防止蓄力时按空格触发跳跃）
-- `jumping && 胸甲槽有风暴之翼` → cancel（防止飞行时误触）
+- `jumping && 胸甲槽有原型` → cancel（防止飞行时误触）
 
 ### 8. 冲刺加速（Sprint Acceleration）
 
 `onPlayerTick` START phase：
-- 条件：持有风暴之翼 + `isSprinting()` + 地面 + `zza > 0` + 非 slam + 非 wall-run + 非飞行
+- 条件：持有原型 + `isSprinting()` + 地面 + `zza > 0` + 非 slam + 非 wall-run + 非飞行
 - `sprint_tick++`，`level = min(sprint_tick / 20, 3)`
 - 每 tick 替换 `MOVEMENT_SPEED` attribute：`multiply_total × (0.6 + level × 0.2)`
 - sprint 停止时清除 modifier
@@ -315,11 +319,11 @@ jumpPower = sqrt(2 × 0.08 × height)
 
 ### 10. 飞行力学
 
-飞行阶段使用 Hybrid 模型：**W 按下时 velocity-set（速度替换）+ 水平惯性保持，W 松开时加法加速（gentle drift）**。全部实现在 `StormWingTravelMixin` 中，通过双注入点完成。
+飞行阶段使用 Hybrid 模型：**双注入点架构**，覆盖 W 按下（HEAD velocity-set）和 W 松开（TAIL 加法漂移）。全部实现在 `PrototypeTravelMixin` 中。
 
-#### 10.1 飞行推进（V6 Hybrid 模型）
+#### 10.1 V6 Hybrid 模型
 
-每 tick 从客户端 `StormWingRenderEvents.onClientTick` 同步 W 键状态到服务端：
+每 tick 从客户端 `PrototypeRenderEvents.onClientTick` 同步 W 键状态到服务端：
 ```
 客户端: 每 tick 写本端 + 每 3 tick 发 C2S → C2SFlightInputPacket(forward)
 服务端: 存储至 entity PersistentData → TAG_FLIGHT_FORWARD
@@ -329,58 +333,89 @@ jumpPower = sqrt(2 × 0.08 × height)
 
 ```
 HEAD injection (cancellable=true):
-  forward > 0.01 → velocity-set + 水平惯性保持
+  forward > 0.01 → velocity-set + pitch 依赖 lift + 俯冲 dot+gravity 投影
   forward ≤ 0.01 → 不拦截，fall through 到 vanilla travel()
 
 TAIL injection:
-  forward ≤ 0.01 → 加法 baseAccel（水平视线方向）
+  forward ≤ 0.01 → 速度 ×0.8，加法 baseAccel（水平视线方向）
   forward > 0.01 → 跳过（已由 HEAD 处理）
 ```
 
-**HEAD 注入 — velocity-set + 水平惯性保持**（`gp$onTravelHead`）：
+**HEAD 注入 — velocity-set + 俯冲 dot+gravity 投影**（`gp$onTravelHead`）：
 
-当 W 按下时，向视线方向设即时速度 `FLIGHT_TARGET_SPEED`，同时保持已有的水平动量：
+当 W 按下时，根据俯仰角选择两套独立模型：
 
+**水平/抬头（pitch ≤ 0.01）**：
 ```
-motion = look × targetSpeed + (0, hoverLift, 0)
+targetVy = look.y × speed + liftFactor × hoverLift
+liftFactor = clamp(-pitch / 90, 0, 1)    # 仰头越大 lift 越大
 
-if newH < 0.001:         → 垂直直视，保留当前水平速度
-elif currH > newH:       → 当前水平速度高于视线方向能给的，保持水平大小
-else:                    → 视线方向能给的更快，用 velocity-set 新值
-```
+vMotion = (look.x × speed, targetVy, look.z × speed)
 
-**TAIL 注入 — 加法 baseAccel**（`gp$onTravelTail`）：
-
-当 W 松开时，向水平视线方向每 tick 加 `FLIGHT_BASE_ACCEL`：
-
-```
-velocity = current + lookH × baseAccel + (0, hoverLift, 0)
+if newH < 0.001:          → 直视正上/下，水平归零
+elif currH > newH:        → 保持旧水平动量大小
+else:                     → 用 velocity-set 新值
 ```
 
-不拦截 vanilla travel()，drag/碰撞正常运作。
+**俯冲（pitch > 0.01）**：
+```
+speedAlongLook = max(speed, current·look + 0.08 × (-look.y))  # dot+gravity 投影
+targetMotion = look × speedAlongLook
+
+motion = current × 0.3 + targetMotion × 0.7    # 70/30 混合平滑过渡
+```
+
+**TAIL 注入 — 不按 W 的 0.8 倍速**（`gp$onTravelTail`）：
+
+当 W 松开时，所有速度目标值取 W 状态的 80%：
+
+```
+noWSpeed = speed × 0.8
+noWHoverLift = hoverLift × 0.8
+
+if pitch > 0.01 (俯冲):
+    speedAlongLook = max(noWSpeed, current·look + 0.08 × (-look.y))
+    targetMotion = look × speedAlongLook
+    velocity = current × 0.3 + targetMotion × 0.7
+    水平: += lookH × baseAccel
+
+else (水平/抬头):
+    targetVy = look.y × noWSpeed + noWHoverLift × liftFactor
+    velocity = current + lookH × baseAccel
+    Y = targetVy
+```
 
 **效果**：
+
 | 场景 | 机制 | 手感 |
 |------|------|------|
 | 按住 W 平飞 | velocity-set `targetSpeed=0.5` | 即时响应，稳定前飞 |
-| 按住 W 抬头 | velocity-set + 水平惯性保留 | 爬升不掉水平速度 |
-| 按住 W 低头 | velocity-set + 水平惯性保留 | 俯冲保持水平动量 |
-| 松开 W | 加法 `baseAccel=0.02` + 恒定 lift | 温和向前漂移不掉高 |
-| 松开 W 且 baseAccel=0 | 纯 vanilla 滑翔 | 原版鞘翅物理 |
+| 按住 W 抬头 | velocity-set + lift 随仰角线性增加 | 抬头上升不掉水平 |
+| 按住 W 俯冲 | dot+gravity 投影 + 70/30 混合 | 速度沿视线方向对齐，水平不落后 |
+| 松开 W | 全速率 ×0.8 + 水平 drift | 温和向前漂移，速度低于 W 状态 |
+| 直视正上 | `newH < 0.001` → 水平归零 | 纯垂直上升，无水平偏移 |
 
-**配置项**（`goetypunk-common.toml` → `storm_wing` 段）：
+**内部比率**（硬编码，不暴露为配置）：
+
+| 值 | 计算 | 来源 |
+|----|------|------|
+| `hoverLift` | `speed × 0.16` | 兼顾 lift 与惯性保留 |
+| `baseAccel` | `speed × 0.04` | 无 W 漂移加速度 |
+| `noWSpeed` | `speed × 0.8` | 不按 W = 按 W 的 4/5 |
+| `liftRatio` | `0.16` | hoverLift / speed |
+| `accelRatio` | `0.04` | baseAccel / speed |
+
+**配置项**（`goetypunk-common.toml` → `prototype` 段）：
 
 | 配置项 | 默认值 | 范围 | 说明 |
 |--------|--------|------|------|
-| `flight_target_speed` | 0.5 | 0.1~2.0 | 按住 W 时的即时速度（blocks/tick） |
-| `flight_hover_lift` | 0.08 | 0.0~0.2 | 恒定抗重力 lift（精确抵消 gravity） |
-| `flight_base_accel` | 0.02 | 0.0~0.1 | 不按W时的水平加速（0=关闭自动漂移） |
+| `flight_target_speed` | 0.5 | 0.1~2.0 | **唯一速度配置**。驱动 lift(×0.16)、漂移(×0.04)、无W速度(×0.8) |
 
 **代码位置**：
-- `mixin/StormWingTravelMixin.java` — HEAD + TAIL 双注入
-- `client/StormWingRenderEvents.java` — C2S 发送 + 本端 forward 写入
-- `common/item/StormWingItem.java` — getFlightForward / setFlightForward
-- `config/ModConfig.java` — FLIGHT_TARGET_SPEED / FLIGHT_HOVER_LIFT / FLIGHT_BASE_ACCEL
+- `mixin/PrototypeTravelMixin.java` — HEAD + TAIL 双注入
+- `client/PrototypeRenderEvents.java` — C2S 发送 + 本端 forward 写入
+- `common/item/PrototypeItem.java` — getFlightForward / setFlightForward
+- `config/ModConfig.java` — FLIGHT_TARGET_SPEED
 - `common/net/c2s/C2SFlightInputPacket.java` — 网络传输
 
 **与其他系统互斥**：
@@ -399,11 +434,11 @@ velocity = current + lookH × baseAccel + (0, hoverLift, 0)
 
 ### 12. 客户端渲染
 
-`StormWingRenderEvents`：
+`PrototypeRenderEvents`：
 
 | 事件 | 用途 |
 |------|------|
-| `RenderPlayerEvent.Post` (LOWEST) | 玩家 body 后渲染翅翼模型（`textures/entity/storm_wing.png`），同时检测 Curios 槽位 |
+| `RenderPlayerEvent.Post` (LOWEST) | 玩家 body 后渲染翅翼模型（`textures/entity/prototype.png`），同时检测 Curios 槽位 |
 | `ViewportEvent.ComputeCameraAngles` | 爬墙时 camera roll 60° |
 | `RenderPlayerEvent.Pre` | 爬墙时 player model 整体倾斜 |
 | `TickEvent.ClientTickEvent.END` | 墙壁状态更新、取消 slam 发送、跳跃蓄力 C2S 发送 |
@@ -411,25 +446,25 @@ velocity = current + lookH × baseAccel + (0, hoverLift, 0)
 
 ### 13. Curios 兼容
 
-`StormWingCurio` → `AttachCapabilitiesEvent<ItemStack>`：
+`PrototypeCurio` → `AttachCapabilitiesEvent<ItemStack>`：
 
 | 方法 | 行为 |
 |------|------|
 | `curioTick` | 在 Curios 槽中继续飞行 tick（调用 `elytraFlightTick`） |
-| `canEquip` | 无 Caelus 时禁止放入 Curios 槽；胸甲槽已有风暴之翼时禁止放入背/胸槽 |
+| `canEquip` | 无 Caelus 时禁止放入 Curios 槽；胸甲槽已有原型时禁止放入背/胸槽 |
 | `canEquipFromUse` | 仅 Caelus 加载时可右键装备 |
 | `getEquipSound` | 鞘翅装备音效 |
 
 ### 14. Caelus 兼容
 
-`CaelusFlightHandler` → 当风暴之翼在 Curios 背部槽时，通过 `caelus:flight` attribute 添加飞行能力：
+`CaelusFlightHandler` → 当原型在 Curios 背部槽时，通过 `caelus:flight` attribute 添加飞行能力：
 - `ADDITION` 修饰器，值 1.0
 - 每 tick 清除后重新添加（防止作弊/命令修改）
 - 通过 `ResourceLocation` 字符串查询 attribute，避免直接 import Caelus 类
 
 ### 15. 配置参数（`goetypunk-common.toml`）
 
-#### Storm Wing 段
+#### Prototype 段
 
 | 配置项 | 默认值 | 范围 | 说明 |
 |--------|--------|------|------|
@@ -441,9 +476,7 @@ velocity = current + lookH × baseAccel + (0, hoverLift, 0)
 | `slam_max_damage` | 1200.0 | 1~9999 | 伤害上限 |
 | `slam_max_radius` | 100.0 | 1~200 | 半径上限 |
 | `slam_hover_ticks` | 5 | 0~100 | 下落前悬停 tick 数 |
-| `flight_target_speed` | 0.5 | 0.1~2.0 | 按住 W 时的即时速度（blocks/tick） |
-| `flight_hover_lift` | 0.08 | 0.0~0.2 | 恒定抗重力 lift（0.08 = 精确抵消 gravity） |
-| `flight_base_accel` | 0.02 | 0.0~0.1 | 不按W时的水平加速（0=关闭自动漂移） |
+| `flight_target_speed` | 0.5 | 0.1~2.0 | 唯一速度配置（驱动 lift×0.16, drift×0.04, noW×0.8） |
 
 #### Wall Run 段
 
@@ -475,6 +508,9 @@ velocity = current + lookH × baseAccel + (0, hoverLift, 0)
 | 二次伤害取消方块上升和红圈 | 减少视觉杂乱，只保留白色圆环 |
 | 爬墙两层 AABB 采样 | 脚部和头顶各采一点，避免全 AABB 误判 |
 | `try-catch` 包裹 Curios 调用 | 防止 Curios 未加载时 NPE 导致崩溃 |
+| `flight_target_speed` 单配置驱动全部速率 | 未来修改者只需改一个值，lift/drift/noW 按内部比率自动缩放 |
+| 俯冲使用 dot+gravity 投影而非 velocity-set | 保持速度沿视线方向，避免俯冲时水平/垂直不同步 |
+| 不按 W = 按 W 的 80% | 飞行时有区分感，但漂移不弱到难以控制 |
 
 ## 调试日志
 

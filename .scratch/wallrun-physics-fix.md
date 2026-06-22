@@ -4,7 +4,7 @@
 
 **根因**：`applyWallMovement()` 在 `PlayerTick.END` phase 执行，设置的 velocity 是下个 tick `travel()` 的起点。原代码继承玩家当前速度的 Y 分量（-0.08/tick），乘摩擦 + 加下滑量后 Y 仍很大，玩家以重力速度坠落。
 
-## 修复方案（`StormWingEvents.java`）
+## 修复方案（`PrototypeEvents.java`）
 
 ### 1. Y 轴直接控制，不继承下落速度（`applyWallMovement`）
 
@@ -74,10 +74,10 @@ player.onGround() || player.isShiftKeyDown()
 - `handleWallJumpOff` + `C2SWallJumpOffPacket` + 网络注册 + 客户端发送（墙面蓄力跳替代）
 - 地面起飞 + 空中强制飞行（`onPlayerTick` START phase）
 - 飞行加速/飞行 tick 追踪（`onPlayerTick` END phase）
-- `getFlightTick` / `setFlightTick` / `getLastBoostTick` / `setLastBoostTick`（`StormWingItem`）
+- `getFlightTick` / `setFlightTick` / `getLastBoostTick` / `setLastBoostTick`（`PrototypeItem`）
 - `BOOST_ACCELERATION` / `FLIGHT_BOOST_STRENGTH` / `FLIGHT_BOOST_COOLDOWN` / `BOOST_ACCELERATION`（`ModConfig`）
 
 ## 当前已知未解决
 
 - 文件被 Git 回退到初始提交，上述所有修改在硬盘上不存在
-- 需重新执行 8 个文件的修改（`StormWingEvents.java`、`ModConfig.java`、`StormWingItem.java`、`ModNetwork.java`、`StormWingRenderEvents.java`、`StormWingPlayerMixin.java`）+ 删除 `C2SWallJumpOffPacket.java`
+- 需重新执行 8 个文件的修改（`PrototypeEvents.java`、`ModConfig.java`、`PrototypeItem.java`、`ModNetwork.java`、`PrototypeRenderEvents.java`、`PrototypePlayerMixin.java`）+ 删除 `C2SWallJumpOffPacket.java`

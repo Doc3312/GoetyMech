@@ -9,7 +9,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.phys.Vec3;
 import top.theillusivec4.curios.api.CuriosApi;
 
-public class StormWingItem extends ElytraItem {
+public class PrototypeItem extends ElytraItem {
 
     private static final String TAG_SLAMMING = "goetypunk.slamming";
     private static final String TAG_SLAM_TICK = "goetypunk.slam_tick";
@@ -26,7 +26,7 @@ public class StormWingItem extends ElytraItem {
     private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
     private static final String TAG_FLIGHT_FORWARD = "goetypunk.flight_forward";
 
-    public StormWingItem() {
+    public PrototypeItem() {
         super(new Properties()
                 .stacksTo(1)
                 .rarity(Rarity.EPIC)
@@ -48,18 +48,18 @@ public class StormWingItem extends ElytraItem {
         return false;
     }
 
-    public static boolean isHoldingStormWing(LivingEntity entity) {
-        return entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof StormWingItem;
+    public static boolean isHoldingPrototype(LivingEntity entity) {
+        return entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PrototypeItem;
     }
 
-    public static boolean hasAnyStormWing(LivingEntity entity) {
-        if (entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof StormWingItem)
+    public static boolean hasAnyPrototype(LivingEntity entity) {
+        if (entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PrototypeItem)
             return true;
         if (entity instanceof Player player) {
             try {
                 var inv = CuriosApi.getCuriosInventory(player);
                 return inv.map(i -> i.findFirstCurio(
-                        s -> s.getItem() instanceof StormWingItem).isPresent()).orElse(false);
+                        s -> s.getItem() instanceof PrototypeItem).isPresent()).orElse(false);
             } catch (Exception e) {
                 return false;
             }

@@ -6,7 +6,7 @@ import com.Polarice3.Goety.common.entities.util.CameraShake;
 import com.Polarice3.Goety.common.entities.util.ModFallingBlock;
 import com.Polarice3.Goety.utils.BlockFinder;
 import com.goetypunk.addon.GoetyPunkMod;
-import com.goetypunk.addon.common.item.StormWingItem;
+import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.common.utils.CuriosHelper;
 import com.goetypunk.addon.common.utils.WallUtil;
@@ -43,7 +43,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = GoetyPunkMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class StormWingEvents {
+public class PrototypeEvents {
 
     private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
 
@@ -133,9 +133,9 @@ public class StormWingEvents {
     @SubscribeEvent
     public static void onLivingFall(LivingFallEvent event) {
         if (event.getEntity() instanceof Player player
-                && (StormWingItem.isSlamming(player)
-                || StormWingItem.isHoldingStormWing(player)
-                || CuriosHelper.hasStormWingInCurios(player))) {
+                && (PrototypeItem.isSlamming(player)
+                || PrototypeItem.isHoldingPrototype(player)
+                || CuriosHelper.hasPrototypeInCurios(player))) {
             event.setCanceled(true);
         }
     }
@@ -143,7 +143,7 @@ public class StormWingEvents {
     @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
         if (event.getEntity() instanceof Player player
-                && StormWingItem.getSlamInvulnTick(player) > 0) {
+                && PrototypeItem.getSlamInvulnTick(player) > 0) {
             event.setCanceled(true);
         }
     }
@@ -157,7 +157,7 @@ public class StormWingEvents {
 
         boolean slamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
-        if (!slamming && isFlyingWithStormWing(player)) {
+        if (!slamming && isFlyingWithPrototype(player)) {
             handleSlamTrigger(player);
         }
 
@@ -165,11 +165,11 @@ public class StormWingEvents {
             handleSlamTick(player);
         }
 
-        StormWingItem.setPrevCrouch(player, player.isShiftKeyDown());
+        PrototypeItem.setPrevCrouch(player, player.isShiftKeyDown());
 
-        int invuln = StormWingItem.getSlamInvulnTick(player);
+        int invuln = PrototypeItem.getSlamInvulnTick(player);
         if (invuln > 0) {
-            StormWingItem.setSlamInvulnTick(player, invuln - 1);
+            PrototypeItem.setSlamInvulnTick(player, invuln - 1);
         }
     }
 
@@ -181,15 +181,15 @@ public class StormWingEvents {
         if (player.level().isClientSide) return;
 
         if (event.phase == TickEvent.Phase.START) {
-            boolean hasStormWing = StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player);
+            boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
             boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
-            GoetyPunkMod.LOGGER.debug("StormWing START phase: zza={}, onGround={}, isFallFlying={}",
+            GoetyPunkMod.LOGGER.debug("Prototype START phase: zza={}, onGround={}, isFallFlying={}",
                     player.zza, player.onGround(), player.isFallFlying());
 
             // ── 爬墙检测（放在飞行前面） ──
-            if (hasStormWing && !isSlamming) {
-                if (StormWingItem.isWallRunning(player)) {
+            if (hasPrototype && !isSlamming) {
+                if (PrototypeItem.isWallRunning(player)) {
                     handleWallRunTick(player);
                 } else if (player.isSprinting() && !player.onGround() && !player.isFallFlying()) {
                     tryStartWallRun(player);
@@ -197,14 +197,14 @@ public class StormWingEvents {
             }
 
             // ── 地面冲刺加速 ──
-            if (hasStormWing && !isSlamming
-                    && !StormWingItem.isWallRunning(player)
+            if (hasPrototype && !isSlamming
+                    && !PrototypeItem.isWallRunning(player)
                     && !player.isFallFlying()
                     && player.onGround()
                     && player.isSprinting()
                     && player.zza > 0) {
-                int current = StormWingItem.getSprintTick(player) + 1;
-                StormWingItem.setSprintTick(player, current);
+                int current = PrototypeItem.getSprintTick(player) + 1;
+                PrototypeItem.setSprintTick(player, current);
                 int level = Math.min(current / 20, 3);
                 double speed = 0.6 + level * 0.2;
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -212,12 +212,12 @@ public class StormWingEvents {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                     if (level > 0) {
                         attr.addTransientModifier(new AttributeModifier(
-                                SPRINT_MODIFIER_UUID, "storm_wing_sprint", speed - 1.0,
+                                SPRINT_MODIFIER_UUID, "prototype_sprint", speed - 1.0,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
                     }
                 }
             } else if (player.onGround() && !player.isSprinting()) {
-                StormWingItem.setSprintTick(player, 0);
+                PrototypeItem.setSprintTick(player, 0);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
@@ -225,19 +225,19 @@ public class StormWingEvents {
             }
 
             // ── Ground takeoff / mid-air flight start ──
-            if (!StormWingItem.isWallRunning(player)
-                    && (StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player))
+            if (!PrototypeItem.isWallRunning(player)
+                    && (PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player))
                     && !player.isFallFlying()) {
-                int charge = StormWingItem.getJumpChargeTick(player);
+                int charge = PrototypeItem.getJumpChargeTick(player);
                 if (player.onGround() && player.zza > 0.0F && charge == 0) {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
-                    GoetyPunkMod.LOGGER.info("StormWing ground takeoff: zza={}, motion={}", player.zza, m);
+                    GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
                 } else if (!player.onGround() && player.zza > 0.0F) {
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
-                    GoetyPunkMod.LOGGER.info("StormWing mid-air deployment: motion={}", m);
+                    GoetyPunkMod.LOGGER.info("Prototype mid-air deployment: motion={}", m);
                 }
             }
 
@@ -247,7 +247,7 @@ public class StormWingEvents {
 
         if (event.phase == TickEvent.Phase.END) {
             // ── Wall movement ──
-            if (StormWingItem.isWallRunning(player)) {
+            if (PrototypeItem.isWallRunning(player)) {
                 applyWallMovement(player);
                 return;
             }
@@ -261,10 +261,10 @@ public class StormWingEvents {
 
     // ── 检测 ──
 
-    private static boolean isFlyingWithStormWing(Player player) {
+    private static boolean isFlyingWithPrototype(Player player) {
         if (!player.isFallFlying()) return false;
-        if (StormWingItem.isHoldingStormWing(player)) return true;
-        return CuriosHelper.hasStormWingInCurios(player);
+        if (PrototypeItem.isHoldingPrototype(player)) return true;
+        return CuriosHelper.hasPrototypeInCurios(player);
     }
 
     // ── Wall-running detection ──
@@ -273,13 +273,13 @@ public class StormWingEvents {
         if (!player.isSprinting()) return;
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
         if (wallDir == null) return;
-        StormWingItem.setWallRunning(player, true);
-        StormWingItem.setWallNormal(player, wallDir);
-        GoetyPunkMod.LOGGER.info("StormWing wall-run START: normal={}", wallDir);
+        PrototypeItem.setWallRunning(player, true);
+        PrototypeItem.setWallNormal(player, wallDir);
+        GoetyPunkMod.LOGGER.info("Prototype wall-run START: normal={}", wallDir);
     }
 
     private static void handleWallRunTick(Player player) {
-        Vec3 wallN = StormWingItem.getWallNormal(player);
+        Vec3 wallN = PrototypeItem.getWallNormal(player);
         if (wallN.lengthSqr() < 0.5) {
             stopWallRun(player);
             return;
@@ -300,7 +300,7 @@ public class StormWingEvents {
     }
 
     public static void handleWallJumpOff(ServerPlayer player) {
-        Vec3 wallN = StormWingItem.getWallNormal(player);
+        Vec3 wallN = PrototypeItem.getWallNormal(player);
         if (wallN.lengthSqr() < 0.5) return;
         Vec3 launch = wallN.scale(ModConfig.WALL_JUMP_OFF_VELOCITY.get());
         Vec3 m = player.getDeltaMovement();
@@ -309,14 +309,14 @@ public class StormWingEvents {
     }
 
     private static void stopWallRun(Player player) {
-        StormWingItem.clearWallState(player);
-        StormWingItem.setWallRunning(player, false);
+        PrototypeItem.clearWallState(player);
+        PrototypeItem.setWallRunning(player, false);
     }
 
     // ── Wall movement (applied in PlayerTick.END) ──
 
     private static void applyWallMovement(Player player) {
-        Vec3 wallN = StormWingItem.getWallNormal(player);
+        Vec3 wallN = PrototypeItem.getWallNormal(player);
         if (wallN.lengthSqr() < 0.5) return;
 
         Vec3 look = player.getLookAngle();
@@ -346,15 +346,15 @@ public class StormWingEvents {
     // ── Jump charging (called from C2S packet handler) ──
 
     public static void handleJumpChargeFromClient(ServerPlayer player, int action) {
-        if (player.isFallFlying() || StormWingItem.isWallRunning(player)) return;
-        boolean hasStormWing = StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player);
-        if (!hasStormWing) return;
+        if (player.isFallFlying() || PrototypeItem.isWallRunning(player)) return;
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+        if (!hasPrototype) return;
 
         if (action > 0) {
             int capped = Math.min(action, ModConfig.JUMP_MAX_CHARGE_TICKS.get());
-            StormWingItem.setJumpChargeTick(player, capped);
+            PrototypeItem.setJumpChargeTick(player, capped);
         } else if (action == 0) {
-            int charge = StormWingItem.getJumpChargeTick(player);
+            int charge = PrototypeItem.getJumpChargeTick(player);
             if (charge > 0) {
                 applyChargedJump(player, charge);
             }
@@ -373,17 +373,17 @@ public class StormWingEvents {
             double jumpPower = velocityForHeight(height);
             Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
-            GoetyPunkMod.LOGGER.info("StormWing charged jump: charge={}, height={}, power={}",
+            GoetyPunkMod.LOGGER.info("Prototype charged jump: charge={}, height={}, power={}",
                     charge, String.format("%.1f", height), String.format("%.3f", jumpPower));
         } else if (player.onGround()) {
             double tapH = ModConfig.JUMP_TAP_HEIGHT.get();
             double jumpPower = velocityForHeight(tapH);
             Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, jumpPower, m.z);
-            GoetyPunkMod.LOGGER.info("StormWing tap jump: charge={}, height={}, power={}",
+            GoetyPunkMod.LOGGER.info("Prototype tap jump: charge={}, height={}, power={}",
                     charge, String.format("%.1f", tapH), String.format("%.3f", jumpPower));
         }
-        StormWingItem.clearJumpCharge(player);
+        PrototypeItem.clearJumpCharge(player);
         player.hurtMarked = true;
     }
 
@@ -404,7 +404,7 @@ public class StormWingEvents {
 
     private static void handleSlamTrigger(Player player) {
         boolean nowCrouch = player.isShiftKeyDown();
-        boolean prevCrouch = StormWingItem.getPrevCrouch(player);
+        boolean prevCrouch = PrototypeItem.getPrevCrouch(player);
 
         if (nowCrouch && !prevCrouch) {
             enterSlamState(player);
@@ -412,10 +412,10 @@ public class StormWingEvents {
     }
 
     private static void enterSlamState(Player player) {
-        StormWingItem.setSlamming(player, true);
-        StormWingItem.setSlamTick(player, 0);
-        StormWingItem.setSlamStartY(player, player.getY());
-        StormWingItem.setSlamInvulnTick(player, 9999);
+        PrototypeItem.setSlamming(player, true);
+        PrototypeItem.setSlamTick(player, 0);
+        PrototypeItem.setSlamStartY(player, player.getY());
+        PrototypeItem.setSlamInvulnTick(player, 9999);
 
         // elytraFlightTick() 返回 false → 同 tick 晚些 updateFallFlying 清除飞行标志
         Vec3 motion = player.getDeltaMovement();
@@ -426,7 +426,7 @@ public class StormWingEvents {
     }
 
     private static void handleSlamTick(Player player) {
-        int tick = StormWingItem.getSlamTick(player);
+        int tick = PrototypeItem.getSlamTick(player);
         boolean onGround = player.onGround();
         boolean inFluid = player.isInWater() || player.isInLava();
 
@@ -450,7 +450,7 @@ public class StormWingEvents {
             player.getAbilities().flying = false;
         }
 
-        StormWingItem.setSlamTick(player, tick + 1);
+        PrototypeItem.setSlamTick(player, tick + 1);
     }
 
     // ── 冲击 ──
@@ -459,7 +459,7 @@ public class StormWingEvents {
         Level level = player.level();
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        double startY = StormWingItem.getSlamStartY(player);
+        double startY = PrototypeItem.getSlamStartY(player);
         double fallDistance = Math.max(0, startY - player.getY());
 
         float damage = (float) Math.max(ModConfig.SLAM_MIN_DAMAGE.get(), Math.min(ModConfig.SLAM_MAX_DAMAGE.get(), fallDistance * ModConfig.SLAM_DAMAGE_MULTIPLIER.get()));
@@ -500,8 +500,8 @@ public class StormWingEvents {
         }
 
         player.fallDistance = 0;
-        StormWingItem.clearSlamState(player);
-        StormWingItem.setSlamInvulnTick(player, 20);
+        PrototypeItem.clearSlamState(player);
+        PrototypeItem.setSlamInvulnTick(player, 20);
     }
 
     private static void applyAoeDamage(Player player, ServerLevel level, float damage, float radius) {

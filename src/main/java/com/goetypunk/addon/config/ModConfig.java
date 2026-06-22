@@ -128,7 +128,7 @@ public class ModConfig {
         cachedFurnaceCookingTime = FLESH_FURNACE_COOKING_TIME.get();
     }
 
-    // ====== Storm Wing 配置 ======
+    // ====== Prototype 配置 ======
 
     public static final ForgeConfigSpec.DoubleValue SLAM_GRAVITY_PER_TICK;
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_SPEED;
@@ -140,14 +140,14 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_TARGET_SPEED;
 
-    // ====== Storm Wing — Wall-running 配置 ======
+    // ====== Prototype — Wall-running 配置 ======
 
     public static final ForgeConfigSpec.DoubleValue WALL_RUN_SPEED;
     public static final ForgeConfigSpec.DoubleValue WALL_GRAVITY;
     public static final ForgeConfigSpec.DoubleValue WALL_JUMP_OFF_VELOCITY;
     public static final ForgeConfigSpec.DoubleValue WALL_PULL_SPEED;
 
-    // ====== Storm Wing — Jump Charge 配置 ======
+    // ====== Prototype — Jump Charge 配置 ======
 
     public static final ForgeConfigSpec.DoubleValue JUMP_TAP_HEIGHT;
     public static final ForgeConfigSpec.IntValue JUMP_CHARGE_THRESHOLD;
@@ -331,8 +331,8 @@ public class ModConfig {
 
         BUILDER.pop();
 
-        // ====== Storm Wing 配置 ======
-        BUILDER.push("storm_wing");
+        // ====== Prototype 配置 ======
+        BUILDER.push("prototype");
 
         SLAM_GRAVITY_PER_TICK = BUILDER
                 .comment("Slam 每 tick 下降速度增量（5 格/秒 = 0.25/tick）", "范围: 0.01-2.0，默认 0.25")

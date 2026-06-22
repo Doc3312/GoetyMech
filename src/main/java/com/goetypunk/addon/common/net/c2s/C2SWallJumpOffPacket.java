@@ -1,6 +1,6 @@
 package com.goetypunk.addon.common.net.c2s;
 
-import com.goetypunk.addon.common.events.StormWingEvents;
+import com.goetypunk.addon.common.events.PrototypeEvents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -23,7 +23,7 @@ public class C2SWallJumpOffPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
-            StormWingEvents.handleWallJumpOff(player);
+            PrototypeEvents.handleWallJumpOff(player);
         });
         ctx.get().setPacketHandled(true);
     }

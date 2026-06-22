@@ -1,6 +1,6 @@
 package com.goetypunk.addon.common.net.c2s;
 
-import com.goetypunk.addon.common.item.StormWingItem;
+import com.goetypunk.addon.common.item.PrototypeItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -26,7 +26,7 @@ public class C2SFlightInputPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
-            StormWingItem.setFlightForward(player, packet.forward);
+            PrototypeItem.setFlightForward(player, packet.forward);
         });
         ctx.get().setPacketHandled(true);
     }

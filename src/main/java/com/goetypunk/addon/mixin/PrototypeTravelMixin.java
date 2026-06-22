@@ -1,7 +1,7 @@
 package com.goetypunk.addon.mixin;
 
 import com.goetypunk.addon.GoetyPunkMod;
-import com.goetypunk.addon.common.item.StormWingItem;
+import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.config.ModConfig;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.MoverType;
@@ -13,15 +13,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Player.class)
-public abstract class StormWingTravelMixin {
+public abstract class PrototypeTravelMixin {
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void gp$onTravelHead(Vec3 travelVec, CallbackInfo ci) {
         Player player = (Player) (Object) this;
         if (!player.isFallFlying()) return;
-        if (!StormWingItem.hasAnyStormWing(player)) return;
+        if (!PrototypeItem.hasAnyPrototype(player)) return;
 
-        float forward = StormWingItem.getFlightForward(player);
+        float forward = PrototypeItem.getFlightForward(player);
         if (!(forward > 0.01f)) return;
 
         Vec3 look = player.getLookAngle();
@@ -63,9 +63,9 @@ public abstract class StormWingTravelMixin {
     private void gp$onTravelTail(Vec3 travelVec, CallbackInfo ci) {
         Player player = (Player) (Object) this;
         if (!player.isFallFlying()) return;
-        if (!StormWingItem.hasAnyStormWing(player)) return;
+        if (!PrototypeItem.hasAnyPrototype(player)) return;
 
-        float forward = StormWingItem.getFlightForward(player);
+        float forward = PrototypeItem.getFlightForward(player);
         if (forward > 0.01f) return;
 
         Vec3 look = player.getLookAngle();

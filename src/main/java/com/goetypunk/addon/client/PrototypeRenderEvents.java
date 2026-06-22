@@ -1,7 +1,7 @@
 package com.goetypunk.addon.client;
 
 import com.goetypunk.addon.GoetyPunkMod;
-import com.goetypunk.addon.common.item.StormWingItem;
+import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.common.utils.CuriosHelper;
 import com.goetypunk.addon.common.utils.WallUtil;
@@ -33,10 +33,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyPunkMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class StormWingRenderEvents {
+public class PrototypeRenderEvents {
 
-    private static final ResourceLocation STORM_WING_TEXTURE =
-            new ResourceLocation(GoetyPunkMod.MOD_ID, "textures/entity/storm_wing.png");
+    private static final ResourceLocation PROTOTYPE_TEXTURE =
+            new ResourceLocation(GoetyPunkMod.MOD_ID, "textures/entity/prototype.png");
 
     // ── Wall-running client state (visual only) ──
     private static Vec3 clientWallNormal = Vec3.ZERO;
@@ -78,12 +78,12 @@ public class StormWingRenderEvents {
 
         // ── Jump charge C2S ──
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        boolean hasStormWing = chest.getItem() instanceof StormWingItem;
-        if (!hasStormWing) {
-            hasStormWing = CuriosHelper.hasStormWingInCurios(player);
+        boolean hasPrototype = chest.getItem() instanceof PrototypeItem;
+        if (!hasPrototype) {
+            hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
         }
 
-        if (jumpDown && hasStormWing && !player.isFallFlying()) {
+        if (jumpDown && hasPrototype && !player.isFallFlying()) {
             clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
             // 第一拍立即发包，不等节流
             if (clientChargeTicks == 1) {
@@ -118,15 +118,15 @@ public class StormWingRenderEvents {
         }
 
         // ── Flight forward input C2S ──
-        boolean hasStormWingForFlight = chest.getItem() instanceof StormWingItem;
-        if (!hasStormWingForFlight) {
-            hasStormWingForFlight = CuriosHelper.hasStormWingInCurios(player);
+        boolean hasPrototypeForFlight = chest.getItem() instanceof PrototypeItem;
+        if (!hasPrototypeForFlight) {
+            hasPrototypeForFlight = CuriosHelper.hasPrototypeInCurios(player);
         }
-        if (hasStormWingForFlight && player.isFallFlying()) {
+        if (hasPrototypeForFlight && player.isFallFlying()) {
             int tick = player.tickCount;
             boolean forwardDown = mc.options.keyUp.isDown();
             float forwardVal = forwardDown ? 1.0f : 0.0f;
-            StormWingItem.setFlightForward(player, forwardVal);
+            PrototypeItem.setFlightForward(player, forwardVal);
             if (tick % 3 == 0) {
                 ModNetwork.CHANNEL.sendToServer(new C2SFlightInputPacket(forwardVal));
             }
@@ -165,7 +165,7 @@ public class StormWingRenderEvents {
     }
 
     // ═══════════════════════════════════════════════════
-    //  4. Render Storm Wing on player body
+    //  4. Render Prototype on player body
     // ═══════════════════════════════════════════════════
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -176,10 +176,10 @@ public class StormWingRenderEvents {
         int packedLight = event.getPackedLight();
 
         ItemStack chestStack = player.getItemBySlot(EquipmentSlot.CHEST);
-        boolean hasInChest = chestStack.getItem() instanceof StormWingItem;
+        boolean hasInChest = chestStack.getItem() instanceof PrototypeItem;
 
         if (!hasInChest) {
-            hasInChest = CuriosHelper.hasStormWingInCurios(player);
+            hasInChest = CuriosHelper.hasPrototypeInCurios(player);
         }
 
         if (!hasInChest) return;
@@ -192,7 +192,7 @@ public class StormWingRenderEvents {
         poseStack.scale(1.8F, 1.8F, 1.8F);
 
         VertexConsumer consumer = ItemRenderer.getFoilBuffer(
-                buffer, RenderType.entityCutout(STORM_WING_TEXTURE), false, chestStack.hasFoil());
+                buffer, RenderType.entityCutout(PROTOTYPE_TEXTURE), false, chestStack.hasFoil());
         model.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                 1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -205,12 +205,12 @@ public class StormWingRenderEvents {
 
     private static void updateClientWallState(Player player) {
         boolean sprinting = Minecraft.getInstance().options.keySprint.isDown();
-        boolean hasStormWing = player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof StormWingItem;
-        if (!hasStormWing) {
-            hasStormWing = CuriosHelper.hasStormWingInCurios(player);
+        boolean hasPrototype = player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PrototypeItem;
+        if (!hasPrototype) {
+            hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
         }
 
-        if (!sprinting || !hasStormWing || player.isFallFlying()) {
+        if (!sprinting || !hasPrototype || player.isFallFlying()) {
             clientWallRollTarget = 0.0f;
             smoothRoll();
             return;

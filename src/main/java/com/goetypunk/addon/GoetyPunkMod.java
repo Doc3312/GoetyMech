@@ -50,12 +50,12 @@ public class GoetyPunkMod {
             try {
                 Class<?> handler = Class.forName("com.goetypunk.addon.compat.caelus.CaelusFlightHandler");
                 MinecraftForge.EVENT_BUS.register(handler);
-                LOGGER.info("Caelus detected — StormWing Curios flight enabled");
+                LOGGER.info("Caelus detected — Prototype Curios flight enabled");
             } catch (Throwable e) {
                 LOGGER.warn("CaelusFlightHandler not available: {}", e.getMessage());
             }
         } else {
-            LOGGER.info("Caelus not detected — StormWing chest slot only");
+            LOGGER.info("Caelus not detected — Prototype chest slot only");
         }
     }
 }

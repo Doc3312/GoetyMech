@@ -13,13 +13,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.UUID;
 
 /**
- * 当 StormWing 装备在 Curios 背部槽时，通过 Caelus API 添加飞行 attribute
+ * 当 Prototype 装备在 Curios 背部槽时，通过 Caelus API 添加飞行 attribute
  * 注意：本类不直接 import CaelusApi，通过 ResourceLocation 字符串查询 attribute，避免类加载失败
  */
 public class CaelusFlightHandler {
 
     private static final UUID FLIGHT_MODIFIER_UUID = UUID.fromString("c1c1b29a-3e6f-4d6b-9f1a-8c5d3e7b2a0f");
-    private static final String FLIGHT_MODIFIER_NAME = "storm_wing_curios_flight";
+    private static final String FLIGHT_MODIFIER_NAME = "prototype_curios_flight";
 
     private static Attribute flightAttribute = null;
 
@@ -51,7 +51,7 @@ public class CaelusFlightHandler {
 
         flightAttr.removeModifier(FLIGHT_MODIFIER_UUID);
 
-        if (CuriosHelper.hasStormWingInCurios(player)) {
+        if (CuriosHelper.hasPrototypeInCurios(player)) {
             flightAttr.addTransientModifier(
                     new AttributeModifier(FLIGHT_MODIFIER_UUID, FLIGHT_MODIFIER_NAME, 1.0,
                             AttributeModifier.Operation.ADDITION));
