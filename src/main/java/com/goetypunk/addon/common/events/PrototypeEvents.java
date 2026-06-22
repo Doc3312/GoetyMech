@@ -208,7 +208,7 @@ public class PrototypeEvents {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
                     GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
-                } else if (!player.onGround() && player.zza > 0.0F) {
+                } else if (!player.onGround() && player.zza > 0.0F && !PrototypeItem.isChargedJumping(player)) {
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
