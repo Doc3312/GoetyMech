@@ -187,7 +187,7 @@ public class PrototypeEvents {
         if (event.phase == TickEvent.Phase.START) {
             Vec3 startM = player.getDeltaMovement();
             double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
-            GoetyPunkMod.LOGGER.info("D START: zza={}, onGround={}, isFly={}, hSpeed={:.4f}",
+            GoetyPunkMod.LOGGER.info("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
                     player.zza, player.onGround(), player.isFallFlying(), startHSpeed);
 
             // ── 爬墙检测（放在飞行前面） ──
@@ -261,10 +261,20 @@ public class PrototypeEvents {
                 }
             }
 
+            // ── Charged jump 水平速度持续注入（抵消 move() 的摩擦衰减） ──
+            if (PrototypeItem.isChargedJumping(player)) {
+                if (player.onGround()) {
+                    PrototypeItem.clearChargedJump(player);
+                } else if (!player.isFallFlying()) {
+                    Vec3 cur = player.getDeltaMovement();
+                    player.setDeltaMovement(PrototypeItem.getCjHx(player), cur.y, PrototypeItem.getCjHz(player));
+                }
+            }
+
             Vec3 endM = player.getDeltaMovement();
             double endHSpeed = Math.sqrt(endM.x * endM.x + endM.z * endM.z);
             if (hasPrototype) {
-                GoetyPunkMod.LOGGER.info("D END: onGround={}, isFly={}, hSpeed={:.4f}, sprintTick={}",
+                GoetyPunkMod.LOGGER.info("D END: onGround={}, isFly={}, hSpeed={}, sprintTick={}",
                         player.onGround(), player.isFallFlying(), endHSpeed,
                         PrototypeItem.getSprintTick(player));
             }
@@ -396,6 +406,10 @@ public class PrototypeEvents {
             GoetyPunkMod.LOGGER.info("Sprint inertia: sprintTick={}, modifier={}, speed={}",
                     sprintTick, String.format("%.4f", modifier), String.format("%.4f", expectedSpeed));
         }
+        // 存储水平速度用于空中持续注入
+        PrototypeItem.setCjHx(player, m.x);
+        PrototypeItem.setCjHz(player, m.z);
+        PrototypeItem.setChargedJumping(player, true);
         int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
         if (charge >= threshold) {
             double minH = ModConfig.JUMP_CHARGE_MIN_HEIGHT.get();

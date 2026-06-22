@@ -25,6 +25,9 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_SLAM_INVULN_TICK = "goetypunk.slam_invuln_tick";
     private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
     private static final String TAG_FLIGHT_FORWARD = "goetypunk.flight_forward";
+    private static final String TAG_CHARGED_JUMPING = "goetypunk.charged_jumping";
+    private static final String TAG_CJ_HX = "goetypunk.cj_hx";
+    private static final String TAG_CJ_HZ = "goetypunk.cj_hz";
 
     public PrototypeItem() {
         super(new Properties()
@@ -188,5 +191,37 @@ public class PrototypeItem extends ElytraItem {
 
     public static void setFlightForward(LivingEntity entity, float forward) {
         entity.getPersistentData().putFloat(TAG_FLIGHT_FORWARD, forward);
+    }
+
+    // ── Charged jump state ──
+
+    public static boolean isChargedJumping(LivingEntity entity) {
+        return entity.getPersistentData().getBoolean(TAG_CHARGED_JUMPING);
+    }
+
+    public static void setChargedJumping(LivingEntity entity, boolean active) {
+        entity.getPersistentData().putBoolean(TAG_CHARGED_JUMPING, active);
+    }
+
+    public static double getCjHx(LivingEntity entity) {
+        return entity.getPersistentData().getDouble(TAG_CJ_HX);
+    }
+
+    public static void setCjHx(LivingEntity entity, double hx) {
+        entity.getPersistentData().putDouble(TAG_CJ_HX, hx);
+    }
+
+    public static double getCjHz(LivingEntity entity) {
+        return entity.getPersistentData().getDouble(TAG_CJ_HZ);
+    }
+
+    public static void setCjHz(LivingEntity entity, double hz) {
+        entity.getPersistentData().putDouble(TAG_CJ_HZ, hz);
+    }
+
+    public static void clearChargedJump(LivingEntity entity) {
+        entity.getPersistentData().remove(TAG_CHARGED_JUMPING);
+        entity.getPersistentData().remove(TAG_CJ_HX);
+        entity.getPersistentData().remove(TAG_CJ_HZ);
     }
 }
