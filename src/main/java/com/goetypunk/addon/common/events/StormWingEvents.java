@@ -260,25 +260,9 @@ public class StormWingEvents {
                 return;
             }
 
-            // ── 飞行加速（加法加速器：向视线方向加推力） ──
-            boolean hasStormWing = StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player);
-            if (!hasStormWing) return;
-
-            Vec3 motion = player.getDeltaMovement();
+            // ── 飞行 tick 追踪（boost 已由 StormWingTravelMixin 在 travel() 内处理） ──
             int currentFlightTicks = player.getFallFlyingTicks();
             StormWingItem.setFlightTick(player, currentFlightTicks);
-
-            Vec3 accel = computeAdditiveAcceleration(
-                    player.getLookAngle(),
-                    StormWingItem.getFlightForward(player),
-                    ModConfig.FLIGHT_BOOST_FORCE.get(),
-                    ModConfig.FLIGHT_HOVER_LIFT.get()
-            );
-            motion = motion.add(accel);
-
-            GoetyPunkMod.LOGGER.debug("StormWing flight: motion={}, accel={}",
-                    motion, accel);
-            player.setDeltaMovement(motion);
         }
     }
 

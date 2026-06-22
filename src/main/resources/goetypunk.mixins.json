@@ -24,7 +24,8 @@
     "LevelMixin",
     "LivingEntityHurtMixin",
     "LivingEntityTickMixin",
-    "StormWingPlayerMixin"
+    "StormWingPlayerMixin",
+    "StormWingTravelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
