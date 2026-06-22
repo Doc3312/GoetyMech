@@ -126,6 +126,7 @@ public class StormWingRenderEvents {
             int tick = player.tickCount;
             boolean forwardDown = mc.options.keyUp.isDown();
             float forwardVal = forwardDown ? 1.0f : 0.0f;
+            StormWingItem.setFlightForward(player, forwardVal);
             if (tick % 3 == 0) {
                 ModNetwork.CHANNEL.sendToServer(new C2SFlightInputPacket(forwardVal));
             }
