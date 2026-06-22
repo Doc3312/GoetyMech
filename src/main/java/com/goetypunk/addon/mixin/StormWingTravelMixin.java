@@ -30,23 +30,28 @@ public abstract class StormWingTravelMixin {
         double hoverLift = ModConfig.FLIGHT_HOVER_LIFT.get();
         double pitch = player.getXRot();
         double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
-        double targetVy;
+        Vec3 motion;
         if (pitch > 0.01) {
-            targetVy = current.y - 0.08;
+            double speedAlongLook = Math.max(speed, current.dot(look) + 0.08 * (-look.y));
+            Vec3 targetMotion = look.scale(speedAlongLook);
+            motion = new Vec3(
+                current.x * 0.3 + targetMotion.x * 0.7,
+                current.y * 0.3 + targetMotion.y * 0.7,
+                current.z * 0.3 + targetMotion.z * 0.7
+            );
         } else {
-            targetVy = look.y * speed + hoverLift * liftFactor;
-        }
-        Vec3 motion = new Vec3(look.x * speed, targetVy, look.z * speed);
-
-        // 水平惯性保持：不因低头/抬头削减水平速度
-        double currH = current.horizontalDistance();
-        double newH = motion.horizontalDistance();
-
-        if (newH < 0.001) {
-            motion = new Vec3(current.x, motion.y, current.z);
-        } else if (currH > newH && currH > 0.01) {
-            double scale = currH / newH;
-            motion = new Vec3(motion.x * scale, motion.y, motion.z * scale);
+            double targetVy = look.y * speed + hoverLift * liftFactor;
+            Vec3 vMotion = new Vec3(look.x * speed, targetVy, look.z * speed);
+            double currH = current.horizontalDistance();
+            double newH = vMotion.horizontalDistance();
+            if (newH < 0.001) {
+                motion = new Vec3(current.x, vMotion.y, current.z);
+            } else if (currH > newH && currH > 0.01) {
+                double scale = currH / newH;
+                motion = new Vec3(vMotion.x * scale, vMotion.y, vMotion.z * scale);
+            } else {
+                motion = vMotion;
+            }
         }
 
         player.setDeltaMovement(motion);
@@ -72,23 +77,36 @@ public abstract class StormWingTravelMixin {
         double hoverLift = ModConfig.FLIGHT_HOVER_LIFT.get();
         double pitch = player.getXRot();
         double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
-        double targetVy;
-        if (pitch > 0.01) {
-            targetVy = current.y - 0.08;
-        } else {
-            targetVy = look.y * speed + hoverLift * liftFactor;
-        }
-
         Vec3 lookH = new Vec3(look.x, 0, look.z);
         double len = lookH.length();
-        if (len < 0.01) {
-            player.setDeltaMovement(new Vec3(current.x, targetVy, current.z));
-            return;
-        }
-        lookH = lookH.scale(1.0 / len);
 
-        Vec3 velocity = current.add(lookH.scale(baseAccel));
-        velocity = new Vec3(velocity.x, targetVy, velocity.z);
+        double targetVy;
+        Vec3 velocity;
+        if (pitch > 0.01) {
+            double speedAlongLook = Math.max(speed, current.dot(look) + 0.08 * (-look.y));
+            Vec3 targetMotion = look.scale(speedAlongLook);
+            targetVy = current.y * 0.3 + targetMotion.y * 0.7;
+            if (len < 0.01) {
+                player.setDeltaMovement(new Vec3(current.x, targetVy, current.z));
+                return;
+            }
+            lookH = lookH.scale(1.0 / len);
+            velocity = current.add(lookH.scale(baseAccel));
+            velocity = new Vec3(
+                current.x * 0.3 + targetMotion.x * 0.7,
+                targetVy,
+                current.z * 0.3 + targetMotion.z * 0.7
+            );
+        } else {
+            targetVy = look.y * speed + hoverLift * liftFactor;
+            if (len < 0.01) {
+                player.setDeltaMovement(new Vec3(current.x, targetVy, current.z));
+                return;
+            }
+            lookH = lookH.scale(1.0 / len);
+            velocity = current.add(lookH.scale(baseAccel));
+            velocity = new Vec3(velocity.x, targetVy, velocity.z);
+        }
         player.setDeltaMovement(velocity);
     }
 }
