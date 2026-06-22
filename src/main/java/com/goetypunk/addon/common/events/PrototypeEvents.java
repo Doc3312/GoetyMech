@@ -207,17 +207,17 @@ public class PrototypeEvents {
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
                 int level = Math.min(current / 20, 3);
-                double speed = 0.6 + level * 0.2;
+                double amount = level * 0.2;
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                     if (level > 0) {
                         attr.addTransientModifier(new AttributeModifier(
-                                SPRINT_MODIFIER_UUID, "prototype_sprint", speed - 1.0,
+                                SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
                     }
                 }
-            } else if (player.onGround() && !player.isSprinting()) {
+            } else if (!player.isSprinting()) {
                 PrototypeItem.setSprintTick(player, 0);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
@@ -230,7 +230,7 @@ public class PrototypeEvents {
                     && (PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player))
                     && !player.isFallFlying()) {
                 int charge = PrototypeItem.getJumpChargeTick(player);
-                if (player.onGround() && player.zza > 0.0F && charge == 0) {
+                if (player.onGround() && player.zza > 0.0F && charge == 0 && !player.isSprinting()) {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
                     GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
