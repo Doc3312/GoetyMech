@@ -187,9 +187,8 @@ public class PrototypeEvents {
         if (event.phase == TickEvent.Phase.START) {
             Vec3 startM = player.getDeltaMovement();
             double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
-            GoetyPunkMod.LOGGER.info("D START: zza={}, inputFwd={}, inputJump={}, onGround={}, isFly={}, hSpeed={}",
-                    player.zza, player.input.forwardImpulse, player.input.jumping,
-                    player.onGround(), player.isFallFlying(), startHSpeed);
+            GoetyPunkMod.LOGGER.info("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
+                    player.zza, player.onGround(), player.isFallFlying(), startHSpeed);
 
             // ── 爬墙检测（放在飞行前面） ──
             if (hasPrototype && !isSlamming) {
@@ -229,8 +228,8 @@ public class PrototypeEvents {
         if (event.phase == TickEvent.Phase.END) {
             // ── Post-travel diagnostic ──
             Vec3 postTravelM = player.getDeltaMovement();
-            GoetyPunkMod.LOGGER.info("D POST_TRAVEL: zza={}, inputFwd={}, inputJump={}, motion=({}, {}, {}), onGround={}",
-                    player.zza, player.input.forwardImpulse, player.input.jumping,
+            GoetyPunkMod.LOGGER.info("D POST_TRAVEL: zza={}, motion=({}, {}, {}), onGround={}",
+                    player.zza,
                     String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
                     player.onGround());
 
@@ -313,10 +312,10 @@ public class PrototypeEvents {
             Vec3 endM = player.getDeltaMovement();
             double endHSpeed = Math.sqrt(endM.x * endM.x + endM.z * endM.z);
             if (hasPrototype) {
-                GoetyPunkMod.LOGGER.info("D END: onGround={}, isFly={}, hSpeed={}, sprintTick={}, zza={}, inputFwd={}, inputJump={}",
+                GoetyPunkMod.LOGGER.info("D END: onGround={}, isFly={}, hSpeed={}, sprintTick={}, zza={}",
                         player.onGround(), player.isFallFlying(), endHSpeed,
                         PrototypeItem.getSprintTick(player),
-                        player.zza, player.input.forwardImpulse, player.input.jumping);
+                        player.zza);
             }
 
             // ── Wall movement ──
