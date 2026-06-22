@@ -206,6 +206,10 @@ public class PrototypeEvents {
                     && player.zza > 0) {
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
+                GoetyPunkMod.LOGGER.info("SprintTick: current={}, onGround={}, sprinting={}, zza={}, wallRun={}, slamming={}, fallFlying={}",
+                        current, player.onGround(), player.isSprinting(), player.zza,
+                        PrototypeItem.isWallRunning(player), isSlamming, player.isFallFlying());
+                player.setMaxUpStep(1.5f);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
@@ -223,6 +227,7 @@ public class PrototypeEvents {
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                 }
+                player.setMaxUpStep(0.6f);
             }
 
             // ── Ground takeoff / mid-air flight start ──

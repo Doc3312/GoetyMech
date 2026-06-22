@@ -123,14 +123,16 @@ public class PrototypeRenderEvents {
         if (hasPrototype && player.isSprinting() && player.zza > 0.0F && !player.isFallFlying()) {
             if (player.tickCount % 2 == 0) {
                 var r = player.getRandom();
-                int count = 3 + r.nextInt(3);
+                Vec3 vel = player.getDeltaMovement();
+                int count = 8 + r.nextInt(5);
                 for (int i = 0; i < count; i++) {
                     double h = r.nextDouble() * 1.8;
-                    double px = player.getX() + (r.nextDouble() - 0.5) * 1.2;
-                    double pz = player.getZ() + (r.nextDouble() - 0.5) * 1.2;
+                    double behind = -r.nextDouble() * 0.8;
+                    double px = player.getX() + vel.x * behind + (r.nextDouble() - 0.5) * 0.3;
+                    double pz = player.getZ() + vel.z * behind + (r.nextDouble() - 0.5) * 0.3;
                     double py = player.getY() + h;
-                    double vx = -player.getDeltaMovement().x * 0.3 + (r.nextDouble() - 0.5) * 0.05;
-                    double vz = -player.getDeltaMovement().z * 0.3 + (r.nextDouble() - 0.5) * 0.05;
+                    double vx = -vel.x * 1.5 + (r.nextDouble() - 0.5) * 0.1;
+                    double vz = -vel.z * 1.5 + (r.nextDouble() - 0.5) * 0.1;
                     player.level().addParticle(
                             new DustParticleOptions(new Vector3f(0.35f, 0.03f, 0.03f), 0.7f),
                             px, py, pz, vx, -0.06, vz);
