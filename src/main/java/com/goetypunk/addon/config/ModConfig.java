@@ -139,6 +139,8 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_RADIUS;
     public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_TARGET_SPEED;
+    public static final ForgeConfigSpec.DoubleValue FLIGHT_HOVER_LIFT;
+    public static final ForgeConfigSpec.DoubleValue FLIGHT_BASE_ACCEL;
 
     // ====== Storm Wing — Wall-running 配置 ======
 
@@ -369,6 +371,14 @@ public class ModConfig {
         FLIGHT_TARGET_SPEED = BUILDER
                 .comment("按住 W 时沿视线方向匀速飞行的速度（blocks/tick）", "值越大飞得越快。范围: 0.1-2.0，默认 0.5（=10 blocks/s）")
                 .defineInRange("flight_target_speed", 0.5, 0.1, 2.0);
+
+        FLIGHT_HOVER_LIFT = BUILDER
+                .comment("恒定抗重力 lift（blocks/tick）。0.08 = 精确抵消 gravity", "范围: 0.0-0.2，默认 0.08")
+                .defineInRange("flight_hover_lift", 0.08, 0.0, 0.2);
+
+        FLIGHT_BASE_ACCEL = BUILDER
+                .comment("不按W时的水平加速（blocks/tick²），让玩家保持向前漂移", "设为 0 则关闭自动漂移，范围: 0.0-0.1，默认 0.02")
+                .defineInRange("flight_base_accel", 0.02, 0.0, 0.1);
 
         BUILDER.pop();
 

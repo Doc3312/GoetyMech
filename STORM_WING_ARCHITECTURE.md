@@ -315,63 +315,77 @@ jumpPower = sqrt(2 × 0.08 × height)
 
 ### 10. 飞行力学
 
-飞行阶段依赖鞘翅默认物理，同时在 `PlayerTickEvent.END` 阶段注入加法加速。
+飞行阶段使用 Hybrid 模型：**W 按下时 velocity-set（速度替换）+ 水平惯性保持，W 松开时加法加速（gentle drift）**。全部实现在 `StormWingTravelMixin` 中，通过双注入点完成。
 
-#### 10.1 飞行推进（Flight Boost）— V4 加法加速器模型
-
-**V4 重构：从"死区控制器"(V3)改为"加法加速器"，参考 ElytraBooster 方案。**
+#### 10.1 飞行推进（V6 Hybrid 模型）
 
 每 tick 从客户端 `StormWingRenderEvents.onClientTick` 同步 W 键状态到服务端：
 ```
-客户端: tick % 3 == 0 → CHANNEL.sendToServer(new C2SFlightInputPacket(forward))
+客户端: 每 tick 写本端 + 每 3 tick 发 C2S → C2SFlightInputPacket(forward)
 服务端: 存储至 entity PersistentData → TAG_FLIGHT_FORWARD
 ```
 
-**加速度公式**（`StormWingEvents.computeAdditiveAcceleration()`）：
+**双注入点架构**：
 
 ```
-motion += lookDir × forward × BOOST_FORCE    # 仅在 forward>0.01 时
-motion += (0, HOVER_LIFT, 0)                  # 恒定抗重力
+HEAD injection (cancellable=true):
+  forward > 0.01 → velocity-set + 水平惯性保持
+  forward ≤ 0.01 → 不拦截，fall through 到 vanilla travel()
+
+TAIL injection:
+  forward ≤ 0.01 → 加法 baseAccel（水平视线方向）
+  forward > 0.01 → 跳过（已由 HEAD 处理）
 ```
+
+**HEAD 注入 — velocity-set + 水平惯性保持**（`gp$onTravelHead`）：
+
+当 W 按下时，向视线方向设即时速度 `FLIGHT_TARGET_SPEED`，同时保持已有的水平动量：
+
+```
+motion = look × targetSpeed + (0, hoverLift, 0)
+
+if newH < 0.001:         → 垂直直视，保留当前水平速度
+elif currH > newH:       → 当前水平速度高于视线方向能给的，保持水平大小
+else:                    → 视线方向能给的更快，用 velocity-set 新值
+```
+
+**TAIL 注入 — 加法 baseAccel**（`gp$onTravelTail`）：
+
+当 W 松开时，向水平视线方向每 tick 加 `FLIGHT_BASE_ACCEL`：
+
+```
+velocity = current + lookH × baseAccel + (0, hoverLift, 0)
+```
+
+不拦截 vanilla travel()，drag/碰撞正常运作。
 
 **效果**：
-- 按住 W → 每 tick 向视线方向加 `BOOST_FORCE`（默认 0.12）推力
-- 平视 → 水平前飞 + 恒定 lift 不掉高
-- 仰头 → 斜向上飞（推力方向随视线改变）
-- 俯视 → 斜向下飞
-- 松开 W → 纯原版滑翔（无额外推力）
-- **无冷却、无爆发、转弯跟随视线即时改变**
-
-**Vanilla drag 自动提供速度上限**：
-- 水平 ×0.99/tick，垂直 ×0.98/tick
-- 加法加速与 drag 自然平衡，无需额外公式
-
-**代码位置**：
-- `StormWingEvents.computeAdditiveAcceleration()`（`public static`，可独立测试）
-- `StormWingEvents.onPlayerTick()` END phase 调用
-- `StormWingRenderEvents.onClientTick()` 捕获 W 键
-- `C2SFlightInputPacket` 传输 forward 值
-
-**入口条件**（全部满足时）：
-- `hasStormWing`（胸甲槽或 Curios）
-- `player.isFallFlying()`
-- `!isSlamming`
-- `!isWallRunning`
-
-**注意**：推进依赖客户端发来的 `forward` 值，与原 `zza` 无关。`STORED_ZZA` Mixin 已废弃。
+| 场景 | 机制 | 手感 |
+|------|------|------|
+| 按住 W 平飞 | velocity-set `targetSpeed=0.5` | 即时响应，稳定前飞 |
+| 按住 W 抬头 | velocity-set + 水平惯性保留 | 爬升不掉水平速度 |
+| 按住 W 低头 | velocity-set + 水平惯性保留 | 俯冲保持水平动量 |
+| 松开 W | 加法 `baseAccel=0.02` + 恒定 lift | 温和向前漂移不掉高 |
+| 松开 W 且 baseAccel=0 | 纯 vanilla 滑翔 | 原版鞘翅物理 |
 
 **配置项**（`goetypunk-common.toml` → `storm_wing` 段）：
 
 | 配置项 | 默认值 | 范围 | 说明 |
 |--------|--------|------|------|
-| `flight_boost_force` | 0.12 | 0.01~0.5 | 每 tick 向视线方向施加的推力 |
-| `flight_hover_lift` | 0.04 | 0.0~0.1 | 恒定抗重力增量 |
+| `flight_target_speed` | 0.5 | 0.1~2.0 | 按住 W 时的即时速度（blocks/tick） |
+| `flight_hover_lift` | 0.08 | 0.0~0.2 | 恒定抗重力 lift（精确抵消 gravity） |
+| `flight_base_accel` | 0.02 | 0.0~0.1 | 不按W时的水平加速（0=关闭自动漂移） |
 
-**可测试性**：`computeAdditiveAcceleration()` 是 `public static` 方法，可被 `StormWingFlightTests` 直接调用验证。
+**代码位置**：
+- `mixin/StormWingTravelMixin.java` — HEAD + TAIL 双注入
+- `client/StormWingRenderEvents.java` — C2S 发送 + 本端 forward 写入
+- `common/item/StormWingItem.java` — getFlightForward / setFlightForward
+- `config/ModConfig.java` — FLIGHT_TARGET_SPEED / FLIGHT_HOVER_LIFT / FLIGHT_BASE_ACCEL
+- `common/net/c2s/C2SFlightInputPacket.java` — 网络传输
 
 **与其他系统互斥**：
-- Slam 期间 `isSlamming = true` → boost 跳过
-- 爬墙期间 `isWallRunning = true` → boost 跳过
+- Slam 期间 `isFallFlying() = false` → Mixin return
+- 爬墙期间 `PlayerTickEvent.END` 覆写 velocity → Mixin 效果被覆盖（无害）
 
 ### 11. 取消猛击
 
@@ -427,8 +441,9 @@ motion += (0, HOVER_LIFT, 0)                  # 恒定抗重力
 | `slam_max_damage` | 1200.0 | 1~9999 | 伤害上限 |
 | `slam_max_radius` | 100.0 | 1~200 | 半径上限 |
 | `slam_hover_ticks` | 5 | 0~100 | 下落前悬停 tick 数 |
-| `flight_boost_force` | 0.12 | 0.01~0.5 | 每 tick 向视线方向施加的推力 |
-| `flight_hover_lift` | 0.04 | 0.0~0.1 | 恒定抗重力增量 |
+| `flight_target_speed` | 0.5 | 0.1~2.0 | 按住 W 时的即时速度（blocks/tick） |
+| `flight_hover_lift` | 0.08 | 0.0~0.2 | 恒定抗重力 lift（0.08 = 精确抵消 gravity） |
+| `flight_base_accel` | 0.02 | 0.0~0.1 | 不按W时的水平加速（0=关闭自动漂移） |
 
 #### Wall Run 段
 
