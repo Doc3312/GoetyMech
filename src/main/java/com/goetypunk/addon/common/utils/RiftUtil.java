@@ -10,13 +10,13 @@ public class RiftUtil {
 
     private record DimensionPair(ResourceKey<Level> a, ResourceKey<Level> b, double aToBScale) {
         ResourceKey<Level> partner(ResourceKey<Level> dim) {
-            if (dim == a) return b;
-            if (dim == b) return a;
+            if (dim != null && dim.equals(a)) return b;
+            if (dim != null && dim.equals(b)) return a;
             return null;
         }
         double scaleTo(ResourceKey<Level> from, ResourceKey<Level> to) {
-            if (from == a && to == b) return aToBScale;
-            if (from == b && to == a) return 1.0 / aToBScale;
+            if (from.equals(a) && to.equals(b)) return aToBScale;
+            if (from.equals(b) && to.equals(a)) return 1.0 / aToBScale;
             return 1.0;
         }
     }
@@ -40,7 +40,7 @@ public class RiftUtil {
     public static Vec3 mapCoordinates(Vec3 pos, ResourceKey<Level> from, ResourceKey<Level> to) {
         for (DimensionPair pair : PAIRS) {
             ResourceKey<Level> partner = pair.partner(from);
-            if (partner != null && partner == to) {
+            if (partner != null && partner.equals(to)) {
                 double scale = pair.scaleTo(from, to);
                 return new Vec3(pos.x * scale, pos.y, pos.z * scale);
             }
