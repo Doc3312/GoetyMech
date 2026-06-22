@@ -18,6 +18,18 @@ public abstract class PrototypePlayerMixin extends LivingEntity {
         super(entityType, level);
     }
 
+    @Inject(method = "aiStep", at = @At("HEAD"))
+    private void gp$logAiStepHead(CallbackInfo ci) {
+        GoetyPunkMod.LOGGER.info("MIXIN_AISTEP_HEAD: zza={}, jumping={}, onGround={}, sprint={}",
+                this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
+    }
+
+    @Inject(method = "aiStep", at = @At("RETURN"))
+    private void gp$logAiStepReturn(CallbackInfo ci) {
+        GoetyPunkMod.LOGGER.info("MIXIN_AISTEP_RETURN: zza={}, jumping={}, onGround={}, sprint={}",
+                this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
+    }
+
     @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
     private void gp$cancelJumpWhileCharging(CallbackInfo ci) {
         Player player = (Player) (Object) this;
