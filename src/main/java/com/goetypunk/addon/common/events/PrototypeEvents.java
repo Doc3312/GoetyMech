@@ -224,8 +224,7 @@ public class PrototypeEvents {
                     && !PrototypeItem.isWallRunning(player)
                     && !player.isFallFlying()
                     && player.onGround()
-                    && player.isSprinting()
-                    && player.zza > 0.0F) {
+                    && player.isSprinting()) {
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
                 player.setMaxUpStep(1.5f);
