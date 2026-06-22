@@ -221,11 +221,12 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
-            // ── 追踪实际地面速度（每 tick，不限于冲刺） ──
+            // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
             double moved = Math.sqrt(
                     (player.getX() - player.xo) * (player.getX() - player.xo)
                     + (player.getZ() - player.zo) * (player.getZ() - player.zo));
-            if (hasPrototype && player.onGround() && !player.isFallFlying()) {
+            if (hasPrototype && player.onGround() && !player.isFallFlying()
+                    && player.isSprinting() && moved > 0.001) {
                 PrototypeItem.setGroundSpeed(player, moved);
             }
 
