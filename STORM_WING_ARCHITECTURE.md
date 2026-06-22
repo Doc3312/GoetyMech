@@ -316,42 +316,70 @@ jumpPower = sqrt(2 × 0.08 × height)
 
 飞行阶段依赖鞘翅默认物理，同时在 `PlayerTickEvent.START` 阶段注入了视线方向速度推进。
 
-#### 10.1 飞行推进（Flight Boost）
+#### 10.1 飞行推进（Flight Boost）— 持续视角控制模型
 
-每 tick 沿玩家视线方向施加固定速度脉冲（与烟花火箭推进原理一致）。
+**V2 重构：从"冷却爆发"改为"持续视角引导"。**
 
-**代码位置**：`StormWingEvents.onPlayerTick()` START phase，`sprint` 加速块之后、`return;` 之前。
+每 tick 当 W 按住时，通过比例控制器将玩家速度平滑引向目标：
 
-**四重闸门条件**（缺一不可）：
+```
+水平目标: look 水平方向 × targetSpeed
+垂直目标: 基于 pitch（仰角）判定：
+  - look.y > liftThreshold → 爬升（vy → climbSpeed）
+  - look.y < diveThreshold → 俯冲（vy → -diveSpeed）
+  - 中间范围 → 抗重力悬浮（vy → hoverLift）
 
-| 条件 | 作用 |
-|------|------|
-| `hasStormWing` | 胸甲槽或 Curios 持有风暴之翼 |
-| `player.isFallFlying()` | 处于鞘翅飞行态 |
-| `!isSlamming` | 非下砸状态（同 tick `enterSlamState()` 立即设置，下沉前已排除） |
-| `!isWallRunning` | 非爬墙状态（爬墙已 `stopFallFlying()`） |
+加速度: (目标 - 当前) × accel
+```
 
 **效果**：
-- 抬头看天 → 升力，缓慢爬升
-- 平视前方 → 水平加速，稳定约 2 倍原版鞘翅速度
-- 俯视地面 → 加速俯冲
+- 平视 → 水平加速至 targetSpeed，hoverLift 抗重力不掉高
+- 仰头 → 爬升（幅度随 pitch 增大）
+- 俯视 → 俯冲加速
+- 松开 W → 原版自由滑翔
+- **无冷却、无爆发、持续平滑引导**
 
-**平衡速度**：`v ≈ boost * cos(pitch) / (1 - drag)`，drag 来自 `travel()` 的 0.99 衰减系数。默认 `boost = 0.025` 时平飞约 2x 原版。
+**稳态公式**（含 boost + travel 重力/阻尼）：
 
-**配置项**：
-- `flight_boost_strength`（默认 0.025，范围 0.0~0.5）— 基础推进力度
-- `flight_boost_vertical`（默认 0.20，范围 0.0~1.0）— Y 轴独立推进力度，直接沿 `look.y` 施加（不依赖水平 boost），默认 0.20 时净值约 +0.12~+0.14/tick，爬升速度约 2.4~2.8 blocks/sec
+```
+vy_ss = (vTarget × accel - 0.08) / ((1/0.98 - 1) + accel)
+```
+
+取 `accel=0.2, hoverLift=0.4` → `vy_ss ≈ 0`，理论平飞不掉高。
+
+**代码位置**：`StormWingEvents.computeFlightAcceleration()`（可独立测试）+ `onPlayerTick()` END phase。
+
+**入口条件**（全部满足时自动生效，无需 W 键）：
+- `hasStormWing`（胸甲槽或 Curios）
+- `player.isFallFlying()`
+- `!isSlamming`
+- `!isWallRunning`
+
+**注意**：推进不依赖 `zza` 输入。服务端鞘翅飞行时 `zza` 始终为 0，原 `STORED_ZZA` + Mixin 捕获方案已废弃。推进是风暴之翼的**固有属性**，进入鞘翅飞行的每个 tick 自动生效。
+
+**配置项**（`goetypunk-common.toml` → `storm_wing` 段）：
+
+| 配置项 | 默认值 | 范围 | 说明 |
+|--------|--------|------|------|
+| `flight_target_speed` | 2.5 | 0.5~10.0 | 水平目标速度（blocks/tick） |
+| `flight_accel` | 0.2 | 0.05~0.5 | 每 tick 加速比例，越大响应越快 |
+| `flight_climb_speed` | 0.8 | 0.3~2.0 | 仰头时目标垂直速度 |
+| `flight_dive_speed` | 1.2 | 0.3~3.0 | 俯冲时目标垂直速度绝对值 |
+| `flight_hover_lift` | 0.4 | 0.1~1.0 | 平视时抗重力目标垂直速度（0.08/accel ≈ 零净下降） |
+| `flight_lift_threshold` | 0.3 | 0.1~0.8 | look.y 超过此值视为爬升 |
+| `flight_dive_threshold` | -0.3 | -0.8~-0.1 | look.y 低于此值视为俯冲 |
+
+删除 `flight_boost_strength`、`flight_boost_cooldown`。
+
+**起飞改进**：
+- 地面 W: `velocity.y = 1.5`（原 2.0，降低后更平滑）
+- 空中 W: `startFallFlying()` + `velocity.y = max(current, 0.3)`（防坠）
+
+**可测试性**：`computeFlightAcceleration()` 是 `public static` 方法，可被 `StormWingFlightTests` 直接调用验证。
 
 **与其他系统互斥**：
 - Slam 期间 `isSlamming = true` → boost 跳过
 - 爬墙期间 `isWallRunning = true` → boost 跳过
-- 地面冲刺不受影响
-
-其他主动飞行能力：
-
-- 持有风暴之翼时 shift 进入 slam（如上所述）
-- 持有风暴之翼时靠近墙壁进入爬墙（如上所述）
-- 爬墙状态下无法 slam
 
 ### 11. 取消猛击
 

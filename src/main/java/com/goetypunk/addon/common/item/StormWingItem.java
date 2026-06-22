@@ -22,7 +22,6 @@ public class StormWingItem extends ElytraItem {
     private static final String TAG_WALL_NORMAL_Y = "goetypunk.wall_ny";
     private static final String TAG_WALL_NORMAL_Z = "goetypunk.wall_nz";
     private static final String TAG_JUMP_CHARGE_TICK = "goetypunk.jump_charge_tick";
-    private static final String TAG_LAST_BOOST_TICK = "goetypunk.last_boost_tick";
     private static final String TAG_SLAM_INVULN_TICK = "goetypunk.slam_invuln_tick";
     private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
 
@@ -154,16 +153,6 @@ public class StormWingItem extends ElytraItem {
 
     public static void clearJumpCharge(LivingEntity entity) {
         entity.getPersistentData().remove(TAG_JUMP_CHARGE_TICK);
-    }
-
-    // ── Flight boost ──
-
-    public static int getLastBoostTick(LivingEntity entity) {
-        return entity.getPersistentData().getInt(TAG_LAST_BOOST_TICK);
-    }
-
-    public static void setLastBoostTick(LivingEntity entity, int tick) {
-        entity.getPersistentData().putInt(TAG_LAST_BOOST_TICK, tick);
     }
 
     // ── Slam invulnerability ──

@@ -52,12 +52,6 @@ public class StormWingEvents {
     private static final String TAG_SLAM_START_Y = "goetypunk.slam_start_y";
     private static final String TAG_PREV_CROUCH = "goetypunk.prev_crouch";
 
-    // ── Debug test tags (TODO: remove after charge jump tuning) ──
-
-
-    // ── Stored zza captured at travel() HEAD — accessible from Mixin ──
-    public static final Map<java.util.UUID, Float> STORED_ZZA = new HashMap<>();
-
     // ── Ring animation sequencer ──
     private static final int RINGS_DELAY = 1;
 
@@ -237,11 +231,13 @@ public class StormWingEvents {
                 int charge = StormWingItem.getJumpChargeTick(player);
                 if (player.onGround() && player.zza > 0.0F && charge == 0) {
                     Vec3 m = player.getDeltaMovement();
-                    player.setDeltaMovement(m.x, 2.0, m.z);
+                    player.setDeltaMovement(m.x, 1.5, m.z);
                     GoetyPunkMod.LOGGER.info("StormWing ground takeoff: zza={}, motion={}", player.zza, m);
                 } else if (!player.onGround() && player.zza > 0.0F) {
                     player.startFallFlying();
-                    GoetyPunkMod.LOGGER.info("StormWing force-flight mid-air!");
+                    Vec3 m = player.getDeltaMovement();
+                    player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
+                    GoetyPunkMod.LOGGER.info("StormWing mid-air deployment: motion={}", m);
                 }
             }
 
@@ -272,29 +268,66 @@ public class StormWingEvents {
             int currentFlightTicks = player.getFallFlyingTicks();
             StormWingItem.setFlightTick(player, currentFlightTicks);
 
-            // ── W 键烟花式爆发 ──
-            float storedZza = STORED_ZZA.getOrDefault(player.getUUID(), 0.0F);
-            GoetyPunkMod.LOGGER.debug("StormWing END phase: zza={}, storedZza={}, isFallFlying={}, flightTicks={}",
-                    player.zza, storedZza, player.isFallFlying(), currentFlightTicks);
-            if (storedZza > 0.0F) {
-                int cooldown = ModConfig.FLIGHT_BOOST_COOLDOWN.get();
-                int lastBoost = StormWingItem.getLastBoostTick(player);
-                if (lastBoost == 0 || currentFlightTicks - lastBoost >= cooldown) {
-                    Vec3 look = player.getLookAngle();
-                    double strength = ModConfig.FLIGHT_BOOST_STRENGTH.get();
-                    motion = motion.add(
-                            (look.x * strength - motion.x) * 0.5,
-                            look.y * 0.1,
-                            (look.z * strength - motion.z) * 0.5
-                    );
-                    StormWingItem.setLastBoostTick(player, currentFlightTicks);
-                    GoetyPunkMod.LOGGER.info("StormWing flight boost: flightTicks={}, motion={}",
-                            currentFlightTicks, motion);
-                }
-            }
+            // ── 持续推进：基于视角的飞行控制（无 zza 依赖，每 tick 生效） ──
+            Vec3 look = player.getLookAngle();
+            Vec3 accel = computeFlightAcceleration(motion, look,
+                    ModConfig.FLIGHT_TARGET_SPEED.get(),
+                    ModConfig.FLIGHT_CLIMB_SPEED.get(),
+                    ModConfig.FLIGHT_DIVE_SPEED.get(),
+                    ModConfig.FLIGHT_HOVER_LIFT.get(),
+                    ModConfig.FLIGHT_LIFT_THRESHOLD.get(),
+                    ModConfig.FLIGHT_DIVE_THRESHOLD.get()
+            );
+            motion = motion.add(accel);
+            GoetyPunkMod.LOGGER.debug("StormWing flight: motion={}, look={}, accel={}",
+                    motion, look, accel);
 
             player.setDeltaMovement(motion);
         }
+    }
+
+    /**
+     * 计算推进加速度向量（死区控制器 + 重力补偿）。
+     * 公开为 static 以便单元测试验证物理参数。
+     *
+     * 死区设计：一 tick 内使运动达到目标速度，补偿下一 tick 的重力 (-0.08) 和 drag。
+     *   hAccel = hTarget / dragH - currentXZ
+     *   vAccel = vTarget / dragV + 0.08 - currentY
+     */
+    public static Vec3 computeFlightAcceleration(Vec3 currentMotion, Vec3 look,
+                                                  double targetSpeed,
+                                                  double climbSpeed, double diveSpeed,
+                                                  double hoverLift, double liftThreshold,
+                                                  double diveThreshold) {
+        // ── 水平目标 ──
+        double hLen = Math.sqrt(look.x * look.x + look.z * look.z);
+        double hTargetX = 0, hTargetZ = 0;
+        if (hLen > 0.001) {
+            double scale = targetSpeed / hLen;
+            hTargetX = look.x * scale;
+            hTargetZ = look.z * scale;
+        }
+
+        // 水平 drag ≈ 0.99
+        double hAccelX = hTargetX / 0.99 - currentMotion.x;
+        double hAccelZ = hTargetZ / 0.99 - currentMotion.z;
+
+        // ── 垂直目标（连续插值，无 hover→climb 断层） ──
+        double vTarget;
+        if (look.y > liftThreshold) {
+            double t = (look.y - liftThreshold) / (1.0 - liftThreshold);
+            vTarget = hoverLift + (climbSpeed - hoverLift) * t;
+        } else if (look.y < diveThreshold) {
+            double t = (diveThreshold - look.y) / (diveThreshold + 1.0);
+            vTarget = hoverLift + (-diveSpeed - hoverLift) * t;
+        } else {
+            vTarget = hoverLift;
+        }
+
+        // 垂直 drag ≈ 0.98，重力 0.08/tick
+        double vAccel = vTarget / 0.98 + 0.08 - currentMotion.y;
+
+        return new Vec3(hAccelX, vAccel, hAccelZ);
     }
 
     // ── 检测 ──

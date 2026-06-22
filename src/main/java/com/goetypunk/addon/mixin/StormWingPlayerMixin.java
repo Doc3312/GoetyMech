@@ -1,7 +1,6 @@
 package com.goetypunk.addon.mixin;
 
 import com.goetypunk.addon.GoetyPunkMod;
-import com.goetypunk.addon.common.events.StormWingEvents;
 import com.goetypunk.addon.common.item.StormWingItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,11 +16,6 @@ public abstract class StormWingPlayerMixin extends LivingEntity {
 
     protected StormWingPlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
-    }
-
-    @Inject(method = "travel", at = @At("HEAD"))
-    private void gp$captureZza(CallbackInfo ci) {
-        StormWingEvents.STORED_ZZA.put(this.getUUID(), this.zza);
     }
 
     @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
