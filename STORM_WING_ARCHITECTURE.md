@@ -20,6 +20,7 @@ src/main/java/com/goetypunk/addon/
 │   │   ├── ModNetwork.java                 # 网络通道注册
 │   │   ├── c2s/C2SCancelSlamPacket.java    # 客户端→服务端：取消猛击
 │   │   ├── c2s/C2SJumpChargePacket.java    # 客户端→服务端：跳跃蓄力 tick
+│   │   ├── c2s/C2SFlightInputPacket.java   # 客户端→服务端：飞行 W 键输入 (forward 0/1)
 │   │   └── s2c/S2CSlamImpactPacket.java    # 服务端→客户端：冲击粒子+音效
 │   └── config/ModConfig.java               # 全部配置项
 ├── client/
@@ -314,68 +315,59 @@ jumpPower = sqrt(2 × 0.08 × height)
 
 ### 10. 飞行力学
 
-飞行阶段依赖鞘翅默认物理，同时在 `PlayerTickEvent.START` 阶段注入了视线方向速度推进。
+飞行阶段依赖鞘翅默认物理，同时在 `PlayerTickEvent.END` 阶段注入加法加速。
 
-#### 10.1 飞行推进（Flight Boost）— 持续视角控制模型
+#### 10.1 飞行推进（Flight Boost）— V4 加法加速器模型
 
-**V2 重构：从"冷却爆发"改为"持续视角引导"。**
+**V4 重构：从"死区控制器"(V3)改为"加法加速器"，参考 ElytraBooster 方案。**
 
-每 tick 当 W 按住时，通过比例控制器将玩家速度平滑引向目标：
+每 tick 从客户端 `StormWingRenderEvents.onClientTick` 同步 W 键状态到服务端：
+```
+客户端: tick % 3 == 0 → CHANNEL.sendToServer(new C2SFlightInputPacket(forward))
+服务端: 存储至 entity PersistentData → TAG_FLIGHT_FORWARD
+```
+
+**加速度公式**（`StormWingEvents.computeAdditiveAcceleration()`）：
 
 ```
-水平目标: look 水平方向 × targetSpeed
-垂直目标: 基于 pitch（仰角）判定：
-  - look.y > liftThreshold → 爬升（vy → climbSpeed）
-  - look.y < diveThreshold → 俯冲（vy → -diveSpeed）
-  - 中间范围 → 抗重力悬浮（vy → hoverLift）
-
-加速度: (目标 - 当前) × accel
+motion += lookDir × forward × BOOST_FORCE    # 仅在 forward>0.01 时
+motion += (0, HOVER_LIFT, 0)                  # 恒定抗重力
 ```
 
 **效果**：
-- 平视 → 水平加速至 targetSpeed，hoverLift 抗重力不掉高
-- 仰头 → 爬升（幅度随 pitch 增大）
-- 俯视 → 俯冲加速
-- 松开 W → 原版自由滑翔
-- **无冷却、无爆发、持续平滑引导**
+- 按住 W → 每 tick 向视线方向加 `BOOST_FORCE`（默认 0.12）推力
+- 平视 → 水平前飞 + 恒定 lift 不掉高
+- 仰头 → 斜向上飞（推力方向随视线改变）
+- 俯视 → 斜向下飞
+- 松开 W → 纯原版滑翔（无额外推力）
+- **无冷却、无爆发、转弯跟随视线即时改变**
 
-**稳态公式**（含 boost + travel 重力/阻尼）：
+**Vanilla drag 自动提供速度上限**：
+- 水平 ×0.99/tick，垂直 ×0.98/tick
+- 加法加速与 drag 自然平衡，无需额外公式
 
-```
-vy_ss = (vTarget × accel - 0.08) / ((1/0.98 - 1) + accel)
-```
+**代码位置**：
+- `StormWingEvents.computeAdditiveAcceleration()`（`public static`，可独立测试）
+- `StormWingEvents.onPlayerTick()` END phase 调用
+- `StormWingRenderEvents.onClientTick()` 捕获 W 键
+- `C2SFlightInputPacket` 传输 forward 值
 
-取 `accel=0.2, hoverLift=0.4` → `vy_ss ≈ 0`，理论平飞不掉高。
-
-**代码位置**：`StormWingEvents.computeFlightAcceleration()`（可独立测试）+ `onPlayerTick()` END phase。
-
-**入口条件**（全部满足时自动生效，无需 W 键）：
+**入口条件**（全部满足时）：
 - `hasStormWing`（胸甲槽或 Curios）
 - `player.isFallFlying()`
 - `!isSlamming`
 - `!isWallRunning`
 
-**注意**：推进不依赖 `zza` 输入。服务端鞘翅飞行时 `zza` 始终为 0，原 `STORED_ZZA` + Mixin 捕获方案已废弃。推进是风暴之翼的**固有属性**，进入鞘翅飞行的每个 tick 自动生效。
+**注意**：推进依赖客户端发来的 `forward` 值，与原 `zza` 无关。`STORED_ZZA` Mixin 已废弃。
 
 **配置项**（`goetypunk-common.toml` → `storm_wing` 段）：
 
 | 配置项 | 默认值 | 范围 | 说明 |
 |--------|--------|------|------|
-| `flight_target_speed` | 2.5 | 0.5~10.0 | 水平目标速度（blocks/tick） |
-| `flight_accel` | 0.2 | 0.05~0.5 | 每 tick 加速比例，越大响应越快 |
-| `flight_climb_speed` | 0.8 | 0.3~2.0 | 仰头时目标垂直速度 |
-| `flight_dive_speed` | 1.2 | 0.3~3.0 | 俯冲时目标垂直速度绝对值 |
-| `flight_hover_lift` | 0.4 | 0.1~1.0 | 平视时抗重力目标垂直速度（0.08/accel ≈ 零净下降） |
-| `flight_lift_threshold` | 0.3 | 0.1~0.8 | look.y 超过此值视为爬升 |
-| `flight_dive_threshold` | -0.3 | -0.8~-0.1 | look.y 低于此值视为俯冲 |
+| `flight_boost_force` | 0.12 | 0.01~0.5 | 每 tick 向视线方向施加的推力 |
+| `flight_hover_lift` | 0.04 | 0.0~0.1 | 恒定抗重力增量 |
 
-删除 `flight_boost_strength`、`flight_boost_cooldown`。
-
-**起飞改进**：
-- 地面 W: `velocity.y = 1.5`（原 2.0，降低后更平滑）
-- 空中 W: `startFallFlying()` + `velocity.y = max(current, 0.3)`（防坠）
-
-**可测试性**：`computeFlightAcceleration()` 是 `public static` 方法，可被 `StormWingFlightTests` 直接调用验证。
+**可测试性**：`computeAdditiveAcceleration()` 是 `public static` 方法，可被 `StormWingFlightTests` 直接调用验证。
 
 **与其他系统互斥**：
 - Slam 期间 `isSlamming = true` → boost 跳过
@@ -435,6 +427,8 @@ vy_ss = (vTarget × accel - 0.08) / ((1/0.98 - 1) + accel)
 | `slam_max_damage` | 1200.0 | 1~9999 | 伤害上限 |
 | `slam_max_radius` | 100.0 | 1~200 | 半径上限 |
 | `slam_hover_ticks` | 5 | 0~100 | 下落前悬停 tick 数 |
+| `flight_boost_force` | 0.12 | 0.01~0.5 | 每 tick 向视线方向施加的推力 |
+| `flight_hover_lift` | 0.04 | 0.0~0.1 | 恒定抗重力增量 |
 
 #### Wall Run 段
 
