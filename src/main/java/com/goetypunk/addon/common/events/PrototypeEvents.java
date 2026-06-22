@@ -375,6 +375,17 @@ public class PrototypeEvents {
     }
 
     private static void applyChargedJump(Player player, int charge) {
+        Vec3 m = player.getDeltaMovement();
+        int sprintTick = PrototypeItem.getSprintTick(player);
+        if (sprintTick > 0) {
+            double t = Math.min(sprintTick / 80.0, 1.0);
+            double modifier = t * ModConfig.SPRINT_MAX_MULTIPLIER.get();
+            double expectedSpeed = 0.1 * (1 + modifier) * 1.3;
+            float yaw = player.getYRot() * Mth.DEG_TO_RAD;
+            m = new Vec3(-Mth.sin(yaw) * expectedSpeed, m.y, Mth.cos(yaw) * expectedSpeed);
+            GoetyPunkMod.LOGGER.info("Sprint inertia: sprintTick={}, modifier={}, speed={}",
+                    sprintTick, String.format("%.4f", modifier), String.format("%.4f", expectedSpeed));
+        }
         int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
         if (charge >= threshold) {
             double minH = ModConfig.JUMP_CHARGE_MIN_HEIGHT.get();
@@ -384,17 +395,15 @@ public class PrototypeEvents {
             t = Math.min(t, 1.0);
             double height = minH + t * (maxH - minH);
             double jumpPower = velocityForHeight(height);
-            Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
-            GoetyPunkMod.LOGGER.info("Prototype charged jump: charge={}, height={}, power={}",
-                    charge, String.format("%.1f", height), String.format("%.3f", jumpPower));
+            GoetyPunkMod.LOGGER.info("Prototype charged jump: charge={}, height={}, power={}, sprintTick={}",
+                    charge, String.format("%.1f", height), String.format("%.3f", jumpPower), sprintTick);
         } else if (player.onGround()) {
             double tapH = ModConfig.JUMP_TAP_HEIGHT.get();
             double jumpPower = velocityForHeight(tapH);
-            Vec3 m = player.getDeltaMovement();
             player.setDeltaMovement(m.x, jumpPower, m.z);
-            GoetyPunkMod.LOGGER.info("Prototype tap jump: charge={}, height={}, power={}",
-                    charge, String.format("%.1f", tapH), String.format("%.3f", jumpPower));
+            GoetyPunkMod.LOGGER.info("Prototype tap jump: charge={}, height={}, power={}, sprintTick={}",
+                    charge, String.format("%.1f", tapH), String.format("%.3f", jumpPower), sprintTick);
         }
         PrototypeItem.clearJumpCharge(player);
         player.hurtMarked = true;
