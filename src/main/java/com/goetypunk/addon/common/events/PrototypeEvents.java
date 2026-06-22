@@ -204,11 +204,17 @@ public class PrototypeEvents {
                     && (PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player))
                     && !player.isFallFlying()) {
                 int charge = PrototypeItem.getJumpChargeTick(player);
+                boolean isCJ = PrototypeItem.isChargedJumping(player);
+                Vec3 startM = player.getDeltaMovement();
+                double startHS = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
+                GoetyPunkMod.LOGGER.info("PROTO_DIAG START: isCJ={}, charge={}, onGround={}, zza={}, isSprint={}, isFly={}, hSpeed={}",
+                        isCJ, charge, player.onGround(), player.zza, player.isSprinting(),
+                        player.isFallFlying(), String.format("%.4f", startHS));
                 if (player.onGround() && player.zza > 0.0F && charge == 0 && !player.isSprinting()) {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
                     GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
-                } else if (!player.onGround() && player.zza > 0.0F && !PrototypeItem.isChargedJumping(player)) {
+                } else if (!player.onGround() && player.zza > 0.0F && !isCJ) {
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
@@ -269,11 +275,31 @@ public class PrototypeEvents {
 
             // ── Charged jump 水平速度持续注入（抵消 move() 的摩擦衰减） ──
             if (PrototypeItem.isChargedJumping(player)) {
+                Vec3 beforeCJ = player.getDeltaMovement();
+                double beforeHSpeed = Math.sqrt(beforeCJ.x * beforeCJ.x + beforeCJ.z * beforeCJ.z);
+                double cjHx = PrototypeItem.getCjHx(player);
+                double cjHz = PrototypeItem.getCjHz(player);
+                double targetHSpeed = Math.sqrt(cjHx * cjHx + cjHz * cjHz);
                 if (player.onGround()) {
                     PrototypeItem.clearChargedJump(player);
+                    GoetyPunkMod.LOGGER.info("PROTO_DIAG CJ_CLEAR onGround: beforeHSpeed={}, targetHSpeed={}, isFly={}",
+                            String.format("%.4f", beforeHSpeed), String.format("%.4f", targetHSpeed),
+                            player.isFallFlying());
                 } else if (!player.isFallFlying()) {
                     Vec3 cur = player.getDeltaMovement();
-                    player.setDeltaMovement(PrototypeItem.getCjHx(player), cur.y, PrototypeItem.getCjHz(player));
+                    player.setDeltaMovement(cjHx, cur.y, cjHz);
+                    Vec3 afterCJ = player.getDeltaMovement();
+                    double afterHSpeed = Math.sqrt(afterCJ.x * afterCJ.x + afterCJ.z * afterCJ.z);
+                    GoetyPunkMod.LOGGER.info("PROTO_DIAG CJ_INJECT: beforeHSpeed={}, target=({},{}), afterHSpeed={}, vy={}",
+                            String.format("%.4f", beforeHSpeed),
+                            String.format("%.4f", cjHx), String.format("%.4f", cjHz),
+                            String.format("%.4f", afterHSpeed),
+                            String.format("%.4f", cur.y));
+                } else {
+                    GoetyPunkMod.LOGGER.info("PROTO_DIAG CJ_BLOCKED by isFly: beforeHSpeed={}, target=({},{}), isFly={}",
+                            String.format("%.4f", beforeHSpeed),
+                            String.format("%.4f", cjHx), String.format("%.4f", cjHz),
+                            player.isFallFlying());
                 }
             }
 
@@ -403,16 +429,16 @@ public class PrototypeEvents {
     private static void applyChargedJump(Player player, int charge) {
         Vec3 m = player.getDeltaMovement();
         double groundSpeed = PrototypeItem.getGroundSpeed(player);
+        double hSpeedBefore = Math.sqrt(m.x * m.x + m.z * m.z);
         if (groundSpeed > 0.001) {
             float yaw = player.getYRot() * Mth.DEG_TO_RAD;
             m = new Vec3(-Mth.sin(yaw) * groundSpeed, m.y, Mth.cos(yaw) * groundSpeed);
             GoetyPunkMod.LOGGER.info("Sprint inertia: groundSpeed={}",
                     String.format("%.4f", groundSpeed));
         }
-        // 存储水平速度用于空中持续注入
         PrototypeItem.setCjHx(player, m.x);
         PrototypeItem.setCjHz(player, m.z);
-        PrototypeItem.setChargedJumping(player, true);
+        double setHSpeed = Math.sqrt(m.x * m.x + m.z * m.z);
         int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
         if (charge >= threshold) {
             double minH = ModConfig.JUMP_CHARGE_MIN_HEIGHT.get();
@@ -423,17 +449,24 @@ public class PrototypeEvents {
             double height = minH + t * (maxH - minH);
             double jumpPower = velocityForHeight(height);
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
-            GoetyPunkMod.LOGGER.info("Prototype charged jump: charge={}, height={}, power={}, groundSpeed={}",
-                    charge, String.format("%.1f", height), String.format("%.3f", jumpPower),
-                    String.format("%.4f", groundSpeed));
+            Vec3 after = player.getDeltaMovement();
+            GoetyPunkMod.LOGGER.info("PROTO_DIAG applyChargedJump: charge={}, hSpeedBefore={}, groundSpeed={}, setHSpeed={}, setVY={}, final=({}, {}, {}), isCJ={}",
+                    charge, String.format("%.4f", hSpeedBefore), String.format("%.4f", groundSpeed),
+                    String.format("%.4f", setHSpeed), String.format("%.4f", jumpPower),
+                    String.format("%.4f", after.x), String.format("%.4f", after.y), String.format("%.4f", after.z),
+                    PrototypeItem.isChargedJumping(player));
         } else if (player.onGround()) {
             double tapH = ModConfig.JUMP_TAP_HEIGHT.get();
             double jumpPower = velocityForHeight(tapH);
             player.setDeltaMovement(m.x, jumpPower, m.z);
-            GoetyPunkMod.LOGGER.info("Prototype tap jump: charge={}, height={}, power={}, groundSpeed={}",
-                    charge, String.format("%.1f", tapH), String.format("%.3f", jumpPower),
-                    String.format("%.4f", groundSpeed));
+            Vec3 after = player.getDeltaMovement();
+            GoetyPunkMod.LOGGER.info("PROTO_DIAG applyTapJump: charge={}, hSpeedBefore={}, groundSpeed={}, setHSpeed={}, final=({}, {}, {}), isCJ={}",
+                    charge, String.format("%.4f", hSpeedBefore), String.format("%.4f", groundSpeed),
+                    String.format("%.4f", setHSpeed),
+                    String.format("%.4f", after.x), String.format("%.4f", after.y), String.format("%.4f", after.z),
+                    PrototypeItem.isChargedJumping(player));
         }
+        PrototypeItem.setChargedJumping(player, true);
         PrototypeItem.clearJumpCharge(player);
         player.hurtMarked = true;
     }
