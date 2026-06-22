@@ -18,17 +18,12 @@ public abstract class StormWingTravelMixin {
         if (!((Object) this instanceof Player player)) return;
         if (!player.isFallFlying()) return;
         if (!StormWingItem.hasAnyStormWing(player)) return;
-
-        Vec3 motion = player.getDeltaMovement();
         float forward = StormWingItem.getFlightForward(player);
-        if (forward > 0.01f) {
-            Vec3 look = player.getLookAngle();
-            motion = motion.add(look.scale(forward * ModConfig.FLIGHT_BOOST_FORCE.get()));
-        }
-        double lift = ModConfig.FLIGHT_HOVER_LIFT.get();
-        if (lift > 0) {
-            motion = motion.add(0, lift, 0);
-        }
+        if (!(forward > 0.01f)) return;
+
+        Vec3 look = player.getLookAngle();
+        double speed = ModConfig.FLIGHT_TARGET_SPEED.get();
+        Vec3 motion = look.scale(speed).add(0, 0.08, 0);
         player.setDeltaMovement(motion);
     }
 }

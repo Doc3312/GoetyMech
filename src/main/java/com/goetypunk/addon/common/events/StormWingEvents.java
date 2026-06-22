@@ -254,34 +254,10 @@ public class StormWingEvents {
 
             // ── 非飞行状态 ──
             if (!player.isFallFlying()) {
-                if (StormWingItem.getFlightTick(player) > 0) {
-                    StormWingItem.setFlightTick(player, 0);
-                }
                 return;
             }
-
-            // ── 飞行 tick 追踪（boost 已由 StormWingTravelMixin 在 travel() 内处理） ──
-            int currentFlightTicks = player.getFallFlyingTicks();
-            StormWingItem.setFlightTick(player, currentFlightTicks);
         }
     }
-
-    /**
-     * 加法加速器（公开为 static 以便单元测试）。
-     * @return 本 tick 应施加的速度增量（Vec3）
-     */
-    public static Vec3 computeAdditiveAcceleration(Vec3 look, float forward, double boostForce, double hoverLift) {
-        Vec3 accel = Vec3.ZERO;
-        if (forward > 0.01f) {
-            double thrust = boostForce * forward;
-            accel = accel.add(look.scale(thrust));
-        }
-        if (hoverLift > 0) {
-            accel = accel.add(0, hoverLift, 0);
-        }
-        return accel;
-    }
-
 
     // ── 检测 ──
 
