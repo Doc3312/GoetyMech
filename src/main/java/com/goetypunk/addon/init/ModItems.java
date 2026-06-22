@@ -11,6 +11,7 @@ import com.goetypunk.addon.common.item.TimeFocusPouch;
 import com.goetypunk.addon.common.item.TwistedEmbryoItem;
 import com.goetypunk.addon.common.item.UnstableRiftFocus;
 import com.goetypunk.addon.common.item.PrototypeItem;
+import com.goetypunk.addon.common.item.curio.SoulCatcherCurio;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -109,6 +110,9 @@ public class ModItems {
                     new BlockItem(ModBlocks.STRESS_ARK.get(),
                             new Item.Properties().rarity(Rarity.EPIC))
             );
+
+    public static final RegistryObject<Item> SOUL_CATCHER =
+            ITEMS.register("soul_catcher", SoulCatcherCurio::new);
 
     // ── 原型 — 鞘翅类物品，无限耐久，推进 + Slam 技能 ──
 

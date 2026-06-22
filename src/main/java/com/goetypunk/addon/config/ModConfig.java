@@ -155,6 +155,14 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue JUMP_CHARGE_MAX_HEIGHT;
     public static final ForgeConfigSpec.IntValue JUMP_MAX_CHARGE_TICKS;
 
+    // ====== Soul Catcher 配置 ======
+
+    /** 灵魂捕手击杀阈值 */
+    public static final ForgeConfigSpec.IntValue SOUL_CATCHER_KILLS_THRESHOLD;
+
+    /** 灵魂捕手音效冷却 (tick) */
+    public static final ForgeConfigSpec.IntValue SOUL_CATCHER_SOUND_COOLDOWN;
+
     // ====== Time Freeze 配置 ======
 
     /** 时停总开关 */
@@ -167,6 +175,19 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue TIME_STOP_DEFAULT_DURATION;
 
     static {
+        // ====== Soul Catcher 配置 ======
+        BUILDER.push("soul_catcher");
+
+        SOUL_CATCHER_KILLS_THRESHOLD = BUILDER
+                .comment("灵魂捕手击杀阈值", "每击杀此数量生物即获得一个灵质", "范围: 1-1000，默认 5")
+                .defineInRange("kills_threshold", 5, 1, 1000);
+
+        SOUL_CATCHER_SOUND_COOLDOWN = BUILDER
+                .comment("灵魂捕手音效冷却 (tick)", "阈值达标后，冷却期内再次达标不播放音效", "范围: 0-1200，默认 40 (2秒)")
+                .defineInRange("sound_cooldown_ticks", 40, 0, 1200);
+
+        BUILDER.pop();
+
         BUILDER.push("time_stop");
 
         TIME_STOP_ENABLED = BUILDER

@@ -203,18 +203,19 @@ public class PrototypeEvents {
                     && !player.isFallFlying()
                     && player.onGround()
                     && player.isSprinting()
-                    && player.zza > 0) {
+                    && player.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4) {
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
-                GoetyPunkMod.LOGGER.info("SprintTick: current={}, onGround={}, sprinting={}, zza={}, wallRun={}, slamming={}, fallFlying={}",
-                        current, player.onGround(), player.isSprinting(), player.zza,
+                GoetyPunkMod.LOGGER.info("SprintTick: current={}, onGround={}, sprinting={}, hSq={}, wallRun={}, slamming={}, fallFlying={}",
+                        current, player.onGround(), player.isSprinting(),
+                        String.format("%.6f", player.getDeltaMovement().horizontalDistanceSqr()),
                         PrototypeItem.isWallRunning(player), isSlamming, player.isFallFlying());
                 player.setMaxUpStep(1.5f);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
-                    if (current >= 20) {
-                        double t = Math.min((current - 20) / 80.0, 1.0);
+                    if (current >= 5) {
+                        double t = Math.min((current - 5) / 80.0, 1.0);
                         double amount = 1.0 + t * 2.0;
                         attr.addTransientModifier(new AttributeModifier(
                                 SPRINT_MODIFIER_UUID, "prototype_sprint", amount,

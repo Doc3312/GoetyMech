@@ -8,6 +8,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 import top.theillusivec4.curios.api.SlotTypePreset;
+import top.theillusivec4.curios.api.SlotTypeMessage.Builder;
 
 @Mod.EventBusSubscriber(modid = GoetyPunkMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CuriosIntegration {
@@ -23,5 +24,13 @@ public class CuriosIntegration {
         // 时间聚晶袋使用腰带槽（与 Goety 多晶大袋一致）
         InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
                 () -> SlotTypePreset.BELT.getMessageBuilder().build());
+
+        // Soul Catcher 使用的槽位
+        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
+                () -> SlotTypePreset.CHARM.getMessageBuilder().build());
+        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
+                () -> SlotTypePreset.HANDS.getMessageBuilder().build());
+        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
+                () -> new Builder("curio").size(1).build());
     }
 }

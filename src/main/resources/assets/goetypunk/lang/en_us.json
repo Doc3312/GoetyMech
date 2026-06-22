@@ -85,6 +85,9 @@
   "block.goetypunk.stress_ark": "Stress Ark",
   "item.goetypunk.stress_ark": "Stress Ark",
 
+  "item.goetypunk.soul_catcher": "Soul Catcher",
+  "info.goetypunk.soul_catcher.progress": "§5%d/%d Kills",
+
   "item.goetypunk.prototype": "Prototype",
   "info.goetypunk.prototype.desc": "Infinite Elytra with boost and slam attack",
   "info.goetypunk.prototype.boost": "Hold W to accelerate while flying",
