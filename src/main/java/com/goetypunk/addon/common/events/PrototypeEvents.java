@@ -181,10 +181,10 @@ public class PrototypeEvents {
         Player player = event.player;
         if (player.level().isClientSide) return;
 
-        if (event.phase == TickEvent.Phase.START) {
-            boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
-            boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+        boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
+        if (event.phase == TickEvent.Phase.START) {
             GoetyPunkMod.LOGGER.debug("Prototype START phase: zza={}, onGround={}, isFallFlying={}",
                     player.zza, player.onGround(), player.isFallFlying());
 
@@ -195,52 +195,6 @@ public class PrototypeEvents {
                 } else if (player.isSprinting() && !player.onGround() && !player.isFallFlying()) {
                     tryStartWallRun(player);
                 }
-            }
-
-            // ── 地面冲刺加速 ──
-            if (hasPrototype && !isSlamming
-                    && !PrototypeItem.isWallRunning(player)
-                    && !player.isFallFlying()
-                    && player.onGround()
-                    && player.isSprinting()
-                    && player.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4) {
-                int current = PrototypeItem.getSprintTick(player) + 1;
-                PrototypeItem.setSprintTick(player, current);
-                player.setMaxUpStep(1.5f);
-                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (attr != null) {
-                    double attrBefore = attr.getValue();
-                    boolean hadMod = attr.getModifier(SPRINT_MODIFIER_UUID) != null;
-                    float walkDelta = player.walkDist - player.walkDistO;
-                    double hSpeed = player.getDeltaMovement().horizontalDistance();
-                    GoetyPunkMod.LOGGER.info("SprintTick: current={}, attr={}, hadMod={}, walkΔ={}, xxa={}, zza={}, hSpeed={}, hSq={}",
-                            current, String.format("%.4f", attrBefore), hadMod,
-                            String.format("%.4f", walkDelta),
-                            String.format("%.3f", player.xxa), String.format("%.3f", player.zza),
-                            String.format("%.4f", hSpeed),
-                            String.format("%.6f", player.getDeltaMovement().horizontalDistanceSqr()));
-                    attr.removeModifier(SPRINT_MODIFIER_UUID);
-                    if (current >= 5) {
-                        double t = Math.min((current - 5) / 80.0, 1.0);
-                        double amount = 1.0 + t * 2.0;
-                        attr.addTransientModifier(new AttributeModifier(
-                                SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
-                                AttributeModifier.Operation.MULTIPLY_TOTAL));
-                        double attrAfter = attr.getValue();
-                        boolean hasModAfter = attr.getModifier(SPRINT_MODIFIER_UUID) != null;
-                        GoetyPunkMod.LOGGER.info("SprintMod AFTER: current={}, amount={}, attrBefore={}, attrAfter={}, Δ={}, hasMod={}",
-                                current, String.format("%.4f", amount),
-                                String.format("%.4f", attrBefore), String.format("%.4f", attrAfter),
-                                String.format("%.4f", attrAfter - attrBefore), hasModAfter);
-                    }
-                }
-            } else if (!player.isSprinting()) {
-                PrototypeItem.setSprintTick(player, 0);
-                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (attr != null) {
-                    attr.removeModifier(SPRINT_MODIFIER_UUID);
-                }
-                player.setMaxUpStep(0.6f);
             }
 
             // ── Ground takeoff / mid-air flight start ──
@@ -265,6 +219,47 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
+            // ── 地面冲刺加速 ──
+            if (hasPrototype && !isSlamming
+                    && !PrototypeItem.isWallRunning(player)
+                    && !player.isFallFlying()
+                    && player.onGround()
+                    && player.isSprinting()
+                    && player.zza > 0.0F) {
+                int current = PrototypeItem.getSprintTick(player) + 1;
+                PrototypeItem.setSprintTick(player, current);
+                player.setMaxUpStep(1.5f);
+                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                if (attr != null) {
+                    double attrBefore = attr.getValue();
+                    boolean hadMod = attr.getModifier(SPRINT_MODIFIER_UUID) != null;
+                    GoetyPunkMod.LOGGER.info("SprintTick: current={}, attr={}, hadMod={}, zza={}, hSq={}",
+                            current, String.format("%.4f", attrBefore), hadMod,
+                            String.format("%.3f", player.zza),
+                            String.format("%.6f", player.getDeltaMovement().horizontalDistanceSqr()));
+                    attr.removeModifier(SPRINT_MODIFIER_UUID);
+                    if (current >= 1) {
+                        double t = Math.min((current - 1) / 80.0, 1.0);
+                        double amount = 1.0 + t * 2.0;
+                        attr.addTransientModifier(new AttributeModifier(
+                                SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
+                                AttributeModifier.Operation.MULTIPLY_TOTAL));
+                        double attrAfter = attr.getValue();
+                        GoetyPunkMod.LOGGER.info("SprintMod AFTER: current={}, amount={}, attr {}→{}, hasMod={}",
+                                current, String.format("%.4f", amount),
+                                String.format("%.4f", attrBefore), String.format("%.4f", attrAfter),
+                                attr.getModifier(SPRINT_MODIFIER_UUID) != null);
+                    }
+                }
+            } else if (!player.isSprinting()) {
+                PrototypeItem.setSprintTick(player, 0);
+                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                if (attr != null) {
+                    attr.removeModifier(SPRINT_MODIFIER_UUID);
+                }
+                player.setMaxUpStep(0.6f);
+            }
+
             // ── Wall movement ──
             if (PrototypeItem.isWallRunning(player)) {
                 applyWallMovement(player);
