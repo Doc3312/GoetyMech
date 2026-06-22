@@ -241,7 +241,7 @@ public class PrototypeEvents {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                     if (current >= 1) {
                         double t = Math.min((current - 1) / 80.0, 1.0);
-                        double amount = t * 8.0;
+                        double amount = t * ModConfig.SPRINT_MAX_MULTIPLIER.get();
                         attr.addTransientModifier(new AttributeModifier(
                                 SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));

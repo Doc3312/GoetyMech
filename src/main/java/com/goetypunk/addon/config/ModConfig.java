@@ -139,6 +139,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_RADIUS;
     public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_TARGET_SPEED;
+    public static final ForgeConfigSpec.DoubleValue SPRINT_MAX_MULTIPLIER;
 
     // ====== Prototype — Wall-running 配置 ======
 
@@ -390,6 +391,10 @@ public class ModConfig {
         FLIGHT_TARGET_SPEED = BUILDER
                 .comment("按住 W 时沿视线方向匀速飞行的速度（blocks/tick）", "值越大飞得越快。同时驱动 lift（×0.16）、不按W漂移加速度（×0.04）、不按W速度（×0.8）。范围: 0.1-2.0，默认 0.5（=10 blocks/s）")
                 .defineInRange("flight_target_speed", 0.5, 0.1, 2.0);
+
+        SPRINT_MAX_MULTIPLIER = BUILDER
+                .comment("冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）", "0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%", "范围: 0.0-20.0，默认 8.0")
+                .defineInRange("sprint_max_multiplier", 8.0, 0.0, 20.0);
 
         BUILDER.pop();
 
