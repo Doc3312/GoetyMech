@@ -8,6 +8,7 @@ import com.goetypunk.addon.common.utils.WallUtil;
 import com.goetypunk.addon.common.net.c2s.C2SCancelSlamPacket;
 import com.goetypunk.addon.common.net.c2s.C2SJumpChargePacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallJumpOffPacket;
+import com.goetypunk.addon.common.net.c2s.C2SFlightInputPacket;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -114,6 +115,24 @@ public class StormWingRenderEvents {
                 lastSentCharge = 0;
             }
             clientChargeTicks = 0;
+        }
+
+        // ── Flight forward input C2S ──
+        boolean hasStormWingForFlight = chest.getItem() instanceof StormWingItem;
+        if (!hasStormWingForFlight) {
+            hasStormWingForFlight = CuriosHelper.hasStormWingInCurios(player);
+        }
+        if (hasStormWingForFlight && player.isFallFlying()) {
+            int tick = player.tickCount;
+            boolean forwardDown = mc.options.keyUp.isDown();
+            float forwardVal = forwardDown ? 1.0f : 0.0f;
+            if (tick % 3 == 0) {
+                ModNetwork.CHANNEL.sendToServer(new C2SFlightInputPacket(forwardVal));
+            }
+        } else if (player.isFallFlying()) {
+            if (player.tickCount % 3 == 0) {
+                ModNetwork.CHANNEL.sendToServer(new C2SFlightInputPacket(0.0f));
+            }
         }
     }
 

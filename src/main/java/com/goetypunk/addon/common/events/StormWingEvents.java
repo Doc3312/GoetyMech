@@ -260,7 +260,7 @@ public class StormWingEvents {
                 return;
             }
 
-            // ── 飞行加速（修复：Curios 检测） ──
+            // ── 飞行加速（加法加速器：向视线方向加推力） ──
             boolean hasStormWing = StormWingItem.isHoldingStormWing(player) || CuriosHelper.hasStormWingInCurios(player);
             if (!hasStormWing) return;
 
@@ -268,67 +268,36 @@ public class StormWingEvents {
             int currentFlightTicks = player.getFallFlyingTicks();
             StormWingItem.setFlightTick(player, currentFlightTicks);
 
-            // ── 持续推进：基于视角的飞行控制（无 zza 依赖，每 tick 生效） ──
-            Vec3 look = player.getLookAngle();
-            Vec3 accel = computeFlightAcceleration(motion, look,
-                    ModConfig.FLIGHT_TARGET_SPEED.get(),
-                    ModConfig.FLIGHT_CLIMB_SPEED.get(),
-                    ModConfig.FLIGHT_DIVE_SPEED.get(),
-                    ModConfig.FLIGHT_HOVER_LIFT.get(),
-                    ModConfig.FLIGHT_LIFT_THRESHOLD.get(),
-                    ModConfig.FLIGHT_DIVE_THRESHOLD.get()
+            Vec3 accel = computeAdditiveAcceleration(
+                    player.getLookAngle(),
+                    StormWingItem.getFlightForward(player),
+                    ModConfig.FLIGHT_BOOST_FORCE.get(),
+                    ModConfig.FLIGHT_HOVER_LIFT.get()
             );
             motion = motion.add(accel);
-            GoetyPunkMod.LOGGER.debug("StormWing flight: motion={}, look={}, accel={}",
-                    motion, look, accel);
 
+            GoetyPunkMod.LOGGER.debug("StormWing flight: motion={}, accel={}",
+                    motion, accel);
             player.setDeltaMovement(motion);
         }
     }
 
     /**
-     * 计算推进加速度向量（死区控制器 + 重力补偿）。
-     * 公开为 static 以便单元测试验证物理参数。
-     *
-     * 死区设计：一 tick 内使运动达到目标速度，补偿下一 tick 的重力 (-0.08) 和 drag。
-     *   hAccel = hTarget / dragH - currentXZ
-     *   vAccel = vTarget / dragV + 0.08 - currentY
+     * 加法加速器（公开为 static 以便单元测试）。
+     * @return 本 tick 应施加的速度增量（Vec3）
      */
-    public static Vec3 computeFlightAcceleration(Vec3 currentMotion, Vec3 look,
-                                                  double targetSpeed,
-                                                  double climbSpeed, double diveSpeed,
-                                                  double hoverLift, double liftThreshold,
-                                                  double diveThreshold) {
-        // ── 水平目标 ──
-        double hLen = Math.sqrt(look.x * look.x + look.z * look.z);
-        double hTargetX = 0, hTargetZ = 0;
-        if (hLen > 0.001) {
-            double scale = targetSpeed / hLen;
-            hTargetX = look.x * scale;
-            hTargetZ = look.z * scale;
+    public static Vec3 computeAdditiveAcceleration(Vec3 look, float forward, double boostForce, double hoverLift) {
+        Vec3 accel = Vec3.ZERO;
+        if (forward > 0.01f) {
+            double thrust = boostForce * forward;
+            accel = accel.add(look.scale(thrust));
         }
-
-        // 水平 drag ≈ 0.99
-        double hAccelX = hTargetX / 0.99 - currentMotion.x;
-        double hAccelZ = hTargetZ / 0.99 - currentMotion.z;
-
-        // ── 垂直目标（连续插值，无 hover→climb 断层） ──
-        double vTarget;
-        if (look.y > liftThreshold) {
-            double t = (look.y - liftThreshold) / (1.0 - liftThreshold);
-            vTarget = hoverLift + (climbSpeed - hoverLift) * t;
-        } else if (look.y < diveThreshold) {
-            double t = (diveThreshold - look.y) / (diveThreshold + 1.0);
-            vTarget = hoverLift + (-diveSpeed - hoverLift) * t;
-        } else {
-            vTarget = hoverLift;
+        if (hoverLift > 0) {
+            accel = accel.add(0, hoverLift, 0);
         }
-
-        // 垂直 drag ≈ 0.98，重力 0.08/tick
-        double vAccel = vTarget / 0.98 + 0.08 - currentMotion.y;
-
-        return new Vec3(hAccelX, vAccel, hAccelZ);
+        return accel;
     }
+
 
     // ── 检测 ──
 

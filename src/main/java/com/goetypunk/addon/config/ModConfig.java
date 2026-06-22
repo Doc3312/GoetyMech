@@ -138,13 +138,8 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_RADIUS;
     public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
-    public static final ForgeConfigSpec.DoubleValue FLIGHT_TARGET_SPEED;
-    public static final ForgeConfigSpec.DoubleValue FLIGHT_ACCEL;
-    public static final ForgeConfigSpec.DoubleValue FLIGHT_CLIMB_SPEED;
-    public static final ForgeConfigSpec.DoubleValue FLIGHT_DIVE_SPEED;
+    public static final ForgeConfigSpec.DoubleValue FLIGHT_BOOST_FORCE;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_HOVER_LIFT;
-    public static final ForgeConfigSpec.DoubleValue FLIGHT_LIFT_THRESHOLD;
-    public static final ForgeConfigSpec.DoubleValue FLIGHT_DIVE_THRESHOLD;
 
     // ====== Storm Wing — Wall-running 配置 ======
 
@@ -372,33 +367,13 @@ public class ModConfig {
                 .comment("Slam 滞空 tick 数（越长则坠落前升得越高）", "范围: 0-100，默认 5")
                 .defineInRange("slam_hover_ticks", 5, 0, 100);
 
-        FLIGHT_TARGET_SPEED = BUILDER
-                .comment("水平目标速度（blocks/tick），持续按住 W 时向此速度加速", "范围: 0.5-10.0，默认 3.5")
-                .defineInRange("flight_target_speed", 3.5, 0.5, 10.0);
-
-        FLIGHT_ACCEL = BUILDER
-                .comment("（不再使用，保留兼容）", "范围: 0.05-0.5，默认 0.3")
-                .defineInRange("flight_accel", 0.3, 0.05, 0.5);
-
-        FLIGHT_CLIMB_SPEED = BUILDER
-                .comment("仰头爬升时目标垂直速度（blocks/tick）", "范围: 0.3-6.0，默认 4.0")
-                .defineInRange("flight_climb_speed", 4.0, 0.3, 6.0);
-
-        FLIGHT_DIVE_SPEED = BUILDER
-                .comment("俯冲时目标垂直速度绝对值（blocks/tick）", "范围: 0.3-3.0，默认 1.2")
-                .defineInRange("flight_dive_speed", 1.2, 0.3, 3.0);
+        FLIGHT_BOOST_FORCE = BUILDER
+                .comment("按 W 时向视线方向施加的每 tick 推力", "值越大转弯越灵敏。范围: 0.01-0.5，默认 0.12")
+                .defineInRange("flight_boost_force", 0.12, 0.01, 0.5);
 
         FLIGHT_HOVER_LIFT = BUILDER
-                .comment("平视时抗重力目标垂直速度", "范围: 0.1-1.0，默认 0.6")
-                .defineInRange("flight_hover_lift", 0.6, 0.1, 1.0);
-
-        FLIGHT_LIFT_THRESHOLD = BUILDER
-                .comment("仰头判定阈值（look.y > 此值视为爬升）", "范围: 0.1-0.8，默认 0.3")
-                .defineInRange("flight_lift_threshold", 0.3, 0.1, 0.8);
-
-        FLIGHT_DIVE_THRESHOLD = BUILDER
-                .comment("俯冲判定阈值（look.y < 此值视为俯冲）", "范围: -0.8--0.1，默认 -0.3")
-                .defineInRange("flight_dive_threshold", -0.3, -0.8, -0.1);
+                .comment("恒定抗重力（每 tick 向上加此速度）", "抵消滑翔自然下落。范围: 0.0-0.1，默认 0.04")
+                .defineInRange("flight_hover_lift", 0.04, 0.0, 0.1);
 
         BUILDER.pop();
 

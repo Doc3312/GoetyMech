@@ -24,6 +24,7 @@ public class StormWingItem extends ElytraItem {
     private static final String TAG_JUMP_CHARGE_TICK = "goetypunk.jump_charge_tick";
     private static final String TAG_SLAM_INVULN_TICK = "goetypunk.slam_invuln_tick";
     private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
+    private static final String TAG_FLIGHT_FORWARD = "goetypunk.flight_forward";
 
     public StormWingItem() {
         super(new Properties()
@@ -177,5 +178,15 @@ public class StormWingItem extends ElytraItem {
 
     public static void clearSprint(LivingEntity entity) {
         entity.getPersistentData().remove(TAG_SPRINT_TICK);
+    }
+
+    // ── Flight forward input ──
+
+    public static float getFlightForward(LivingEntity entity) {
+        return entity.getPersistentData().getFloat(TAG_FLIGHT_FORWARD);
+    }
+
+    public static void setFlightForward(LivingEntity entity, float forward) {
+        entity.getPersistentData().putFloat(TAG_FLIGHT_FORWARD, forward);
     }
 }
