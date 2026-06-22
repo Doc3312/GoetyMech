@@ -61,6 +61,9 @@ public class PrototypeRenderEvents {
         if (mc.player == null) return;
 
         Player player = mc.player;
+        GoetyPunkMod.LOGGER.info("CLIENT_TICK: zza={}, onGround={}, sprint={}",
+                player.zza, player.onGround(), player.isSprinting());
+
         boolean jumpDown = mc.options.keyJump.isDown();
         boolean wasPressed = jumpDown && !prevJumpDown;
         prevJumpDown = jumpDown;
