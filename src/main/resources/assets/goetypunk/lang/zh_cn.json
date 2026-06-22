@@ -86,7 +86,7 @@
   "item.goetypunk.stress_ark": "应力方舟",
 
   "item.goetypunk.soul_catcher": "灵魂捕手",
-  "info.goetypunk.soul_catcher.progress": "§5%d/%d 击杀",
+  "info.goetypunk.soul_catcher.progress": "§5聚魂：%d/%d",
 
   "item.goetypunk.prototype": "原型",
   "info.goetypunk.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
