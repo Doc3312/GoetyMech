@@ -227,7 +227,6 @@ public class PrototypeEvents {
                     && player.isSprinting()) {
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
-                player.setMaxUpStep(1.5f);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     double attrBefore = attr.getValue();
@@ -258,7 +257,6 @@ public class PrototypeEvents {
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                 }
-                player.setMaxUpStep(0.6f);
             }
 
             // ── Wall movement ──

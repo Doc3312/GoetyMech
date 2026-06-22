@@ -25,6 +25,7 @@
     "LivingEntityHurtMixin",
     "LivingEntityTickMixin",
     "PrototypePlayerMixin",
+    "PrototypeStepHeightMixin",
     "PrototypeTravelMixin"
   ],
   "injectors": {
