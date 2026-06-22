@@ -72,7 +72,12 @@ public abstract class StormWingTravelMixin {
         double hoverLift = ModConfig.FLIGHT_HOVER_LIFT.get();
         double pitch = player.getXRot();
         double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
-        double targetVy = look.y * speed + hoverLift * liftFactor;
+        double targetVy;
+        if (pitch > 0.01) {
+            targetVy = current.y - 0.08;
+        } else {
+            targetVy = look.y * speed + hoverLift * liftFactor;
+        }
 
         Vec3 lookH = new Vec3(look.x, 0, look.z);
         double len = lookH.length();
