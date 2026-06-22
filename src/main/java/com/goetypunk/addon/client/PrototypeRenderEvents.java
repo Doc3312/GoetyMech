@@ -23,8 +23,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import org.joml.Vector3f;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
@@ -115,6 +117,25 @@ public class PrototypeRenderEvents {
                 lastSentCharge = 0;
             }
             clientChargeTicks = 0;
+        }
+
+        // ── Sprint particle trail ──
+        if (hasPrototype && player.isSprinting() && player.zza > 0.0F && !player.isFallFlying()) {
+            if (player.tickCount % 2 == 0) {
+                var r = player.getRandom();
+                int count = 3 + r.nextInt(3);
+                for (int i = 0; i < count; i++) {
+                    double h = r.nextDouble() * 1.8;
+                    double px = player.getX() + (r.nextDouble() - 0.5) * 1.2;
+                    double pz = player.getZ() + (r.nextDouble() - 0.5) * 1.2;
+                    double py = player.getY() + h;
+                    double vx = -player.getDeltaMovement().x * 0.3 + (r.nextDouble() - 0.5) * 0.05;
+                    double vz = -player.getDeltaMovement().z * 0.3 + (r.nextDouble() - 0.5) * 0.05;
+                    player.level().addParticle(
+                            new DustParticleOptions(new Vector3f(0.35f, 0.03f, 0.03f), 0.7f),
+                            px, py, pz, vx, -0.06, vz);
+                }
+            }
         }
 
         // ── Flight forward input C2S ──

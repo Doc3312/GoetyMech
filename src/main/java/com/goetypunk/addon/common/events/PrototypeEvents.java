@@ -206,12 +206,12 @@ public class PrototypeEvents {
                     && player.zza > 0) {
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
-                int level = Math.min(current / 20, 3);
-                double amount = level * 0.2;
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
-                    if (level > 0) {
+                    if (current >= 20) {
+                        double t = Math.min((current - 20) / 80.0, 1.0);
+                        double amount = 1.0 + t * 2.0;
                         attr.addTransientModifier(new AttributeModifier(
                                 SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
