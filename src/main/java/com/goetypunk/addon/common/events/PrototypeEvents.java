@@ -187,8 +187,9 @@ public class PrototypeEvents {
         if (event.phase == TickEvent.Phase.START) {
             Vec3 startM = player.getDeltaMovement();
             double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
-            GoetyPunkMod.LOGGER.info("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
-                    player.zza, player.onGround(), player.isFallFlying(), startHSpeed);
+            GoetyPunkMod.LOGGER.info("D START: zza={}, inputFwd={}, inputJump={}, onGround={}, isFly={}, hSpeed={}",
+                    player.zza, player.input.forwardImpulse, player.input.jumping,
+                    player.onGround(), player.isFallFlying(), startHSpeed);
 
             // ── 爬墙检测（放在飞行前面） ──
             if (hasPrototype && !isSlamming) {
@@ -205,7 +206,6 @@ public class PrototypeEvents {
                     && !player.isFallFlying()) {
                 int charge = PrototypeItem.getJumpChargeTick(player);
                 boolean isCJ = PrototypeItem.isChargedJumping(player);
-                Vec3 startM = player.getDeltaMovement();
                 double startHS = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
                 GoetyPunkMod.LOGGER.info("PROTO_DIAG START: isCJ={}, charge={}, onGround={}, zza={}, isSprint={}, isFly={}, hSpeed={}",
                         isCJ, charge, player.onGround(), player.zza, player.isSprinting(),
@@ -227,6 +227,13 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
+            // ── Post-travel diagnostic ──
+            Vec3 postTravelM = player.getDeltaMovement();
+            GoetyPunkMod.LOGGER.info("D POST_TRAVEL: zza={}, inputFwd={}, inputJump={}, motion=({}, {}, {}), onGround={}",
+                    player.zza, player.input.forwardImpulse, player.input.jumping,
+                    String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
+                    player.onGround());
+
             // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
             double moved = Math.sqrt(
                     (player.getX() - player.xo) * (player.getX() - player.xo)
@@ -306,9 +313,10 @@ public class PrototypeEvents {
             Vec3 endM = player.getDeltaMovement();
             double endHSpeed = Math.sqrt(endM.x * endM.x + endM.z * endM.z);
             if (hasPrototype) {
-                GoetyPunkMod.LOGGER.info("D END: onGround={}, isFly={}, hSpeed={}, sprintTick={}",
+                GoetyPunkMod.LOGGER.info("D END: onGround={}, isFly={}, hSpeed={}, sprintTick={}, zza={}, inputFwd={}, inputJump={}",
                         player.onGround(), player.isFallFlying(), endHSpeed,
-                        PrototypeItem.getSprintTick(player));
+                        PrototypeItem.getSprintTick(player),
+                        player.zza, player.input.forwardImpulse, player.input.jumping);
             }
 
             // ── Wall movement ──
