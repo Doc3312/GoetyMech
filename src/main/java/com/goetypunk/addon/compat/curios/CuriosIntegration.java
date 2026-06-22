@@ -20,5 +20,8 @@ public class CuriosIntegration {
                 () -> SlotTypePreset.BODY.getMessageBuilder().build());
         InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
                 () -> SlotTypePreset.BACK.getMessageBuilder().build());
+        // 时间聚晶袋使用腰带槽（与 Goety 多晶大袋一致）
+        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
+                () -> SlotTypePreset.BELT.getMessageBuilder().build());
     }
 }
