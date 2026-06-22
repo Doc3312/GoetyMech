@@ -27,7 +27,7 @@ public abstract class StormWingTravelMixin {
         Vec3 look = player.getLookAngle();
         Vec3 current = player.getDeltaMovement();
         double speed = ModConfig.FLIGHT_TARGET_SPEED.get();
-        double hoverLift = ModConfig.FLIGHT_HOVER_LIFT.get();
+        double hoverLift = speed * 0.16;
         double pitch = player.getXRot();
         double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
         Vec3 motion;
@@ -45,7 +45,7 @@ public abstract class StormWingTravelMixin {
             double currH = current.horizontalDistance();
             double newH = vMotion.horizontalDistance();
             if (newH < 0.001) {
-                motion = new Vec3(current.x, vMotion.y, current.z);
+                motion = new Vec3(0, vMotion.y, 0);
             } else if (currH > newH && currH > 0.01) {
                 double scale = currH / newH;
                 motion = new Vec3(vMotion.x * scale, vMotion.y, vMotion.z * scale);
@@ -68,13 +68,15 @@ public abstract class StormWingTravelMixin {
         float forward = StormWingItem.getFlightForward(player);
         if (forward > 0.01f) return;
 
-        double baseAccel = ModConfig.FLIGHT_BASE_ACCEL.get();
-        if (!(baseAccel > 0.001)) return;
-
         Vec3 look = player.getLookAngle();
         Vec3 current = player.getDeltaMovement();
         double speed = ModConfig.FLIGHT_TARGET_SPEED.get();
-        double hoverLift = ModConfig.FLIGHT_HOVER_LIFT.get();
+        double noWSpeed = speed * 0.8;
+        double hoverLift = speed * 0.16;
+        double noWHoverLift = hoverLift * 0.8;
+        double baseAccel = speed * 0.04;
+        if (!(baseAccel > 0.001)) return;
+
         double pitch = player.getXRot();
         double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
         Vec3 lookH = new Vec3(look.x, 0, look.z);
@@ -83,7 +85,7 @@ public abstract class StormWingTravelMixin {
         double targetVy;
         Vec3 velocity;
         if (pitch > 0.01) {
-            double speedAlongLook = Math.max(speed, current.dot(look) + 0.08 * (-look.y));
+            double speedAlongLook = Math.max(noWSpeed, current.dot(look) + 0.08 * (-look.y));
             Vec3 targetMotion = look.scale(speedAlongLook);
             targetVy = current.y * 0.3 + targetMotion.y * 0.7;
             if (len < 0.01) {
@@ -98,7 +100,7 @@ public abstract class StormWingTravelMixin {
                 current.z * 0.3 + targetMotion.z * 0.7
             );
         } else {
-            targetVy = look.y * speed + hoverLift * liftFactor;
+            targetVy = look.y * noWSpeed + noWHoverLift * liftFactor;
             if (len < 0.01) {
                 player.setDeltaMovement(new Vec3(current.x, targetVy, current.z));
                 return;
