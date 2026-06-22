@@ -647,7 +647,7 @@ public class StormWingEvents {
         try {
             level.sendParticles(
                     new CircleExplodeParticleOption(1.0f, 0.0f, 0.0f, radius, 2),
-                    px, py + 0.3, pz, 1, 0, 0, 0, 0);
+                    px, BlockFinder.moveDownToGround(player) + 0.3, pz, 1, 0, 0, 0, 0);
         } catch (Exception ignored) {
         }
 
