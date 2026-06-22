@@ -231,31 +231,32 @@ public class PrototypeEvents {
                     && !player.isFallFlying()
                     && player.onGround()
                     && player.isSprinting()) {
-                double hSq = player.getDeltaMovement().horizontalDistanceSqr();
-                if (hSq <= 1.0E-4) return;
-                int current = Math.min(PrototypeItem.getSprintTick(player) + 1, 81);
-                PrototypeItem.setSprintTick(player, current);
                 player.setMaxUpStep(1.5f);
-                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (attr != null) {
-                    double attrBefore = attr.getValue();
-                    boolean hadMod = attr.getModifier(SPRINT_MODIFIER_UUID) != null;
-                    GoetyPunkMod.LOGGER.info("SprintTick: current={}, attr={}, hadMod={}, zza={}, hSq={}",
-                            current, String.format("%.4f", attrBefore), hadMod,
-                            String.format("%.3f", player.zza),
-                            String.format("%.6f", player.getDeltaMovement().horizontalDistanceSqr()));
-                    attr.removeModifier(SPRINT_MODIFIER_UUID);
-                    if (current >= 1) {
-                        double t = Math.min((current - 1) / 80.0, 1.0);
-                        double amount = 5.0 * t;
-                        attr.addTransientModifier(new AttributeModifier(
-                                SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
-                                AttributeModifier.Operation.MULTIPLY_TOTAL));
-                        double attrAfter = attr.getValue();
-                        GoetyPunkMod.LOGGER.info("SprintMod AFTER: current={}, amount={}, attr {}→{}, hasMod={}",
-                                current, String.format("%.4f", amount),
-                                String.format("%.4f", attrBefore), String.format("%.4f", attrAfter),
-                                attr.getModifier(SPRINT_MODIFIER_UUID) != null);
+                double hSq = player.getDeltaMovement().horizontalDistanceSqr();
+                if (hSq > 1.0E-4) {
+                    int current = Math.min(PrototypeItem.getSprintTick(player) + 1, 81);
+                    PrototypeItem.setSprintTick(player, current);
+                    AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                    if (attr != null) {
+                        double attrBefore = attr.getValue();
+                        boolean hadMod = attr.getModifier(SPRINT_MODIFIER_UUID) != null;
+                        GoetyPunkMod.LOGGER.info("SprintTick: current={}, attr={}, hadMod={}, zza={}, hSq={}",
+                                current, String.format("%.4f", attrBefore), hadMod,
+                                String.format("%.3f", player.zza),
+                                String.format("%.6f", player.getDeltaMovement().horizontalDistanceSqr()));
+                        attr.removeModifier(SPRINT_MODIFIER_UUID);
+                        if (current >= 1) {
+                            double t = Math.min((current - 1) / 80.0, 1.0);
+                            double amount = 5.0 * t;
+                            attr.addTransientModifier(new AttributeModifier(
+                                    SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
+                                    AttributeModifier.Operation.MULTIPLY_TOTAL));
+                            double attrAfter = attr.getValue();
+                            GoetyPunkMod.LOGGER.info("SprintMod AFTER: current={}, amount={}, attr {}→{}, hasMod={}",
+                                    current, String.format("%.4f", amount),
+                                    String.format("%.4f", attrBefore), String.format("%.4f", attrAfter),
+                                    attr.getModifier(SPRINT_MODIFIER_UUID) != null);
+                        }
                     }
                 }
             } else if (!player.isSprinting()) {
