@@ -54,6 +54,7 @@ public class PrototypeEvents {
 
     // ── Ring animation sequencer ──
     private static final int RINGS_DELAY = 1;
+    private static final int SLAM_DELAY_TICKS = 40; // 2秒
 
     private static final Map<ServerLevel, List<SlamAnimData>> ACTIVE_SLAMS = new ConcurrentHashMap<>();
     private static final Map<ServerLevel, List<DelayedDamageData>> PENDING_DAMAGES = new ConcurrentHashMap<>();
@@ -482,7 +483,7 @@ public class PrototypeEvents {
             double groundY = Math.floor(BlockFinder.moveDownToGround(player) - 0.0625);
             PENDING_DAMAGES.computeIfAbsent(serverLevel, k -> Collections.synchronizedList(new ArrayList<>()))
                     .add(new DelayedDamageData(player.getUUID(), player.getX(), groundY, player.getZ(),
-                            damage, radius, serverLevel.getGameTime() + 60));
+                            damage, radius, serverLevel.getGameTime() + SLAM_DELAY_TICKS));
         }
 
         serverLevel.playSound(null, player.blockPosition(),
@@ -658,7 +659,7 @@ public class PrototypeEvents {
                     String.format("%.1f", radius),
                     String.format("%.2f", px), String.format("%.2f", aoeGroundY), String.format("%.2f", pz));
             level.sendParticles(
-                    new AoEParticleOption(radius, 60),
+                    new AoEParticleOption(radius, SLAM_DELAY_TICKS),
                     px, aoeGroundY, pz, 0, 0.8, 0.0, 0.0, 1.0);
         } catch (Exception ignored) {
         }
