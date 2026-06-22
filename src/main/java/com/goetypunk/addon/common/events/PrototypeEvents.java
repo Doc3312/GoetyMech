@@ -202,15 +202,21 @@ public class PrototypeEvents {
                     && (PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player))
                     && !player.isFallFlying()) {
                 int charge = PrototypeItem.getJumpChargeTick(player);
-                if (player.onGround() && player.zza > 0.0F && charge == 0 && !player.isSprinting()) {
+                boolean justJumped = player.getPersistentData().getBoolean("goetypunk.justJumped");
+                if (player.onGround() && player.zza > 0.0F && charge == 0 && !player.isSprinting() && !justJumped) {
                     Vec3 m = player.getDeltaMovement();
-                    player.setDeltaMovement(m.x, 1.5, m.z);
-                    GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
+                    double jumpPower = velocityForHeight(ModConfig.JUMP_TAP_HEIGHT.get());
+                    player.setDeltaMovement(m.x, jumpPower, m.z);
+                    GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, power={}, height={}",
+                            player.zza, String.format("%.3f", jumpPower), ModConfig.JUMP_TAP_HEIGHT.get());
                 } else if (!player.onGround() && player.zza > 0.0F) {
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
                     GoetyPunkMod.LOGGER.info("Prototype mid-air deployment: motion={}", m);
+                }
+                if (justJumped) {
+                    player.getPersistentData().remove("goetypunk.justJumped");
                 }
             }
 
@@ -225,7 +231,9 @@ public class PrototypeEvents {
                     && !player.isFallFlying()
                     && player.onGround()
                     && player.isSprinting()) {
-                int current = PrototypeItem.getSprintTick(player) + 1;
+                double hSq = player.getDeltaMovement().horizontalDistanceSqr();
+                if (hSq <= 1.0E-4) return;
+                int current = Math.min(PrototypeItem.getSprintTick(player) + 1, 81);
                 PrototypeItem.setSprintTick(player, current);
                 player.setMaxUpStep(1.5f);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -239,7 +247,7 @@ public class PrototypeEvents {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                     if (current >= 1) {
                         double t = Math.min((current - 1) / 80.0, 1.0);
-                        double amount = 1.0 + t * 2.0;
+                        double amount = 5.0 * t;
                         attr.addTransientModifier(new AttributeModifier(
                                 SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
@@ -366,6 +374,10 @@ public class PrototypeEvents {
         if (action > 0) {
             int capped = Math.min(action, ModConfig.JUMP_MAX_CHARGE_TICKS.get());
             PrototypeItem.setJumpChargeTick(player, capped);
+            int sprintTick = PrototypeItem.getSprintTick(player);
+            if (sprintTick > 0) {
+                PrototypeItem.setJumpChargeSprintTick(player, sprintTick);
+            }
         } else if (action == 0) {
             int charge = PrototypeItem.getJumpChargeTick(player);
             if (charge > 0) {
@@ -396,6 +408,29 @@ public class PrototypeEvents {
             GoetyPunkMod.LOGGER.info("Prototype tap jump: charge={}, height={}, power={}",
                     charge, String.format("%.1f", tapH), String.format("%.3f", jumpPower));
         }
+
+        // ── Apply cached sprint boost to horizontal velocity ──
+        int sprintTick = PrototypeItem.getJumpChargeSprintTick(player);
+        if (sprintTick > 0) {
+            double t = Math.min((sprintTick - 1) / 80.0, 1.0);
+            double amount = 5.0 * t;
+            double baseSprintSpeed = 0.13;
+            double targetSpeed = baseSprintSpeed * (1.0 + amount);
+            Vec3 m = player.getDeltaMovement();
+            Vec3 horiz = new Vec3(m.x, 0, m.z);
+            double currSpeed = horiz.length();
+            if (currSpeed > 0.001) {
+                Vec3 dir = horiz.normalize();
+                player.setDeltaMovement(dir.x * targetSpeed, m.y, dir.z * targetSpeed);
+            } else {
+                Vec3 look = player.getLookAngle();
+                Vec3 lookH = new Vec3(look.x, 0, look.z).normalize();
+                player.setDeltaMovement(lookH.x * targetSpeed, m.y, lookH.z * targetSpeed);
+            }
+            PrototypeItem.clearJumpChargeSprintTick(player);
+        }
+
+        player.getPersistentData().putBoolean("goetypunk.justJumped", true);
         PrototypeItem.clearJumpCharge(player);
         player.hurtMarked = true;
     }
