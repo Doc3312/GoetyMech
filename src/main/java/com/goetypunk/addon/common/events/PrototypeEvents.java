@@ -225,11 +225,6 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
-            GoetyPunkMod.LOGGER.info("END phase sprint-check: hasP={}, isSlam={}, wall={}, fly={}, ground={}, sprint={}, zza={}, hSq={}",
-                    hasPrototype, isSlamming, PrototypeItem.isWallRunning(player),
-                    player.isFallFlying(), player.onGround(), player.isSprinting(),
-                    String.format("%.2f", player.zza),
-                    String.format("%.6f", player.getDeltaMovement().horizontalDistanceSqr()));
             // ── 地面冲刺加速 ──
             if (hasPrototype && !isSlamming
                     && !PrototypeItem.isWallRunning(player)
