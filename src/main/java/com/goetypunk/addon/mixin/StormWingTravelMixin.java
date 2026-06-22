@@ -3,6 +3,7 @@ package com.goetypunk.addon.mixin;
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.item.StormWingItem;
 import com.goetypunk.addon.config.ModConfig;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -27,7 +28,9 @@ public abstract class StormWingTravelMixin {
         Vec3 current = player.getDeltaMovement();
         double speed = ModConfig.FLIGHT_TARGET_SPEED.get();
         double hoverLift = ModConfig.FLIGHT_HOVER_LIFT.get();
-        Vec3 motion = look.scale(speed).add(0, hoverLift, 0);
+        double pitch = player.getXRot();
+        double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
+        Vec3 motion = look.scale(speed).add(0, hoverLift * liftFactor, 0);
 
         // 水平惯性保持：不因低头/抬头削减水平速度
         double currH = current.horizontalDistance();
@@ -64,8 +67,13 @@ public abstract class StormWingTravelMixin {
         lookH = lookH.scale(1.0 / len);
 
         Vec3 current = player.getDeltaMovement();
+        double speed = ModConfig.FLIGHT_TARGET_SPEED.get();
         double hoverLift = ModConfig.FLIGHT_HOVER_LIFT.get();
-        Vec3 velocity = current.add(lookH.scale(baseAccel)).add(0, hoverLift, 0);
+        double pitch = player.getXRot();
+        double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
+        double targetVy = look.y * speed + hoverLift * liftFactor;
+        Vec3 velocity = current.add(lookH.scale(baseAccel));
+        velocity = new Vec3(velocity.x, targetVy, velocity.z);
         player.setDeltaMovement(velocity);
     }
 }
