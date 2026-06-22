@@ -185,8 +185,10 @@ public class PrototypeEvents {
         boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
         if (event.phase == TickEvent.Phase.START) {
-            GoetyPunkMod.LOGGER.debug("Prototype START phase: zza={}, onGround={}, isFallFlying={}",
-                    player.zza, player.onGround(), player.isFallFlying());
+            Vec3 startM = player.getDeltaMovement();
+            double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
+            GoetyPunkMod.LOGGER.info("D START: zza={}, onGround={}, isFly={}, hSpeed={:.4f}",
+                    player.zza, player.onGround(), player.isFallFlying(), startHSpeed);
 
             // ── 爬墙检测（放在飞行前面） ──
             if (hasPrototype && !isSlamming) {
@@ -257,6 +259,14 @@ public class PrototypeEvents {
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                 }
+            }
+
+            Vec3 endM = player.getDeltaMovement();
+            double endHSpeed = Math.sqrt(endM.x * endM.x + endM.z * endM.z);
+            if (hasPrototype) {
+                GoetyPunkMod.LOGGER.info("D END: onGround={}, isFly={}, hSpeed={:.4f}, sprintTick={}",
+                        player.onGround(), player.isFallFlying(), endHSpeed,
+                        PrototypeItem.getSprintTick(player));
             }
 
             // ── Wall movement ──
