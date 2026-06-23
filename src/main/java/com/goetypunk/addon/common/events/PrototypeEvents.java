@@ -416,7 +416,7 @@ public class PrototypeEvents {
     // ── Jump charging (called from C2S packet handler) ──
 
     public static void handleJumpChargeFromClient(ServerPlayer player, int action, float forward, boolean jumping, double clientGroundSpeed) {
-        if (player.isFallFlying()) return;
+        if (player.isFallFlying() || PrototypeItem.isWallRunning(player)) return;
         if (action > 0 && !player.onGround()) return;
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
         if (!hasPrototype) return;
@@ -491,7 +491,6 @@ public class PrototypeEvents {
                     String.format("%.4f", after.x), String.format("%.4f", after.y), String.format("%.4f", after.z),
                     PrototypeItem.isChargedJumping(player));
         }
-        PrototypeItem.setWallRunning(player, false);
         PrototypeItem.setChargedJumping(player, true);
         PrototypeItem.clearJumpCharge(player);
         player.hurtMarked = true;

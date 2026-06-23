@@ -118,10 +118,9 @@ public class PrototypeRenderEvents {
             ModNetwork.CHANNEL.sendToServer(new C2SCancelSlamPacket());
         }
 
-        // Jump during wall-run: detach and let CJ handle
-        if (wasPressed && ClientWallRunState.isActive()) {
-            ClientWallRunState.wallNormal = Vec3.ZERO;
-            ClientWallRunState.graceTicks = 0;
+        // Wall jump-off via C2S
+        if (wasPressed && clientWallNormal.lengthSqr() >= 0.5) {
+            ModNetwork.CHANNEL.sendToServer(new C2SWallJumpOffPacket());
         }
 
         // ── Wall input C2S (forward + strafe, throttled every 2 ticks) ──
