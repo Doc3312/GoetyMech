@@ -143,6 +143,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue FLIGHT_MAX_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_DECEL_RATE;
     public static final ForgeConfigSpec.DoubleValue SPRINT_MAX_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue SWIM_MAX_MULTIPLIER;
 
     // ====== Prototype — Kill Absorption 配置 ======
 
@@ -438,6 +439,10 @@ public class ModConfig {
         SPRINT_MAX_MULTIPLIER = BUILDER
                 .comment("冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）", "0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%", "范围: 0.0-20.0，默认 8.0")
                 .defineInRange("sprint_max_multiplier", 8.0, 0.0, 20.0);
+
+        SWIM_MAX_MULTIPLIER = BUILDER
+                .comment("游泳加速最高倍率（MULTIPLY_TOTAL modifier 值）", "0.0=100%(无加速), 1.0=200%, 8.0=900%", "范围: 0.0-20.0，默认 8.0")
+                .defineInRange("swim_max_multiplier", 8.0, 0.0, 20.0);
 
         KILL_HEALTH_ABSORB_RATIO = BUILDER
                 .comment("击杀生物生命吸收比例", "被击杀生物 maxHealth × 此值 = 治疗量", "范围: 0.0-2.0，默认 0.8")
