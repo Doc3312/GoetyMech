@@ -444,7 +444,8 @@ public class PrototypeEvents {
 
     public static void handleJumpChargeFromClient(ServerPlayer player, int action, float forward, boolean jumping, double clientGroundSpeed) {
         if (player.isFallFlying() || PrototypeItem.isWallRunning(player)) return;
-        if (action > 0 && !player.onGround()) return;
+        boolean inWater = player.isInWater();
+        if (action > 0 && !player.onGround() && !inWater) return;
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
         if (!hasPrototype) return;
 
@@ -469,6 +470,22 @@ public class PrototypeEvents {
     }
 
     private static void applyChargedJump(Player player, int charge) {
+        if (player.isInWater()) {
+            Vec3 look = player.getLookAngle();
+            int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
+            int maxTicks = ModConfig.JUMP_MAX_CHARGE_TICKS.get();
+            double minSpeed = ModConfig.SWIM_CHARGE_MIN_SPEED.get();
+            double maxSpeed = ModConfig.SWIM_CHARGE_MAX_SPEED.get();
+            double t = charge >= threshold
+                    ? Math.min((double)(charge - threshold) / (double)(maxTicks - threshold), 1.0)
+                    : 0.0;
+            double speed = minSpeed + t * (maxSpeed - minSpeed);
+            player.setDeltaMovement(look.scale(speed));
+            PrototypeItem.setChargedJumping(player, true);
+            PrototypeItem.clearJumpCharge(player);
+            player.hurtMarked = true;
+            return;
+        }
         Vec3 m = player.getDeltaMovement();
         double hSpeed = Math.sqrt(m.x * m.x + m.z * m.z);
         double groundSpeed = PrototypeItem.getGroundSpeed(player);

@@ -148,7 +148,8 @@ public class PrototypeRenderEvents {
             hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
         }
 
-        if (jumpDown && hasPrototype && player.onGround() && !player.isFallFlying()) {
+        boolean canCharge = (player.onGround() || (player.isSwimming() && player.isInWater())) && !player.isFallFlying();
+        if (jumpDown && hasPrototype && canCharge) {
             clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
             float fwd = player.zza;
             boolean jumping = jumpDown;

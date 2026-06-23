@@ -173,6 +173,8 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue JUMP_CHARGE_MIN_HEIGHT;
     public static final ForgeConfigSpec.DoubleValue JUMP_CHARGE_MAX_HEIGHT;
     public static final ForgeConfigSpec.IntValue JUMP_MAX_CHARGE_TICKS;
+    public static final ForgeConfigSpec.DoubleValue SWIM_CHARGE_MIN_SPEED;
+    public static final ForgeConfigSpec.DoubleValue SWIM_CHARGE_MAX_SPEED;
 
     // ====== Soul Catcher 配置 ======
 
@@ -513,6 +515,14 @@ public class ModConfig {
         JUMP_MAX_CHARGE_TICKS = BUILDER
                 .comment("最大蓄力 tick 数（20 tick = 1 秒）", "范围: 20-200，默认 60（=3秒）")
                 .defineInRange("jump_max_charge_ticks", 60, 20, 200);
+
+        SWIM_CHARGE_MIN_SPEED = BUILDER
+                .comment("水中蓄力最低爆发速度（blocks/tick，蓄力门槛时达到）", "沿视线方向爆发，范围: 0.5-5.0，默认 1.5")
+                .defineInRange("swim_charge_min_speed", 1.5, 0.5, 5.0);
+
+        SWIM_CHARGE_MAX_SPEED = BUILDER
+                .comment("水中蓄力最高爆发速度（blocks/tick，最大蓄力时达到）", "沿视线方向爆发，范围: 1.0-10.0，默认 4.0")
+                .defineInRange("swim_charge_max_speed", 4.0, 1.0, 10.0);
 
         BUILDER.pop();
     }
