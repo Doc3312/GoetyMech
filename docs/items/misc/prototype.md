@@ -30,3 +30,9 @@
 - 改动：飞行加速从加法叠加改为每次直接设置合成后的最终速度
 - 原因：加法加速器在客户端-服务端同步中存在 forward 方向不一致问题
 - 关联：prototype-flight-mixin skill
+
+### 2026-06-23 — 蓄力跳冲刺惯性修复 + 速度倍率
+
+- 改动：新增 cj_start_speed NBT 保留蓄力开始时客户端速度；CJ 注入不再被 isFallFlying() 阻塞，飞行中持续维持水平速度；在 applyChargedJump 中给 bestSpeed 乘 2.5 倍
+- 原因：长蓄力（80+ tick）后 isSprinting() 丢失导致 attrSpeed 塌缩到 0.1；进入飞行后 CJ 注入被跳过，水平速度仅靠 elytra 物理维持（摩擦大）；用户反馈速度仍需提升
+- 关联：fix-charge-jump-hspeed change

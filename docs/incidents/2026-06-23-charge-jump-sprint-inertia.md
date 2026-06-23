@@ -1,6 +1,6 @@
 # 蓄力跳冲刺惯性丢失
 
-status: verified
+status: superseded
 
 ## 问题
 
@@ -59,10 +59,28 @@ double bestSpeed = Math.max(hSpeed, Math.max(groundSpeed, attrSpeed));
 
 **结果**：`PROTO_DIAG` 日志验证 `setHSpeed=1.5210`（≈ `attr 1.17 * 1.3`），后续 CJ_INJECT 每 tick 维持 `hSpeed=1.5210`，惯性完整保留。
 
+### 第三轮修复（长蓄力退化 + 飞行注入 + 速度倍率）
+
+**问题发现**：前两轮修复后，短时蓄力（< 80 tick）正常，但长蓄力（80+ tick）仍然退化到未加速速度。
+
+**根因深化**：
+1. `groundSpeed` 被 END phase 每 tick 的 `moved` 覆盖为 0（蓄力时玩家不移动）
+2. `isSprinting()` 在长蓄力期间可能变为 false → `attrSpeed` 仅 0.1
+
+**修复**：
+- 新增 `cj_start_speed` NBT 标签，在蓄力开始时从 `clientGroundSpeed` 一次写入，永不被覆盖
+- 作为第四源参与 `bestSpeed = max(hSpeed, groundSpeed, attrSpeed, cjStartSpeed)` 计算
+- 移除 CJ 注入的 `!player.isFallFlying()` 限制，使注入在飞行阶段继续维持水平速度
+- 对 `bestSpeed` 乘 2.5 倍以满足用户对速度的期望
+
 ## 涉及文件
 
-- `PrototypeEvents.java:442` — `applyChargedJump()` 三源取 max 实现
+- `PrototypeEvents.java:442` — `applyChargedJump()` 三/四源取 max 实现
 - `PrototypeEvents.java:449` — 新增 guard condition（防止站立时 attrSpeed 产生虚假前冲）
+- `PrototypeItem.java:32,229-248` — `TAG_CJ_START_SPEED` + getter/setter
+- `PrototypeEvents.java:430-432` — handleJumpChargeFromClient 蓄力时写 cj_start_speed
+- `PrototypeEvents.java:448` — 第四源 cjStartSpeed 参与 bestSpeed 计算
+- `PrototypeEvents.java:294` — 移除 isFallFlying() 阻塞，CJ 注入覆盖飞行阶段
 
 ## 时间线
 
@@ -72,3 +90,6 @@ double bestSpeed = Math.max(hSpeed, Math.max(groundSpeed, attrSpeed));
 | 2026-06-23 17:12 | 日志分析发现 `isSprint=false, zza=0.0` |
 | 2026-06-23 17:15 | 定位输入时序根因（playerInput reset vs 包处理顺序） |
 | 2026-06-23 17:30 | 第二轮修复：三源取 max → 日志验证 hSpeed=1.5210 维持 |
+| 2026-06-23 18:00 | 第三轮修复：cj_start_speed 四源取 max → 长蓄力速度保持 |
+| 2026-06-23 18:08 | CJ 注入穿透飞行状态 → 飞行中每 tick 补速度 |
+| 2026-06-23 18:13 | bestSpeed 乘 2.5 倍 → 水平速度达到预期 |
