@@ -205,26 +205,10 @@
 		#范围: 1-200，默认 100
 		#Range: 1.0 ~ 200.0
 		slam_max_radius = 100.0
-		#Slam 伤害倍率：坠落高度 × 此值
-		#范围: 0.0-10.0，默认 1.0
-		#Range: 0.0 ~ 10.0
-		slam_damage_multiplier = 1.0
-		#Slam 半径倍率：坠落高度 × 此值
-		#范围: 0.0-20.0，默认 1.0
-		#Range: 0.0 ~ 20.0
-		slam_radius_multiplier = 1.0
 		#Slam 伤害上限
 		#范围: 1-9999，默认 1200
 		#Range: 1.0 ~ 9999.0
 		slam_max_damage = 1200.0
-		#按住 W 时沿视线方向匀速飞行的速度（blocks/tick）
-		#值越大飞得越快。同时驱动 lift（×0.16）、不按W漂移加速度（×0.04）、不按W速度（×0.8）。范围: 0.1-2.0，默认 0.5（=10 blocks/s）
-		#Range: 0.1 ~ 2.0
-		flight_target_speed = 0.5
-		#Slam 每 tick 下降速度增量（5 格/秒 = 0.25/tick）
-		#范围: 0.01-2.0，默认 0.25
-		#Range: 0.01 ~ 2.0
-		slam_gravity_per_tick = 0.25
 		#Slam 最低伤害（无论坠落多矮都有此保底）
 		#范围: 1-9999，默认 20
 		#Range: 1.0 ~ 9999.0
@@ -233,15 +217,46 @@
 		#范围: 0-100，默认 5
 		#Range: 0 ~ 100
 		slam_hover_ticks = 5
+		#击杀生物生命吸收比例
+		#被击杀生物 maxHealth × 此值 = 治疗量
+		#范围: 0.0-2.0，默认 0.8
+		#Range: 0.0 ~ 2.0
+		kill_health_absorb_ratio = 0.8
+		#击杀食物恢复比例
+		#被击杀生物 maxHealth × 此值 = 食物恢复量
+		#范围: 0.0-2.0，默认 0.333
+		#Range: 0.0 ~ 2.0
+		kill_food_restore_ratio = 0.333
+		#Slam 最大下降速度（120 格/秒 = 6.0/tick）
+		#范围: 0.5-20.0，默认 6.0
+		#Range: 0.5 ~ 20.0
+		slam_max_speed = 6.0
+		#Slam 伤害倍率：坠落高度 × 此值
+		#范围: 0.0-10.0，默认 1.0
+		#Range: 0.0 ~ 10.0
+		slam_damage_multiplier = 1.0
+		#Slam 半径倍率：坠落高度 × 此值
+		#范围: 0.0-20.0，默认 1.0
+		#Range: 0.0 ~ 20.0
+		slam_radius_multiplier = 1.0
+		#按住 W 时沿视线方向匀速飞行的速度（blocks/tick）
+		#值越大飞得越快。同时驱动 lift（×0.16）、不按W漂移加速度（×0.04）、不按W速度（×0.8）。范围: 0.1-2.0，默认 0.5（=10 blocks/s）
+		#Range: 0.1 ~ 2.0
+		flight_target_speed = 0.5
+		#Slam 每 tick 下降速度增量（5 格/秒 = 0.25/tick）
+		#范围: 0.01-2.0，默认 0.25
+		#Range: 0.01 ~ 2.0
+		slam_gravity_per_tick = 0.25
 		#冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）
 		#0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%
 		#范围: 0.0-20.0，默认 8.0
 		#Range: 0.0 ~ 20.0
 		sprint_max_multiplier = 8.0
-		#Slam 最大下降速度（120 格/秒 = 6.0/tick）
-		#范围: 0.5-20.0，默认 6.0
-		#Range: 0.5 ~ 20.0
-		slam_max_speed = 6.0
+		#吸收上限倍率
+		#玩家 maxHealth × 此值 = absorption 上限
+		#范围: 1.0-10.0，默认 2.0
+		#Range: 1.0 ~ 10.0
+		kill_absorption_cap_multiplier = 2.0
 
 	[squad_barracks.stress_focus]
 		#应力伤害除数

@@ -25,3 +25,4 @@ Prototype 系统服务端核心逻辑，管理 4 个子系统：
 |------|--------|--------|-----------|
 | 2026-06-24 | 首次文档记录 | 还清文档债务 | PrototypeItem, WallUtil, PrototypeRenderEvents |
 | 2026-06-24 | 回退 CJ-during-wall-run：恢复 isWallRunning 守卫 | 墙上跳跃与翻越翻越冲突，翻越后冲刺断掉 | PrototypeRenderEvents |
+| 2026-06-24 | 新增 Kill Absorption 子系统：LivingDeathEvent 监听，击杀生物吸收 80% maxHealth 治疗玩家，溢出转 absorption（上限 maxHealth×2）；同时恢复 foodLevel（1/3 maxHealth），满后溢转 saturation | 原型缺乏击杀收益，需要战斗正向循环 | ModConfig (kill_health_absorb_ratio/kill_absorption_cap_multiplier/kill_food_restore_ratio) |
