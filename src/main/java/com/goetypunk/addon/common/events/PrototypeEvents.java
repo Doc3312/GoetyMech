@@ -50,7 +50,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PrototypeEvents {
 
     private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
-    private static final UUID SWIM_MODIFIER_UUID = UUID.fromString("b2c3d4e5-f6a7-890b-cdef-1234567890ab");
 
     private static final String TAG_SLAMMING = "goetypunk.slamming";
     private static final String TAG_SLAM_TICK = "goetypunk.slam_tick";
@@ -282,31 +281,6 @@ public class PrototypeEvents {
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
-                }
-            }
-
-            // ── 游泳加速 + 氧气免疫 ──
-            boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
-            if (hasPrototype && inWater && !player.isFallFlying()) {
-                int swimTick = PrototypeItem.getSwimTick(player) + 1;
-                PrototypeItem.setSwimTick(player, swimTick);
-                AttributeInstance swimAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (swimAttr != null) {
-                    swimAttr.removeModifier(SWIM_MODIFIER_UUID);
-                    if (swimTick >= 1) {
-                        double t = Math.min((swimTick - 1) / 80.0, 1.0);
-                        double amount = t * ModConfig.SWIM_MAX_MULTIPLIER.get();
-                        swimAttr.addTransientModifier(new AttributeModifier(
-                                SWIM_MODIFIER_UUID, "prototype_swim", amount,
-                                AttributeModifier.Operation.MULTIPLY_TOTAL));
-                    }
-                }
-                player.setAirSupply(player.getMaxAirSupply());
-            } else if (!inWater) {
-                PrototypeItem.setSwimTick(player, 0);
-                AttributeInstance swimAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (swimAttr != null) {
-                    swimAttr.removeModifier(SWIM_MODIFIER_UUID);
                 }
             }
 
