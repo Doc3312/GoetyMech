@@ -281,7 +281,9 @@ public class PrototypeEvents {
             }
 
             // ── Charged jump 水平速度持续注入（抵消 move() 的摩擦衰减） ──
-            if (PrototypeItem.isChargedJumping(player)) {
+            if (PrototypeItem.isWallRunning(player)) {
+                PrototypeItem.clearChargedJump(player);
+            } else if (PrototypeItem.isChargedJumping(player)) {
                 Vec3 beforeCJ = player.getDeltaMovement();
                 double beforeHSpeed = Math.sqrt(beforeCJ.x * beforeCJ.x + beforeCJ.z * beforeCJ.z);
                 double cjHx = PrototypeItem.getCjHx(player);
