@@ -101,5 +101,7 @@
   "info.goetypunk.flesh_casket.slots": "§7Slots: %d",
   "info.goetypunk.flesh_casket.type_a": "§aAuto-casts on damage taken",
   "info.goetypunk.flesh_casket.type_b": "§aAuto-casts when health ≤ 50%%",
-  "info.goetypunk.flesh_casket.type_c": "§aAuto-casts when health ≤ %d%%"
+  "info.goetypunk.flesh_casket.type_c": "§aAuto-casts when health ≤ %d%%",
+
+  "container.goetypunk.flesh_casket": "Flesh Casket"
 }

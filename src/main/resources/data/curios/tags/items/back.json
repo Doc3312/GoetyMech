@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "goetypunk:prototype"
+    "goetypunk:prototype",
+    "goetypunk:flesh_casket_a",
+    "goetypunk:flesh_casket_b",
+    "goetypunk:flesh_casket_c"
   ]
 }
