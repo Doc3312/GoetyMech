@@ -10,6 +10,8 @@ import com.goetypunk.addon.common.item.curio.FleshCasketItem;
 import com.goetypunk.addon.common.item.curio.TriggerType;
 import com.goetypunk.addon.config.ModConfig;
 import com.goetypunk.addon.init.ModItems;
+import com.Polarice3.Goety.common.magic.SpellStat;
+import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +22,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
 import top.theillusivec4.curios.api.CuriosApi;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = GoetyPunkMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FleshCasketEvents {
@@ -32,8 +35,8 @@ public class FleshCasketEvents {
         if (event.player.level().isClientSide) return;
         if (!(event.player instanceof ServerPlayer)) return;
 
-        findFleshCasket((ServerPlayer) event.player).ifPresent(casket ->
-                FleshCasketItem.tickCooldowns(casket));
+        findAllFleshCaskets((ServerPlayer) event.player)
+                .forEach(FleshCasketItem::tickCooldowns);
     }
 
     @SubscribeEvent
@@ -41,23 +44,25 @@ public class FleshCasketEvents {
         if (event.getEntity().level().isClientSide) return;
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        Optional<ItemStack> opt = findFleshCasket(player);
-        if (opt.isEmpty()) return;
+        List<ItemStack> caskets = findAllFleshCaskets(player);
+        if (caskets.isEmpty()) return;
 
-        ItemStack casketStack = opt.get();
-        FleshCasketItem casketItem = (FleshCasketItem) casketStack.getItem();
-        TriggerType trigger = casketItem.getTriggerType();
+        float maxHealth = player.getMaxHealth();
+        float currentHealth = player.getHealth();
 
-        if (trigger == TriggerType.A) {
-            tryAutoCast(player, casketStack);
-        } else if (trigger == TriggerType.B || trigger == TriggerType.C) {
-            float maxHealth = player.getMaxHealth();
-            float currentHealth = player.getHealth();
-            float threshold = (trigger == TriggerType.B)
-                    ? 0.5f
-                    : (ModConfig.FLESH_CASKET_THRESHOLD.get() / 100.0f);
-            if (currentHealth / maxHealth <= threshold) {
+        for (ItemStack casketStack : caskets) {
+            FleshCasketItem casketItem = (FleshCasketItem) casketStack.getItem();
+            TriggerType trigger = casketItem.getTriggerType();
+
+            if (trigger == TriggerType.A) {
                 tryAutoCast(player, casketStack);
+            } else if (trigger == TriggerType.B || trigger == TriggerType.C) {
+                float threshold = (trigger == TriggerType.B)
+                        ? 0.5f
+                        : (ModConfig.FLESH_CASKET_THRESHOLD.get() / 100.0f);
+                if (currentHealth / maxHealth <= threshold) {
+                    tryAutoCast(player, casketStack);
+                }
             }
         }
     }
@@ -96,6 +101,8 @@ public class FleshCasketEvents {
             if (!spell.conditionsMet(serverLevel, player)) continue;
 
             var spellStat = WandUtil.getStats(player, spell);
+            if (tier >= 2) spellStat.potency += 2;
+            if (tier >= 3) { spellStat.potency += 2; spellStat.duration += 1; }
             ItemStack staffStack = new ItemStack(ModItems.AUTO_CAST_DUMMY_WAND.get());
 
             player.getPersistentData().putLong(TAG_LAST_CAST_TICK, gameTime);
@@ -120,10 +127,18 @@ public class FleshCasketEvents {
         }
     }
 
-    private static Optional<ItemStack> findFleshCasket(ServerPlayer player) {
+    private static List<ItemStack> findAllFleshCaskets(ServerPlayer player) {
         var curios = CuriosApi.getCuriosInventory(player).orElse(null);
-        if (curios == null) return Optional.empty();
-        return curios.findFirstCurio(s -> s.getItem() instanceof FleshCasketItem)
-                .map(r -> r.stack());
+        if (curios == null) return List.of();
+        List<ItemStack> result = new ArrayList<>();
+        curios.getCurios().forEach((ident, handler) -> {
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStacks().getStackInSlot(i);
+                if (stack.getItem() instanceof FleshCasketItem) {
+                    result.add(stack);
+                }
+            }
+        });
+        return result;
     }
 }

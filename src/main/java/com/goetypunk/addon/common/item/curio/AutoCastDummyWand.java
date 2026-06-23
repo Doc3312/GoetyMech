@@ -9,7 +9,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AutoCastDummyWand extends Item implements IWand {
-    private static final List<SpellType> ALL_TYPES = Arrays.asList(SpellType.values());
+    private static final List<SpellType> NO_ELEMENT_TYPES = Arrays.asList(
+            SpellType.NONE,
+            SpellType.NECROMANCY,
+            SpellType.ILL,
+            SpellType.GEOMANCY,
+            SpellType.WIND,
+            SpellType.VOID
+    );
 
     public AutoCastDummyWand() {
         super(new Properties().stacksTo(1));
@@ -22,7 +29,7 @@ public class AutoCastDummyWand extends Item implements IWand {
 
     @Override
     public List<SpellType> getSpellTypes() {
-        return ALL_TYPES;
+        return NO_ELEMENT_TYPES;
     }
 
     @Override

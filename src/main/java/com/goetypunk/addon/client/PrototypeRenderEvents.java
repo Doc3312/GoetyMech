@@ -70,11 +70,23 @@ public class PrototypeRenderEvents {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
         Player player = mc.player;
+
+        if (event.phase == TickEvent.Phase.START) {
+            ClientWallRunState.sprintDown = mc.options.keySprint.isDown();
+            float fwd = mc.options.keyUp.isDown() ? 1.0f : (mc.options.keyDown.isDown() ? -1.0f : 0.0f);
+            float strafe = 0.0f;
+            if (mc.options.keyLeft.isDown()) strafe += 1.0f;
+            if (mc.options.keyRight.isDown()) strafe -= 1.0f;
+            ClientWallRunState.forwardInput = fwd;
+            ClientWallRunState.strafeInput = strafe;
+            return;
+        }
+
+        if (event.phase != TickEvent.Phase.END) return;
 
         boolean jumpDown = mc.options.keyJump.isDown();
         boolean wasPressed = jumpDown && !prevJumpDown;
@@ -82,28 +94,6 @@ public class PrototypeRenderEvents {
 
         // ── Update client wall state for camera/model roll ──
         updateClientWallState(player);
-
-        // ── Apply wall-run velocity via setDeltaMovement (consumed by next tick's travel()) ──
-        if (clientWallNormal.lengthSqr() >= 0.5) {
-            Vec3 wallN = clientWallNormal;
-            Vec3 wallUp = new Vec3(0, 1, 0);
-            Vec3 wallRight = wallUp.cross(wallN).normalize();
-
-            float wallFwd = mc.options.keyUp.isDown() ? 1.0f : (mc.options.keyDown.isDown() ? -1.0f : 0.0f);
-            float wallStrafe = 0.0f;
-            if (mc.options.keyLeft.isDown()) wallStrafe += 1.0f;
-            if (mc.options.keyRight.isDown()) wallStrafe -= 1.0f;
-
-            double speed = ModConfig.WALL_RUN_SPEED.get();
-            Vec3 move = wallUp.scale(wallFwd * speed)
-                    .add(wallRight.scale(-wallStrafe * speed));
-
-            Vec3 wallGravity = wallN.scale(-ModConfig.WALL_GRAVITY.get());
-            move = move.add(wallGravity);
-            move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
-
-            player.setDeltaMovement(move);
-        }
 
         // Cancel slam on jump press (not during wall-run)
         if (wasPressed && clientWallNormal.lengthSqr() < 0.5) {
