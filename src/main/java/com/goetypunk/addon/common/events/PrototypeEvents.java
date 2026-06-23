@@ -24,7 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -441,17 +440,9 @@ public class PrototypeEvents {
 
     private static void applyChargedJump(Player player, int charge) {
         Vec3 m = player.getDeltaMovement();
-        double groundSpeed = PrototypeItem.getGroundSpeed(player);
-        double hSpeedBefore = Math.sqrt(m.x * m.x + m.z * m.z);
-        if (groundSpeed > 0.001) {
-            float yaw = player.getYRot() * Mth.DEG_TO_RAD;
-            m = new Vec3(-Mth.sin(yaw) * groundSpeed, m.y, Mth.cos(yaw) * groundSpeed);
-            GoetyPunkMod.LOGGER.info("Sprint inertia: groundSpeed={}",
-                    String.format("%.4f", groundSpeed));
-        }
         PrototypeItem.setCjHx(player, m.x);
         PrototypeItem.setCjHz(player, m.z);
-        double setHSpeed = Math.sqrt(m.x * m.x + m.z * m.z);
+        double hSpeed = Math.sqrt(m.x * m.x + m.z * m.z);
         int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
         if (charge >= threshold) {
             double minH = ModConfig.JUMP_CHARGE_MIN_HEIGHT.get();
@@ -463,9 +454,9 @@ public class PrototypeEvents {
             double jumpPower = velocityForHeight(height);
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
             Vec3 after = player.getDeltaMovement();
-            GoetyPunkMod.LOGGER.info("PROTO_DIAG applyChargedJump: charge={}, hSpeedBefore={}, groundSpeed={}, setHSpeed={}, setVY={}, final=({}, {}, {}), isCJ={}",
-                    charge, String.format("%.4f", hSpeedBefore), String.format("%.4f", groundSpeed),
-                    String.format("%.4f", setHSpeed), String.format("%.4f", jumpPower),
+            GoetyPunkMod.LOGGER.info("PROTO_DIAG applyChargedJump: charge={}, hSpeed={}, setVY={}, final=({}, {}, {}), isCJ={}",
+                    charge, String.format("%.4f", hSpeed),
+                    String.format("%.4f", jumpPower),
                     String.format("%.4f", after.x), String.format("%.4f", after.y), String.format("%.4f", after.z),
                     PrototypeItem.isChargedJumping(player));
         } else if (player.onGround()) {
@@ -473,9 +464,8 @@ public class PrototypeEvents {
             double jumpPower = velocityForHeight(tapH);
             player.setDeltaMovement(m.x, jumpPower, m.z);
             Vec3 after = player.getDeltaMovement();
-            GoetyPunkMod.LOGGER.info("PROTO_DIAG applyTapJump: charge={}, hSpeedBefore={}, groundSpeed={}, setHSpeed={}, final=({}, {}, {}), isCJ={}",
-                    charge, String.format("%.4f", hSpeedBefore), String.format("%.4f", groundSpeed),
-                    String.format("%.4f", setHSpeed),
+            GoetyPunkMod.LOGGER.info("PROTO_DIAG applyTapJump: charge={}, hSpeed={}, final=({}, {}, {}), isCJ={}",
+                    charge, String.format("%.4f", hSpeed),
                     String.format("%.4f", after.x), String.format("%.4f", after.y), String.format("%.4f", after.z),
                     PrototypeItem.isChargedJumping(player));
         }
