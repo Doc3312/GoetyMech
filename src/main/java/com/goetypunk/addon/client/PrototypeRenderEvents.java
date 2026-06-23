@@ -83,6 +83,15 @@ public class PrototypeRenderEvents {
             if (mc.options.keyRight.isDown()) strafe -= 1.0f;
             ClientWallRunState.forwardInput = fwd;
             ClientWallRunState.strafeInput = strafe;
+
+            boolean sprinting = ClientWallRunState.sprintDown || player.isSprinting();
+            boolean hasProto = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+            Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
+            if (sprinting && hasProto && !player.isFallFlying() && wallDir != null) {
+                ClientWallRunState.wallNormal = wallDir;
+            } else {
+                ClientWallRunState.wallNormal = Vec3.ZERO;
+            }
             return;
         }
 
