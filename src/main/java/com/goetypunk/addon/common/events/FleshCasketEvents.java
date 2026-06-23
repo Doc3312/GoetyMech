@@ -100,9 +100,7 @@ public class FleshCasketEvents {
             if (!spell.conditionsMet(serverLevel, player)) continue;
 
             var spellStat = WandUtil.getStats(player, spell);
-            ItemStack staffStack = (tier == 1)
-                    ? ItemStack.EMPTY
-                    : new ItemStack(ModItems.AUTO_CAST_DUMMY_WAND.get());
+            ItemStack staffStack = new ItemStack(ModItems.AUTO_CAST_DUMMY_WAND.get());
 
             int cooldown = spell.spellCooldown(player);
 
