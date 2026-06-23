@@ -145,7 +145,7 @@ public abstract class PrototypeTravelMixin {
                     Vec3 motion = player.getDeltaMovement();
                     double hSpeed = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
                     if (hSpeed > 0.001) {
-                        player.setDeltaMovement(motion.x * velocityMult, motion.y, motion.z * velocityMult);
+                        player.setDeltaMovement(motion.x * velocityMult, motion.y * velocityMult, motion.z * velocityMult);
                     }
                 }
             } else {
