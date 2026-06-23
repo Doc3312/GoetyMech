@@ -427,7 +427,7 @@ public class PrototypeEvents {
                 PrototypeItem.setChargeStartY(player, player.getY());
             } else if (player.onGround()) {
                 PrototypeItem.setChargeStartY(player, player.getY());
-            } else if (startY - player.getY() > 3.0) {
+            } else if (startY - player.getY() > 6.0) {
                 int charge = PrototypeItem.getJumpChargeTick(player);
                 if (charge > 0) {
                     applyChargedJump(player, charge);
