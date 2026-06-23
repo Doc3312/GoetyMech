@@ -1,6 +1,8 @@
 package com.goetypunk.addon.common.net.c2s;
 
 import com.goetypunk.addon.common.item.PrototypeItem;
+import com.goetypunk.addon.common.net.ModNetwork;
+import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -22,6 +24,7 @@ public class C2SCancelSlamPacket {
             if (!PrototypeItem.isSlamming(player)) return;
             player.fallDistance = 0;
             player.setDeltaMovement(player.getDeltaMovement().x, Math.max(0.5, player.getDeltaMovement().y), player.getDeltaMovement().z);
+            ModNetwork.sendTo(player, new S2CSlamStatePacket(false));
             PrototypeItem.clearSlamState(player);
         });
         ctx.get().setPacketHandled(true);

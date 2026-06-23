@@ -24,6 +24,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import org.joml.Vector3f;
@@ -50,6 +51,13 @@ public class PrototypeRenderEvents {
     private static int lastSentCharge = 0;
     private static boolean prevJumpDown = false;
 
+    // ── Slam client state (synced via S2CSlamStatePacket) ──
+    private static boolean clientSlamming = false;
+
+    public static void setClientSlamming(boolean slamming) {
+        clientSlamming = slamming;
+    }
+
     // ═══════════════════════════════════════════════════
     //  1. Client tick: wall detection + jump charge C2S
     // ═══════════════════════════════════════════════════
@@ -61,8 +69,6 @@ public class PrototypeRenderEvents {
         if (mc.player == null) return;
 
         Player player = mc.player;
-        GoetyPunkMod.LOGGER.info("CLIENT_TICK: zza={}, onGround={}, sprint={}",
-                player.zza, player.onGround(), player.isSprinting());
 
         boolean jumpDown = mc.options.keyJump.isDown();
         boolean wasPressed = jumpDown && !prevJumpDown;
@@ -101,22 +107,6 @@ public class PrototypeRenderEvents {
                 ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(clientChargeTicks, fwd, jumping, 0.0));
                 lastSentCharge = clientChargeTicks;
             }
-            // Particles
-            if (clientChargeTicks > 0 && clientChargeTicks % 3 == 0) {
-                var random = player.getRandom();
-                double px = player.getX() + (random.nextDouble() - 0.5) * 0.6;
-                double pz = player.getZ() + (random.nextDouble() - 0.5) * 0.6;
-                player.level().addParticle(
-                        net.minecraft.core.particles.ParticleTypes.CRIT,
-                        px, player.getY(), pz,
-                        (random.nextDouble() - 0.5) * 0.1, 0.1, (random.nextDouble() - 0.5) * 0.1);
-                if (clientChargeTicks > 40) {
-                    player.level().addParticle(
-                            net.minecraft.core.particles.ParticleTypes.ENCHANTED_HIT,
-                            px, player.getY() + 0.1, pz,
-                            0, 0.05, 0);
-                }
-            }
         } else {
             if (lastSentCharge > 0) {
                 ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(0, player.zza, false, 0.0));
@@ -125,24 +115,24 @@ public class PrototypeRenderEvents {
             clientChargeTicks = 0;
         }
 
-        // ── Sprint particle trail ──
-        if (hasPrototype && player.isSprinting() && player.zza > 0.0F && !player.isFallFlying()) {
-            if (player.tickCount % 2 == 0) {
-                var r = player.getRandom();
-                Vec3 vel = player.getDeltaMovement();
-                int count = 8 + r.nextInt(5);
-                for (int i = 0; i < count; i++) {
-                    double h = r.nextDouble() * 1.8;
-                    double behind = -r.nextDouble() * 0.8;
-                    double px = player.getX() + vel.x * behind + (r.nextDouble() - 0.5) * 0.3;
-                    double pz = player.getZ() + vel.z * behind + (r.nextDouble() - 0.5) * 0.3;
-                    double py = player.getY() + h;
-                    double vx = -vel.x * 1.5 + (r.nextDouble() - 0.5) * 0.1;
-                    double vz = -vel.z * 1.5 + (r.nextDouble() - 0.5) * 0.1;
-                    player.level().addParticle(
-                            new DustParticleOptions(new Vector3f(0.35f, 0.03f, 0.03f), 0.7f),
-                            px, py, pz, vx, -0.06, vz);
-                }
+        // ── Unified body-trail particles ──
+        if (hasPrototype) {
+            Vector3f color = null;
+            boolean addCrit = false;
+
+            if (clientSlamming) {
+                color = new Vector3f(0.35f, 0.03f, 0.03f);
+                addCrit = true;
+            } else if (player.isSprinting() && player.zza > 0.0F && !player.isFallFlying()) {
+                color = new Vector3f(0.35f, 0.03f, 0.03f);
+            } else if (clientChargeTicks > 0) {
+                color = new Vector3f(0.35f, 0.03f, 0.03f);
+            } else if (player.isFallFlying()) {
+                color = new Vector3f(0.15f, 0.015f, 0.015f);
+            }
+
+            if (color != null) {
+                spawnBodyTrailParticles(player, color, 0.23f, addCrit);
             }
         }
 
@@ -271,6 +261,43 @@ public class PrototypeRenderEvents {
             clientWallRoll = clientWallRollTarget;
         } else {
             clientWallRoll += diff * 0.15f;
+        }
+    }
+
+    private static void spawnBodyTrailParticles(Player player, Vector3f color, float scale, boolean addCrit) {
+        var r = player.getRandom();
+        Vec3 vel = player.getDeltaMovement();
+        float yawRad = player.getYRot() * Mth.DEG_TO_RAD;
+        Vec3 right = new Vec3(-Mth.cos(yawRad), 0, -Mth.sin(yawRad));
+
+        double[][] anchors = {
+                {-0.35, 0.85},
+                {0.35, 0.85},
+                {-0.25, 1.75},
+                {0.25, 1.75},
+                {-0.2, 0.15},
+                {0.2, 0.15},
+        };
+
+        for (double[] a : anchors) {
+            double px = player.getX() + right.x * a[0];
+            double pz = player.getZ() + right.z * a[0];
+            double py = player.getY() + a[1];
+
+            for (int i = 0; i < 3; i++) {
+                double jx = px + (r.nextDouble() - 0.5) * 0.15;
+                double jy = py + (r.nextDouble() - 0.5) * 0.15;
+                double jz = pz + (r.nextDouble() - 0.5) * 0.15;
+                double vx = -vel.x * 1.5 + (r.nextDouble() - 0.5) * 0.1;
+                double vy = -0.06 + (r.nextDouble() - 0.5) * 0.05;
+                double vz = -vel.z * 1.5 + (r.nextDouble() - 0.5) * 0.1;
+                player.level().addParticle(new DustParticleOptions(color, scale), jx, jy, jz, vx, vy, vz);
+            }
+
+            if (addCrit) {
+                player.level().addParticle(ParticleTypes.CRIT, px, py, pz,
+                        (r.nextDouble() - 0.5) * 0.15, 0.05, (r.nextDouble() - 0.5) * 0.15);
+            }
         }
     }
 }

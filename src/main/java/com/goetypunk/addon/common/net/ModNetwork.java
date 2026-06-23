@@ -9,6 +9,7 @@ import com.goetypunk.addon.common.net.c2s.C2SFlightInputPacket;
 import com.goetypunk.addon.common.net.s2c.S2CTimeStopDimensionPacket;
 import com.goetypunk.addon.common.net.s2c.S2CTimeStopStatePacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
+import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetypunk.addon.common.net.s2c.S2CStressArkDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,6 +51,10 @@ public class ModNetwork {
                 S2CSlamImpactPacket::encode,
                 S2CSlamImpactPacket::decode,
                 S2CSlamImpactPacket::handle);
+        CHANNEL.registerMessage(idx++, S2CSlamStatePacket.class,
+                S2CSlamStatePacket::encode,
+                S2CSlamStatePacket::decode,
+                S2CSlamStatePacket::handle);
         CHANNEL.registerMessage(idx++, C2SCancelSlamPacket.class,
                 C2SCancelSlamPacket::encode,
                 C2SCancelSlamPacket::decode,

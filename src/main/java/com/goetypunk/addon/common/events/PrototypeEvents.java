@@ -11,6 +11,7 @@ import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.common.utils.CuriosHelper;
 import com.goetypunk.addon.common.utils.WallUtil;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
+import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetypunk.addon.config.ModConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -529,6 +530,10 @@ public class PrototypeEvents {
 
         player.level().playSound(null, player.blockPosition(),
                 SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 1.0F, 0.6F);
+
+        if (player instanceof ServerPlayer sp) {
+            ModNetwork.sendTo(sp, new S2CSlamStatePacket(true));
+        }
     }
 
     private static void handleSlamTick(Player player) {
@@ -603,6 +608,10 @@ public class PrototypeEvents {
                     new S2CSlamImpactPacket(
                             player.getX(), player.getY(), player.getZ(),
                             radius, damage));
+        }
+
+        if (player instanceof ServerPlayer sp) {
+            ModNetwork.sendTo(sp, new S2CSlamStatePacket(false));
         }
 
         player.fallDistance = 0;
