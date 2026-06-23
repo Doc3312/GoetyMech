@@ -111,15 +111,11 @@ public class UnstableRiftSpell extends Spell {
         }
         Vec3 safeTarget = new Vec3(targetPos.x, y, targetPos.z);
 
-        long returnDelay = ModConfig.UNSTABLE_RIFT_RETURN_DELAY.get();
-        if (useStaffBonus) {
-            returnDelay = (long) (returnDelay * 1.5);
-        }
         data.putString(TAG_ORIGIN_DIM, currentDim.location().toString());
         data.putDouble(TAG_ORIGIN_X, currentPos.x);
         data.putDouble(TAG_ORIGIN_Y, currentPos.y);
         data.putDouble(TAG_ORIGIN_Z, currentPos.z);
-        data.putLong(TAG_RETURN_TIME, worldIn.getGameTime() + returnDelay);
+        data.putLong(TAG_RETURN_TIME, worldIn.getGameTime() + ModConfig.UNSTABLE_RIFT_RETURN_DELAY.get());
 
         if (!player.isCreative()) {
             SEHelper.decreaseSouls(player, ModConfig.UNSTABLE_RIFT_COST.get());
@@ -127,7 +123,11 @@ public class UnstableRiftSpell extends Spell {
 
         ItemStack focus = WandUtil.findFocus(caster);
         if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), ModConfig.UNSTABLE_RIFT_COOLDOWN.get());
+            int cooldown = ModConfig.UNSTABLE_RIFT_COOLDOWN.get();
+            if (useStaffBonus) {
+                cooldown = (int) (cooldown * 0.2);
+            }
+            SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }
 
         player.changeDimension(targetLevel, new ArcaTeleporter(safeTarget));
