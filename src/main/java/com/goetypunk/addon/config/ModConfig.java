@@ -427,8 +427,8 @@ public class ModConfig {
                 .defineInRange("jump_tap_height", 3.0, 1.0, 10.0);
 
         JUMP_CHARGE_THRESHOLD = BUILDER
-                .comment("蓄力门槛 tick（未达到此值视为短按）", "蓄力系统需 charge ≥ 此值才走蓄力公式", "范围: 5-59，默认 6（≈0.3秒）")
-                .defineInRange("jump_charge_threshold", 6, 5, 59);
+                .comment("蓄力门槛 tick（未达到此值视为短按）", "蓄力系统需 charge ≥ 此值才走蓄力公式", "范围: 1-59，默认 3（≈0.15秒）")
+                .defineInRange("jump_charge_threshold", 3, 1, 59);
 
         JUMP_CHARGE_MIN_HEIGHT = BUILDER
                 .comment("蓄力最低跳跃高度（格），threshold 时达到", "范围: 3.0-80.0，默认 8.0")
