@@ -103,9 +103,6 @@ public class SculkBindSpell extends Spell {
         if (WandUtil.enchantedFocus(caster)) {
             range += WandUtil.getRangeLevel(caster);
         }
-        if (useStaffBonus) {
-            range += 4;
-        }
         LivingEntity target = this.getTarget(caster, range);
         if (target == null) {
             if (caster instanceof ServerPlayer player) {
@@ -172,6 +169,9 @@ public class SculkBindSpell extends Spell {
 
         // 7. 召唤原版 Warden + 注入愤怒 + 禁遁地（保留出土动画）
         int wardenCount = ModConfig.SCULK_BIND_WARDEN_COUNT.get();
+        if (useStaffBonus) {
+            wardenCount += 1;
+        }
 
         // 尖啸音效：在 Warden 生成前只播一次，覆盖整个召唤区域
         worldIn.playSound(null, spikePos, SoundEvents.SCULK_SHRIEKER_SHRIEK,
