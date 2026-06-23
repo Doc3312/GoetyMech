@@ -38,6 +38,9 @@ public class ModCreativeTab {
                         output.accept(ModItems.SOUL_CATCHER.get());
                         output.accept(ModItems.PROTOTYPE.get());
                         output.accept(ModItems.STRESS_ARK.get());
+                        output.accept(ModItems.FLESH_CASKET_A.get());
+                        output.accept(ModItems.FLESH_CASKET_B.get());
+                        output.accept(ModItems.FLESH_CASKET_C.get());
                     })
                     .build()
     );

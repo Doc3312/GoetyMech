@@ -11,7 +11,10 @@ import com.goetypunk.addon.common.item.TimeFocusPouch;
 import com.goetypunk.addon.common.item.TwistedEmbryoItem;
 import com.goetypunk.addon.common.item.UnstableRiftFocus;
 import com.goetypunk.addon.common.item.PrototypeItem;
+import com.goetypunk.addon.common.item.curio.AutoCastDummyWand;
+import com.goetypunk.addon.common.item.curio.FleshCasketItem;
 import com.goetypunk.addon.common.item.curio.SoulCatcherCurio;
+import com.goetypunk.addon.common.item.curio.TriggerType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -118,4 +121,18 @@ public class ModItems {
 
     public static final RegistryObject<Item> PROTOTYPE =
             ITEMS.register("prototype", PrototypeItem::new);
+
+    // ── 血肉晶匣 ──
+
+    public static final RegistryObject<Item> FLESH_CASKET_A =
+            ITEMS.register("flesh_casket_a", () -> new FleshCasketItem(TriggerType.A));
+
+    public static final RegistryObject<Item> FLESH_CASKET_B =
+            ITEMS.register("flesh_casket_b", () -> new FleshCasketItem(TriggerType.B));
+
+    public static final RegistryObject<Item> FLESH_CASKET_C =
+            ITEMS.register("flesh_casket_c", () -> new FleshCasketItem(TriggerType.C));
+
+    public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND =
+            ITEMS.register("auto_cast_dummy_wand", AutoCastDummyWand::new);
 }

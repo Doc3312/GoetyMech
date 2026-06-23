@@ -178,7 +178,21 @@ public class ModConfig {
     /** 时停默认时长（tick） */
     public static final ForgeConfigSpec.IntValue TIME_STOP_DEFAULT_DURATION;
 
+    // ====== Flesh Casket 配置 ======
+
+    /** Type C 自动施法触发阈值百分比 */
+    public static final ForgeConfigSpec.IntValue FLESH_CASKET_THRESHOLD;
+
     static {
+        // ====== Flesh Casket 配置 ======
+        BUILDER.push("flesh_casket");
+
+        FLESH_CASKET_THRESHOLD = BUILDER
+                .comment("Type C 血肉晶匣自动施法触发阈值（百分比）", "玩家血量低于此百分比时触发", "范围: 1-100，默认 20")
+                .defineInRange("threshold", 20, 1, 100);
+
+        BUILDER.pop();
+
         // ====== Soul Catcher 配置 ======
         BUILDER.push("soul_catcher");
 
