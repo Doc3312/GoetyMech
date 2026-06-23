@@ -428,6 +428,10 @@ public class PrototypeEvents {
 
         float forward = PrototypeItem.getWallForward(player);
         float strafe = PrototypeItem.getWallStrafe(player);
+        // 冲刺+墙跑默认前进；C2S 包做精细覆盖（如停止或后退）
+        if (forward == 0.0f && strafe == 0.0f && player.isSprinting()) {
+            forward = 1.0f;
+        }
         double speed = ModConfig.WALL_RUN_SPEED.get();
 
         GoetyPunkMod.LOGGER.info("WALL_MV: wallN=({}, {}, {}), fwd={}, strafe={}, fwOnWall=({}, {}, {}), right=({}, {}, {})",
