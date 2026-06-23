@@ -11,8 +11,14 @@ public class ClientWallRunState {
     public static int graceTicks = 0;
     public static Vec3 lastWallNormal = Vec3.ZERO;
 
+    public static int sprintRetainTicks = 0;
+
     public static boolean isActive() {
         return wallNormal.lengthSqr() >= 0.5 || graceTicks > 0;
+    }
+
+    public static boolean shouldSprint() {
+        return isActive() || sprintRetainTicks > 0;
     }
 
     public static void applyGrace(int ticks) {
@@ -26,6 +32,12 @@ public class ClientWallRunState {
             if (wallNormal.lengthSqr() < 0.5 && graceTicks > 0) {
                 wallNormal = lastWallNormal;
             }
+        }
+    }
+
+    public static void tickSprintRetain() {
+        if (sprintRetainTicks > 0) {
+            sprintRetainTicks--;
         }
     }
 }

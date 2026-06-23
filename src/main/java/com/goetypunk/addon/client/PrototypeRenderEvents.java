@@ -76,7 +76,8 @@ public class PrototypeRenderEvents {
         Player player = mc.player;
 
         if (event.phase == TickEvent.Phase.START) {
-            if (!ClientWallRunState.isActive()) {
+            ClientWallRunState.tickSprintRetain();
+            if (!ClientWallRunState.shouldSprint()) {
                 ClientWallRunState.sprintDown = mc.options.keySprint.isDown() || player.isSprinting();
             }
             float fwd = mc.options.keyUp.isDown() ? 1.0f : (mc.options.keyDown.isDown() ? -1.0f : 0.0f);
@@ -86,7 +87,7 @@ public class PrototypeRenderEvents {
             ClientWallRunState.forwardInput = fwd;
             ClientWallRunState.strafeInput = strafe;
 
-            boolean sprinting = ClientWallRunState.sprintDown || player.isSprinting();
+            boolean sprinting = ClientWallRunState.sprintDown || player.isSprinting() || ClientWallRunState.shouldSprint();
             boolean hasProto = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
             Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
             if (sprinting && hasProto && !player.isFallFlying() && wallDir != null) {

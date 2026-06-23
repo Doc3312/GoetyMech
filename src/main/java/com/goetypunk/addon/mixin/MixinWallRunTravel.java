@@ -52,6 +52,7 @@ public abstract class MixinWallRunTravel {
                     if (player.level().noCollision(checkBox)) {
                         wallMove = wallMove.add(outward);
                         ClientWallRunState.applyGrace(3);
+                        ClientWallRunState.sprintRetainTicks = 10;
                         found = true;
                         break;
                     }
