@@ -46,13 +46,13 @@ public abstract class MixinWallRunTravel {
             AABB futureBox = player.getBoundingBox().move(climbVec).inflate(-0.02);
             if (!player.level().noCollision(futureBox)) {
                 boolean found = false;
-                for (double out : new double[]{0.9, 1.2, 0.7, 0.5}) {
+                for (double out : new double[]{2.8, 3.2, 2.5, 2.0}) {
                     Vec3 outward = wallN.scale(-out);
                     AABB checkBox = player.getBoundingBox().move(climbVec.add(outward)).inflate(-0.02);
                     if (player.level().noCollision(checkBox)) {
                         wallMove = wallMove.add(outward);
-                        ClientWallRunState.applyGrace(3);
-                        ClientWallRunState.sprintRetainTicks = 30;
+                        ClientWallRunState.applyGrace(10);
+                        ClientWallRunState.sprintRetainTicks = 60;
                         found = true;
                         break;
                     }

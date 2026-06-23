@@ -133,7 +133,7 @@ public abstract class PrototypeTravelMixin {
         if (player.isInWater()) {
             player.setAirSupply(player.getMaxAirSupply());
 
-            float forward = player.zza;
+            float forward = PrototypeItem.getSwimForward(player);
             if (forward > 0.01f) {
                 int tick = PrototypeItem.getSwimTick(player) + 1;
                 PrototypeItem.setSwimTick(player, tick);

@@ -30,11 +30,13 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
     private static final String TAG_FLIGHT_FORWARD = "goetypunk.flight_forward";
     private static final String TAG_SWIM_TICK = "goetypunk.swim_tick";
+    private static final String TAG_SWIM_FORWARD = "goetypunk.swim_forward";
     private static final String TAG_CHARGED_JUMPING = "goetypunk.charged_jumping";
     private static final String TAG_CJ_HX = "goetypunk.cj_hx";
     private static final String TAG_CJ_HZ = "goetypunk.cj_hz";
     private static final String TAG_GROUND_SPEED = "goetypunk.ground_speed";
     private static final String TAG_CJ_START_SPEED = "goetypunk.cj_start_speed";
+    private static final String TAG_CHARGE_START_Y = "goetypunk.charge_start_y";
 
     public PrototypeItem() {
         super(new Properties()
@@ -202,6 +204,7 @@ public class PrototypeItem extends ElytraItem {
 
     public static void clearJumpCharge(LivingEntity entity) {
         entity.getPersistentData().remove(TAG_JUMP_CHARGE_TICK);
+        entity.getPersistentData().remove(TAG_CHARGE_START_Y);
     }
 
     // ── Slam invulnerability ──
@@ -252,6 +255,14 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_SWIM_TICK);
     }
 
+    public static float getSwimForward(LivingEntity entity) {
+        return entity.getPersistentData().getFloat(TAG_SWIM_FORWARD);
+    }
+
+    public static void setSwimForward(LivingEntity entity, float forward) {
+        entity.getPersistentData().putFloat(TAG_SWIM_FORWARD, forward);
+    }
+
     // ── Charged jump state ──
 
     public static boolean isChargedJumping(LivingEntity entity) {
@@ -291,6 +302,16 @@ public class PrototypeItem extends ElytraItem {
 
     public static void setCjStartSpeed(LivingEntity entity, double speed) {
         entity.getPersistentData().putDouble(TAG_CJ_START_SPEED, speed);
+    }
+
+    // ── Charge start Y tracking ──
+
+    public static double getChargeStartY(LivingEntity entity) {
+        return entity.getPersistentData().getDouble(TAG_CHARGE_START_Y);
+    }
+
+    public static void setChargeStartY(LivingEntity entity, double y) {
+        entity.getPersistentData().putDouble(TAG_CHARGE_START_Y, y);
     }
 
     // ── Ground speed tracking ──

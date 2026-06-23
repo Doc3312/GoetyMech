@@ -147,10 +147,18 @@
 		#范围: 5-59，默认 6（≈0.3秒）
 		#Range: 5 ~ 59
 		jump_charge_threshold = 6
+		#水中蓄力最低爆发速度（blocks/tick，蓄力门槛时达到）
+		#沿视线方向爆发，范围: 0.5-5.0，默认 1.5
+		#Range: 0.5 ~ 5.0
+		swim_charge_min_speed = 1.5
 		#蓄力最低跳跃高度（格），threshold 时达到
 		#范围: 3.0-80.0，默认 8.0
 		#Range: 3.0 ~ 80.0
 		jump_charge_min_height = 8.0
+		#水中蓄力最高爆发速度（blocks/tick，最大蓄力时达到）
+		#沿视线方向爆发，范围: 1.0-10.0，默认 4.0
+		#Range: 1.0 ~ 10.0
+		swim_charge_max_speed = 4.0
 		#短按跳跃高度（格）
 		#范围: 1.0-10.0，默认 3.0
 		#Range: 1.0 ~ 10.0
@@ -209,11 +217,6 @@
 		#范围: 1-9999，默认 1200
 		#Range: 1.0 ~ 9999.0
 		slam_max_damage = 1200.0
-		#飞行加速到上限所需 tick 数
-		#类似 sprint 的 80 tick 加速曲线
-		#范围: 5-400，默认 60（=3秒到10x）
-		#Range: 5 ~ 400
-		flight_accel_ticks = 60
 		#Slam 最低伤害（无论坠落多矮都有此保底）
 		#范围: 1-9999，默认 20
 		#Range: 1.0 ~ 9999.0
@@ -244,25 +247,42 @@
 		#范围: 0.0-20.0，默认 1.0
 		#Range: 0.0 ~ 20.0
 		slam_radius_multiplier = 1.0
-		#按住 W 时沿视线方向匀速飞行的速度（blocks/tick）
-		#值越大飞得越快。同时驱动 lift（×0.16）、不按W漂移加速度（×0.04）、不按W速度（×0.8）。范围: 0.1-2.0，默认 0.5（=10 blocks/s）
+		#游泳加速每 tick 增加的水平速度（blocks/tick²）
+		#越大加速越快
+		#范围: 0.005-0.2，默认 0.02
+		#Range: 0.005 ~ 0.2
+		swim_accel_rate = 0.02
+		#按住 W 时沿视线方向飞行的基础速度（blocks/tick）
+		#按住W会从该速度开始逐渐加速到 FLIGHT_TARGET_SPEED * FLIGHT_MAX_MULTIPLIER
+		#范围: 0.1-2.0，默认 0.5（=10 blocks/s）
 		#Range: 0.1 ~ 2.0
 		flight_target_speed = 0.5
 		#Slam 每 tick 下降速度增量（5 格/秒 = 0.25/tick）
 		#范围: 0.01-2.0，默认 0.25
 		#Range: 0.01 ~ 2.0
 		slam_gravity_per_tick = 0.25
-		#飞行速度加速倍率上限
-		#按住W时速度从1x逐渐增至上限
-		#倍率 × FLIGHT_TARGET_SPEED = 实际速度
-		#范围: 1.0-100.0，默认 10.0
-		#Range: 1.0 ~ 100.0
+		#飞行最高速度倍率（相对 flight_target_speed）
+		#最终最高速度 = flight_target_speed × 此值，范围: 1.0-50.0，默认 10.0
+		#Range: 1.0 ~ 50.0
 		flight_max_multiplier = 10.0
+		#游泳加速最高水平速度（blocks/tick）
+		#按住W时逐渐加速到此上限
+		#范围: 0.1-2.0，默认 0.5（=10 blocks/s）
+		#Range: 0.1 ~ 2.0
+		swim_max_speed = 0.5
 		#冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）
 		#0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%
 		#范围: 0.0-20.0，默认 8.0
 		#Range: 0.0 ~ 20.0
 		sprint_max_multiplier = 8.0
+		#松开W时速度衰减倍率（每 tick 水平速度乘此值）
+		#值越大减速越慢，范围: 0.5-0.999，默认 0.97
+		#Range: 0.5 ~ 0.999
+		flight_decel_rate = 0.97
+		#按住W时每 tick 增加的速度（blocks/tick）
+		#值越大加速越快，范围: 0.01-1.0，默认 0.05
+		#Range: 0.01 ~ 1.0
+		flight_accel_rate = 0.05
 		#吸收上限倍率
 		#玩家 maxHealth × 此值 = absorption 上限
 		#范围: 1.0-10.0，默认 2.0

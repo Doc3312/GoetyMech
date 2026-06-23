@@ -7,6 +7,7 @@ import com.goetypunk.addon.common.net.c2s.C2STimeStopPacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallInputPacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallJumpOffPacket;
 import com.goetypunk.addon.common.net.c2s.C2SFlightInputPacket;
+import com.goetypunk.addon.common.net.c2s.C2SSwimInputPacket;
 import com.goetypunk.addon.common.net.s2c.S2CTimeStopDimensionPacket;
 import com.goetypunk.addon.common.net.s2c.S2CTimeStopStatePacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
@@ -80,6 +81,10 @@ public class ModNetwork {
                 C2SFlightInputPacket::encode,
                 C2SFlightInputPacket::decode,
                 C2SFlightInputPacket::handle);
+        CHANNEL.registerMessage(idx++, C2SSwimInputPacket.class,
+                C2SSwimInputPacket::encode,
+                C2SSwimInputPacket::decode,
+                C2SSwimInputPacket::handle);
     }
 
     public static <MSG> void sendTo(ServerPlayer player, MSG msg) {

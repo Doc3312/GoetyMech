@@ -217,7 +217,7 @@ public class PrototypeEvents {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
                     GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
-                } else if (!player.onGround() && player.zza > 0.0F && !isCJ) {
+                } else if (!player.onGround() && player.zza > 0.0F && charge == 0 && !isCJ) {
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
@@ -420,7 +420,20 @@ public class PrototypeEvents {
     public static void handleJumpChargeFromClient(ServerPlayer player, int action, float forward, boolean jumping, double clientGroundSpeed) {
         if (player.isFallFlying() || PrototypeItem.isWallRunning(player)) return;
         boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
-        if (action > 0 && !player.onGround() && !inWater) return;
+        if (action > 0 && !inWater) {
+            double startY = PrototypeItem.getChargeStartY(player);
+            if (startY == 0.0) {
+                PrototypeItem.setChargeStartY(player, player.getY());
+            } else if (player.onGround()) {
+                PrototypeItem.setChargeStartY(player, player.getY());
+            } else if (startY - player.getY() > 3.0) {
+                int charge = PrototypeItem.getJumpChargeTick(player);
+                if (charge > 0) {
+                    applyChargedJump(player, charge);
+                }
+                return;
+            }
+        }
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
         if (!hasPrototype) return;
 
