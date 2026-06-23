@@ -25,3 +25,4 @@
 | 2026-06-24 | START 阶段用 shouldSprint() 守卫 sprintDown，sprinting 变量加 || ClientWallRunState.shouldSprint() | 翻越后 sprint 丢失，用 sprintRetainTicks 保持 30 tick | ClientWallRunState |
 | 2026-06-24 | 删除 shouldSprint() 守卫，恢复直接按键轮询 sprintDown | shouldSprint() 在 grace 窗口期阻止 sprintDown 刷新 → 翻越后 sprint 断掉 | sprint-cutoff-fix incident |
 | 2026-06-24 | setWallNormal 加 !player.isInWater() 守卫；camera roll 加 !player.isInWater() | 水下不应触发墙跑（移动+相机旋转） | PrototypeEvents |
+| 2026-06-24 | 重构 charge jump C2S 发包逻辑：canCharge 下移到内层仅控制累加；外层改用 !isFallFlying；发包节流改为 tickCount%5；释放改为 !jumpDown | 跌落边缘时 onGround=false → canCharge=false → else 分支发 action=0 绕过服务端 3 格检测 | PrototypeEvents |
