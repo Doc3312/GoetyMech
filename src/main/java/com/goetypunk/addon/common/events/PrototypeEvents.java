@@ -20,6 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -461,12 +462,8 @@ public class PrototypeEvents {
         move = move.add(gravityOnWall);
         move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
 
-        player.setDeltaMovement(move.x, move.y, move.z);
-
-        Vec3 afterVel = player.getDeltaMovement();
-        GoetyPunkMod.LOGGER.info("WALL_AFTER: set=({}, {}, {}), actual=({}, {}, {})",
-                String.format("%.4f", move.x), String.format("%.4f", move.y), String.format("%.4f", move.z),
-                String.format("%.4f", afterVel.x), String.format("%.4f", afterVel.y), String.format("%.4f", afterVel.z));
+        player.move(MoverType.SELF, move);
+        player.setDeltaMovement(Vec3.ZERO);
 
         GoetyPunkMod.LOGGER.info("WALL_MV_RESULT: move=({}, {}, {}), gravityOnWall=({}, {}, {}), pull=({}, {}, {})",
                 String.format("%.4f", move.x), String.format("%.4f", move.y), String.format("%.4f", move.z),
