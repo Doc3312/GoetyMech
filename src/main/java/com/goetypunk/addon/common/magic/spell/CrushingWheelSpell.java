@@ -94,6 +94,8 @@ public class CrushingWheelSpell extends Spell {
         ItemStack focus = WandUtil.findFocus(caster);
         if (!(focus.getItem() instanceof StressFocus)) return;
 
+        boolean useStaffBonus = rightStaff(staff);
+
         if (!StressFocus.isBound(focus)) {
             player.displayClientMessage(
                     Component.translatable("info.goetypunk.stress_focus.not_bound")
@@ -123,6 +125,9 @@ public class CrushingWheelSpell extends Spell {
         int totalStress = (int) reader.getNetworkStress();
         int divisor = ModConfig.STRESS_DAMAGE_DIVISOR.get();
         int damage = Math.max(1, (int) (capacity / divisor));
+        if (useStaffBonus) {
+            damage = (int) (damage * 1.5);
+        }
         GoetyPunkMod.LOGGER.info("StressFocus spell → capacity={} stress={} divisor={} damage={}",
                 capacity, totalStress, divisor, damage);
         StressFocus.updateDamageCache(focus, damage);
@@ -154,7 +159,9 @@ public class CrushingWheelSpell extends Spell {
         }
 
         int cooldown = (int) (ModConfig.STRESS_FOCUS_COOLDOWN.get());
-        SEHelper.addCooldown(player, focus.getItem(), cooldown);
+        if (!focus.isEmpty()) {
+            SEHelper.addCooldown(player, focus.getItem(), cooldown);
+        }
         if (!player.isCreative()) {
             int cost = ModConfig.STRESS_FOCUS_COST.get();
             if (cost > 0) SEHelper.decreaseSouls(player, cost);
