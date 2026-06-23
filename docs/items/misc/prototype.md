@@ -37,6 +37,12 @@
 - 原因：长蓄力（80+ tick）后 isSprinting() 丢失导致 attrSpeed 塌缩到 0.1；进入飞行后 CJ 注入被跳过，水平速度仅靠 elytra 物理维持（摩擦大）；用户反馈速度仍需提升
 - 关联：fix-charge-jump-hspeed change
 
+### 2026-06-23 — 修复 sprint 停止后 groundSpeed 残值导致无输入蓄力跳获得错误水平动量
+
+- 改动：在 sprint 停止分支（`!player.isSprinting()`）中清空 `groundSpeed(NBT)`
+- 原因：sprint 期间每 tick 追踪的实测速度残留在 NBT 中，停止 sprint 后未被清除，蓄力跳时 `bestSpeed` 取到旧 sprint 速度，在无 W 输入时产生不应有的水平推力
+- 关联：codebase-remediation change
+
 ### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
 
 - 改动：移除旧冲刺粒子（DustParticleOptions 随机散布）和蓄力跳粒子（CRIT + ENCHANTED_HIT）；新增 6 身体锚点粒子系统（左手/右手外侧、头顶左/右、左脚/右脚外侧）；S2CSlamStatePacket 同步下砸客户端状态；下砸时生成深红体线 + FLAME 火星 + 淡红尾迹三层混合
