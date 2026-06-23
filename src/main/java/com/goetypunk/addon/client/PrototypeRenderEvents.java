@@ -13,6 +13,7 @@ import com.goetypunk.addon.common.net.c2s.C2SFlightInputPacket;
 import com.goetypunk.addon.config.ModConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -148,7 +149,8 @@ public class PrototypeRenderEvents {
             hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
         }
 
-        boolean canCharge = (player.onGround() || (player.isSwimming() && player.isInWater())) && !player.isFallFlying();
+        boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
+        boolean canCharge = (player.onGround() || inWater) && !player.isFallFlying();
         if (jumpDown && hasPrototype && canCharge) {
             clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
             float fwd = player.zza;

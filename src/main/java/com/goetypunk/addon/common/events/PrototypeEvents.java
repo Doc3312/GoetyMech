@@ -15,6 +15,7 @@ import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetypunk.addon.config.ModConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -285,8 +286,8 @@ public class PrototypeEvents {
             }
 
             // ── 游泳加速 + 氧气免疫 ──
-            boolean swimActive = player.isSwimming() && player.isInWater();
-            if (hasPrototype && swimActive && !player.isFallFlying()) {
+            boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
+            if (hasPrototype && inWater && !player.isFallFlying()) {
                 int swimTick = PrototypeItem.getSwimTick(player) + 1;
                 PrototypeItem.setSwimTick(player, swimTick);
                 AttributeInstance swimAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -301,7 +302,7 @@ public class PrototypeEvents {
                     }
                 }
                 player.setAirSupply(player.getMaxAirSupply());
-            } else if (!swimActive) {
+            } else if (!inWater) {
                 PrototypeItem.setSwimTick(player, 0);
                 AttributeInstance swimAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (swimAttr != null) {
@@ -444,7 +445,7 @@ public class PrototypeEvents {
 
     public static void handleJumpChargeFromClient(ServerPlayer player, int action, float forward, boolean jumping, double clientGroundSpeed) {
         if (player.isFallFlying() || PrototypeItem.isWallRunning(player)) return;
-        boolean inWater = player.isInWater();
+        boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
         if (action > 0 && !player.onGround() && !inWater) return;
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
         if (!hasPrototype) return;
