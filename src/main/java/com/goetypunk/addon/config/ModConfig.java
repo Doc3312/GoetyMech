@@ -141,6 +141,17 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue FLIGHT_TARGET_SPEED;
     public static final ForgeConfigSpec.DoubleValue SPRINT_MAX_MULTIPLIER;
 
+    // ====== Prototype — Kill Absorption 配置 ======
+
+    /** 击杀生物生命吸收比例 */
+    public static final ForgeConfigSpec.DoubleValue KILL_HEALTH_ABSORB_RATIO;
+
+    /** 吸收上限倍率（玩家 maxHealth × 此值 = absorption 上限） */
+    public static final ForgeConfigSpec.DoubleValue KILL_ABSORPTION_CAP_MULTIPLIER;
+
+    /** 击杀食物恢复比例 */
+    public static final ForgeConfigSpec.DoubleValue KILL_FOOD_RESTORE_RATIO;
+
     // ====== Prototype — Wall-running 配置 ======
 
     public static final ForgeConfigSpec.DoubleValue WALL_RUN_SPEED;
@@ -412,6 +423,18 @@ public class ModConfig {
         SPRINT_MAX_MULTIPLIER = BUILDER
                 .comment("冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）", "0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%", "范围: 0.0-20.0，默认 8.0")
                 .defineInRange("sprint_max_multiplier", 8.0, 0.0, 20.0);
+
+        KILL_HEALTH_ABSORB_RATIO = BUILDER
+                .comment("击杀生物生命吸收比例", "被击杀生物 maxHealth × 此值 = 治疗量", "范围: 0.0-2.0，默认 0.8")
+                .defineInRange("kill_health_absorb_ratio", 0.8, 0.0, 2.0);
+
+        KILL_ABSORPTION_CAP_MULTIPLIER = BUILDER
+                .comment("吸收上限倍率", "玩家 maxHealth × 此值 = absorption 上限", "范围: 1.0-10.0，默认 2.0")
+                .defineInRange("kill_absorption_cap_multiplier", 2.0, 1.0, 10.0);
+
+        KILL_FOOD_RESTORE_RATIO = BUILDER
+                .comment("击杀食物恢复比例", "被击杀生物 maxHealth × 此值 = 食物恢复量", "范围: 0.0-2.0，默认 0.333")
+                .defineInRange("kill_food_restore_ratio", 0.333, 0.0, 2.0);
 
         BUILDER.pop();
 
