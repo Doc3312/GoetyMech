@@ -147,6 +147,9 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue WALL_GRAVITY;
     public static final ForgeConfigSpec.DoubleValue WALL_JUMP_OFF_VELOCITY;
     public static final ForgeConfigSpec.DoubleValue WALL_PULL_SPEED;
+    public static final ForgeConfigSpec.DoubleValue WALL_ROTATION_SPEED;
+    public static final ForgeConfigSpec.IntValue WALL_RECOVERY_TICKS;
+    public static final ForgeConfigSpec.DoubleValue WALL_ROTATION_LIMIT;
 
     // ====== Prototype — Jump Charge 配置 ======
 
@@ -416,6 +419,18 @@ public class ModConfig {
         WALL_PULL_SPEED = BUILDER
                 .comment("吸附拉向墙面的速度", "范围: 0.05-1.0，默认 0.3")
                 .defineInRange("wall_pull_speed", 0.3, 0.05, 1.0);
+
+        WALL_ROTATION_SPEED = BUILDER
+                .comment("相机旋转插值速度", "0.05=慢, 0.3=快, 默认 0.15")
+                .defineInRange("wall_rotation_speed", 0.15, 0.05, 0.5);
+
+        WALL_RECOVERY_TICKS = BUILDER
+                .comment("跑墙结束回正所需 tick", "0=瞬间回正, 默认 10")
+                .defineInRange("wall_recovery_ticks", 10, 0, 40);
+
+        WALL_ROTATION_LIMIT = BUILDER
+                .comment("最大相机旋转角度（度），防止翻转视", "默认 85")
+                .defineInRange("wall_rotation_limit", 85.0, 45.0, 90.0);
 
         BUILDER.pop();
 
