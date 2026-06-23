@@ -426,6 +426,9 @@ public class PrototypeEvents {
 
         if (clientGroundSpeed > 0.001) {
             PrototypeItem.setGroundSpeed(player, clientGroundSpeed);
+            if (action > 0) {
+                PrototypeItem.setCjStartSpeed(player, clientGroundSpeed);
+            }
         }
 
         if (action > 0) {
@@ -445,15 +448,18 @@ public class PrototypeEvents {
         double groundSpeed = PrototypeItem.getGroundSpeed(player);
         double attrSpeed = player.getSpeed();
         if (player.isSprinting()) attrSpeed *= 1.3;
-        double bestSpeed = Math.max(hSpeed, Math.max(groundSpeed, attrSpeed));
+        double cjStartSpeed = PrototypeItem.getCjStartSpeed(player);
+        double bestSpeed = Math.max(hSpeed, Math.max(groundSpeed, Math.max(attrSpeed, cjStartSpeed)));
         if (bestSpeed > 0.001 && bestSpeed > hSpeed + 0.001
-                && (groundSpeed > 0.001 || hSpeed > 0.001 || player.isSprinting())) {
+                && (groundSpeed > 0.001 || hSpeed > 0.001 || cjStartSpeed > 0.001 || player.isSprinting())) {
             float yaw = player.getYRot() * Mth.DEG_TO_RAD;
             m = new Vec3(-Mth.sin(yaw) * bestSpeed, m.y, Mth.cos(yaw) * bestSpeed);
-            GoetyPunkMod.LOGGER.info("Sprint inertia: hSpeed={}, groundSpeed={}, attrSpeed={}, bestSpeed={}",
+            GoetyPunkMod.LOGGER.info("Sprint inertia: hSpeed={}, groundSpeed={}, attrSpeed={}, cjStartSpeed={}, bestSpeed={}",
                     String.format("%.4f", hSpeed), String.format("%.4f", groundSpeed),
-                    String.format("%.4f", attrSpeed), String.format("%.4f", bestSpeed));
+                    String.format("%.4f", attrSpeed), String.format("%.4f", cjStartSpeed),
+                    String.format("%.4f", bestSpeed));
         }
+        PrototypeItem.setCjStartSpeed(player, 0);
         PrototypeItem.setCjHx(player, m.x);
         PrototypeItem.setCjHz(player, m.z);
         double setHSpeed = Math.sqrt(m.x * m.x + m.z * m.z);

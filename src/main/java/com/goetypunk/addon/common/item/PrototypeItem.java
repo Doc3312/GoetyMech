@@ -29,6 +29,7 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_CJ_HX = "goetypunk.cj_hx";
     private static final String TAG_CJ_HZ = "goetypunk.cj_hz";
     private static final String TAG_GROUND_SPEED = "goetypunk.ground_speed";
+    private static final String TAG_CJ_START_SPEED = "goetypunk.cj_start_speed";
 
     public PrototypeItem() {
         super(new Properties()
@@ -224,6 +225,15 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_CHARGED_JUMPING);
         entity.getPersistentData().remove(TAG_CJ_HX);
         entity.getPersistentData().remove(TAG_CJ_HZ);
+        entity.getPersistentData().remove(TAG_CJ_START_SPEED);
+    }
+
+    public static double getCjStartSpeed(LivingEntity entity) {
+        return entity.getPersistentData().getDouble(TAG_CJ_START_SPEED);
+    }
+
+    public static void setCjStartSpeed(LivingEntity entity, double speed) {
+        entity.getPersistentData().putDouble(TAG_CJ_START_SPEED, speed);
     }
 
     // ── Ground speed tracking ──
