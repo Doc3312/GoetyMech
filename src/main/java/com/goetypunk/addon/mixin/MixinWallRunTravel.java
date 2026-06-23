@@ -34,36 +34,29 @@ public abstract class MixinWallRunTravel {
         }
 
         double speed = ModConfig.WALL_RUN_SPEED.get();
-        Vec3 wallMove = wallUp.scale(wallFwd * speed)
-                .add(wallRight.scale(wallStrafe * speed))
+        Vec3 climbVec = wallUp.scale(wallFwd * speed);
+        Vec3 strafeVec = wallRight.scale(wallStrafe * speed);
+        Vec3 wallMove = climbVec
+                .add(strafeVec)
                 .add(wallN.scale(-ModConfig.WALL_GRAVITY.get()))
                 .add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
 
-        Vec3 prePos = player.position();
-
-        player.setDeltaMovement(wallMove);
-        player.move(MoverType.SELF, wallMove);
-
-        Vec3 moved = player.position().subtract(prePos);
-        boolean climbingBlocked = wallFwd > 0 && moved.y < wallFwd * speed * 0.3;
-
-        if (climbingBlocked) {
-            for (double dy : new double[]{0.6, 1.0}) {
-                if (player.level().noCollision(player.getBoundingBox().move(0, dy, 0))) {
-                    player.setPos(player.getX(), player.getY() + dy, player.getZ());
-                    player.move(MoverType.SELF, wallMove);
-                    break;
-                }
-            }
-            for (double side : new double[]{0.5, -0.5, 0.3, -0.3}) {
-                Vec3 shift = wallRight.scale(side);
-                if (player.level().noCollision(player.getBoundingBox().move(shift))) {
-                    player.setPos(player.getX() + shift.x, player.getY(), player.getZ() + shift.z);
-                    player.move(MoverType.SELF, new Vec3(0, wallFwd * speed, 0));
-                    break;
+        if (wallFwd > 0) {
+            AABB futureBox = player.getBoundingBox().move(climbVec).inflate(-0.01);
+            if (!player.level().noCollision(futureBox)) {
+                for (double side : new double[]{0.6, -0.6, 0.4, -0.4, 0.2, -0.2}) {
+                    Vec3 sideStep = wallRight.scale(side);
+                    AABB checkBox = player.getBoundingBox().move(climbVec.add(sideStep)).inflate(-0.01);
+                    if (player.level().noCollision(checkBox)) {
+                        wallMove = wallMove.add(sideStep);
+                        break;
+                    }
                 }
             }
         }
+
+        player.setDeltaMovement(wallMove);
+        player.move(MoverType.SELF, wallMove);
 
         ci.cancel();
     }
