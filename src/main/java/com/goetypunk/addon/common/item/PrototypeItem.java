@@ -35,6 +35,7 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_CJ_HZ = "goetypunk.cj_hz";
     private static final String TAG_GROUND_SPEED = "goetypunk.ground_speed";
     private static final String TAG_CJ_START_SPEED = "goetypunk.cj_start_speed";
+    private static final String TAG_CHARGE_START_Y = "goetypunk.charge_start_y";
 
     public PrototypeItem() {
         super(new Properties()
@@ -301,5 +302,19 @@ public class PrototypeItem extends ElytraItem {
 
     public static void setGroundSpeed(LivingEntity entity, double speed) {
         entity.getPersistentData().putDouble(TAG_GROUND_SPEED, speed);
+    }
+
+    // ── Charge start Y tracking ──
+
+    public static double getChargeStartY(LivingEntity entity) {
+        return entity.getPersistentData().getDouble(TAG_CHARGE_START_Y);
+    }
+
+    public static void setChargeStartY(LivingEntity entity, double y) {
+        entity.getPersistentData().putDouble(TAG_CHARGE_START_Y, y);
+    }
+
+    public static void clearChargeStartY(LivingEntity entity) {
+        entity.getPersistentData().remove(TAG_CHARGE_START_Y);
     }
 }
