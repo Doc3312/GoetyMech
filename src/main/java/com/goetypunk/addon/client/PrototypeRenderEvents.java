@@ -148,21 +148,24 @@ public class PrototypeRenderEvents {
         }
 
         boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
-        boolean canCharge = (player.onGround() || inWater) && !player.isFallFlying();
-        if (jumpDown && hasPrototype && canCharge) {
-            clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
-            float fwd = player.zza;
-            boolean jumping = jumpDown;
-            if (clientChargeTicks == 1) {
-                Vec3 vel = player.getDeltaMovement();
-                double clientHSpeed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
-                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(1, fwd, jumping, clientHSpeed));
-                lastSentCharge = 1;
-            } else if (clientChargeTicks != lastSentCharge && clientChargeTicks % 5 == 0) {
-                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(clientChargeTicks, fwd, jumping, 0.0));
-                lastSentCharge = clientChargeTicks;
+        if (jumpDown && hasPrototype && !player.isFallFlying()) {
+            if (player.onGround() || inWater) {
+                clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
             }
-        } else {
+            if (clientChargeTicks > 0) {
+                float fwd = player.zza;
+                boolean jumping = jumpDown;
+                if (lastSentCharge == 0) {
+                    Vec3 vel = player.getDeltaMovement();
+                    double clientHSpeed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+                    ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(1, fwd, jumping, clientHSpeed));
+                    lastSentCharge = 1;
+                } else if (player.tickCount % 5 == 0) {
+                    ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(clientChargeTicks, fwd, jumping, 0.0));
+                    lastSentCharge = clientChargeTicks;
+                }
+            }
+        } else if (!jumpDown) {
             if (lastSentCharge > 0) {
                 ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(0, player.zza, false, 0.0));
                 lastSentCharge = 0;
