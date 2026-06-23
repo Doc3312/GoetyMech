@@ -21,6 +21,8 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_WALL_NORMAL_X = "goetypunk.wall_nx";
     private static final String TAG_WALL_NORMAL_Y = "goetypunk.wall_ny";
     private static final String TAG_WALL_NORMAL_Z = "goetypunk.wall_nz";
+    private static final String TAG_WALL_RUN_TICKS = "goetypunk.wall_run_ticks";
+    private static final String TAG_WALL_RECOVERY_TICKS = "goetypunk.wall_recovery_ticks";
     private static final String TAG_JUMP_CHARGE_TICK = "goetypunk.jump_charge_tick";
     private static final String TAG_SLAM_INVULN_TICK = "goetypunk.slam_invuln_tick";
     private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
@@ -145,6 +147,26 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_WALL_NORMAL_X);
         entity.getPersistentData().remove(TAG_WALL_NORMAL_Y);
         entity.getPersistentData().remove(TAG_WALL_NORMAL_Z);
+    }
+
+    public static int getWallRunTicks(LivingEntity entity) {
+        return entity.getPersistentData().getInt(TAG_WALL_RUN_TICKS);
+    }
+
+    public static void setWallRunTicks(LivingEntity entity, int ticks) {
+        entity.getPersistentData().putInt(TAG_WALL_RUN_TICKS, ticks);
+    }
+
+    public static int getWallRecoveryTicks(LivingEntity entity) {
+        return entity.getPersistentData().getInt(TAG_WALL_RECOVERY_TICKS);
+    }
+
+    public static void setWallRecoveryTicks(LivingEntity entity, int ticks) {
+        entity.getPersistentData().putInt(TAG_WALL_RECOVERY_TICKS, ticks);
+    }
+
+    public static void clearWallRecovery(LivingEntity entity) {
+        entity.getPersistentData().remove(TAG_WALL_RECOVERY_TICKS);
     }
 
     // ── Jump charging ──
