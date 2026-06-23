@@ -198,7 +198,7 @@ public class PrototypeEvents {
             if (hasPrototype && !isSlamming) {
                 if (PrototypeItem.isWallRunning(player)) {
                     handleWallRunTick(player);
-                } else if (player.isSprinting() && !player.isFallFlying()) {
+                } else if (player.isSprinting() && !player.isFallFlying() && !player.isInWater()) {
                     tryStartWallRun(player);
                 }
             }

@@ -89,7 +89,7 @@ public class PrototypeRenderEvents {
             boolean sprinting = ClientWallRunState.sprintDown || player.isSprinting() || ClientWallRunState.shouldSprint();
             boolean hasProto = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
             Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
-            if (sprinting && hasProto && !player.isFallFlying() && wallDir != null) {
+            if (sprinting && hasProto && !player.isFallFlying() && !player.isInWater() && wallDir != null) {
                 ClientWallRunState.wallNormal = wallDir;
                 ClientWallRunState.graceTicks = 0;
             } else if (sprinting && hasProto && !player.isFallFlying() && ClientWallRunState.graceTicks > 0) {
