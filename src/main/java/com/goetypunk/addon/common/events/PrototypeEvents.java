@@ -425,25 +425,13 @@ public class PrototypeEvents {
                 String.format("%.4f", curVel.y),
                 String.format("%.4f", curVel.z));
 
-        Vec3 forwardOnWall;
-        if (player.isSprinting()) {
-            forwardOnWall = new Vec3(0, -1, 0).cross(wallN).normalize();
-        } else {
-            Vec3 look = player.getLookAngle();
-            forwardOnWall = look.subtract(wallN.scale(look.dot(wallN)));
-            double fwLen = forwardOnWall.length();
-            if (fwLen < 0.001) {
-                forwardOnWall = new Vec3(0, -1, 0).cross(wallN);
-            }
-            forwardOnWall = forwardOnWall.normalize();
-        }
+        Vec3 forwardOnWall = new Vec3(0, -1, 0).cross(wallN).normalize();
 
         Vec3 rightOnWall = forwardOnWall.cross(wallN).normalize();
 
         float forward = PrototypeItem.getWallForward(player);
         float strafe = PrototypeItem.getWallStrafe(player);
-        // 冲刺+墙跑默认前进；C2S 包做精细覆盖（如停止或后退）
-        if (forward == 0.0f && strafe == 0.0f && player.isSprinting()) {
+        if (forward == 0.0f && strafe == 0.0f) {
             forward = 1.0f;
         }
         double speed = ModConfig.WALL_RUN_SPEED.get();
