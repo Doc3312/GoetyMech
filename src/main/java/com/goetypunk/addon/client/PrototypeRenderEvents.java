@@ -279,7 +279,7 @@ public class PrototypeRenderEvents {
         GoetyPunkMod.LOGGER.info("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
                 mc.options.keySprint.isDown(), player.isSprinting(), hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
                 player.isFallFlying());
-        boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && wallDir != null;
+        boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && !player.isInWater() && wallDir != null;
 
         if (onWall) {
             clientWallNormal = wallDir;
