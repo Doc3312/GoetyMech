@@ -49,7 +49,7 @@ public abstract class MixinWallRunTravel {
         boolean verticalBlocked = wallFwd > 0 && actualMoved.y < wallFwd * speed * 0.3;
 
         if (horizontalBlocked || verticalBlocked) {
-            AABB stepped = player.getBoundingBox().offset(0, 0.6, 0);
+            AABB stepped = player.getBoundingBox().move(0, 0.6, 0);
             if (player.level().noCollision(stepped)) {
                 player.setPos(player.getX(), player.getY() + 0.6, player.getZ());
                 Vec3 leftover = new Vec3(wallMove.x, 0, wallMove.z);
