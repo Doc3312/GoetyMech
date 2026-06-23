@@ -22,13 +22,12 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FleshCasketItem extends Item implements ICurioItem {
     private static final String TAG_TIER = "flesh_casket_tier";
     private static final String TAG_TRIGGER = "flesh_casket_trigger";
-    private static final String TAG_COOLDOWNS = "flesh_casket_cooldowns";
+    private static final String TAG_COOLDOWN = "flesh_casket_cooldown";
+    private static final int MAX_COOLDOWN_TICKS = 600;
 
     private final TriggerType triggerType;
 
@@ -78,11 +77,17 @@ public class FleshCasketItem extends Item implements ICurioItem {
 
     @Override
     public boolean canUnequip(SlotContext slotContext, ItemStack stack) {
-        FleshCasketItemHandler handler = FleshCasketItemHandler.get(stack);
-        for (int i = 0; i < handler.getSlots(); i++) {
-            if (!handler.getStackInSlot(i).isEmpty()) return false;
-        }
         return true;
+    }
+
+    @Override
+    public boolean isDamageable() {
+        return true;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return MAX_COOLDOWN_TICKS;
     }
 
     @Override
@@ -119,34 +124,23 @@ public class FleshCasketItem extends Item implements ICurioItem {
         stack.setTag(nbt);
     }
 
-    public static int getFocusCooldown(ItemStack casketStack, String focusId) {
-        CompoundTag cdTag = casketStack.getOrCreateTagElement(TAG_COOLDOWNS);
-        return cdTag.getInt(focusId);
+    public static int getCooldown(ItemStack casketStack) {
+        return casketStack.getOrCreateTag().getInt(TAG_COOLDOWN);
     }
 
-    public static void setFocusCooldown(ItemStack casketStack, String focusId, int ticks) {
-        casketStack.getOrCreateTagElement(TAG_COOLDOWNS).putInt(focusId, ticks);
+    public static void setCooldown(ItemStack casketStack, int ticks) {
+        casketStack.getOrCreateTag().putInt(TAG_COOLDOWN, Math.max(0, ticks));
+        casketStack.setDamageValue(Math.min(MAX_COOLDOWN_TICKS, Math.max(0, ticks)));
     }
 
-    public static boolean isFocusOnCooldown(ItemStack casketStack, String focusId) {
-        return getFocusCooldown(casketStack, focusId) > 0;
+    public static boolean isOnCooldown(ItemStack casketStack) {
+        return getCooldown(casketStack) > 0;
     }
 
     public static void tickCooldowns(ItemStack casketStack) {
-        CompoundTag cdTag = casketStack.getOrCreateTagElement(TAG_COOLDOWNS);
-        if (cdTag.isEmpty()) return;
-        Map<String, Integer> toRemove = new HashMap<>();
-        for (String key : cdTag.getAllKeys()) {
-            int val = cdTag.getInt(key) - 1;
-            if (val <= 0) {
-                toRemove.put(key, 0);
-            } else {
-                cdTag.putInt(key, val);
-            }
-        }
-        for (String key : toRemove.keySet()) {
-            cdTag.remove(key);
-        }
+        int cd = getCooldown(casketStack);
+        if (cd <= 0) return;
+        setCooldown(casketStack, cd - 1);
     }
 
     public static boolean hasAnyFocus(ItemStack casketStack) {

@@ -12,15 +12,12 @@ import com.goetypunk.addon.config.ModConfig;
 import com.goetypunk.addon.init.ModItems;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Optional;
@@ -90,8 +87,7 @@ public class FleshCasketEvents {
             ISpell spell = iFocus.getSpell();
             if (spell == null) continue;
 
-            String focusId = ForgeRegistries.ITEMS.getKey(focusStack.getItem()).toString();
-            if (FleshCasketItem.isFocusOnCooldown(casketStack, focusId)) continue;
+            if (FleshCasketItem.isOnCooldown(casketStack)) continue;
 
             int halfCost = spell.soulCost(player, ItemStack.EMPTY) / 2;
             if (!player.isCreative() && SEHelper.getSoulAmountInt(player) < halfCost) continue;
@@ -102,8 +98,6 @@ public class FleshCasketEvents {
             var spellStat = WandUtil.getStats(player, spell);
             ItemStack staffStack = new ItemStack(ModItems.AUTO_CAST_DUMMY_WAND.get());
 
-            int cooldown = spell.spellCooldown(player);
-
             player.getPersistentData().putLong(TAG_LAST_CAST_TICK, gameTime);
             spell.SpellResult(serverLevel, player, staffStack, spellStat);
 
@@ -111,7 +105,17 @@ public class FleshCasketEvents {
                 SEHelper.decreaseSouls(player, halfCost);
             }
 
-            FleshCasketItem.setFocusCooldown(casketStack, focusId, cooldown);
+            int maxCooldown = 0;
+            for (int j = 0; j < inv.getSlots(); j++) {
+                ItemStack fs = inv.getStackInSlot(j);
+                if (fs.isEmpty() || !(fs.getItem() instanceof IFocus iF)) continue;
+                ISpell s = iF.getSpell();
+                if (s != null) {
+                    int cd = s.spellCooldown(player);
+                    if (cd > maxCooldown) maxCooldown = cd;
+                }
+            }
+            FleshCasketItem.setCooldown(casketStack, maxCooldown);
             return;
         }
     }
