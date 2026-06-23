@@ -20,7 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
+
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -319,9 +319,8 @@ public class PrototypeEvents {
                         player.zza);
             }
 
-            // ── Wall movement ──
+            // ── Wall movement (server tracks state only; client handles velocity via setDeltaMovement) ──
             if (PrototypeItem.isWallRunning(player)) {
-                applyWallMovement(player);
                 return;
             }
 
@@ -412,62 +411,6 @@ public class PrototypeEvents {
         PrototypeItem.setWallRecoveryTicks(player, ModConfig.WALL_RECOVERY_TICKS.get());
         PrototypeItem.clearWallState(player);
         PrototypeItem.setWallRunning(player, false);
-    }
-
-    // ── Wall movement (applied in PlayerTick.END) ──
-
-    private static void applyWallMovement(Player player) {
-        Vec3 wallN = PrototypeItem.getWallNormal(player);
-        if (wallN.lengthSqr() < 0.5) return;
-
-        Vec3 curVel = player.getDeltaMovement();
-        GoetyPunkMod.LOGGER.info("WALL_DIAG: isSprint={}, zza={}, xxa={}, curVel=({}, {}, {})",
-                player.isSprinting(),
-                String.format("%.3f", player.zza),
-                String.format("%.3f", player.xxa),
-                String.format("%.4f", curVel.x),
-                String.format("%.4f", curVel.y),
-                String.format("%.4f", curVel.z));
-
-        Vec3 forwardOnWall = new Vec3(0, -1, 0).cross(wallN).normalize();
-
-        Vec3 rightOnWall = forwardOnWall.cross(wallN).normalize();
-
-        float forward = PrototypeItem.getWallForward(player);
-        float strafe = PrototypeItem.getWallStrafe(player);
-        if (forward == 0.0f && strafe == 0.0f) {
-            forward = 1.0f;
-        }
-        double speed = ModConfig.WALL_RUN_SPEED.get();
-
-        GoetyPunkMod.LOGGER.info("WALL_MV: wallN=({}, {}, {}), fwd={}, strafe={}, fwOnWall=({}, {}, {}), right=({}, {}, {})",
-                String.format("%.2f", wallN.x), String.format("%.2f", wallN.y), String.format("%.2f", wallN.z),
-                forward, strafe,
-                String.format("%.3f", forwardOnWall.x), String.format("%.3f", forwardOnWall.y), String.format("%.3f", forwardOnWall.z),
-                String.format("%.3f", rightOnWall.x), String.format("%.3f", rightOnWall.y), String.format("%.3f", rightOnWall.z));
-
-        Vec3 move = forwardOnWall.scale(forward * speed)
-                .add(rightOnWall.scale(-strafe * speed));
-
-        Vec3 worldDown = new Vec3(0, -ModConfig.WALL_GRAVITY.get(), 0);
-        Vec3 gravityOnWall = WallUtil.projectOnPlane(worldDown, wallN);
-        move = move.add(gravityOnWall);
-        move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
-
-        if (player.onGround()) {
-            move = move.add(0, 0.22, 0);
-            GoetyPunkMod.LOGGER.info("WALL_LIFT: onGround, added upward lift");
-        }
-
-        player.move(MoverType.SELF, move);
-        player.setDeltaMovement(Vec3.ZERO);
-
-        GoetyPunkMod.LOGGER.info("WALL_MV_RESULT: move=({}, {}, {}), gravityOnWall=({}, {}, {}), pull=({}, {}, {})",
-                String.format("%.4f", move.x), String.format("%.4f", move.y), String.format("%.4f", move.z),
-                String.format("%.4f", gravityOnWall.x), String.format("%.4f", gravityOnWall.y), String.format("%.4f", gravityOnWall.z),
-                String.format("%.4f", wallN.x * ModConfig.WALL_PULL_SPEED.get()),
-                String.format("%.4f", wallN.y * ModConfig.WALL_PULL_SPEED.get()),
-                String.format("%.4f", wallN.z * ModConfig.WALL_PULL_SPEED.get()));
     }
 
     // ── Jump charging (called from C2S packet handler) ──

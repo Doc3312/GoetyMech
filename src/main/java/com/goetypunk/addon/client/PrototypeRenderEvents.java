@@ -83,6 +83,30 @@ public class PrototypeRenderEvents {
         // ── Update client wall state for camera/model roll ──
         updateClientWallState(player);
 
+        // ── Apply wall-run velocity via setDeltaMovement (consumed by next tick's travel()) ──
+        if (clientWallNormal.lengthSqr() >= 0.5) {
+            Vec3 wallN = clientWallNormal;
+            Vec3 forwardOnWall = new Vec3(0, -1, 0).cross(wallN).normalize();
+            Vec3 rightOnWall = forwardOnWall.cross(wallN).normalize();
+
+            float wallFwd = mc.options.keyUp.isDown() ? 1.0f : (mc.options.keyDown.isDown() ? -1.0f : 0.0f);
+            float wallStrafe = 0.0f;
+            if (mc.options.keyLeft.isDown()) wallStrafe += 1.0f;
+            if (mc.options.keyRight.isDown()) wallStrafe -= 1.0f;
+            if (wallFwd == 0.0f && wallStrafe == 0.0f) wallFwd = 1.0f;
+
+            double speed = ModConfig.WALL_RUN_SPEED.get();
+            Vec3 move = forwardOnWall.scale(wallFwd * speed)
+                    .add(rightOnWall.scale(-wallStrafe * speed));
+
+            Vec3 worldDown = new Vec3(0, -ModConfig.WALL_GRAVITY.get(), 0);
+            Vec3 gravityOnWall = WallUtil.projectOnPlane(worldDown, wallN);
+            move = move.add(gravityOnWall);
+            move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
+
+            player.setDeltaMovement(move);
+        }
+
         // Cancel slam on jump press (not during wall-run)
         if (wasPressed && clientWallNormal.lengthSqr() < 0.5) {
             ModNetwork.CHANNEL.sendToServer(new C2SCancelSlamPacket());
