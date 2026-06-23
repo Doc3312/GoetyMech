@@ -24,6 +24,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -117,22 +118,15 @@ public class PrototypeRenderEvents {
 
         // ── Unified body-trail particles ──
         if (hasPrototype) {
-            Vector3f color = null;
-            boolean addCrit = false;
-
             if (clientSlamming) {
-                color = new Vector3f(0.35f, 0.03f, 0.03f);
-                addCrit = true;
+                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, ParticleTypes.FLAME);
+                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null);
             } else if (player.isSprinting() && player.zza > 0.0F && !player.isFallFlying()) {
-                color = new Vector3f(0.35f, 0.03f, 0.03f);
+                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null);
             } else if (clientChargeTicks > 0) {
-                color = new Vector3f(0.35f, 0.03f, 0.03f);
+                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null);
             } else if (player.isFallFlying()) {
-                color = new Vector3f(0.15f, 0.015f, 0.015f);
-            }
-
-            if (color != null) {
-                spawnBodyTrailParticles(player, color, 0.23f, addCrit);
+                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null);
             }
         }
 
@@ -264,7 +258,7 @@ public class PrototypeRenderEvents {
         }
     }
 
-    private static void spawnBodyTrailParticles(Player player, Vector3f color, float scale, boolean addCrit) {
+    private static void spawnBodyTrailParticles(Player player, Vector3f color, float scale, ParticleOptions spark) {
         var r = player.getRandom();
         Vec3 vel = player.getDeltaMovement();
         float yawRad = player.getYRot() * Mth.DEG_TO_RAD;
@@ -284,18 +278,18 @@ public class PrototypeRenderEvents {
             double pz = player.getZ() + right.z * a[0];
             double py = player.getY() + a[1];
 
-            for (int i = 0; i < 3; i++) {
-                double jx = px + (r.nextDouble() - 0.5) * 0.15;
-                double jy = py + (r.nextDouble() - 0.5) * 0.15;
-                double jz = pz + (r.nextDouble() - 0.5) * 0.15;
-                double vx = -vel.x * 1.5 + (r.nextDouble() - 0.5) * 0.1;
-                double vy = -0.06 + (r.nextDouble() - 0.5) * 0.05;
-                double vz = -vel.z * 1.5 + (r.nextDouble() - 0.5) * 0.1;
+            for (int i = 0; i < 5; i++) {
+                double jx = px + (r.nextDouble() - 0.5) * 0.2;
+                double jy = py + (r.nextDouble() - 0.5) * 0.2;
+                double jz = pz + (r.nextDouble() - 0.5) * 0.2;
+                double vx = -vel.x * 0.6 + (r.nextDouble() - 0.5) * 0.1;
+                double vy = -0.03 + (r.nextDouble() - 0.5) * 0.05;
+                double vz = -vel.z * 0.6 + (r.nextDouble() - 0.5) * 0.1;
                 player.level().addParticle(new DustParticleOptions(color, scale), jx, jy, jz, vx, vy, vz);
             }
 
-            if (addCrit) {
-                player.level().addParticle(ParticleTypes.CRIT, px, py, pz,
+            if (spark != null) {
+                player.level().addParticle(spark, px, py, pz,
                         (r.nextDouble() - 0.5) * 0.15, 0.05, (r.nextDouble() - 0.5) * 0.15);
             }
         }
