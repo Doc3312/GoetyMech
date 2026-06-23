@@ -350,6 +350,10 @@ public class PrototypeEvents {
         PrototypeItem.setWallRunning(player, true);
         PrototypeItem.setWallNormal(player, wallDir);
         PrototypeItem.setWallRunTicks(player, 0);
+        if (player.onGround()) {
+            player.setDeltaMovement(player.getDeltaMovement().add(0, 0.42, 0));
+            GoetyPunkMod.LOGGER.info("Prototype wall-run LIFT: onGround lift vy=0.42");
+        }
         GoetyPunkMod.LOGGER.info("Prototype wall-run START: normal={}", wallDir);
     }
 
@@ -449,6 +453,11 @@ public class PrototypeEvents {
         Vec3 gravityOnWall = WallUtil.projectOnPlane(worldDown, wallN);
         move = move.add(gravityOnWall);
         move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
+
+        if (player.onGround()) {
+            move = move.add(0, 0.22, 0);
+            GoetyPunkMod.LOGGER.info("WALL_LIFT: onGround, added upward lift");
+        }
 
         player.move(MoverType.SELF, move);
         player.setDeltaMovement(Vec3.ZERO);
