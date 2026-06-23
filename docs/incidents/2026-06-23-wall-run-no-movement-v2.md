@@ -2,6 +2,15 @@
 
 status: superseded
 
+## 2026-06-23 Post-archive update
+status: superseded
+
+Client-side setDeltaMovement approach was implemented but missed the design goal.
+The user wants VERTICAL wall-running (run UP walls, Titanfall-style), not horizontal wall-running.
+W=climb up, S=slide down, A/D=strafe left/right on wall surface.
+Gravity should pull TOWARD the wall (not projected onto wall plane).
+No auto-forward movement - player controls all direction.
+
 ## 问题
 
 墙跑完全实现（相机全量旋转、转角检测、摩擦检测）后，服务端 `player.move(MoverType.SELF, move)` 不产生实际位移。Y 坐标始终停留在地面高度，沿墙方向也无移动。
