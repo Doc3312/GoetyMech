@@ -81,7 +81,7 @@ public class FleshCasketItem extends Item implements ICurioItem {
     }
 
     @Override
-    public boolean isDamageable() {
+    public boolean isDamageable(ItemStack stack) {
         return true;
     }
 
