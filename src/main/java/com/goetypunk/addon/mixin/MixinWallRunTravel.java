@@ -31,6 +31,7 @@ public abstract class MixinWallRunTravel {
 
         if (ClientWallRunState.sprintDown || player.isSprinting()) {
             player.setSprinting(true);
+            ClientWallRunState.sprintDown = true;
         }
 
         double speed = ModConfig.WALL_RUN_SPEED.get();
