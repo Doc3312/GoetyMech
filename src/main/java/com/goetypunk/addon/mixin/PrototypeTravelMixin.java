@@ -24,15 +24,9 @@ public abstract class PrototypeTravelMixin {
         float forward = PrototypeItem.getFlightForward(player);
         if (!(forward > 0.01f)) return;
 
-        int accelTick = PrototypeItem.getFlightAccelTick(player);
-        int accelTicks = ModConfig.FLIGHT_ACCEL_TICKS.get();
-        double t = Math.min((double) accelTick / (double) accelTicks, 1.0);
-        double maxMult = ModConfig.FLIGHT_MAX_MULTIPLIER.get();
-        double mult = 1.0 + t * (maxMult - 1.0);
-        double speed = ModConfig.FLIGHT_TARGET_SPEED.get() * mult;
-
         Vec3 look = player.getLookAngle();
         Vec3 current = player.getDeltaMovement();
+        double speed = ModConfig.FLIGHT_TARGET_SPEED.get();
         double hoverLift = speed * 0.16;
         double pitch = player.getXRot();
         double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);

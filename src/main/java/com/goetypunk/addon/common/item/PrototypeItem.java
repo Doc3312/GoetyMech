@@ -29,7 +29,6 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_SLAM_INVULN_TICK = "goetypunk.slam_invuln_tick";
     private static final String TAG_SPRINT_TICK = "goetypunk.sprint_tick";
     private static final String TAG_FLIGHT_FORWARD = "goetypunk.flight_forward";
-    private static final String TAG_FLIGHT_ACCEL_TICK = "goetypunk.flight_accel_tick";
     private static final String TAG_CHARGED_JUMPING = "goetypunk.charged_jumping";
     private static final String TAG_CJ_HX = "goetypunk.cj_hx";
     private static final String TAG_CJ_HZ = "goetypunk.cj_hz";
@@ -236,20 +235,6 @@ public class PrototypeItem extends ElytraItem {
 
     public static void setFlightForward(LivingEntity entity, float forward) {
         entity.getPersistentData().putFloat(TAG_FLIGHT_FORWARD, forward);
-    }
-
-    // ── Flight acceleration tick ──
-
-    public static int getFlightAccelTick(LivingEntity entity) {
-        return entity.getPersistentData().getInt(TAG_FLIGHT_ACCEL_TICK);
-    }
-
-    public static void setFlightAccelTick(LivingEntity entity, int tick) {
-        entity.getPersistentData().putInt(TAG_FLIGHT_ACCEL_TICK, tick);
-    }
-
-    public static void clearFlightAccel(LivingEntity entity) {
-        entity.getPersistentData().remove(TAG_FLIGHT_ACCEL_TICK);
     }
 
     // ── Charged jump state ──

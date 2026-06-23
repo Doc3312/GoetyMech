@@ -209,6 +209,11 @@
 		#范围: 1-9999，默认 1200
 		#Range: 1.0 ~ 9999.0
 		slam_max_damage = 1200.0
+		#飞行加速到上限所需 tick 数
+		#类似 sprint 的 80 tick 加速曲线
+		#范围: 5-400，默认 60（=3秒到10x）
+		#Range: 5 ~ 400
+		flight_accel_ticks = 60
 		#Slam 最低伤害（无论坠落多矮都有此保底）
 		#范围: 1-9999，默认 20
 		#Range: 1.0 ~ 9999.0
@@ -258,17 +263,6 @@
 		#范围: 0.0-20.0，默认 8.0
 		#Range: 0.0 ~ 20.0
 		sprint_max_multiplier = 8.0
-		#飞行减速度（per tick）
-		#松开W后每tick倍率减量
-		#范围: 0.01-5.0，默认 0.05
-		#Range: 0.01 ~ 5.0
-		flight_decel_rate = 0.05
-		#飞行加速度（per tick）
-		#按住W时每tick倍率增量
-		#例: 0.15 × 60 tick = 9.0 → 约3秒到10x
-		#范围: 0.01-5.0，默认 0.15
-		#Range: 0.01 ~ 5.0
-		flight_accel_rate = 0.15
 		#吸收上限倍率
 		#玩家 maxHealth × 此值 = absorption 上限
 		#范围: 1.0-10.0，默认 2.0
