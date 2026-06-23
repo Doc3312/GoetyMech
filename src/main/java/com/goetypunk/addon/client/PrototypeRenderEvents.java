@@ -169,6 +169,12 @@ public class PrototypeRenderEvents {
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         float rollDeg = quatRollDeg(clientWallQuat);
+        GoetyPunkMod.LOGGER.info("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
+                String.format("%.2f", rollDeg),
+                String.format("%.3f", clientWallQuat.x),
+                String.format("%.3f", clientWallQuat.y),
+                String.format("%.3f", clientWallQuat.z),
+                String.format("%.3f", clientWallQuat.w));
         if (Math.abs(rollDeg) < 1.0f) return;
         event.setRoll(event.getRoll() + rollDeg);
     }
@@ -236,6 +242,9 @@ public class PrototypeRenderEvents {
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
+        GoetyPunkMod.LOGGER.info("CLIENT_WALL: sprint={}, hasProto={}, wallDir={}, isFly={}",
+                sprinting, hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
+                player.isFallFlying());
         boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && wallDir != null;
 
         if (onWall) {
