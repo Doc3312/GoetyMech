@@ -415,14 +415,18 @@ public class PrototypeEvents {
         Vec3 wallN = PrototypeItem.getWallNormal(player);
         if (wallN.lengthSqr() < 0.5) return;
 
-        Vec3 look = player.getLookAngle();
-        Vec3 forwardOnWall = look.subtract(wallN.scale(look.dot(wallN)));
-        double fwLen = forwardOnWall.length();
-        if (fwLen < 0.001) {
-            forwardOnWall = new Vec3(1, 0, 0).cross(wallN);
-            fwLen = forwardOnWall.length();
+        Vec3 forwardOnWall;
+        if (player.isSprinting()) {
+            forwardOnWall = new Vec3(0, -1, 0).cross(wallN).normalize();
+        } else {
+            Vec3 look = player.getLookAngle();
+            forwardOnWall = look.subtract(wallN.scale(look.dot(wallN)));
+            double fwLen = forwardOnWall.length();
+            if (fwLen < 0.001) {
+                forwardOnWall = new Vec3(0, -1, 0).cross(wallN);
+            }
+            forwardOnWall = forwardOnWall.normalize();
         }
-        forwardOnWall = forwardOnWall.scale(1.0 / fwLen);
 
         Vec3 rightOnWall = forwardOnWall.cross(wallN).normalize();
 

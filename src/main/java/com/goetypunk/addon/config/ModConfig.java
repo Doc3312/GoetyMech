@@ -406,7 +406,7 @@ public class ModConfig {
 
         WALL_RUN_SPEED = BUILDER
                 .comment("墙面移动速度（blocks/tick）", "范围: 0.01-1.0，默认 0.15")
-                .defineInRange("wall_run_speed", 0.15, 0.01, 1.0);
+                .defineInRange("wall_run_speed", 0.25, 0.01, 1.0);
 
         WALL_GRAVITY = BUILDER
                 .comment("墙面下滑重力（blocks/tick）", "范围: 0.0-1.0，默认 0.03")
