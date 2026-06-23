@@ -1,0 +1,260 @@
+
+[sculk_bind_focus]
+	#幽匿束缚聚晶施法成功冷却时间（tick）
+	#范围: 20-12000，默认 100（5秒，测试用）
+	#Range: 20 ~ 12000
+	success_cooldown = 100
+	#锁定持续时间（秒）
+	#范围: 1-60，默认 10
+	#Range: 1 ~ 60
+	lock_duration = 10
+	#幽匿束缚聚晶未命中冷却时间（tick）
+	#范围: 20-12000，默认 80（4秒）
+	#Range: 20 ~ 12000
+	miss_cooldown = 80
+	#每次施法召唤Warden的数量
+	#范围: 1-10，默认 1
+	#Range: 1 ~ 10
+	warden_count = 1
+	#幽匿束缚聚晶的灵魂消耗
+	#范围: 1-1000，默认 80
+	#Range: 1 ~ 1000
+	soul_cost = 80
+	#法术最大射程（格）
+	#范围: 5-64，默认 16
+	#Range: 5 ~ 64
+	range = 16
+
+[flesh_casket]
+	#Type C 血肉晶匣自动施法触发阈值（百分比）
+	#玩家血量低于此百分比时触发
+	#范围: 1-100，默认 20
+	#Range: 1 ~ 100
+	threshold = 20
+
+[blocks]
+	#血肉熔炉放置时自动扫描不祥火炬的范围（格）
+	#范围: 2-32，默认 8
+	#Range: 2 ~ 32
+	link_range = 8
+	#血肉熔炉转化扭曲胚胎所需时间（秒）
+	#范围: 1-10000，默认 15
+	#Range: 1 ~ 10000
+	flesh_furnace_cooking_time = 15
+
+[soul_catcher]
+	#灵魂捕手音效冷却 (tick)
+	#阈值达标后，冷却期内再次达标不播放音效
+	#范围: 0-1200，默认 40 (2秒)
+	#Range: 0 ~ 1200
+	sound_cooldown_ticks = 40
+	#灵魂捕手击杀阈值
+	#每击杀此数量生物即获得一个灵质
+	#范围: 1-1000，默认 5
+	#Range: 1 ~ 1000
+	kills_threshold = 5
+
+[time_stop]
+	#Enable time stop countdown (auto-end after duration)
+	#范围: true/false，默认 false
+	time_stop_countdown_enabled = false
+	#Default time stop duration in ticks (20 ticks = 1 second)
+	#仅在 countdown 启用时生效
+	#范围: 20-72000，默认 180（9秒）
+	#Range: 20 ~ 72000
+	time_stop_default_duration = 180
+	#Enable time stop feature
+	#范围: true/false，默认 true
+	time_stop_enabled = true
+
+[items]
+	#扭曲胚胎召唤新刌民时消耗的灵魂数量
+	#范围: 1-10000，默认 10
+	#Range: 1 ~ 10000
+	twisted_embryo_soul_cost = 10
+	#成熟胚胎召唤仆从时消耗的灵魂数量
+	#范围: 1-10000，默认 100
+	#Range: 1 ~ 10000
+	mature_embryo_soul_cost = 100
+
+[squad_barracks]
+	#二阶点将台灵魂折扣倍率
+	#范围: 0.0-1.0，默认 0.5
+	#Range: 0.0 ~ 1.0
+	tier2_discount = 0.5
+	#三阶点将台灵魂折扣倍率
+	#范围: 0.0-1.0，默认 0.1
+	#Range: 0.0 ~ 1.0
+	tier3_discount = 0.1
+	#兵团聚晶施法冷却时间（tick）
+	#范围: 20-12000，默认 200（10秒）
+	#Range: 20 ~ 12000
+	squad_summon_cooldown = 200
+	#召唤仆从寿命（tick）
+	#范围: 20-72000，默认 6000（5分钟）
+	#Range: 20 ~ 72000
+	squad_lifespan = 6000
+
+	[squad_barracks.remote_engine]
+		#远程引擎的应力→转速换算比
+		#RPM = 可用应力 / 此值
+		#例: 可用应力 1024, 比值 64 → 16 RPM
+		#范围: 1-1024，默认 64
+		#Range: 1 ~ 1024
+		stress_to_rpm_ratio = 64
+
+	[squad_barracks.wall_run]
+		#最大相机旋转角度（度），防止翻转视
+		#默认 85
+		#Range: 45.0 ~ 90.0
+		wall_rotation_limit = 85.0
+		#墙面下滑重力（blocks/tick）
+		#范围: 0.0-1.0，默认 0.03
+		#Range: 0.0 ~ 1.0
+		wall_gravity = 0.03
+		#跳离墙面的速度
+		#范围: 0.1-2.0，默认 0.6
+		#Range: 0.1 ~ 2.0
+		wall_jump_off_velocity = 0.6
+		#相机旋转插值速度
+		#0.05=慢, 0.3=快, 默认 0.15
+		#Range: 0.05 ~ 0.5
+		wall_rotation_speed = 0.15
+		#墙面移动速度（blocks/tick）
+		#范围: 0.01-3.0，默认 0.6
+		#Range: 0.01 ~ 3.0
+		wall_run_speed = 0.6
+		#跑墙结束回正所需 tick
+		#0=瞬间回正, 默认 10
+		#Range: 0 ~ 40
+		wall_recovery_ticks = 10
+		#吸附拉向墙面的速度
+		#范围: 0.05-1.0，默认 0.3
+		#Range: 0.05 ~ 1.0
+		wall_pull_speed = 0.3
+
+	[squad_barracks.jump_charge]
+		#蓄力最高跳跃高度（格），最大蓄力时达到
+		#范围: 8.0-200.0，默认 80.0
+		#Range: 8.0 ~ 200.0
+		jump_charge_max_height = 80.0
+		#最大蓄力 tick 数（20 tick = 1 秒）
+		#范围: 20-200，默认 60（=3秒）
+		#Range: 20 ~ 200
+		jump_max_charge_ticks = 60
+		#蓄力门槛 tick（未达到此值视为短按）
+		#蓄力系统需 charge ≥ 此值才走蓄力公式
+		#范围: 5-59，默认 6（≈0.3秒）
+		#Range: 5 ~ 59
+		jump_charge_threshold = 6
+		#蓄力最低跳跃高度（格），threshold 时达到
+		#范围: 3.0-80.0，默认 8.0
+		#Range: 3.0 ~ 80.0
+		jump_charge_min_height = 8.0
+		#短按跳跃高度（格）
+		#范围: 1.0-10.0，默认 3.0
+		#Range: 1.0 ~ 10.0
+		jump_tap_height = 3.0
+
+	[squad_barracks.rift_walk]
+		#裂纬聚晶冷却时间（tick）
+		#范围: 20-24000，默认 6000（5分钟）
+		#Range: 20 ~ 24000
+		unstable_rift_cooldown = 6000
+		#界旅聚晶冷却时间（tick）
+		#范围: 20-12000，默认 300（15秒）
+		#Range: 20 ~ 12000
+		stable_rift_cooldown = 300
+		#裂纬聚晶自动回传延迟（tick）
+		#范围: 40-600，默认 200（10秒）
+		#Range: 40 ~ 600
+		unstable_rift_return_delay = 200
+		#裂纬聚晶（低级裂隙）的灵魂消耗
+		#范围: 1-5000，默认 100
+		#Range: 1 ~ 5000
+		unstable_rift_cost = 100
+		#界旅聚晶（高级裂隙）的灵魂消耗
+		#范围: 1-5000，默认 500
+		#Range: 1 ~ 5000
+		stable_rift_cost = 500
+
+	[squad_barracks.crushing_wheel]
+		#每级半径附魔增加的飞行距离（格）
+		#范围: 0-50，默认 5
+		#Range: 0.0 ~ 50.0
+		radius_distance_bonus = 5.0
+		#轮子加速度（格/秒²）
+		#范围: 0-50，默认 2
+		#Range: 0.0 ~ 50.0
+		acceleration = 2.0
+		#轮子基础飞行距离（格）
+		#范围: 5-100，默认 50
+		#Range: 5 ~ 100
+		base_distance = 50
+		#轮子上限速度（格/秒）
+		#范围: 1-100，默认 99
+		#Range: 1.0 ~ 100.0
+		max_speed = 99.0
+		#轮子初始速度（格/秒）
+		#范围: 1-100，默认 5
+		#Range: 1.0 ~ 100.0
+		speed = 5.0
+
+	[squad_barracks.prototype]
+		#Slam AoE 半径上限（格）
+		#范围: 1-200，默认 100
+		#Range: 1.0 ~ 200.0
+		slam_max_radius = 100.0
+		#Slam 伤害倍率：坠落高度 × 此值
+		#范围: 0.0-10.0，默认 1.0
+		#Range: 0.0 ~ 10.0
+		slam_damage_multiplier = 1.0
+		#Slam 半径倍率：坠落高度 × 此值
+		#范围: 0.0-20.0，默认 1.0
+		#Range: 0.0 ~ 20.0
+		slam_radius_multiplier = 1.0
+		#Slam 伤害上限
+		#范围: 1-9999，默认 1200
+		#Range: 1.0 ~ 9999.0
+		slam_max_damage = 1200.0
+		#按住 W 时沿视线方向匀速飞行的速度（blocks/tick）
+		#值越大飞得越快。同时驱动 lift（×0.16）、不按W漂移加速度（×0.04）、不按W速度（×0.8）。范围: 0.1-2.0，默认 0.5（=10 blocks/s）
+		#Range: 0.1 ~ 2.0
+		flight_target_speed = 0.5
+		#Slam 每 tick 下降速度增量（5 格/秒 = 0.25/tick）
+		#范围: 0.01-2.0，默认 0.25
+		#Range: 0.01 ~ 2.0
+		slam_gravity_per_tick = 0.25
+		#Slam 最低伤害（无论坠落多矮都有此保底）
+		#范围: 1-9999，默认 20
+		#Range: 1.0 ~ 9999.0
+		slam_min_damage = 20.0
+		#Slam 滞空 tick 数（越长则坠落前升得越高）
+		#范围: 0-100，默认 5
+		#Range: 0 ~ 100
+		slam_hover_ticks = 5
+		#冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）
+		#0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%
+		#范围: 0.0-20.0，默认 8.0
+		#Range: 0.0 ~ 20.0
+		sprint_max_multiplier = 8.0
+		#Slam 最大下降速度（120 格/秒 = 6.0/tick）
+		#范围: 0.5-20.0，默认 6.0
+		#Range: 0.5 ~ 20.0
+		slam_max_speed = 6.0
+
+	[squad_barracks.stress_focus]
+		#应力伤害除数
+		#绑定的应力读取器的网络容量 / 此值 = 基础伤害
+		#范围: 100-10000，默认 2000
+		#Range: 100 ~ 10000
+		damage_divisor = 2000
+		#应力聚晶的灵魂消耗
+		#范围: 0-1000，默认 0
+		#Range: 0 ~ 1000
+		soul_cost = 0
+		#施法冷却时间（tick）
+		#范围: 5-200，默认 20
+		#Range: 5 ~ 200
+		cooldown = 20
+

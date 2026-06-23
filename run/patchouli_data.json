@@ -1,0 +1,21 @@
+{
+  "bookGuiScale": 0,
+  "clickedVisualize": false,
+  "bookData": {
+    "goety:black_book": {
+      "viewedEntries": [
+        "goety:rituals/dark_altar",
+        "goety:summons/common_servants",
+        "goety:summons/ministrosities",
+        "goety:crafts/artifice/ominous_pyre"
+      ],
+      "bookmarks": [
+        {
+          "entry": "goety:crafts/artifice/ominous_pyre",
+          "page": 0
+        }
+      ],
+      "completedManualQuests": []
+    }
+  }
+}

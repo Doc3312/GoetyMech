@@ -79,6 +79,12 @@
 - 原因：水平沿墙跑不符合 Titanfall 式垂直墙跑的预期；需要 W/S 控制升降、A/D 控制水平横移
 - 关联：commit 99b7245（PrototypeRenderEvents.java client-side setDeltaMovement）；Config keys: `WALL_RUN_SPEED`, `WALL_GRAVITY`, `WALL_PULL_SPEED`
 
+### 2026-06-23 — Plan B: Mixin into Player.travel() for wall-run movement
+
+- 改动：HEAD injection 取消 travel()，通过 accessor 设置 onGround=true，手动调用 player.move() 传入墙跑速度（W=wallUp, A/D=wallRight，重力拉向墙面 + 贴墙拉力）；通过 ClientWallRunState 重新应用 sprint；临时 onGround 覆盖实现 step-up
+- 原因：travel() 的摩擦模型 + onGround 检测导致取消 sprint 后墙跑速度被大幅衰减；需要完全绕过原版移动流水线以达到 Titanfall 式垂直墙跑效果
+- 关联：commit 7a632bf；文件：MixinWallRunTravel.java、ClientWallRunState.java、EntityOnGroundAccessor.java、PrototypeRenderEvents.java
+
 ### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
 
 - 改动：移除旧冲刺粒子（DustParticleOptions 随机散布）和蓄力跳粒子（CRIT + ENCHANTED_HIT）；新增 6 身体锚点粒子系统（左手/右手外侧、头顶左/右、左脚/右脚外侧）；S2CSlamStatePacket 同步下砸客户端状态；下砸时生成深红体线 + FLAME 火星 + 淡红尾迹三层混合

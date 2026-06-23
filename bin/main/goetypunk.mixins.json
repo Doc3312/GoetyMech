@@ -1,0 +1,33 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.goetypunk.addon.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "goetypunk.refmap.json",
+  "client": [
+    "Blaze3DMixin",
+    "CameraMixin",
+    "ClientLevelMixin",
+    "GameRendererMixin",
+    "GuiMixin",
+    "ItemInHandRendererMixin",
+    "LevelRendererMixin",
+    "MinecraftMixin",
+    "ParticleEngineMixin",
+    "TimerAccessor",
+    "TutorialMixin",
+    "EntityMixin"
+  ],
+  "mixins": [
+    "CollectingNeighborUpdaterMixin",
+    "InstantNeighborUpdaterMixin",
+    "LevelMixin",
+    "LivingEntityHurtMixin",
+    "LivingEntityTickMixin",
+    "PrototypePlayerMixin",
+    "PrototypeTravelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

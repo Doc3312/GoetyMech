@@ -1,0 +1,31 @@
+com/goetypunk/addon/mixin/ClientLevelMixin tickingEntities f_171630_
+com/goetypunk/addon/mixin/ClientLevelMixin entityStorage f_171631_
+com/goetypunk/addon/mixin/CollectingNeighborUpdaterMixin level f_230636_
+com/goetypunk/addon/mixin/EntityMixin level f_19853_
+com/goetypunk/addon/mixin/GameRendererMixin random f_109061_
+com/goetypunk/addon/mixin/GameRendererMixin minecraft f_109059_
+com/goetypunk/addon/mixin/InstantNeighborUpdaterMixin level f_230741_
+com/goetypunk/addon/mixin/MinecraftMixin player f_91074_
+com/goetypunk/addon/mixin/MinecraftMixin level f_91073_
+com/goetypunk/addon/mixin/MinecraftMixin gui f_91065_
+com/goetypunk/addon/mixin/MinecraftMixin gameRenderer f_91063_
+com/goetypunk/addon/mixin/MinecraftMixin screen f_91080_
+com/goetypunk/addon/mixin/MinecraftMixin options f_91066_
+com/goetypunk/addon/mixin/MinecraftMixin keyboardHandler f_91068_
+com/goetypunk/addon/mixin/MinecraftMixin timer f_90991_
+com/goetypunk/addon/mixin/MinecraftMixin profiler f_91026_
+com/goetypunk/addon/mixin/MinecraftMixin rightClickDelay f_91011_
+com/goetypunk/addon/mixin/MinecraftMixin overlay f_91081_
+com/goetypunk/addon/mixin/MinecraftMixin pause f_91012_
+com/goetypunk/addon/mixin/MinecraftMixin soundManager f_91043_
+com/goetypunk/addon/mixin/MinecraftMixin tutorial f_91005_
+com/goetypunk/addon/mixin/MinecraftMixin hitResult f_91077_
+com/goetypunk/addon/mixin/MinecraftMixin gameMode f_91072_
+com/goetypunk/addon/mixin/MinecraftMixin chatListener f_240378_
+com/goetypunk/addon/mixin/MinecraftMixin singleplayerServer f_91007_
+com/goetypunk/addon/mixin/MinecraftMixin pausePartialTick f_91013_
+com/goetypunk/addon/mixin/EntityMixin level ()Lnet/minecraft/world/level/Level; m_9236_
+com/goetypunk/addon/mixin/EntityMixin setPosRaw (DDD)V m_20343_
+com/goetypunk/addon/mixin/MinecraftMixin tick ()V m_91398_
+com/goetypunk/addon/mixin/MinecraftMixin setScreen (Lnet/minecraft/client/gui/screens/Screen;)V m_91152_
+com/goetypunk/addon/mixin/MinecraftMixin handleKeybinds ()V m_91279_
