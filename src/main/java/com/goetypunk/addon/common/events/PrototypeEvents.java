@@ -291,20 +291,16 @@ public class PrototypeEvents {
                     GoetyPunkMod.LOGGER.info("PROTO_DIAG CJ_CLEAR onGround: beforeHSpeed={}, targetHSpeed={}, isFly={}",
                             String.format("%.4f", beforeHSpeed), String.format("%.4f", targetHSpeed),
                             player.isFallFlying());
-                } else if (!player.isFallFlying()) {
+                } else {
                     Vec3 cur = player.getDeltaMovement();
                     player.setDeltaMovement(cjHx, cur.y, cjHz);
                     Vec3 afterCJ = player.getDeltaMovement();
                     double afterHSpeed = Math.sqrt(afterCJ.x * afterCJ.x + afterCJ.z * afterCJ.z);
-                    GoetyPunkMod.LOGGER.info("PROTO_DIAG CJ_INJECT: beforeHSpeed={}, target=({},{}), afterHSpeed={}, vy={}",
+                    GoetyPunkMod.LOGGER.info("PROTO_DIAG CJ_INJECT: beforeHSpeed={}, target=({},{}), afterHSpeed={}, vy={}, isFly={}",
                             String.format("%.4f", beforeHSpeed),
                             String.format("%.4f", cjHx), String.format("%.4f", cjHz),
                             String.format("%.4f", afterHSpeed),
-                            String.format("%.4f", cur.y));
-                } else {
-                    GoetyPunkMod.LOGGER.info("PROTO_DIAG CJ_BLOCKED by isFly: beforeHSpeed={}, target=({},{}), isFly={}",
-                            String.format("%.4f", beforeHSpeed),
-                            String.format("%.4f", cjHx), String.format("%.4f", cjHz),
+                            String.format("%.4f", cur.y),
                             player.isFallFlying());
                 }
             }
