@@ -35,6 +35,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -957,5 +958,55 @@ public class PrototypeEvents {
             }
         }
         return null;
+    }
+
+    // ── Kill Absorption ──
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+
+        if (!(event.getSource().getEntity() instanceof Player player)) return;
+
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+        if (!hasPrototype) return;
+
+        LivingEntity killed = event.getEntity();
+        float mobMaxHealth = killed.getMaxHealth();
+
+        // ── Health absorption ──
+        float ratio = (float)(double)ModConfig.KILL_HEALTH_ABSORB_RATIO.get();
+        if (ratio > 0.0F) {
+            float absorbAmount = mobMaxHealth * ratio;
+            float missingHealth = player.getMaxHealth() - player.getHealth();
+
+            if (absorbAmount <= missingHealth) {
+                player.heal(absorbAmount);
+            } else {
+                player.heal(missingHealth);
+                float overflow = absorbAmount - missingHealth;
+                float currentAbsorption = player.getAbsorptionAmount();
+                float cap = player.getMaxHealth() * (float)(double)ModConfig.KILL_ABSORPTION_CAP_MULTIPLIER.get();
+                player.setAbsorptionAmount(Math.min(currentAbsorption + overflow, cap));
+            }
+        }
+
+        // ── Food restoration ──
+        float foodRatio = (float)(double)ModConfig.KILL_FOOD_RESTORE_RATIO.get();
+        if (foodRatio > 0.0F) {
+            float foodAmount = mobMaxHealth * foodRatio;
+            if (foodAmount > 0.0F) {
+                int foodToAdd = Math.max(1, (int)foodAmount);
+                int currentFood = player.getFoodData().getFoodLevel();
+                int newFood = Math.min(currentFood + foodToAdd, 20);
+                int overflow = (currentFood + foodToAdd) - newFood;
+
+                player.getFoodData().setFoodLevel(newFood);
+                if (overflow > 0) {
+                    float newSat = Math.min(player.getFoodData().getSaturationLevel() + overflow, newFood);
+                    player.getFoodData().setSaturation(newSat);
+                }
+            }
+        }
     }
 }
