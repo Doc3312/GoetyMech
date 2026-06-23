@@ -90,12 +90,15 @@ public class PrototypeRenderEvents {
 
         if (jumpDown && hasPrototype && !player.isFallFlying()) {
             clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
-            // 第一拍立即发包，不等节流
+            float fwd = player.zza;
+            boolean jumping = jumpDown;
             if (clientChargeTicks == 1) {
-                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(1));
+                Vec3 vel = player.getDeltaMovement();
+                double clientHSpeed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(1, fwd, jumping, clientHSpeed));
                 lastSentCharge = 1;
             } else if (clientChargeTicks != lastSentCharge && clientChargeTicks % 5 == 0) {
-                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(clientChargeTicks));
+                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(clientChargeTicks, fwd, jumping, 0.0));
                 lastSentCharge = clientChargeTicks;
             }
             // Particles
@@ -116,7 +119,7 @@ public class PrototypeRenderEvents {
             }
         } else {
             if (lastSentCharge > 0) {
-                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(0));
+                ModNetwork.CHANNEL.sendToServer(new C2SJumpChargePacket(0, player.zza, false, 0.0));
                 lastSentCharge = 0;
             }
             clientChargeTicks = 0;

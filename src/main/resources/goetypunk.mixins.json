@@ -26,8 +26,7 @@
     "LivingEntityTickMixin",
     "PrototypePlayerMixin",
     "PrototypeStepHeightMixin",
-    "PrototypeTravelMixin",
-    "ServerGamePacketListenerImplMixin"
+    "PrototypeTravelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
