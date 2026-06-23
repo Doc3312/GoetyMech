@@ -146,9 +146,14 @@ public class PrototypeEvents {
 
     @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (event.getEntity() instanceof Player player
-                && PrototypeItem.getSlamInvulnTick(player) > 0) {
-            event.setCanceled(true);
+        if (event.getEntity() instanceof Player player) {
+            if (PrototypeItem.getSlamInvulnTick(player) > 0) {
+                event.setCanceled(true);
+            }
+            if (event.getSource() == player.level().damageSources().drown()
+                    && (PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player))) {
+                event.setCanceled(true);
+            }
         }
     }
 
@@ -188,6 +193,11 @@ public class PrototypeEvents {
         boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
         if (event.phase == TickEvent.Phase.START) {
+            // ── 水下氧气免疫 ──
+            if (hasPrototype && player.isInWaterOrBubble()) {
+                player.setAirSupply(player.getMaxAirSupply());
+            }
+
             Vec3 startM = player.getDeltaMovement();
             double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
             GoetyPunkMod.LOGGER.info("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
@@ -245,12 +255,13 @@ public class PrototypeEvents {
                 PrototypeItem.setGroundSpeed(player, moved);
             }
 
-            // ── 地面冲刺加速 ──
+            // ── 地面冲刺加速 / 游泳加速 ──
+            boolean isSwimBoosting = player.isSwimming() && player.isInWater();
             if (hasPrototype && !isSlamming
                     && !PrototypeItem.isWallRunning(player)
                     && !player.isFallFlying()
-                    && player.onGround()
-                    && player.isSprinting()) {
+                    && player.isSprinting()
+                    && (player.onGround() || isSwimBoosting)) {
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -418,7 +429,7 @@ public class PrototypeEvents {
 
     public static void handleJumpChargeFromClient(ServerPlayer player, int action, float forward, boolean jumping, double clientGroundSpeed) {
         if (player.isFallFlying() || PrototypeItem.isWallRunning(player)) return;
-        if (action > 0 && !player.onGround()) return;
+        if (action > 0 && !player.onGround() && !player.isInWater()) return;
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
         if (!hasPrototype) return;
 
@@ -443,6 +454,30 @@ public class PrototypeEvents {
     }
 
     private static void applyChargedJump(Player player, int charge) {
+        // ── 水中蓄力跳：沿视线方向爆发 ──
+        if (player.isInWater()) {
+            Vec3 look = player.getLookAngle();
+            int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
+            double power;
+            if (charge >= threshold) {
+                double minH = ModConfig.JUMP_CHARGE_MIN_HEIGHT.get();
+                double maxH = ModConfig.JUMP_CHARGE_MAX_HEIGHT.get();
+                int maxTicks = ModConfig.JUMP_MAX_CHARGE_TICKS.get();
+                double t = (double)(charge - threshold) / (double)(maxTicks - threshold);
+                t = Math.min(t, 1.0);
+                double height = minH + t * (maxH - minH);
+                power = velocityForHeight(height);
+            } else {
+                double tapH = ModConfig.JUMP_TAP_HEIGHT.get();
+                power = velocityForHeight(tapH);
+            }
+            player.setDeltaMovement(look.x * power, Math.max(look.y * power, 0.3), look.z * power);
+            PrototypeItem.clearChargedJump(player);
+            PrototypeItem.clearJumpCharge(player);
+            player.hurtMarked = true;
+            return;
+        }
+
         Vec3 m = player.getDeltaMovement();
         double hSpeed = Math.sqrt(m.x * m.x + m.z * m.z);
         double groundSpeed = PrototypeItem.getGroundSpeed(player);

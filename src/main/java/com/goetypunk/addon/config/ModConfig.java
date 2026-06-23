@@ -139,6 +139,9 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_RADIUS;
     public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_TARGET_SPEED;
+    public static final ForgeConfigSpec.DoubleValue FLIGHT_MAX_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue FLIGHT_ACCEL_RATE;
+    public static final ForgeConfigSpec.DoubleValue FLIGHT_DECEL_RATE;
     public static final ForgeConfigSpec.DoubleValue SPRINT_MAX_MULTIPLIER;
 
     // ====== Prototype — Kill Absorption 配置 ======
@@ -419,6 +422,18 @@ public class ModConfig {
         FLIGHT_TARGET_SPEED = BUILDER
                 .comment("按住 W 时沿视线方向匀速飞行的速度（blocks/tick）", "值越大飞得越快。同时驱动 lift（×0.16）、不按W漂移加速度（×0.04）、不按W速度（×0.8）。范围: 0.1-2.0，默认 0.5（=10 blocks/s）")
                 .defineInRange("flight_target_speed", 0.5, 0.1, 2.0);
+
+        FLIGHT_MAX_MULTIPLIER = BUILDER
+                .comment("飞行速度加速倍率上限", "按住W时速度从1x逐渐增至上限", "倍率 × FLIGHT_TARGET_SPEED = 实际速度", "范围: 1.0-100.0，默认 10.0")
+                .defineInRange("flight_max_multiplier", 10.0, 1.0, 100.0);
+
+        FLIGHT_ACCEL_RATE = BUILDER
+                .comment("飞行加速度（per tick）", "按住W时每tick倍率增量", "例: 0.15 × 60 tick = 9.0 → 约3秒到10x", "范围: 0.01-5.0，默认 0.15")
+                .defineInRange("flight_accel_rate", 0.15, 0.01, 5.0);
+
+        FLIGHT_DECEL_RATE = BUILDER
+                .comment("飞行减速度（per tick）", "松开W后每tick倍率减量", "范围: 0.01-5.0，默认 0.05")
+                .defineInRange("flight_decel_rate", 0.05, 0.01, 5.0);
 
         SPRINT_MAX_MULTIPLIER = BUILDER
                 .comment("冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）", "0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%", "范围: 0.0-20.0，默认 8.0")
