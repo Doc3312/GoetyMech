@@ -51,6 +51,85 @@
 
 ---
 
+## SpellResult 中的聚晶/法杖访问模式
+
+Goety 的 Spell 体系中有三个正交的概念，理解它们的区别是正确开发的前提。
+
+### 三条原则
+
+| # | 原则 | 说明 |
+|---|------|------|
+| 1 | **附魔读聚晶** | 聚晶上的 Range/Potency/Duration 附魔通过 `WandUtil.enchantedFocus(caster)` + `WandUtil.getRangeLevel(caster)` 等读取 |
+| 2 | **增强看法杖** | 法杖类型是否匹配法术流派通过 `rightStaff(staff)` 检查，决定是否解锁额外行为（更高伤害、更多数量、引导模式等） |
+| 3 | **冷却/焦点 API 用 `WandUtil.findFocus(caster)`** | 需要直接操作聚晶的 `ItemStack` 时使用，必须做 `isEmpty()` 守卫 |
+
+### 三者的关系：互补而非替代
+
+```
+WandUtil.enchantedFocus(caster)  ─── 量变：增强法术强度（数值）
+rightStaff(staff)                ─── 质变：改变法术行为（模式）
+WandUtil.findFocus(caster)       ─── 获取聚晶 ItemStack（仅特殊场景）
+```
+
+它们在 Goety 的 85+ 个 Spell 中**同时出现**，用于不同目的。不存在其中一个是另一个的"替代写法"。
+
+### 各模式的真实使用频率（Goety 源码统计）
+
+| 模式 | 文件数 | 典型用途 |
+|------|--------|---------|
+| `WandUtil.enchantedFocus(caster)` | **104** | 聚晶附魔→增强数值（准标准） |
+| `rightStaff(staff)` | **91** | 法杖类型匹配→解锁增强行为 |
+| `WandUtil.findFocus(caster)` | **5** | 直接操作聚晶 ItemStack |
+| `IWand.getFocus(staff)` | **0 (Spell内)** | Spell 子类从不直接调用 |
+
+**结论：** `IWand.getFocus(staff)` 是 DarkWand/工具类的底层方法，Spell 子类应使用 `WandUtil` 工具类而非直接调用。
+
+### 正确模板
+
+```java
+@Override
+public void SpellResult(ServerLevel worldIn, LivingEntity caster,
+                        ItemStack staff, SpellStat spellStat) {
+    // ── 1. 聚晶附魔加成（标准模式，Goety 104 个 Spell 都这么写）
+    int potency = spellStat.getPotency();
+    int range = spellStat.getRange();
+    if (WandUtil.enchantedFocus(caster)) {
+        potency += WandUtil.getPotencyLevel(caster);
+        range += WandUtil.getRangeLevel(caster);
+    }
+
+    // ── 2. 法杖类型增强（rightStaff = 检查法杖是否匹配法术流派）
+    boolean useStaffBonus = rightStaff(staff);
+    if (useStaffBonus) {
+        potency *= 2;          // 示例：威力翻倍
+    }
+
+    // ── 3. 施法逻辑（略）
+
+    // ── 4. 冷却（必须 isEmpty 守卫，自动施法场景下聚晶可能为空）
+    ItemStack focus = WandUtil.findFocus(caster);
+    if (!focus.isEmpty() && caster instanceof Player player) {
+        int cooldown = (int) (this.spellCooldown(caster)
+                * ModAttributes.getCooldownDiscount(caster));
+        SEHelper.addCooldown(player, focus.getItem(), cooldown);
+    }
+}
+```
+
+### 为什么不用 `IWand.getFocus(staff)` 替代 `WandUtil.findFocus(caster)`
+
+自动施法（FleshCasket 等）传入的 `staff` 是临时创建的 DummyWand，内部无聚晶槽位。此时 `IWand.getFocus(staff)` 返回 `EMPTY`，而 `WandUtil.findFocus(caster)` 还能尝试从玩家手持法杖读取 — 后者有更广的兼容性。这也是 Goety 自身也用 `WandUtil` 而非 `IWand.getFocus` 的原因。
+
+### 常见错误
+
+| 错误写法 | 问题 | 正确写法 |
+|---------|------|---------|
+| `IWand.getFocus(staff)` 替代 enchantedFocus | 自动施法时聚晶不可达，丢失附魔加成 | `WandUtil.enchantedFocus(caster)` |
+| 只调 `rightStaff` 不调 `enchantedFocus` | 丢失了聚晶附魔的数值加成 | 两者都调，各司其职 |
+| `SEHelper.addCooldown(player, WandUtil.findFocus(caster).getItem(), cd)` 无守卫 | 聚晶为空时对 `Items.AIR` 上冷却，冷却无效 | 加 `isEmpty()` 守卫，聚晶为空时跳过 |
+
+---
+
 # Focus 开发完整指南
 
 ## 四层架构
@@ -93,9 +172,15 @@ public class MyAttackSpell extends Spell {
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster,
                            ItemStack staff, SpellStat spellStat) {
+        // 附魔加成 — Goety 标准模式
         int potency = spellStat.getPotency();
         if (WandUtil.enchantedFocus(caster))
             potency += WandUtil.getPotencyLevel(caster);
+
+        // 法杖类型匹配增强 — 所有 Spell 都应加上
+        if (rightStaff(staff)) {
+            potency *= 2;
+        }
 
         // 方式A：发射弹射物
         Vec3 look = caster.getViewVector(1.0F);
@@ -138,6 +223,10 @@ public class MySummonSpell extends SummonSpell {
         if (WandUtil.enchantedFocus(caster)) {
             potency += WandUtil.getPotencyLevel(caster);
             duration += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
+        }
+        if (rightStaff(staff)) {
+            potency *= 2;
+            duration += 2;
         }
         if (!isShifting(caster)) {
             MySummonedEntity summoned = new MySummonedEntity(ModEntityType.MY.get(), worldIn);
