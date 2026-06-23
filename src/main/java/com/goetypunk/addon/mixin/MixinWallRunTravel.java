@@ -5,6 +5,7 @@ import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.config.ModConfig;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +29,7 @@ public abstract class MixinWallRunTravel {
         float wallFwd = ClientWallRunState.forwardInput;
         float wallStrafe = ClientWallRunState.strafeInput;
 
-        if (ClientWallRunState.sprintDown) {
+        if (ClientWallRunState.sprintDown || player.isSprinting()) {
             player.setSprinting(true);
         }
 
@@ -38,10 +39,24 @@ public abstract class MixinWallRunTravel {
                 .add(wallN.scale(-ModConfig.WALL_GRAVITY.get()))
                 .add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
 
-        ((EntityOnGroundAccessor) (Object) player).setOnGround(true);
+        Vec3 prePos = player.position();
 
         player.setDeltaMovement(wallMove);
         player.move(MoverType.SELF, wallMove);
+
+        Vec3 actualMoved = player.position().subtract(prePos);
+        boolean horizontalBlocked = wallStrafe != 0 && Math.abs(actualMoved.horizontalDistance()) < Math.abs(wallStrafe * speed) * 0.3;
+        boolean verticalBlocked = wallFwd > 0 && actualMoved.y < wallFwd * speed * 0.3;
+
+        if (horizontalBlocked || verticalBlocked) {
+            AABB stepped = player.getBoundingBox().offset(0, 0.6, 0);
+            if (player.level().noCollision(stepped)) {
+                player.setPos(player.getX(), player.getY() + 0.6, player.getZ());
+                Vec3 leftover = new Vec3(wallMove.x, 0, wallMove.z);
+                if (wallFwd > 0) leftover = leftover.add(0, wallFwd * speed, 0);
+                player.move(MoverType.SELF, leftover);
+            }
+        }
 
         ci.cancel();
     }
