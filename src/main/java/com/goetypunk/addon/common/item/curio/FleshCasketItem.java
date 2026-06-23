@@ -24,16 +24,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class FleshCasketItem extends Item implements ICurioItem {
-    private static final String TAG_TIER = "flesh_casket_tier";
-    private static final String TAG_TRIGGER = "flesh_casket_trigger";
     private static final String TAG_COOLDOWN = "flesh_casket_cooldown";
     private static final int MAX_COOLDOWN_TICKS = 600;
 
     private final TriggerType triggerType;
+    private final int tier;
 
-    public FleshCasketItem(TriggerType triggerType) {
+    public FleshCasketItem(TriggerType triggerType, int tier) {
         super(new Properties().stacksTo(1).setNoRepair());
         this.triggerType = triggerType;
+        this.tier = tier;
     }
 
     public TriggerType getTriggerType() {
@@ -44,7 +44,6 @@ public class FleshCasketItem extends Item implements ICurioItem {
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!world.isClientSide) {
-            int tier = getTier(stack);
             SimpleMenuProvider provider = new SimpleMenuProvider(
                     (id, inventory, p) -> new FleshCasketContainer(id, inventory, FleshCasketItemHandler.get(stack), stack, tier),
                     getName(stack));
@@ -54,11 +53,10 @@ public class FleshCasketItem extends Item implements ICurioItem {
     }
 
     public static int getTier(ItemStack stack) {
-        return stack.getOrCreateTag().getInt(TAG_TIER);
-    }
-
-    public static void setTier(ItemStack stack, int tier) {
-        stack.getOrCreateTag().putInt(TAG_TIER, tier);
+        if (stack.getItem() instanceof FleshCasketItem casket) {
+            return casket.tier;
+        }
+        return 1;
     }
 
     public static int getSlotCount(int tier) {
@@ -93,11 +91,6 @@ public class FleshCasketItem extends Item implements ICurioItem {
     @Override
     @Nullable
     public ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundTag nbt) {
-        int tier = getTier(stack);
-        if (tier == 0) {
-            setTier(stack, 1);
-            tier = 1;
-        }
         return new FleshCasketItemCapability(stack, getSlotCount(tier));
     }
 

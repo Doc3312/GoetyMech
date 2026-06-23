@@ -124,14 +124,26 @@ public class ModItems {
 
     // ── 血肉晶匣 ──
 
-    public static final RegistryObject<Item> FLESH_CASKET_A =
-            ITEMS.register("flesh_casket_a", () -> new FleshCasketItem(TriggerType.A));
+    public static final RegistryObject<Item> FLESH_CASKET_A_1 =
+            ITEMS.register("flesh_casket_a_1", () -> new FleshCasketItem(TriggerType.A, 1));
+    public static final RegistryObject<Item> FLESH_CASKET_A_2 =
+            ITEMS.register("flesh_casket_a_2", () -> new FleshCasketItem(TriggerType.A, 2));
+    public static final RegistryObject<Item> FLESH_CASKET_A_3 =
+            ITEMS.register("flesh_casket_a_3", () -> new FleshCasketItem(TriggerType.A, 3));
 
-    public static final RegistryObject<Item> FLESH_CASKET_B =
-            ITEMS.register("flesh_casket_b", () -> new FleshCasketItem(TriggerType.B));
+    public static final RegistryObject<Item> FLESH_CASKET_B_1 =
+            ITEMS.register("flesh_casket_b_1", () -> new FleshCasketItem(TriggerType.B, 1));
+    public static final RegistryObject<Item> FLESH_CASKET_B_2 =
+            ITEMS.register("flesh_casket_b_2", () -> new FleshCasketItem(TriggerType.B, 2));
+    public static final RegistryObject<Item> FLESH_CASKET_B_3 =
+            ITEMS.register("flesh_casket_b_3", () -> new FleshCasketItem(TriggerType.B, 3));
 
-    public static final RegistryObject<Item> FLESH_CASKET_C =
-            ITEMS.register("flesh_casket_c", () -> new FleshCasketItem(TriggerType.C));
+    public static final RegistryObject<Item> FLESH_CASKET_C_1 =
+            ITEMS.register("flesh_casket_c_1", () -> new FleshCasketItem(TriggerType.C, 1));
+    public static final RegistryObject<Item> FLESH_CASKET_C_2 =
+            ITEMS.register("flesh_casket_c_2", () -> new FleshCasketItem(TriggerType.C, 2));
+    public static final RegistryObject<Item> FLESH_CASKET_C_3 =
+            ITEMS.register("flesh_casket_c_3", () -> new FleshCasketItem(TriggerType.C, 3));
 
     public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND =
             ITEMS.register("auto_cast_dummy_wand", AutoCastDummyWand::new);

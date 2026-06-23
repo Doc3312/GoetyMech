@@ -2,8 +2,14 @@
   "replace": false,
   "values": [
     "goetypunk:prototype",
-    "goetypunk:flesh_casket_a",
-    "goetypunk:flesh_casket_b",
-    "goetypunk:flesh_casket_c"
+    "goetypunk:flesh_casket_a_1",
+    "goetypunk:flesh_casket_a_2",
+    "goetypunk:flesh_casket_a_3",
+    "goetypunk:flesh_casket_b_1",
+    "goetypunk:flesh_casket_b_2",
+    "goetypunk:flesh_casket_b_3",
+    "goetypunk:flesh_casket_c_1",
+    "goetypunk:flesh_casket_c_2",
+    "goetypunk:flesh_casket_c_3"
   ]
 }
