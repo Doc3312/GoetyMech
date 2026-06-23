@@ -21,4 +21,14 @@ public class ServerGamePacketListenerImplMixin {
     private void gp$logHandlePlayerInputReturn(ServerboundPlayerInputPacket pPacket, CallbackInfo ci) {
         GoetyPunkMod.LOGGER.info("HANDLE_INPUT_RETURN");
     }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void gp$logTick(CallbackInfo ci) {
+        GoetyPunkMod.LOGGER.info("SGPLI_TICK called");
+    }
+
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void gp$logTickReturn(CallbackInfo ci) {
+        GoetyPunkMod.LOGGER.info("SGPLI_TICK returned");
+    }
 }
