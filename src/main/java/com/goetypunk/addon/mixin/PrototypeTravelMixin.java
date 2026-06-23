@@ -26,7 +26,11 @@ public abstract class PrototypeTravelMixin {
 
         Vec3 look = player.getLookAngle();
         Vec3 current = player.getDeltaMovement();
-        double speed = ModConfig.FLIGHT_TARGET_SPEED.get();
+        double base = ModConfig.FLIGHT_TARGET_SPEED.get();
+        double accelRate = ModConfig.FLIGHT_ACCEL_RATE.get();
+        double maxMultiplier = ModConfig.FLIGHT_MAX_MULTIPLIER.get();
+        double currentLookSpeed = current.dot(look);
+        double speed = Mth.clamp(currentLookSpeed + accelRate, base, base * maxMultiplier);
         double hoverLift = speed * 0.16;
         double pitch = player.getXRot();
         double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
@@ -108,6 +112,14 @@ public abstract class PrototypeTravelMixin {
             lookH = lookH.scale(1.0 / len);
             velocity = current.add(lookH.scale(baseAccel));
             velocity = new Vec3(velocity.x, targetVy, velocity.z);
+        }
+        double base = ModConfig.FLIGHT_TARGET_SPEED.get();
+        double decelRate = ModConfig.FLIGHT_DECEL_RATE.get();
+        double currHSpeed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
+        if (currHSpeed > base * 1.05 && decelRate < 0.999) {
+            double newHSpeed = Math.max(currHSpeed * decelRate, base);
+            double factor = newHSpeed / currHSpeed;
+            velocity = new Vec3(velocity.x * factor, velocity.y, velocity.z * factor);
         }
         player.setDeltaMovement(velocity);
     }
