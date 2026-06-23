@@ -132,6 +132,27 @@ public abstract class PrototypeTravelMixin {
 
         if (player.isInWater()) {
             player.setAirSupply(player.getMaxAirSupply());
+
+            float forward = player.zza;
+            if (forward > 0.01f) {
+                int tick = PrototypeItem.getSwimTick(player) + 1;
+                PrototypeItem.setSwimTick(player, tick);
+
+                double desiredSpeedMult = 1.0 + Math.min((tick - 1) / 80.0, 1.0) * ModConfig.SWIM_MAX_MULTIPLIER.get();
+                double velocityMult = 1.25 - 0.25 / desiredSpeedMult;
+
+                if (velocityMult > 1.01) {
+                    Vec3 motion = player.getDeltaMovement();
+                    double hSpeed = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
+                    if (hSpeed > 0.001) {
+                        player.setDeltaMovement(motion.x * velocityMult, motion.y, motion.z * velocityMult);
+                    }
+                }
+            } else {
+                PrototypeItem.setSwimTick(player, 0);
+            }
+        } else {
+            PrototypeItem.setSwimTick(player, 0);
         }
     }
 }

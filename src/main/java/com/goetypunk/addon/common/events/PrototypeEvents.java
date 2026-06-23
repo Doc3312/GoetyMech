@@ -50,7 +50,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PrototypeEvents {
 
     private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
-    private static final UUID SWIM_MODIFIER_UUID = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901");
 
     private static final String TAG_SLAMMING = "goetypunk.slamming";
     private static final String TAG_SLAM_TICK = "goetypunk.slam_tick";
@@ -285,31 +284,6 @@ public class PrototypeEvents {
                 }
             }
 
-            // ── 游泳加速（attribute modifier，与 sprint 相同机制） ──
-            if (hasPrototype && player.isInWater() && player.isSprinting()) {
-                int current = PrototypeItem.getSwimTick(player) + 1;
-                PrototypeItem.setSwimTick(player, current);
-                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (attr != null) {
-                    attr.removeModifier(SPRINT_MODIFIER_UUID);
-                    attr.removeModifier(SWIM_MODIFIER_UUID);
-                    if (current >= 1) {
-                        double t = Math.min((current - 1) / 80.0, 1.0);
-                        double amount = t * ModConfig.SWIM_MAX_MULTIPLIER.get();
-                        attr.addTransientModifier(new AttributeModifier(
-                                SWIM_MODIFIER_UUID, "prototype_swim", amount,
-                                AttributeModifier.Operation.MULTIPLY_TOTAL));
-                    }
-                }
-            } else {
-                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (attr != null) {
-                    attr.removeModifier(SWIM_MODIFIER_UUID);
-                }
-                if (!player.isInWater()) {
-                    PrototypeItem.setSwimTick(player, 0);
-                }
-            }
 
             // ── Charged jump 水平速度持续注入（抵消 move() 的摩擦衰减） ──
             if (PrototypeItem.isWallRunning(player)) {
