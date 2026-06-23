@@ -415,6 +415,15 @@ public class PrototypeEvents {
         Vec3 wallN = PrototypeItem.getWallNormal(player);
         if (wallN.lengthSqr() < 0.5) return;
 
+        Vec3 curVel = player.getDeltaMovement();
+        GoetyPunkMod.LOGGER.info("WALL_DIAG: isSprint={}, zza={}, xxa={}, curVel=({}, {}, {})",
+                player.isSprinting(),
+                String.format("%.3f", player.zza),
+                String.format("%.3f", player.xxa),
+                String.format("%.4f", curVel.x),
+                String.format("%.4f", curVel.y),
+                String.format("%.4f", curVel.z));
+
         Vec3 forwardOnWall;
         if (player.isSprinting()) {
             forwardOnWall = new Vec3(0, -1, 0).cross(wallN).normalize();
@@ -453,6 +462,11 @@ public class PrototypeEvents {
         move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
 
         player.setDeltaMovement(move.x, move.y, move.z);
+
+        Vec3 afterVel = player.getDeltaMovement();
+        GoetyPunkMod.LOGGER.info("WALL_AFTER: set=({}, {}, {}), actual=({}, {}, {})",
+                String.format("%.4f", move.x), String.format("%.4f", move.y), String.format("%.4f", move.z),
+                String.format("%.4f", afterVel.x), String.format("%.4f", afterVel.y), String.format("%.4f", afterVel.z));
 
         GoetyPunkMod.LOGGER.info("WALL_MV_RESULT: move=({}, {}, {}), gravityOnWall=({}, {}, {}), pull=({}, {}, {})",
                 String.format("%.4f", move.x), String.format("%.4f", move.y), String.format("%.4f", move.z),
