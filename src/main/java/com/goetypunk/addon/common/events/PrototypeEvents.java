@@ -274,6 +274,7 @@ public class PrototypeEvents {
                 }
             } else if (!player.isSprinting()) {
                 PrototypeItem.setSprintTick(player, 0);
+                PrototypeItem.setGroundSpeed(player, 0);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
