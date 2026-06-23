@@ -35,7 +35,7 @@ public abstract class MixinWallRunTravel {
 
         double speed = ModConfig.WALL_RUN_SPEED.get();
         Vec3 wallMove = wallUp.scale(wallFwd * speed)
-                .add(wallRight.scale(-wallStrafe * speed))
+                .add(wallRight.scale(wallStrafe * speed))
                 .add(wallN.scale(-ModConfig.WALL_GRAVITY.get()))
                 .add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
 
@@ -44,17 +44,24 @@ public abstract class MixinWallRunTravel {
         player.setDeltaMovement(wallMove);
         player.move(MoverType.SELF, wallMove);
 
-        Vec3 actualMoved = player.position().subtract(prePos);
-        boolean horizontalBlocked = wallStrafe != 0 && Math.abs(actualMoved.horizontalDistance()) < Math.abs(wallStrafe * speed) * 0.3;
-        boolean verticalBlocked = wallFwd > 0 && actualMoved.y < wallFwd * speed * 0.3;
+        Vec3 moved = player.position().subtract(prePos);
+        boolean climbingBlocked = wallFwd > 0 && moved.y < wallFwd * speed * 0.3;
 
-        if (horizontalBlocked || verticalBlocked) {
-            AABB stepped = player.getBoundingBox().move(0, 0.6, 0);
-            if (player.level().noCollision(stepped)) {
-                player.setPos(player.getX(), player.getY() + 0.6, player.getZ());
-                Vec3 leftover = new Vec3(wallMove.x, 0, wallMove.z);
-                if (wallFwd > 0) leftover = leftover.add(0, wallFwd * speed, 0);
-                player.move(MoverType.SELF, leftover);
+        if (climbingBlocked) {
+            for (double dy : new double[]{0.6, 1.0}) {
+                if (player.level().noCollision(player.getBoundingBox().move(0, dy, 0))) {
+                    player.setPos(player.getX(), player.getY() + dy, player.getZ());
+                    player.move(MoverType.SELF, wallMove);
+                    break;
+                }
+            }
+            for (double side : new double[]{0.5, -0.5, 0.3, -0.3}) {
+                Vec3 shift = wallRight.scale(side);
+                if (player.level().noCollision(player.getBoundingBox().move(shift))) {
+                    player.setPos(player.getX() + shift.x, player.getY(), player.getZ() + shift.z);
+                    player.move(MoverType.SELF, new Vec3(0, wallFwd * speed, 0));
+                    break;
+                }
             }
         }
 
