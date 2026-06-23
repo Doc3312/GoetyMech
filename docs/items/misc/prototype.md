@@ -73,6 +73,12 @@
 - 原因：lift-off-ground 在复杂地形不可靠；反重力比抬升更稳定
 - 关联：commit 44f9fb3
 
+### 2026-06-23 — 垂直墙跑实现：W 爬升 / S 下滑 / A D 水平横移
+
+- 改动：墙跑方向从水平沿墙（`forwardOnWall`）改为垂直向上（`wallUp`）：W=爬升、S=下滑、A/D=左右横移；重力从墙面投影改为拉向墙面（`wallN * -WALL_GRAVITY`）；新增 `WALL_PULL_SPEED` 保持贴墙
+- 原因：水平沿墙跑不符合 Titanfall 式垂直墙跑的预期；需要 W/S 控制升降、A/D 控制水平横移
+- 关联：commit 99b7245（PrototypeRenderEvents.java client-side setDeltaMovement）；Config keys: `WALL_RUN_SPEED`, `WALL_GRAVITY`, `WALL_PULL_SPEED`
+
 ### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
 
 - 改动：移除旧冲刺粒子（DustParticleOptions 随机散布）和蓄力跳粒子（CRIT + ENCHANTED_HIT）；新增 6 身体锚点粒子系统（左手/右手外侧、头顶左/右、左脚/右脚外侧）；S2CSlamStatePacket 同步下砸客户端状态；下砸时生成深红体线 + FLAME 火星 + 淡红尾迹三层混合
