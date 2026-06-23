@@ -85,8 +85,28 @@
   "block.goetypunk.stress_ark": "应力方舟",
   "item.goetypunk.stress_ark": "应力方舟",
 
+  "item.goetypunk.soul_catcher": "灵魂捕手",
+  "info.goetypunk.soul_catcher.progress": "§5聚魂：%d/%d",
+
   "item.goetypunk.prototype": "原型",
   "info.goetypunk.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
   "info.goetypunk.prototype.boost": "飞行中按住 W 可加速推进",
-  "info.goetypunk.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸"
+  "info.goetypunk.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸",
+
+  "item.goetypunk.flesh_casket_a_1": "血肉晶匣（盈蓄·初级）",
+  "item.goetypunk.flesh_casket_a_2": "血肉晶匣（盈蓄·中级）",
+  "item.goetypunk.flesh_casket_a_3": "血肉晶匣（盈蓄·高级）",
+  "item.goetypunk.flesh_casket_b_1": "血肉晶匣（平衡·初级）",
+  "item.goetypunk.flesh_casket_b_2": "血肉晶匣（平衡·中级）",
+  "item.goetypunk.flesh_casket_b_3": "血肉晶匣（平衡·高级）",
+  "item.goetypunk.flesh_casket_c_1": "血肉晶匣（濒死·初级）",
+  "item.goetypunk.flesh_casket_c_2": "血肉晶匣（濒死·中级）",
+  "item.goetypunk.flesh_casket_c_3": "血肉晶匣（濒死·高级）",
+  "info.goetypunk.flesh_casket.no_lich": "§c只有巫妖才能驾驭此力量！",
+  "info.goetypunk.flesh_casket.tier": "§7等级：%s",
+  "info.goetypunk.flesh_casket.slots": "§7插槽：%d",
+  "info.goetypunk.flesh_casket.type_a": "§a受伤时自动施法",
+  "info.goetypunk.flesh_casket.type_b": "§a血量 ≤ 50%% 时自动施法",
+  "info.goetypunk.flesh_casket.type_c": "§a血量 ≤ %d%% 时自动施法",
+  "container.goetypunk.flesh_casket": "血肉晶匣"
 }

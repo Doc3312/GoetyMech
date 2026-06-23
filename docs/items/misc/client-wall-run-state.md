@@ -15,3 +15,5 @@
 | Date | Change | Reason | Relates to |
 |------|--------|--------|-----------|
 | 2026-06-24 | 首次文档记录 | 还清文档债务 | MixinWallRunTravel, PrototypeRenderEvents |
+| 2026-06-24 | 新增 graceTicks/lastWallNormal + applyGrace/tickGrace | 翻越爆发后留 3 tick 窗口用 pull 重新贴墙 | MixinWallRunTravel |
+| 2026-06-24 | 新增 sprintRetainTicks + shouldSprint/tickSprintRetain | 翻越后保持 30 tick sprint，防止 LocalPlayer.aiStep() 清除 | MixinWallRunTravel, PrototypeRenderEvents |

@@ -24,3 +24,4 @@ Prototype 系统服务端核心逻辑，管理 4 个子系统：
 | Date | Change | Reason | Relates to |
 |------|--------|--------|-----------|
 | 2026-06-24 | 首次文档记录 | 还清文档债务 | PrototypeItem, WallUtil, PrototypeRenderEvents |
+| 2026-06-24 | 回退 CJ-during-wall-run：恢复 isWallRunning 守卫 | 墙上跳跃与翻越翻越冲突，翻越后冲刺断掉 | PrototypeRenderEvents |

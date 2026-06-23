@@ -85,8 +85,29 @@
   "block.goetypunk.stress_ark": "Stress Ark",
   "item.goetypunk.stress_ark": "Stress Ark",
 
+  "item.goetypunk.soul_catcher": "Soul Catcher",
+  "info.goetypunk.soul_catcher.progress": "§5Souls: %d/%d",
+
   "item.goetypunk.prototype": "Prototype",
   "info.goetypunk.prototype.desc": "Infinite Elytra with boost and slam attack",
   "info.goetypunk.prototype.boost": "Hold W to accelerate while flying",
-  "info.goetypunk.prototype.slam": "Press Shift while flying to perform a ground slam"
+  "info.goetypunk.prototype.slam": "Press Shift while flying to perform a ground slam",
+
+  "item.goetypunk.flesh_casket_a_1": "Flesh Casket (Retaliatory - Basic)",
+  "item.goetypunk.flesh_casket_a_2": "Flesh Casket (Retaliatory - Advanced)",
+  "item.goetypunk.flesh_casket_a_3": "Flesh Casket (Retaliatory - Epic)",
+  "item.goetypunk.flesh_casket_b_1": "Flesh Casket (Vital Ward - Basic)",
+  "item.goetypunk.flesh_casket_b_2": "Flesh Casket (Vital Ward - Advanced)",
+  "item.goetypunk.flesh_casket_b_3": "Flesh Casket (Vital Ward - Epic)",
+  "item.goetypunk.flesh_casket_c_1": "Flesh Casket (Desperation - Basic)",
+  "item.goetypunk.flesh_casket_c_2": "Flesh Casket (Desperation - Advanced)",
+  "item.goetypunk.flesh_casket_c_3": "Flesh Casket (Desperation - Epic)",
+  "info.goetypunk.flesh_casket.no_lich": "§cOnly liches can harness this power!",
+  "info.goetypunk.flesh_casket.tier": "§7Tier: %s",
+  "info.goetypunk.flesh_casket.slots": "§7Slots: %d",
+  "info.goetypunk.flesh_casket.type_a": "§aAuto-casts on damage taken",
+  "info.goetypunk.flesh_casket.type_b": "§aAuto-casts when health ≤ 50%%",
+  "info.goetypunk.flesh_casket.type_c": "§aAuto-casts when health ≤ %d%%",
+
+  "container.goetypunk.flesh_casket": "Flesh Casket"
 }

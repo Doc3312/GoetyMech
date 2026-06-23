@@ -25,7 +25,10 @@
     "LivingEntityHurtMixin",
     "LivingEntityTickMixin",
     "PrototypePlayerMixin",
-    "PrototypeTravelMixin"
+    "PrototypeStepHeightMixin",
+    "PrototypeTravelMixin",
+    "MixinWallRunTravel",
+    "EntityOnGroundAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

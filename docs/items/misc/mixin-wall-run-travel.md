@@ -16,3 +16,5 @@
 | Date | Change | Reason | Relates to |
 |------|--------|--------|-----------|
 | 2026-06-24 | 首次文档记录 | 还清文档债务 | ClientWallRunState, PrototypeItem, WallUtil |
+| 2026-06-24 | 头顶翻越（outward burst）+ grace period 3 tick | 墙跑遇到天花板障碍自动向外爆发翻越 | ClientWallRunState |
+| 2026-06-24 | 翻越爆发时设 sprintRetainTicks=30（后改为 30） | 翻越后 sprint 被 LocalPlayer.aiStep() 清除，需要保留窗口重新贴墙 | ClientWallRunState, PrototypeRenderEvents |
