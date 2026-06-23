@@ -78,8 +78,10 @@ public class SquadSpell extends Spell {
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         if (!(caster instanceof ServerPlayer player)) return;
-        if (!(WandUtil.findFocus(caster).getItem() instanceof SquadFocus)) return;
         ItemStack focus = WandUtil.findFocus(caster);
+        if (!(focus.getItem() instanceof SquadFocus)) return;
+
+        boolean useStaffBonus = rightStaff(staff);
 
         if (isShifting(caster)) {
             BlockPos pos = SquadFocus.getBoundPos(focus);
@@ -194,6 +196,9 @@ public class SquadSpell extends Spell {
         }
 
         int lifespan = ModConfig.SQUAD_LIFESPAN.get();
+        if (useStaffBonus) {
+            lifespan = (int) (lifespan * 1.5);
+        }
         String summonerKey = SquadFocus.makeSummonerKey(boundPos, boundDim);
         spawnSquad(player, worldIn, consumedSquad, lifespan, summonerKey);
 
@@ -206,7 +211,9 @@ public class SquadSpell extends Spell {
         }
 
         int cooldown = (int) (ModConfig.SQUAD_SUMMON_COOLDOWN.get());
-        SEHelper.addCooldown(player, focus.getItem(), cooldown);
+        if (!focus.isEmpty()) {
+            SEHelper.addCooldown(player, focus.getItem(), cooldown);
+        }
         this.playSound(worldIn, caster, SoundEvents.EVOKER_CAST_SPELL);
     }
 
