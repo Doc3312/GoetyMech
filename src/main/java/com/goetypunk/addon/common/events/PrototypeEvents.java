@@ -300,7 +300,7 @@ public class PrototypeEvents {
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
                     }
                 }
-                player.setAirSupply(player.getMaxAir());
+                player.setAirSupply(player.getMaxAirSupply());
             } else if (!swimActive) {
                 PrototypeItem.setSwimTick(player, 0);
                 AttributeInstance swimAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
