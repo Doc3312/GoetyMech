@@ -448,6 +448,7 @@ public class PrototypeEvents {
         double bestSpeed = Math.max(hSpeed, Math.max(groundSpeed, Math.max(attrSpeed, cjStartSpeed)));
         if (bestSpeed > 0.001 && bestSpeed > hSpeed + 0.001
                 && (groundSpeed > 0.001 || hSpeed > 0.001 || cjStartSpeed > 0.001 || player.isSprinting())) {
+            bestSpeed *= 2.0;
             float yaw = player.getYRot() * Mth.DEG_TO_RAD;
             m = new Vec3(-Mth.sin(yaw) * bestSpeed, m.y, Mth.cos(yaw) * bestSpeed);
             GoetyPunkMod.LOGGER.info("Sprint inertia: hSpeed={}, groundSpeed={}, attrSpeed={}, cjStartSpeed={}, bestSpeed={}",
