@@ -360,7 +360,7 @@ public class PrototypeEvents {
             return;
         }
 
-        if (!player.isSprinting() || player.isShiftKeyDown()
+        if (player.isShiftKeyDown()
                 || player.isInWater() || player.isInLava()) {
             stopWallRun(player);
             return;
