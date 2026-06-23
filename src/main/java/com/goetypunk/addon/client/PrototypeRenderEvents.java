@@ -119,14 +119,14 @@ public class PrototypeRenderEvents {
         // ── Unified body-trail particles ──
         if (hasPrototype) {
             if (clientSlamming) {
-                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, ParticleTypes.FLAME);
-                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null);
+                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, ParticleTypes.FLAME, -0.5);
+                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null, -0.5);
             } else if (player.isSprinting() && player.zza > 0.0F && !player.isFallFlying()) {
-                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null);
+                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null, -0.3);
             } else if (clientChargeTicks > 0) {
-                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null);
+                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null, -0.3);
             } else if (player.isFallFlying()) {
-                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null);
+                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null, -1.0);
             }
         }
 
@@ -258,7 +258,7 @@ public class PrototypeRenderEvents {
         }
     }
 
-    private static void spawnBodyTrailParticles(Player player, Vector3f color, float scale, ParticleOptions spark) {
+    private static void spawnBodyTrailParticles(Player player, Vector3f color, float scale, ParticleOptions spark, double behind) {
         var r = player.getRandom();
         Vec3 vel = player.getDeltaMovement();
         float yawRad = player.getYRot() * Mth.DEG_TO_RAD;
@@ -274,9 +274,9 @@ public class PrototypeRenderEvents {
         };
 
         for (double[] a : anchors) {
-            double px = player.getX() + right.x * a[0];
-            double pz = player.getZ() + right.z * a[0];
-            double py = player.getY() + a[1];
+            double px = player.getX() + right.x * a[0] + vel.x * behind;
+            double pz = player.getZ() + right.z * a[0] + vel.z * behind;
+            double py = player.getY() + a[1] + vel.y * behind;
 
             for (int i = 0; i < 5; i++) {
                 double jx = px + (r.nextDouble() - 0.5) * 0.2;
