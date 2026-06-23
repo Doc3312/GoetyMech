@@ -430,6 +430,12 @@ public class PrototypeEvents {
         float strafe = PrototypeItem.getWallStrafe(player);
         double speed = ModConfig.WALL_RUN_SPEED.get();
 
+        GoetyPunkMod.LOGGER.info("WALL_MV: wallN=({}, {}, {}), fwd={}, strafe={}, fwOnWall=({}, {}, {}), right=({}, {}, {})",
+                String.format("%.2f", wallN.x), String.format("%.2f", wallN.y), String.format("%.2f", wallN.z),
+                forward, strafe,
+                String.format("%.3f", forwardOnWall.x), String.format("%.3f", forwardOnWall.y), String.format("%.3f", forwardOnWall.z),
+                String.format("%.3f", rightOnWall.x), String.format("%.3f", rightOnWall.y), String.format("%.3f", rightOnWall.z));
+
         Vec3 move = forwardOnWall.scale(forward * speed)
                 .add(rightOnWall.scale(-strafe * speed));
 
@@ -439,6 +445,13 @@ public class PrototypeEvents {
         move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
 
         player.setDeltaMovement(move.x, move.y, move.z);
+
+        GoetyPunkMod.LOGGER.info("WALL_MV_RESULT: move=({}, {}, {}), gravityOnWall=({}, {}, {}), pull=({}, {}, {})",
+                String.format("%.4f", move.x), String.format("%.4f", move.y), String.format("%.4f", move.z),
+                String.format("%.4f", gravityOnWall.x), String.format("%.4f", gravityOnWall.y), String.format("%.4f", gravityOnWall.z),
+                String.format("%.4f", wallN.x * ModConfig.WALL_PULL_SPEED.get()),
+                String.format("%.4f", wallN.y * ModConfig.WALL_PULL_SPEED.get()),
+                String.format("%.4f", wallN.z * ModConfig.WALL_PULL_SPEED.get()));
     }
 
     // ── Jump charging (called from C2S packet handler) ──
