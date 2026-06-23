@@ -73,6 +73,8 @@ public class UnstableRiftSpell extends Spell {
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         if (!(caster instanceof ServerPlayer player)) return;
 
+        boolean useStaffBonus = rightStaff(staff);
+
         ResourceKey<Level> currentDim = player.level().dimension();
         if (!RiftUtil.isRiftable(currentDim)) {
             player.displayClientMessage(
@@ -109,17 +111,24 @@ public class UnstableRiftSpell extends Spell {
         }
         Vec3 safeTarget = new Vec3(targetPos.x, y, targetPos.z);
 
+        long returnDelay = ModConfig.UNSTABLE_RIFT_RETURN_DELAY.get();
+        if (useStaffBonus) {
+            returnDelay = (long) (returnDelay * 1.5);
+        }
         data.putString(TAG_ORIGIN_DIM, currentDim.location().toString());
         data.putDouble(TAG_ORIGIN_X, currentPos.x);
         data.putDouble(TAG_ORIGIN_Y, currentPos.y);
         data.putDouble(TAG_ORIGIN_Z, currentPos.z);
-        data.putLong(TAG_RETURN_TIME, worldIn.getGameTime() + ModConfig.UNSTABLE_RIFT_RETURN_DELAY.get());
+        data.putLong(TAG_RETURN_TIME, worldIn.getGameTime() + returnDelay);
 
         if (!player.isCreative()) {
             SEHelper.decreaseSouls(player, ModConfig.UNSTABLE_RIFT_COST.get());
         }
 
-        SEHelper.addCooldown(player, WandUtil.findFocus(caster).getItem(), ModConfig.UNSTABLE_RIFT_COOLDOWN.get());
+        ItemStack focus = WandUtil.findFocus(caster);
+        if (!focus.isEmpty()) {
+            SEHelper.addCooldown(player, focus.getItem(), ModConfig.UNSTABLE_RIFT_COOLDOWN.get());
+        }
 
         player.changeDimension(targetLevel, new ArcaTeleporter(safeTarget));
 

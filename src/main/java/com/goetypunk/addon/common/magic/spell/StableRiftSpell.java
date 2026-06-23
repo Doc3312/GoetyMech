@@ -72,6 +72,8 @@ public class StableRiftSpell extends Spell {
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         if (!(caster instanceof ServerPlayer player)) return;
 
+        boolean useStaffBonus = rightStaff(staff);
+
         ResourceKey<Level> currentDim = player.level().dimension();
         if (!RiftUtil.isRiftable(currentDim)) {
             player.displayClientMessage(
@@ -103,11 +105,18 @@ public class StableRiftSpell extends Spell {
         BlockPos targetBlockPos = BlockPos.containing(targetPos.x, y, targetPos.z);
         Vec3 landingPos = findSafeLanding(targetLevel, targetBlockPos, targetDim);
 
+        int cost = ModConfig.STABLE_RIFT_COST.get();
+        if (useStaffBonus) {
+            cost = Math.max(1, cost / 2);
+        }
         if (!player.isCreative()) {
-            SEHelper.decreaseSouls(player, ModConfig.STABLE_RIFT_COST.get());
+            SEHelper.decreaseSouls(player, cost);
         }
 
-        SEHelper.addCooldown(player, WandUtil.findFocus(caster).getItem(), ModConfig.STABLE_RIFT_COOLDOWN.get());
+        ItemStack focus = WandUtil.findFocus(caster);
+        if (!focus.isEmpty()) {
+            SEHelper.addCooldown(player, focus.getItem(), ModConfig.STABLE_RIFT_COOLDOWN.get());
+        }
 
         player.changeDimension(targetLevel, new ArcaTeleporter(landingPos));
 
