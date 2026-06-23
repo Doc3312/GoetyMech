@@ -24,6 +24,7 @@ public abstract class PrototypeTravelMixin {
             float forward = PrototypeItem.getFlightForward(player);
             if (forward > 0.01f) {
                 float factor = PrototypeItem.getFlightSpeedFactor(player);
+                if (factor < 1.0f) factor = 1.0f;
                 if (!player.level().isClientSide) {
                     double maxMult = ModConfig.FLIGHT_MAX_MULTIPLIER.get();
                     double accel = ModConfig.FLIGHT_ACCEL_RATE.get();
@@ -76,6 +77,7 @@ public abstract class PrototypeTravelMixin {
             float forward = PrototypeItem.getFlightForward(player);
             if (forward <= 0.01f) {
                 float factor = PrototypeItem.getFlightSpeedFactor(player);
+                if (factor < 1.0f) factor = 1.0f;
                 if (factor > 1.0f) {
                     double decel = ModConfig.FLIGHT_DECEL_RATE.get();
                     factor = Math.max(1.0f, (float)(factor - decel));

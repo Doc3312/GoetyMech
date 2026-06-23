@@ -247,11 +247,28 @@
 		#范围: 0.01-2.0，默认 0.25
 		#Range: 0.01 ~ 2.0
 		slam_gravity_per_tick = 0.25
+		#飞行速度加速倍率上限
+		#按住W时速度从1x逐渐增至上限
+		#倍率 × FLIGHT_TARGET_SPEED = 实际速度
+		#范围: 1.0-100.0，默认 10.0
+		#Range: 1.0 ~ 100.0
+		flight_max_multiplier = 10.0
 		#冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）
 		#0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%
 		#范围: 0.0-20.0，默认 8.0
 		#Range: 0.0 ~ 20.0
 		sprint_max_multiplier = 8.0
+		#飞行减速度（per tick）
+		#松开W后每tick倍率减量
+		#范围: 0.01-5.0，默认 0.05
+		#Range: 0.01 ~ 5.0
+		flight_decel_rate = 0.05
+		#飞行加速度（per tick）
+		#按住W时每tick倍率增量
+		#例: 0.15 × 60 tick = 9.0 → 约3秒到10x
+		#范围: 0.01-5.0，默认 0.15
+		#Range: 0.01 ~ 5.0
+		flight_accel_rate = 0.15
 		#吸收上限倍率
 		#玩家 maxHealth × 此值 = absorption 上限
 		#范围: 1.0-10.0，默认 2.0
