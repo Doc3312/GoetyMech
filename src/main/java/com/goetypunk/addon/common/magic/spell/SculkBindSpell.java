@@ -95,10 +95,16 @@ public class SculkBindSpell extends Spell {
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster,
                             ItemStack staff, SpellStat spellStat) {
+        // 法杖类型增强检测（Goety 标准模式，为后续扩展预留）
+        boolean useStaffBonus = rightStaff(staff);
+
         // 1. 射线检测目标
         int range = spellStat.getRange();
         if (WandUtil.enchantedFocus(caster)) {
             range += WandUtil.getRangeLevel(caster);
+        }
+        if (useStaffBonus) {
+            range += 4;
         }
         LivingEntity target = this.getTarget(caster, range);
         if (target == null) {
@@ -107,9 +113,12 @@ public class SculkBindSpell extends Spell {
                         Component.translatable("info.goetypunk.sculk_bind_focus.no_target"), true);
             }
             if (caster instanceof Player player) {
-                int cooldown = (int) (ModConfig.SCULK_BIND_MISS_COOLDOWN.get()
-                        * ModAttributes.getCooldownDiscount(caster));
-                SEHelper.addCooldown(player, WandUtil.findFocus(caster).getItem(), cooldown);
+                ItemStack focus = WandUtil.findFocus(caster);
+                if (!focus.isEmpty()) {
+                    int cooldown = (int) (ModConfig.SCULK_BIND_MISS_COOLDOWN.get()
+                            * ModAttributes.getCooldownDiscount(caster));
+                    SEHelper.addCooldown(player, focus.getItem(), cooldown);
+                }
             }
             return;
         }
@@ -216,9 +225,12 @@ public class SculkBindSpell extends Spell {
         this.playSound(worldIn, caster, SoundEvents.SCULK_CATALYST_BLOOM);
 
         if (caster instanceof Player player) {
-            int cooldown = (int) (ModConfig.SCULK_BIND_SUCCESS_COOLDOWN.get()
-                    * ModAttributes.getCooldownDiscount(caster));
-            SEHelper.addCooldown(player, WandUtil.findFocus(caster).getItem(), cooldown);
+            ItemStack focus = WandUtil.findFocus(caster);
+            if (!focus.isEmpty()) {
+                int cooldown = (int) (ModConfig.SCULK_BIND_SUCCESS_COOLDOWN.get()
+                        * ModAttributes.getCooldownDiscount(caster));
+                SEHelper.addCooldown(player, focus.getItem(), cooldown);
+            }
         }
     }
 
