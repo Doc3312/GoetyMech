@@ -247,11 +247,6 @@
 		#范围: 0.0-20.0，默认 1.0
 		#Range: 0.0 ~ 20.0
 		slam_radius_multiplier = 1.0
-		#游泳加速每 tick 增加的水平速度（blocks/tick²）
-		#越大加速越快
-		#范围: 0.005-0.2，默认 0.02
-		#Range: 0.005 ~ 0.2
-		swim_accel_rate = 0.02
 		#按住 W 时沿视线方向飞行的基础速度（blocks/tick）
 		#按住W会从该速度开始逐渐加速到 FLIGHT_TARGET_SPEED * FLIGHT_MAX_MULTIPLIER
 		#范围: 0.1-2.0，默认 0.5（=10 blocks/s）
@@ -265,11 +260,6 @@
 		#最终最高速度 = flight_target_speed × 此值，范围: 1.0-50.0，默认 10.0
 		#Range: 1.0 ~ 50.0
 		flight_max_multiplier = 10.0
-		#游泳加速最高水平速度（blocks/tick）
-		#按住W时逐渐加速到此上限
-		#范围: 0.1-2.0，默认 0.5（=10 blocks/s）
-		#Range: 0.1 ~ 2.0
-		swim_max_speed = 0.5
 		#冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）
 		#0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%
 		#范围: 0.0-20.0，默认 8.0
@@ -288,6 +278,11 @@
 		#范围: 1.0-10.0，默认 2.0
 		#Range: 1.0 ~ 10.0
 		kill_absorption_cap_multiplier = 2.0
+		#游泳加速最高倍率（MULTIPLY_TOTAL modifier 值）
+		#0.0=100%(无加速), 1.0=200%, 8.0=900%
+		#范围: 0.0-20.0，默认 8.0
+		#Range: 0.0 ~ 20.0
+		swim_max_multiplier = 8.0
 
 	[squad_barracks.stress_focus]
 		#应力伤害除数

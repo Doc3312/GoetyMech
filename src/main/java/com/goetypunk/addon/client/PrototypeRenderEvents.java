@@ -78,9 +78,7 @@ public class PrototypeRenderEvents {
 
         if (event.phase == TickEvent.Phase.START) {
             ClientWallRunState.tickSprintRetain();
-            if (!ClientWallRunState.shouldSprint()) {
-                ClientWallRunState.sprintDown = mc.options.keySprint.isDown() || player.isSprinting();
-            }
+            ClientWallRunState.sprintDown = mc.options.keySprint.isDown() || player.isSprinting();
             float fwd = mc.options.keyUp.isDown() ? 1.0f : (mc.options.keyDown.isDown() ? -1.0f : 0.0f);
             float strafe = 0.0f;
             if (mc.options.keyLeft.isDown()) strafe += 1.0f;
