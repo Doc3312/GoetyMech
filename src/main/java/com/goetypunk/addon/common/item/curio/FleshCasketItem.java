@@ -3,12 +3,20 @@ package com.goetypunk.addon.common.item.curio;
 import com.Polarice3.Goety.api.items.magic.IFocus;
 import com.goetypunk.addon.common.item.capability.FleshCasketItemCapability;
 import com.goetypunk.addon.common.item.capability.FleshCasketItemHandler;
+import com.goetypunk.addon.common.menu.FleshCasketContainer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -33,6 +41,19 @@ public class FleshCasketItem extends Item implements ICurioItem {
         return triggerType;
     }
 
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!world.isClientSide) {
+            int tier = getTier(stack);
+            SimpleMenuProvider provider = new SimpleMenuProvider(
+                    (id, inventory, p) -> new FleshCasketContainer(id, inventory, FleshCasketItemHandler.get(stack), stack, tier),
+                    getName(stack));
+            NetworkHooks.openScreen((ServerPlayer) player, provider, buf -> buf.writeInt(tier));
+        }
+        return InteractionResultHolder.success(stack);
+    }
+
     public static int getTier(ItemStack stack) {
         return stack.getOrCreateTag().getInt(TAG_TIER);
     }
@@ -52,7 +73,7 @@ public class FleshCasketItem extends Item implements ICurioItem {
 
     @Override
     public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
-        return true;
+        return slotContext.entity().isCrouching();
     }
 
     @Override

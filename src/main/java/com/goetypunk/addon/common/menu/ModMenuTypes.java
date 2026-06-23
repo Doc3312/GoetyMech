@@ -14,4 +14,8 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<SquadBarracksMenu>> SQUAD_BARRACKS =
             CONTAINER_TYPE.register("squad_barracks",
                     () -> IForgeMenuType.create(SquadBarracksMenu::new));
+
+    public static final RegistryObject<MenuType<FleshCasketContainer>> FLESH_CASKET =
+            CONTAINER_TYPE.register("flesh_casket",
+                    () -> IForgeMenuType.create(FleshCasketContainer::createContainerClientSide));
 }

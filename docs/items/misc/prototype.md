@@ -13,6 +13,12 @@
 
 ## 演化记录
 
+### 2026-06-23 — 墙跑全量旋转实现 + 物理失败归档
+
+- 改动：实现相机全量旋转（四元数 SLERP 平滑过渡）、转角自动检测（findBestWallDirection）、墙面摩擦检测（slipperiness ≥ 0.8 禁止跑墙）、跑墙激活条件放宽（地面冲刺也可激活）；物理层改用 `player.move() + setDeltaMovement(ZERO)` 模型，但仍无法产生实际位移
+- 原因：相机旋转需要完整的墙壁=地面视觉体验；物理层 `move()` 执行但 Y 坐标不变化，开放问题待后续诊断
+- 关联：wall-run-full-rotation change（已归档）
+
 ### 2026-06-18 — 墙跑物理修复：Y 轴独立控制
 
 - 改动：applyWallMovement() 不再继承玩家下落速度，Y 轴设为独立慢滑速度 WALL_SLIDE_SPEED；视线方向保留 Y 分量支持仰头爬墙；退出条件从不冲刺改为落地
@@ -42,6 +48,30 @@
 - 改动：在 sprint 停止分支（`!player.isSprinting()`）中清空 `groundSpeed(NBT)`
 - 原因：sprint 期间每 tick 追踪的实测速度残留在 NBT 中，停止 sprint 后未被清除，蓄力跳时 `bestSpeed` 取到旧 sprint 速度，在无 W 输入时产生不应有的水平推力
 - 关联：codebase-remediation change
+
+### 2026-06-23 — 墙跑方向计算从视线投影改为水平沿墙方向
+
+- 改动：sprint 时用 `down × wallN` 计算水平沿墙方向，替代 `getLookAngle()` 投影；新增 C2SWallInputPacket（客户端 → 服务端同步 forward/strafe 输入）；墙跑时 `forward=1` fallback
+- 原因：视线投影在墙面上产生不可预测的斜向移动，不满足"水平沿墙跑"的预期
+- 关联：wall-run iteration (commits c544224 → 565daa0 → 136150e → 5faa6a5)
+
+### 2026-06-23 — 墙跑物理改为直接 move() 绕过 travel() 摩擦
+
+- 改动：取消 setDeltaMovement 被动物理，改为 `player.move(MoverType.SELF, delta)` 直接驱动；delta 清零防止 travel() 覆盖；移除 sprint 检查使墙跑在 sprint 取消后持续
+- 原因：travel() 的摩擦覆盖 + onGround 检测导致墙跑速度被大幅衰减，需要绕过原版移动流水线
+- 关联：wall-run iteration (commits 1f5853d → c755f7e → cd816fd)
+
+### 2026-06-23 — 墙跑启动时抬升离地 + onGround 守卫
+
+- 改动：墙跑激活时强制抬升 0.2 格（避免地面摩擦抵消水平速度）；在 applyWallMovement 入口加 `player.onGround()` 守卫
+- 原因：墙跑从地面开始时，travel() 的地面摩擦立即将速度降到零，需要空中启动
+- 关联：commit 9ac4f32
+
+### 2026-06-23 — 墙跑改用视线方向 + 反重力模式
+
+- 改动：墙跑方向改回视线方向（`getLookAngle()`），移除 lift-off-ground；改为持续设置 `setNoGravity(true)` 消除重力影响
+- 原因：lift-off-ground 在复杂地形不可靠；反重力比抬升更稳定
+- 关联：commit 44f9fb3
 
 ### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
 

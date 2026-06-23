@@ -1,6 +1,7 @@
 package com.goetypunk.addon.client;
 
 import com.goetypunk.addon.GoetyPunkMod;
+import com.goetypunk.addon.client.gui.FleshCasketScreen;
 import com.goetypunk.addon.client.gui.SquadBarracksScreen;
 import com.goetypunk.addon.client.render.CrushingWheelRenderer;
 import com.goetypunk.addon.client.render.RemoteEngineRenderer;
@@ -36,6 +37,8 @@ public class ModClientEvents {
         event.enqueueWork(() -> {
             net.minecraft.client.gui.screens.MenuScreens.register(
                     ModMenuTypes.SQUAD_BARRACKS.get(), SquadBarracksScreen::new);
+            net.minecraft.client.gui.screens.MenuScreens.register(
+                    ModMenuTypes.FLESH_CASKET.get(), FleshCasketScreen::new);
             net.minecraft.client.renderer.item.ItemProperties.register(
                     ModItems.SQUAD_FOCUS.get(),
                     new net.minecraft.resources.ResourceLocation(com.goetypunk.addon.GoetyPunkMod.MOD_ID, "bound"),
