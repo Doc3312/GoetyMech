@@ -10,7 +10,6 @@ import com.goetypunk.addon.common.net.c2s.C2SJumpChargePacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallInputPacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallJumpOffPacket;
 import com.goetypunk.addon.common.net.c2s.C2SFlightInputPacket;
-import com.goetypunk.addon.common.net.c2s.C2SSwimInputPacket;
 import com.goetypunk.addon.config.ModConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -150,7 +149,8 @@ public class PrototypeRenderEvents {
             hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
         }
 
-        boolean canCharge = !player.isFallFlying();
+        boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
+        boolean canCharge = (player.onGround() || inWater) && !player.isFallFlying();
         if (jumpDown && hasPrototype && canCharge) {
             clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
             float fwd = player.zza;
@@ -194,26 +194,6 @@ public class PrototypeRenderEvents {
         } else if (player.isFallFlying()) {
             if (player.tickCount % 3 == 0) {
                 ModNetwork.CHANNEL.sendToServer(new C2SFlightInputPacket(0.0f));
-            }
-        }
-
-        // ── Swim forward input C2S ──
-        boolean hasPrototypeForSwim = chest.getItem() instanceof PrototypeItem;
-        if (!hasPrototypeForSwim) {
-            hasPrototypeForSwim = CuriosHelper.hasPrototypeInCurios(player);
-        }
-        boolean inWaterForSwim = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
-        if (hasPrototypeForSwim && inWaterForSwim) {
-            boolean forwardDown = mc.options.keyUp.isDown();
-            float forwardVal = forwardDown ? 1.0f : 0.0f;
-            PrototypeItem.setSwimForward(player, forwardVal);
-            if (player.tickCount % 3 == 0) {
-                ModNetwork.CHANNEL.sendToServer(new C2SSwimInputPacket(forwardVal));
-            }
-        } else {
-            PrototypeItem.setSwimForward(player, 0.0f);
-            if (player.tickCount % 3 == 0) {
-                ModNetwork.CHANNEL.sendToServer(new C2SSwimInputPacket(0.0f));
             }
         }
     }
