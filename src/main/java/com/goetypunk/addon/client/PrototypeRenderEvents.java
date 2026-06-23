@@ -96,6 +96,11 @@ public class PrototypeRenderEvents {
                 ClientWallRunState.wallNormal = Vec3.ZERO;
                 ClientWallRunState.graceTicks = 0;
             }
+
+            if (ClientWallRunState.isActive() && mc.options.keyShift.isDown()) {
+                ClientWallRunState.wallNormal = Vec3.ZERO;
+                ClientWallRunState.graceTicks = 0;
+            }
             return;
         }
 
@@ -113,9 +118,10 @@ public class PrototypeRenderEvents {
             ModNetwork.CHANNEL.sendToServer(new C2SCancelSlamPacket());
         }
 
-        // Wall jump-off via C2S
-        if (wasPressed && clientWallNormal.lengthSqr() >= 0.5) {
-            ModNetwork.CHANNEL.sendToServer(new C2SWallJumpOffPacket());
+        // Jump during wall-run: detach and let CJ handle
+        if (wasPressed && ClientWallRunState.isActive()) {
+            ClientWallRunState.wallNormal = Vec3.ZERO;
+            ClientWallRunState.graceTicks = 0;
         }
 
         // ── Wall input C2S (forward + strafe, throttled every 2 ticks) ──
@@ -140,7 +146,7 @@ public class PrototypeRenderEvents {
             hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
         }
 
-        if (jumpDown && hasPrototype && !player.isFallFlying()) {
+        if (jumpDown && hasPrototype && player.onGround() && !player.isFallFlying()) {
             clientChargeTicks = Math.min(clientChargeTicks + 1, 60);
             float fwd = player.zza;
             boolean jumping = jumpDown;
