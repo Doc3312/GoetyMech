@@ -18,74 +18,56 @@ public abstract class PrototypeTravelMixin {
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void gp$onTravelHead(Vec3 travelVec, CallbackInfo ci) {
         Player player = (Player) (Object) this;
+        if (!player.isFallFlying()) return;
         if (!PrototypeItem.hasAnyPrototype(player)) return;
 
-        if (player.isFallFlying()) {
-            float forward = PrototypeItem.getFlightForward(player);
-            if (forward > 0.01f) {
-                float factor = PrototypeItem.getFlightSpeedFactor(player);
-                if (factor < 1.0f) factor = 1.0f;
-                if (!player.level().isClientSide) {
-                    double maxMult = ModConfig.FLIGHT_MAX_MULTIPLIER.get();
-                    double accel = ModConfig.FLIGHT_ACCEL_RATE.get();
-                    factor = Math.min((float)(factor + accel), (float)maxMult);
-                    PrototypeItem.setFlightSpeedFactor(player, factor);
-                }
+        float forward = PrototypeItem.getFlightForward(player);
+        if (!(forward > 0.01f)) return;
 
-                double speed = ModConfig.FLIGHT_TARGET_SPEED.get() * factor;
-                Vec3 look = player.getLookAngle();
-                Vec3 current = player.getDeltaMovement();
-                double hoverLift = speed * 0.16;
-                double pitch = player.getXRot();
-                double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
-                Vec3 motion;
-                if (pitch > 0.01) {
-                    double speedAlongLook = Math.max(speed, current.dot(look) + 0.08 * (-look.y));
-                    Vec3 targetMotion = look.scale(speedAlongLook);
-                    motion = new Vec3(
-                        current.x * 0.3 + targetMotion.x * 0.7,
-                        current.y * 0.3 + targetMotion.y * 0.7,
-                        current.z * 0.3 + targetMotion.z * 0.7
-                    );
-                } else {
-                    double targetVy = look.y * speed + hoverLift * liftFactor;
-                    Vec3 vMotion = new Vec3(look.x * speed, targetVy, look.z * speed);
-                    double currH = current.horizontalDistance();
-                    double newH = vMotion.horizontalDistance();
-                    if (newH < 0.001) {
-                        motion = new Vec3(0, vMotion.y, 0);
-                    } else if (currH > newH && currH > 0.01) {
-                        double scale = currH / newH;
-                        motion = new Vec3(vMotion.x * scale, vMotion.y, vMotion.z * scale);
-                    } else {
-                        motion = vMotion;
-                    }
-                }
+        int accelTick = PrototypeItem.getFlightAccelTick(player);
+        int accelTicks = ModConfig.FLIGHT_ACCEL_TICKS.get();
+        double t = Math.min((double) accelTick / (double) accelTicks, 1.0);
+        double maxMult = ModConfig.FLIGHT_MAX_MULTIPLIER.get();
+        double mult = 1.0 + t * (maxMult - 1.0);
+        double speed = ModConfig.FLIGHT_TARGET_SPEED.get() * mult;
 
-                player.setDeltaMovement(motion);
-                player.move(MoverType.SELF, motion);
-                ci.cancel();
+        Vec3 look = player.getLookAngle();
+        Vec3 current = player.getDeltaMovement();
+        double hoverLift = speed * 0.16;
+        double pitch = player.getXRot();
+        double liftFactor = Mth.clamp(-pitch / 90.0, 0, 1);
+        Vec3 motion;
+        if (pitch > 0.01) {
+            double speedAlongLook = Math.max(speed, current.dot(look) + 0.08 * (-look.y));
+            Vec3 targetMotion = look.scale(speedAlongLook);
+            motion = new Vec3(
+                current.x * 0.3 + targetMotion.x * 0.7,
+                current.y * 0.3 + targetMotion.y * 0.7,
+                current.z * 0.3 + targetMotion.z * 0.7
+            );
+        } else {
+            double targetVy = look.y * speed + hoverLift * liftFactor;
+            Vec3 vMotion = new Vec3(look.x * speed, targetVy, look.z * speed);
+            double currH = current.horizontalDistance();
+            double newH = vMotion.horizontalDistance();
+            if (newH < 0.001) {
+                motion = new Vec3(0, vMotion.y, 0);
+            } else if (currH > newH && currH > 0.01) {
+                double scale = currH / newH;
+                motion = new Vec3(vMotion.x * scale, vMotion.y, vMotion.z * scale);
+            } else {
+                motion = vMotion;
             }
         }
+
+        player.setDeltaMovement(motion);
+        player.move(MoverType.SELF, motion);
+        ci.cancel();
     }
 
     @Inject(method = "travel", at = @At("TAIL"))
     private void gp$onTravelTail(Vec3 travelVec, CallbackInfo ci) {
         Player player = (Player) (Object) this;
-
-        if (PrototypeItem.hasAnyPrototype(player) && player.isFallFlying() && !player.level().isClientSide) {
-            float forward = PrototypeItem.getFlightForward(player);
-            if (forward <= 0.01f) {
-                float factor = PrototypeItem.getFlightSpeedFactor(player);
-                if (factor < 1.0f) factor = 1.0f;
-                if (factor > 1.0f) {
-                    double decel = ModConfig.FLIGHT_DECEL_RATE.get();
-                    factor = Math.max(1.0f, (float)(factor - decel));
-                    PrototypeItem.setFlightSpeedFactor(player, factor);
-                }
-            }
-        }
-
         if (!player.isFallFlying()) return;
         if (!PrototypeItem.hasAnyPrototype(player)) return;
 

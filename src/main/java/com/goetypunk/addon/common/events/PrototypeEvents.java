@@ -294,6 +294,19 @@ public class PrototypeEvents {
                 }
             }
 
+            // ── 飞行加速 tick 计数器（跟 sprint 同一个模式） ──
+            if (hasPrototype && player.isFallFlying()) {
+                float flightForward = PrototypeItem.getFlightForward(player);
+                int accelTick = PrototypeItem.getFlightAccelTick(player);
+                if (flightForward > 0.01f && accelTick < ModConfig.FLIGHT_ACCEL_TICKS.get()) {
+                    PrototypeItem.setFlightAccelTick(player, accelTick + 1);
+                } else if (flightForward <= 0.01f && accelTick > 0) {
+                    PrototypeItem.setFlightAccelTick(player, accelTick - 1);
+                }
+            } else if (!player.isFallFlying()) {
+                PrototypeItem.clearFlightAccel(player);
+            }
+
             // ── Charged jump 水平速度持续注入（抵消 move() 的摩擦衰减） ──
             if (PrototypeItem.isWallRunning(player)) {
                 PrototypeItem.clearChargedJump(player);
