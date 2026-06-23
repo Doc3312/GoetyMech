@@ -8,7 +8,24 @@ public class ClientWallRunState {
     public static float strafeInput = 0.0f;
     public static boolean sprintDown = false;
 
+    public static int graceTicks = 0;
+    public static Vec3 lastWallNormal = Vec3.ZERO;
+
     public static boolean isActive() {
-        return wallNormal.lengthSqr() >= 0.5;
+        return wallNormal.lengthSqr() >= 0.5 || graceTicks > 0;
+    }
+
+    public static void applyGrace(int ticks) {
+        graceTicks = ticks;
+        lastWallNormal = wallNormal;
+    }
+
+    public static void tickGrace() {
+        if (graceTicks > 0) {
+            graceTicks--;
+            if (wallNormal.lengthSqr() < 0.5 && graceTicks > 0) {
+                wallNormal = lastWallNormal;
+            }
+        }
     }
 }

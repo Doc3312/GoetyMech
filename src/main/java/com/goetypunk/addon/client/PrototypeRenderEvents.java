@@ -89,8 +89,12 @@ public class PrototypeRenderEvents {
             Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
             if (sprinting && hasProto && !player.isFallFlying() && wallDir != null) {
                 ClientWallRunState.wallNormal = wallDir;
+                ClientWallRunState.graceTicks = 0;
+            } else if (sprinting && hasProto && !player.isFallFlying() && ClientWallRunState.graceTicks > 0) {
+                ClientWallRunState.tickGrace();
             } else {
                 ClientWallRunState.wallNormal = Vec3.ZERO;
+                ClientWallRunState.graceTicks = 0;
             }
             return;
         }

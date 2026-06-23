@@ -50,6 +50,7 @@ public abstract class MixinWallRunTravel {
                     AABB checkBox = player.getBoundingBox().move(climbVec.add(outward)).inflate(-0.02);
                     if (player.level().noCollision(checkBox)) {
                         wallMove = wallMove.add(outward);
+                        ClientWallRunState.applyGrace(3);
                         found = true;
                         break;
                     }
