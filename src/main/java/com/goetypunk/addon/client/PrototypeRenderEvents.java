@@ -152,11 +152,9 @@ public class PrototypeRenderEvents {
 
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
-        float lenSq = clientWallQuat.lengthSquared();
-        if (lenSq < 0.001f) return;
-        float roll = clientWallQuat.getRoll();
-        if (Math.abs(roll) < 0.01f) return;
-        event.setRoll(event.getRoll() + (float) Math.toDegrees(roll));
+        float rollDeg = quatRollDeg(clientWallQuat);
+        if (Math.abs(rollDeg) < 1.0f) return;
+        event.setRoll(event.getRoll() + rollDeg);
     }
 
     // ═══════════════════════════════════════════════════
@@ -165,11 +163,8 @@ public class PrototypeRenderEvents {
 
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
-        float lenSq = clientWallQuat.lengthSquared();
-        if (lenSq < 0.001f) return;
-        float roll = clientWallQuat.getRoll();
-        if (Math.abs(roll) < 0.01f) return;
-        float rollDeg = (float) Math.toDegrees(roll);
+        float rollDeg = quatRollDeg(clientWallQuat);
+        if (Math.abs(rollDeg) < 1.0f) return;
         float rollRad = rollDeg * Mth.DEG_TO_RAD;
         PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
         model.body.zRot += rollRad;
@@ -267,10 +262,22 @@ public class PrototypeRenderEvents {
         return (float) Math.toDegrees(Math.asin(side));
     }
 
+    private static float quatRollDeg(Quaternionf q) {
+        float w = q.w;
+        float x = q.x;
+        float y = q.y;
+        float z = q.z;
+        double roll = Math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z));
+        return (float) Math.toDegrees(roll);
+    }
+
     private static void slerpWallRotation() {
-        float dot = clientWallQuat.dot(clientWallQuatTarget);
+        float dot = clientWallQuat.w * clientWallQuatTarget.w
+                  + clientWallQuat.x * clientWallQuatTarget.x
+                  + clientWallQuat.y * clientWallQuatTarget.y
+                  + clientWallQuat.z * clientWallQuatTarget.z;
         if (dot < 0) {
-            clientWallQuatTarget.negate();
+            clientWallQuatTarget.set(-clientWallQuatTarget.x, -clientWallQuatTarget.y, -clientWallQuatTarget.z, -clientWallQuatTarget.w);
             dot = -dot;
         }
         if (Math.abs(dot) > 0.9999f) {
