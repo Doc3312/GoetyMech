@@ -7,6 +7,7 @@ import com.goetypunk.addon.common.utils.CuriosHelper;
 import com.goetypunk.addon.common.utils.WallUtil;
 import com.goetypunk.addon.common.net.c2s.C2SCancelSlamPacket;
 import com.goetypunk.addon.common.net.c2s.C2SJumpChargePacket;
+import com.goetypunk.addon.common.net.c2s.C2SWallInputPacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallJumpOffPacket;
 import com.goetypunk.addon.common.net.c2s.C2SFlightInputPacket;
 import com.goetypunk.addon.config.ModConfig;
@@ -90,6 +91,21 @@ public class PrototypeRenderEvents {
         // Wall jump-off via C2S
         if (wasPressed && clientWallNormal.lengthSqr() >= 0.5) {
             ModNetwork.CHANNEL.sendToServer(new C2SWallJumpOffPacket());
+        }
+
+        // ── Wall input C2S (forward + strafe, throttled every 2 ticks) ──
+        if (clientWallNormal.lengthSqr() >= 0.5) {
+            if (player.tickCount % 2 == 0) {
+                float wallFwd = mc.options.keyUp.isDown() ? 1.0f : (mc.options.keyDown.isDown() ? -1.0f : 0.0f);
+                float wallStrafe = 0.0f;
+                if (mc.options.keyLeft.isDown()) wallStrafe += 1.0f;
+                if (mc.options.keyRight.isDown()) wallStrafe -= 1.0f;
+                ModNetwork.CHANNEL.sendToServer(new C2SWallInputPacket(wallFwd, wallStrafe));
+            }
+        } else {
+            if (player.tickCount % 5 == 0) {
+                ModNetwork.CHANNEL.sendToServer(new C2SWallInputPacket(0.0f, 0.0f));
+            }
         }
 
         // ── Jump charge C2S ──

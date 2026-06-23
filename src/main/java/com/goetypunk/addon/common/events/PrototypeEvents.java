@@ -426,8 +426,8 @@ public class PrototypeEvents {
 
         Vec3 rightOnWall = forwardOnWall.cross(wallN).normalize();
 
-        float forward = player.zza;
-        float strafe = player.xxa;
+        float forward = PrototypeItem.getWallForward(player);
+        float strafe = PrototypeItem.getWallStrafe(player);
         double speed = ModConfig.WALL_RUN_SPEED.get();
 
         Vec3 move = forwardOnWall.scale(forward * speed)
