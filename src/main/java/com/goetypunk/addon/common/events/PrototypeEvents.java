@@ -195,7 +195,7 @@ public class PrototypeEvents {
             if (hasPrototype && !isSlamming) {
                 if (PrototypeItem.isWallRunning(player)) {
                     handleWallRunTick(player);
-                } else if (player.isSprinting() && !player.onGround() && !player.isFallFlying()) {
+                } else if (player.isSprinting() && !player.isFallFlying()) {
                     tryStartWallRun(player);
                 }
             }
@@ -342,8 +342,10 @@ public class PrototypeEvents {
         if (!player.isSprinting()) return;
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
         if (wallDir == null) return;
+        if (WallUtil.getWallFriction(player, wallDir) >= 0.8f) return;
         PrototypeItem.setWallRunning(player, true);
         PrototypeItem.setWallNormal(player, wallDir);
+        PrototypeItem.setWallRunTicks(player, 0);
         GoetyPunkMod.LOGGER.info("Prototype wall-run START: normal={}", wallDir);
     }
 
@@ -360,10 +362,31 @@ public class PrototypeEvents {
             return;
         }
 
-        if (WallUtil.getWallDirection(player, 0.5) == null) {
-            stopWallRun(player);
-            return;
+        // ── 角落检测：当前墙面消失 → 扫描所有方向找最近的墙 ──
+        Vec3 currentWall = WallUtil.getWallDirection(player, 0.5);
+        if (currentWall == null) {
+            Vec3 newDir = WallUtil.findBestWallDirection(player, 0.8);
+            if (newDir != null) {
+                if (WallUtil.getWallFriction(player, newDir) >= 0.8f) {
+                    stopWallRun(player);
+                    return;
+                }
+                PrototypeItem.setWallNormal(player, newDir);
+                GoetyPunkMod.LOGGER.info("Prototype wall-run CORNER: new normal={}", newDir);
+            } else {
+                stopWallRun(player);
+                return;
+            }
+        } else {
+            // ── 墙面摩擦检测（冰面不可跑） ──
+            if (WallUtil.getWallFriction(player, wallN) >= 0.8f) {
+                stopWallRun(player);
+                return;
+            }
         }
+
+        // ── 累加跑墙 tick ──
+        PrototypeItem.setWallRunTicks(player, PrototypeItem.getWallRunTicks(player) + 1);
 
         // Jump-off is handled via C2SWallJumpOffPacket from client
     }
@@ -378,6 +401,7 @@ public class PrototypeEvents {
     }
 
     private static void stopWallRun(Player player) {
+        PrototypeItem.setWallRecoveryTicks(player, ModConfig.WALL_RECOVERY_TICKS.get());
         PrototypeItem.clearWallState(player);
         PrototypeItem.setWallRunning(player, false);
     }
@@ -406,7 +430,9 @@ public class PrototypeEvents {
         Vec3 move = forwardOnWall.scale(forward * speed)
                 .add(rightOnWall.scale(-strafe * speed));
 
-        move = move.add(0, -ModConfig.WALL_GRAVITY.get(), 0);
+        Vec3 worldDown = new Vec3(0, -ModConfig.WALL_GRAVITY.get(), 0);
+        Vec3 gravityOnWall = WallUtil.projectOnPlane(worldDown, wallN);
+        move = move.add(gravityOnWall);
         move = move.add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
 
         player.setDeltaMovement(move.x, move.y, move.z);
