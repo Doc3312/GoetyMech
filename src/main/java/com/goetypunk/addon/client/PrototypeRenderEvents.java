@@ -116,18 +116,10 @@ public class PrototypeRenderEvents {
             clientChargeTicks = 0;
         }
 
-        // ── Unified body-trail particles ──
-        if (hasPrototype) {
-            if (clientSlamming) {
-                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, ParticleTypes.FLAME, -0.5);
-                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null, -0.5);
-            } else if (player.isSprinting() && player.zza > 0.0F && !player.isFallFlying()) {
-                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null, -0.3);
-            } else if (clientChargeTicks > 0) {
-                spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, null, -0.3);
-            } else if (player.isFallFlying()) {
-                spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null, -1.0);
-            }
+        // ── Slam-only particles ──
+        if (hasPrototype && clientSlamming) {
+            spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, ParticleTypes.FLAME, -0.5);
+            spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null, -0.5);
         }
 
         // ── Flight forward input C2S ──
