@@ -9,6 +9,7 @@ import com.goetypunk.addon.common.net.c2s.C2SCancelSlamPacket;
 import com.goetypunk.addon.common.net.c2s.C2SJumpChargePacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallJumpOffPacket;
 import com.goetypunk.addon.common.net.c2s.C2SFlightInputPacket;
+import com.goetypunk.addon.config.ModConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -28,6 +29,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ViewportEvent;
@@ -44,8 +46,10 @@ public class PrototypeRenderEvents {
 
     // ── Wall-running client state (visual only) ──
     private static Vec3 clientWallNormal = Vec3.ZERO;
-    private static float clientWallRoll = 0.0f;
-    private static float clientWallRollTarget = 0.0f;
+    private static Quaternionf clientWallQuat = new Quaternionf();
+    private static Quaternionf clientWallQuatTarget = new Quaternionf();
+    private static int clientWallRecoveryTicks = 0;
+    private static boolean clientWasWallRunning = false;
 
     // ── Jump charge client state ──
     private static int clientChargeTicks = 0;
@@ -143,23 +147,30 @@ public class PrototypeRenderEvents {
     }
 
     // ═══════════════════════════════════════════════════
-    //  2. Camera roll during wall-running
+    //  2. Camera rotation during wall-running (quaternion SLERP)
     // ═══════════════════════════════════════════════════
 
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
-        if (Math.abs(clientWallRoll) < 1.0f) return;
-        event.setRoll(event.getRoll() + clientWallRoll);
+        float lenSq = clientWallQuat.lengthSquared();
+        if (lenSq < 0.001f) return;
+        float roll = clientWallQuat.getRoll();
+        if (Math.abs(roll) < 0.01f) return;
+        event.setRoll(event.getRoll() + (float) Math.toDegrees(roll));
     }
 
     // ═══════════════════════════════════════════════════
-    //  3. Model roll during wall-running
+    //  3. Model rotation during wall-running
     // ═══════════════════════════════════════════════════
 
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
-        if (Math.abs(clientWallRoll) < 1.0f) return;
-        float rollRad = clientWallRoll * Mth.DEG_TO_RAD;
+        float lenSq = clientWallQuat.lengthSquared();
+        if (lenSq < 0.001f) return;
+        float roll = clientWallQuat.getRoll();
+        if (Math.abs(roll) < 0.01f) return;
+        float rollDeg = (float) Math.toDegrees(roll);
+        float rollRad = rollDeg * Mth.DEG_TO_RAD;
         PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
         model.body.zRot += rollRad;
         model.head.zRot += rollRad;
@@ -205,48 +216,68 @@ public class PrototypeRenderEvents {
     }
 
     // ═══════════════════════════════════════════════════
-    //  Internal helpers
+    //  Internal helpers (quaternion-based wall rotation)
     // ═══════════════════════════════════════════════════
 
     private static void updateClientWallState(Player player) {
-        boolean sprinting = Minecraft.getInstance().options.keySprint.isDown();
-        boolean hasPrototype = player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PrototypeItem;
-        if (!hasPrototype) {
-            hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
-        }
-
-        if (!sprinting || !hasPrototype || player.isFallFlying()) {
-            clientWallRollTarget = 0.0f;
-            smoothRoll();
-            return;
-        }
+        Minecraft mc = Minecraft.getInstance();
+        boolean sprinting = mc.options.keySprint.isDown();
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
-        if (wallDir != null) {
+        boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && wallDir != null;
+
+        if (onWall) {
             clientWallNormal = wallDir;
-            Vec3 lookH = new Vec3(player.getLookAngle().x, 0, player.getLookAngle().z);
-            double len = lookH.length();
-            if (len > 0.001) {
-                lookH = lookH.scale(1.0 / len);
-            } else {
-                lookH = new Vec3(0, 0, 1);
-            }
-            Vec3 right = new Vec3(lookH.z, 0, -lookH.x);
-            double side = wallDir.x * right.x + wallDir.z * right.z;
-            clientWallRollTarget = (float) Math.toDegrees(Math.asin(Mth.clamp(side, -1.0, 1.0)));
+            float rollDeg = computeWallRollDeg(player, wallDir);
+            float limit = (float) (double) ModConfig.WALL_ROTATION_LIMIT.get();
+            rollDeg = Mth.clamp(rollDeg, -limit, limit);
+            clientWallQuatTarget = new Quaternionf().rotationZ(rollDeg * Mth.DEG_TO_RAD);
+            clientWasWallRunning = true;
+            clientWallRecoveryTicks = 0;
         } else {
-            clientWallRollTarget = 0.0f;
+            clientWallNormal = Vec3.ZERO;
+            if (clientWasWallRunning) {
+                clientWallRecoveryTicks = ModConfig.WALL_RECOVERY_TICKS.get();
+                clientWasWallRunning = false;
+            }
+            if (clientWallRecoveryTicks > 0) {
+                clientWallRecoveryTicks--;
+                clientWallQuatTarget = new Quaternionf();
+            } else {
+                clientWallQuatTarget = new Quaternionf();
+                clientWallQuat = new Quaternionf();
+                return;
+            }
         }
 
-        smoothRoll();
+        slerpWallRotation();
     }
 
-    private static void smoothRoll() {
-        float diff = clientWallRollTarget - clientWallRoll;
-        if (Math.abs(diff) < 0.5f) {
-            clientWallRoll = clientWallRollTarget;
+    private static float computeWallRollDeg(Player player, Vec3 wallDir) {
+        Vec3 lookH = new Vec3(player.getLookAngle().x, 0, player.getLookAngle().z);
+        double len = lookH.length();
+        if (len > 0.001) {
+            lookH = lookH.scale(1.0 / len);
         } else {
-            clientWallRoll += diff * 0.15f;
+            lookH = new Vec3(0, 0, 1);
+        }
+        Vec3 right = new Vec3(lookH.z, 0, -lookH.x);
+        double side = Mth.clamp(wallDir.x * right.x + wallDir.z * right.z, -1.0, 1.0);
+        return (float) Math.toDegrees(Math.asin(side));
+    }
+
+    private static void slerpWallRotation() {
+        float dot = clientWallQuat.dot(clientWallQuatTarget);
+        if (dot < 0) {
+            clientWallQuatTarget.negate();
+            dot = -dot;
+        }
+        if (Math.abs(dot) > 0.9999f) {
+            clientWallQuat.set(clientWallQuatTarget);
+        } else {
+            float t = (float) (double) ModConfig.WALL_ROTATION_SPEED.get();
+            clientWallQuat.slerp(clientWallQuatTarget, t);
         }
     }
 
