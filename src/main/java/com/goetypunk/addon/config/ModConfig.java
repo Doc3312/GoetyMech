@@ -143,7 +143,8 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue FLIGHT_MAX_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_DECEL_RATE;
     public static final ForgeConfigSpec.DoubleValue SPRINT_MAX_MULTIPLIER;
-    public static final ForgeConfigSpec.DoubleValue SWIM_MAX_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue SWIM_MAX_SPEED;
+    public static final ForgeConfigSpec.DoubleValue SWIM_ACCEL_RATE;
 
     // ====== Prototype — Kill Absorption 配置 ======
 
@@ -442,9 +443,13 @@ public class ModConfig {
                 .comment("冲刺加速最高倍率（MULTIPLY_TOTAL modifier 值）", "0.0=100%(无加速), 1.0=200%, 5.0=600%, 8.0=900%", "范围: 0.0-20.0，默认 8.0")
                 .defineInRange("sprint_max_multiplier", 8.0, 0.0, 20.0);
 
-        SWIM_MAX_MULTIPLIER = BUILDER
-                .comment("游泳加速最高倍率（MULTIPLY_TOTAL modifier 值）", "0.0=100%(无加速), 1.0=200%, 8.0=900%", "范围: 0.0-20.0，默认 8.0")
-                .defineInRange("swim_max_multiplier", 8.0, 0.0, 20.0);
+        SWIM_MAX_SPEED = BUILDER
+                .comment("游泳加速最高水平速度（blocks/tick）", "按住W时逐渐加速到此上限", "范围: 0.1-2.0，默认 0.5（=10 blocks/s）")
+                .defineInRange("swim_max_speed", 0.5, 0.1, 2.0);
+
+        SWIM_ACCEL_RATE = BUILDER
+                .comment("游泳加速每 tick 增加的水平速度（blocks/tick²）", "越大加速越快", "范围: 0.005-0.2，默认 0.02")
+                .defineInRange("swim_accel_rate", 0.02, 0.005, 0.2);
 
         KILL_HEALTH_ABSORB_RATIO = BUILDER
                 .comment("击杀生物生命吸收比例", "被击杀生物 maxHealth × 此值 = 治疗量", "范围: 0.0-2.0，默认 0.8")

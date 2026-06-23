@@ -138,14 +138,13 @@ public abstract class PrototypeTravelMixin {
                 int tick = PrototypeItem.getSwimTick(player) + 1;
                 PrototypeItem.setSwimTick(player, tick);
 
-                double t = Math.min((tick - 1) / 80.0, 1.0);
-                double multiplier = 1.0 + t * ModConfig.SWIM_MAX_MULTIPLIER.get();
-
                 Vec3 motion = player.getDeltaMovement();
                 double hSpeed = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-                if (hSpeed > 0.001 && multiplier > 1.01) {
-                    player.setDeltaMovement(motion.x * multiplier, motion.y, motion.z * multiplier);
-                }
+                double target = ModConfig.SWIM_MAX_SPEED.get();
+                double accel = ModConfig.SWIM_ACCEL_RATE.get();
+                double newHSpeed = Math.min(hSpeed + accel, target);
+                double factor = hSpeed > 0.001 ? newHSpeed / hSpeed : 1.0;
+                player.setDeltaMovement(motion.x * factor, motion.y, motion.z * factor);
             } else {
                 PrototypeItem.setSwimTick(player, 0);
             }
