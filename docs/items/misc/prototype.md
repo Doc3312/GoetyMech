@@ -91,6 +91,12 @@
 - 原因：原版 travel() 遇天花板碰撞无法继续爬墙；LocalPlayer.aiStep() 在 travel() 后清除 sprint，翻越后 sprint 丢失
 - 关联：MixinWallRunTravel.java, ClientWallRunState.java, PrototypeRenderEvents.java; sprintRetain 由用户手动从 10 改为 30 tick
 
+### 2026-06-24 — Sprint cut-off 修复 + 水下墙跑守卫 + 游泳加速重写
+
+- 改动：移除 shouldSprint() 守卫（恢复直接按键轮询）；水下禁止墙跑（移动+相机）；游泳加速从 attribute modifier 改为 mixin 公式 `m = 1.25 - 0.25/d`，三轴乘法保留俯仰角
+- 原因：sprint 在翻越后断掉（shouldSprint guard 阻止 sprintDown 刷新）；水下墙跑不应触发；MOVEMENT_SPEED 属性在游泳时无 Depths Strider 时不生效，attribute 方法不可行
+- 关联：sprint-cutoff-fix, underwater-wallrun-guard, swim-accel-rework
+
 ### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
 
 - 改动：移除旧冲刺粒子（DustParticleOptions 随机散布）和蓄力跳粒子（CRIT + ENCHANTED_HIT）；新增 6 身体锚点粒子系统（左手/右手外侧、头顶左/右、左脚/右脚外侧）；S2CSlamStatePacket 同步下砸客户端状态；下砸时生成深红体线 + FLAME 火星 + 淡红尾迹三层混合
