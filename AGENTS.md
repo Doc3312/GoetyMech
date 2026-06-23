@@ -54,7 +54,11 @@ IF auto-commit 包含 `src/` 下的生产代码变更（`.java` 文件） THEN �
 4. 如果 240 秒超时 → `Stop-Process -Force` 杀进程 → 读日志
 5. 搜索 `ERROR / CRASH / Exception / Caused by / Mixin`
 6. 无错误 → 告诉用户"编译启动通过，可以进游戏测试了"
-7. 有错误 → 贴出报错摘要
+7. 有错误 → 按以下流程处理：
+   a. **crash 日志自动快照**：`Copy-Item run/logs/latest.log "run/logs/crash-snapshot/$(Get-Date -Format 'yyyyMMdd-HHmmss')-$(Select-String -Pattern 'Caused by|at (com\.goetypunk|net\.minecraft)' run/logs/latest.log | Select-Object -First 1 | ForEach-Object { $_ -replace '.*\.(\w+)\..*', '$1' }).log"`
+   b. **调用 diagnose skill 分析根因**（必须，不得跳过）
+   c. **禁止在分析出根因前删除**任何文件（日志 / 存档 / 配置）
+   d. 贴出报错摘要 + 根因分析 + 修复建议或无法修复的原因
 
 不触发 runClient 的排除项：仅修改 `docs/`、`AGENTS.md`、`*.json`、`*.yaml`、`*.yml`、`*.toml` 等非代码文件。
 
