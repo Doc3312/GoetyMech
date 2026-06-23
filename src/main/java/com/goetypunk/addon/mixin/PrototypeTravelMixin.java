@@ -2,7 +2,6 @@ package com.goetypunk.addon.mixin;
 
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.item.PrototypeItem;
-import com.goetypunk.addon.config.ModConfig;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
@@ -132,25 +131,6 @@ public abstract class PrototypeTravelMixin {
 
         if (player.isInWater()) {
             player.setAirSupply(player.getMaxAirSupply());
-
-            float forward = player.zza;
-            if (forward > 0.01f) {
-                int tick = PrototypeItem.getSwimTick(player) + 1;
-                PrototypeItem.setSwimTick(player, tick);
-
-                double t = Math.min((tick - 1) / 80.0, 1.0);
-                double multiplier = 1.0 + t * ModConfig.SWIM_MAX_MULTIPLIER.get();
-
-                Vec3 motion = player.getDeltaMovement();
-                double hSpeed = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-                if (hSpeed > 0.001 && multiplier > 1.01) {
-                    player.setDeltaMovement(motion.x * multiplier, motion.y, motion.z * multiplier);
-                }
-            } else {
-                PrototypeItem.setSwimTick(player, 0);
-            }
-        } else {
-            PrototypeItem.setSwimTick(player, 0);
         }
     }
 }
