@@ -238,12 +238,12 @@ public class PrototypeRenderEvents {
 
     private static void updateClientWallState(Player player) {
         Minecraft mc = Minecraft.getInstance();
-        boolean sprinting = mc.options.keySprint.isDown();
+        boolean sprinting = mc.options.keySprint.isDown() || player.isSprinting();
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
-        GoetyPunkMod.LOGGER.info("CLIENT_WALL: sprint={}, hasProto={}, wallDir={}, isFly={}",
-                sprinting, hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
+        GoetyPunkMod.LOGGER.info("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
+                mc.options.keySprint.isDown(), player.isSprinting(), hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
                 player.isFallFlying());
         boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && wallDir != null;
 
