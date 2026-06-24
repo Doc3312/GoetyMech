@@ -1,6 +1,6 @@
 ---
 name: "goety-addon-dev"
-description: "Goety Focus / Spell / servant / soul"
+description: "Goety Focus / Spell / servant / soul / 聚晶 / 法术 / 仆从 / 灵魂"
 ---
 
 # Goety Addon Dev — 综合开发指南

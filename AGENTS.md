@@ -18,7 +18,7 @@ Single-context repo。参见 `docs/agents/domain.md`。
 |-------|-----------|
 | create-dev | Create machines / Ponder / kinetic BE / BESR |
 | entity-render-dev | entity render / collision / invisible |
-| goety-addon-dev | Goety Focus / Spell / servant / soul |
+| goety-addon-dev | Goety Focus / Spell / servant / soul / 聚晶 / 法术 / 仆从 / 灵魂 |
 | goety-block-anim-and-particle | block anim / particle / camera shake |
 | goetypunk-architecture | package / convention / register |
 | jei-dev | JEI / recipe display / ghost drag |
@@ -43,6 +43,12 @@ IF 用户说「修复 / 改代码 / 实施 / 开始做 / 动手 / 执行 / 写�
 IF 已进入实现阶段 THEN 调用 openspec-apply-change skill 走完整 openspec 工作流，不得直接编辑文件。
 
 例外：5 行以内的 trivial 修复可以直接改。
+
+### Skill 优先于源码
+
+IF 讨论/开发涉及可用技能表中任一 skill 覆盖的领域（如聚晶/法术、方块动画、JEI 配方等） THEN 必须先调用 `skill` tool 加载对应 skill，再从 skill 文档中确认约定和模式，最后才读源码验证。
+
+禁止跳过 skill 直接读源码。skill 文档是约定层，源码是验证层，两者都要但不允许跳过约定层。
 
 ### 运行验证（每次改完代码自动 runClient）
 
