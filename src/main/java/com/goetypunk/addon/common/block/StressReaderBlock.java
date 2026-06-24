@@ -3,6 +3,7 @@ package com.goetypunk.addon.common.block;
 import com.goetypunk.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetypunk.addon.common.item.RemoteEngineBlockItem;
 import com.goetypunk.addon.common.item.StressFocus;
+import com.goetypunk.addon.common.item.StressShieldFocus;
 import com.goetypunk.addon.config.ModConfig;
 import com.goetypunk.addon.init.ModBlocks;
 import com.simibubi.create.AllShapes;
@@ -118,6 +119,15 @@ public class StressReaderBlock extends DirectionalKineticBlock
                 }
                 player.displayClientMessage(
                         Component.translatable("info.goetypunk.stress_focus.bound_success"), true);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+
+        if (stack.getItem() instanceof StressShieldFocus && !player.isShiftKeyDown()) {
+            if (!level.isClientSide) {
+                StressShieldFocus.bindToReader(stack, level, pos);
+                player.displayClientMessage(
+                        Component.translatable("info.goetypunk.stress_shield.bound"), true);
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
         }

@@ -27,7 +27,7 @@ public class StressShieldEvents {
         IStressShield shield = StressShieldHelper.getShield(player);
         if (shield == null || !shield.isActive()) return;
 
-        float gameTime = player.level().getGameTime();
+        long gameTime = player.level().getGameTime();
         if (gameTime > shield.getExpireTick()) {
             shield.clear();
             return;
@@ -38,7 +38,7 @@ public class StressShieldEvents {
 
         if (damage <= currentShield) {
             shield.setShield(currentShield - damage);
-            shield.setLastHurtTick((long) gameTime);
+            shield.setLastHurtTick(gameTime);
             event.setAmount(0);
         } else {
             float overshoot = damage - currentShield;
