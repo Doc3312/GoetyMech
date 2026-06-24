@@ -10,6 +10,7 @@ import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.common.utils.CuriosHelper;
 import com.goetypunk.addon.common.utils.WallUtil;
+import com.goetypunk.addon.common.data.AssimilationSaveManager;
 import com.goetypunk.addon.common.net.s2c.S2CAssimilationDataPacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
@@ -1035,8 +1036,25 @@ public class PrototypeEvents {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer sp) {
+            AssimilationSaveManager.onPlayerLogin(sp);
             int kills = PrototypeItem.getAssimilationKills(sp);
             ModNetwork.sendTo(sp, new S2CAssimilationDataPacket(kills));
+        }
+    }
+
+    private static int ASSIM_SAVE_COUNTER = 0;
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            ASSIM_SAVE_COUNTER++;
+            if (ASSIM_SAVE_COUNTER >= 1200) {
+                ASSIM_SAVE_COUNTER = 0;
+                var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+                if (server != null) {
+                    AssimilationSaveManager.flushDirty(server);
+                }
+            }
         }
     }
 
@@ -1109,6 +1127,7 @@ public class PrototypeEvents {
         PrototypeItem.incrementAssimilationKills(player);
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CAssimilationDataPacket(PrototypeItem.getAssimilationKills(player)));
+            AssimilationSaveManager.markDirty(sp);
         }
     }
 }

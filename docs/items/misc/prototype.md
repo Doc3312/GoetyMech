@@ -97,6 +97,11 @@
 - 原因：sprint 在翻越后断掉（shouldSprint guard 阻止 sprintDown 刷新）；水下墙跑不应触发；MOVEMENT_SPEED 属性在游泳时无 Depths Strider 时不生效，attribute 方法不可行
 - 关联：sprint-cutoff-fix, underwater-wallrun-guard, swim-accel-rework
 
+### 2026-06-25 — 同化击杀计数成长系统（滑翔改为初始能力 + 文件缓存防崩溃丢失）
+
+- 改动：滑翔改为始终可用（hasFlight 返回 true）；新增 AssimilcationSaveManager 每 60s 写独立缓存文件到 playerdata/，写时先写 .tmp 再原子重命名；登录时 cache > NBT 自动恢复击杀数
+- 原因：用户发现鞘翅无法禁用滑翔；经历 crash 导致击杀数清零的教训，需要独立于 NBT 的备份机制
+
 ### 2026-06-25 — 同化击杀计数成长系统
 
 - 改动：新增同化击杀计数系统（PersistentData `goetypunk.assimilation_kills`），4 阶能力解锁（<10=基础机动+滑翔 ≥10=二级加速 ≥50=Slam ≥100=终阶），边际收益伤害倍率函数（1-100k+ 无极 cap），病毒附加伤害（indirectMagic per hit），Shift 展开 tooltip 显示能力列表/状态/统计

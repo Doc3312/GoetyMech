@@ -29,3 +29,4 @@ Prototype 系统服务端核心逻辑，管理 4 个子系统：
 | 2026-06-24 | tryStartWallRun 加 !player.isInWater() 守卫 | 水下不应触发墙跑 | PrototypeRenderEvents |
 | 2026-06-24 | 跌落自动释放阈值 3→6 格 | 3 格太容易触发 | — |
 | 2026-06-25 | 同化击杀计数：LivingDeathEvent 累加 + S2C 包同步；PlayerLoggedInEvent 登录同步；LivingHurtEvent 全局伤害倍率 + indirectMagic 病毒附加伤害；能力门控（飞行始终可用，slam ≥50） | RPG 成长系统 | PrototypeItem, S2CAssimilationDataPacket |
+| 2026-06-25 | 同化缓存落盘：AssimilationSaveManager 每 60s 写一次独立文件；登录时 cache > NBT 自动恢复；写临时文件+原子重命名防崩溃截断；替换即时 save(sp) | crash 导致击杀数清零的教训 | AssimilationSaveManager |
