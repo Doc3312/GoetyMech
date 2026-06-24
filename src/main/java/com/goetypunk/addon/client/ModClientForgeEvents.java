@@ -8,7 +8,9 @@ import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.item.RemoteEngineBlockItem;
 import com.goetypunk.addon.client.TimeStopUtilsWrapped;
 import com.goetypunk.addon.common.item.TimeFocusPouch;
+import com.goetypunk.addon.common.item.curio.FleshCasketItem;
 import com.goetypunk.addon.common.net.ModNetwork;
+import com.goetypunk.addon.common.net.c2s.C2SOpenFleshCasketPacket;
 import com.goetypunk.addon.common.net.c2s.C2STimeStopPacket;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
@@ -78,6 +80,10 @@ public class ModClientForgeEvents {
                 anyPouchOpen = true;
                 ModNetwork.CHANNEL.sendToServer(new C2STimeStopPacket(true));
             }
+        }
+
+        if (ModClientEvents.fleshCasketKey != null && ModClientEvents.fleshCasketKey.consumeClick()) {
+            ModNetwork.CHANNEL.sendToServer(new C2SOpenFleshCasketPacket());
         }
 
         if (mc.level.getGameTime() % 5 != 0) return;

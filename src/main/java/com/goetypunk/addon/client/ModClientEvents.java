@@ -13,6 +13,8 @@ import com.goetypunk.addon.init.ModBlocks;
 import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModItems;
 import com.goetypunk.addon.common.item.SquadFocus;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -22,13 +24,16 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-
+import org.apache.commons.lang3.ArrayUtils;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Mod.EventBusSubscriber(modid = GoetyPunkMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents {
     private static final Logger LOGGER = LoggerFactory.getLogger("ModClientEvents");
+
+    public static KeyMapping fleshCasketKey;
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
@@ -43,6 +48,11 @@ public class ModClientEvents {
                     ModItems.SQUAD_FOCUS.get(),
                     new net.minecraft.resources.ResourceLocation(com.goetypunk.addon.GoetyPunkMod.MOD_ID, "bound"),
                     (stack, world, entity, seed) -> SquadFocus.isBound(stack) ? 1.0F : 0.0F);
+
+            fleshCasketKey = new KeyMapping("key.goetypunk.open_flesh_casket",
+                    GLFW.GLFW_KEY_Z, "key.goetypunk.category");
+            Minecraft.getInstance().options.keyMappings =
+                    ArrayUtils.add(Minecraft.getInstance().options.keyMappings, fleshCasketKey);
         });
 
         LOGGER.error("[MOD_CLIENT] Flywheel Visuals DISABLED for diagnosis - using BESR only");
