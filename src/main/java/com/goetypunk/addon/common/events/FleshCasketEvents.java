@@ -2,6 +2,7 @@ package com.goetypunk.addon.common.events;
 
 import com.Polarice3.Goety.api.items.magic.IFocus;
 import com.Polarice3.Goety.api.magic.ISpell;
+import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
@@ -103,10 +104,19 @@ public class FleshCasketEvents {
             var spellStat = WandUtil.getStats(player, spell);
             if (tier >= 2) spellStat.potency += 2;
             if (tier >= 3) { spellStat.potency += 2; spellStat.duration += 1; }
-            ItemStack staffStack = new ItemStack(ModItems.AUTO_CAST_DUMMY_WAND.get());
+            ItemStack staffStack = new ItemStack(
+                    tier >= 2 ? ModItems.AUTO_CAST_DUMMY_WAND.get()
+                              : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
+            SoulUsingItemHandler.get(staffStack).setStackInSlot(0, focusStack);
 
             player.getPersistentData().putLong(TAG_LAST_CAST_TICK, gameTime);
-            spell.SpellResult(serverLevel, player, staffStack, spellStat);
+            ItemStack oldOffhand = player.getOffhandItem();
+            player.getInventory().offhand.set(0, staffStack);
+            try {
+                spell.SpellResult(serverLevel, player, staffStack, spellStat);
+            } finally {
+                player.getInventory().offhand.set(0, oldOffhand);
+            }
 
             if (!player.isCreative()) {
                 SEHelper.decreaseSouls(player, halfCost);

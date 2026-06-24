@@ -15,6 +15,7 @@ import com.goetypunk.addon.common.item.curio.AutoCastDummyWand;
 import com.goetypunk.addon.common.item.curio.FleshCasketItem;
 import com.goetypunk.addon.common.item.curio.SoulCatcherCurio;
 import com.goetypunk.addon.common.item.curio.TriggerType;
+import com.Polarice3.Goety.api.magic.SpellType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -147,4 +148,8 @@ public class ModItems {
 
     public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND =
             ITEMS.register("auto_cast_dummy_wand", AutoCastDummyWand::new);
+
+    public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND_T1 =
+            ITEMS.register("auto_cast_dummy_wand_t1",
+                    () -> new AutoCastDummyWand(SpellType.NONE));
 }
