@@ -26,19 +26,22 @@ public class C2SOpenFleshCasketPacket {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
 
-            ItemStack stack = player.getMainHandItem();
-            InteractionHand hand = InteractionHand.MAIN_HAND;
-            if (!(stack.getItem() instanceof FleshCasketItem)) {
-                stack = player.getOffhandItem();
-                hand = InteractionHand.OFF_HAND;
-                if (!(stack.getItem() instanceof FleshCasketItem)) return;
+            ItemStack mainStack = player.getMainHandItem();
+            ItemStack offStack = player.getOffhandItem();
+            ItemStack targetStack;
+            if (mainStack.getItem() instanceof FleshCasketItem) {
+                targetStack = mainStack;
+            } else if (offStack.getItem() instanceof FleshCasketItem) {
+                targetStack = offStack;
+            } else {
+                return;
             }
 
-            int tier = FleshCasketItem.getTier(stack);
+            int tier = FleshCasketItem.getTier(targetStack);
             SimpleMenuProvider provider = new SimpleMenuProvider(
                     (id, inventory, p) -> new FleshCasketContainer(
-                            id, inventory, FleshCasketItemHandler.get(stack), stack, tier),
-                    stack.getHoverName());
+                            id, inventory, FleshCasketItemHandler.get(targetStack), targetStack, tier),
+                    targetStack.getHoverName());
             NetworkHooks.openScreen(player, provider, buf -> buf.writeInt(tier));
         });
         ctx.get().setPacketHandled(true);
