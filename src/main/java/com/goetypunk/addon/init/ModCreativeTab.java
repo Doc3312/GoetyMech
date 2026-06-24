@@ -30,6 +30,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.TIER3_SQUAD_BARRACKS.get());
                         output.accept(ModItems.SQUAD_FOCUS.get());
                         output.accept(ModItems.STRESS_FOCUS.get());
+                        output.accept(ModItems.STRESS_SHIELD_FOCUS.get());
                         output.accept(ModItems.STRESS_READER.get());
                         output.accept(ModItems.REMOTE_ENGINE.get());
                         output.accept(ModItems.UNSTABLE_RIFT_FOCUS.get());

@@ -164,6 +164,25 @@
 		#Range: 1.0 ~ 10.0
 		jump_tap_height = 3.0
 
+	[squad_barracks.stress_shield_focus]
+		#应力→护盾换算除数
+		#应力总值 / 此值 = 护盾值
+		#范围: 500-50000，默认 5000
+		#Range: 500 ~ 50000
+		divisor = 5000
+		#基础持续时间（秒）
+		#范围: 10-600，默认 60（=1分钟）
+		#Range: 10 ~ 600
+		base_duration = 60
+		#应力护盾聚晶的灵魂消耗
+		#范围: 0-1000，默认 100
+		#Range: 0 ~ 1000
+		soul_cost = 100
+		#施法冷却时间（tick）
+		#范围: 100-24000，默认 12000（=10分钟）
+		#Range: 100 ~ 24000
+		cooldown = 12000
+
 	[squad_barracks.rift_walk]
 		#裂纬聚晶冷却时间（tick）
 		#范围: 20-24000，默认 6000（5分钟）
