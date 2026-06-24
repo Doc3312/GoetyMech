@@ -82,6 +82,10 @@
 	#范围: 0.0-1.0，默认 0.5
 	#Range: 0.0 ~ 1.0
 	tier2_discount = 0.5
+	#召唤仆从寿命（tick）
+	#范围: 20-72000，默认 6000（5分钟）
+	#Range: 20 ~ 72000
+	squad_lifespan = 6000
 	#三阶点将台灵魂折扣倍率
 	#范围: 0.0-1.0，默认 0.1
 	#Range: 0.0 ~ 1.0
@@ -90,18 +94,6 @@
 	#范围: 20-12000，默认 200（10秒）
 	#Range: 20 ~ 12000
 	squad_summon_cooldown = 200
-	#召唤仆从寿命（tick）
-	#范围: 20-72000，默认 6000（5分钟）
-	#Range: 20 ~ 72000
-	squad_lifespan = 6000
-
-	[squad_barracks.remote_engine]
-		#远程引擎的应力→转速换算比
-		#RPM = 可用应力 / 此值
-		#例: 可用应力 1024, 比值 64 → 16 RPM
-		#范围: 1-1024，默认 64
-		#Range: 1 ~ 1024
-		stress_to_rpm_ratio = 64
 
 	[squad_barracks.wall_run]
 		#最大相机旋转角度（度），防止翻转视
@@ -132,78 +124,6 @@
 		#范围: 0.05-1.0，默认 0.3
 		#Range: 0.05 ~ 1.0
 		wall_pull_speed = 0.3
-
-	[squad_barracks.jump_charge]
-		#蓄力最高跳跃高度（格），最大蓄力时达到
-		#范围: 8.0-200.0，默认 80.0
-		#Range: 8.0 ~ 200.0
-		jump_charge_max_height = 80.0
-		#最大蓄力 tick 数（20 tick = 1 秒）
-		#范围: 20-200，默认 60（=3秒）
-		#Range: 20 ~ 200
-		jump_max_charge_ticks = 60
-		#蓄力门槛 tick（未达到此值视为短按）
-		#蓄力系统需 charge ≥ 此值才走蓄力公式
-		#范围: 5-59，默认 6（≈0.3秒）
-		#Range: 5 ~ 59
-		jump_charge_threshold = 6
-		#水中蓄力最低爆发速度（blocks/tick，蓄力门槛时达到）
-		#沿视线方向爆发，范围: 0.5-5.0，默认 1.5
-		#Range: 0.5 ~ 5.0
-		swim_charge_min_speed = 1.5
-		#蓄力最低跳跃高度（格），threshold 时达到
-		#范围: 3.0-80.0，默认 8.0
-		#Range: 3.0 ~ 80.0
-		jump_charge_min_height = 8.0
-		#水中蓄力最高爆发速度（blocks/tick，最大蓄力时达到）
-		#沿视线方向爆发，范围: 1.0-10.0，默认 4.0
-		#Range: 1.0 ~ 10.0
-		swim_charge_max_speed = 4.0
-		#短按跳跃高度（格）
-		#范围: 1.0-10.0，默认 3.0
-		#Range: 1.0 ~ 10.0
-		jump_tap_height = 3.0
-
-	[squad_barracks.stress_shield_focus]
-		#应力→护盾换算除数
-		#应力总值 / 此值 = 护盾值
-		#范围: 500-50000，默认 5000
-		#Range: 500 ~ 50000
-		divisor = 5000
-		#基础持续时间（秒）
-		#范围: 10-600，默认 60（=1分钟）
-		#Range: 10 ~ 600
-		base_duration = 60
-		#应力护盾聚晶的灵魂消耗
-		#范围: 0-1000，默认 100
-		#Range: 0 ~ 1000
-		soul_cost = 100
-		#施法冷却时间（tick）
-		#范围: 100-24000，默认 12000（=10分钟）
-		#Range: 100 ~ 24000
-		cooldown = 12000
-
-	[squad_barracks.rift_walk]
-		#裂纬聚晶冷却时间（tick）
-		#范围: 20-24000，默认 6000（5分钟）
-		#Range: 20 ~ 24000
-		unstable_rift_cooldown = 6000
-		#界旅聚晶冷却时间（tick）
-		#范围: 20-12000，默认 300（15秒）
-		#Range: 20 ~ 12000
-		stable_rift_cooldown = 300
-		#裂纬聚晶自动回传延迟（tick）
-		#范围: 40-600，默认 200（10秒）
-		#Range: 40 ~ 600
-		unstable_rift_return_delay = 200
-		#裂纬聚晶（低级裂隙）的灵魂消耗
-		#范围: 1-5000，默认 100
-		#Range: 1 ~ 5000
-		unstable_rift_cost = 100
-		#界旅聚晶（高级裂隙）的灵魂消耗
-		#范围: 1-5000，默认 500
-		#Range: 1 ~ 5000
-		stable_rift_cost = 500
 
 	[squad_barracks.crushing_wheel]
 		#每级半径附魔增加的飞行距离（格）
@@ -317,4 +237,106 @@
 		#范围: 5-200，默认 20
 		#Range: 5 ~ 200
 		cooldown = 20
+
+	[squad_barracks.remote_engine]
+		#远程引擎的应力→转速换算比
+		#RPM = 可用应力 / 此值
+		#例: 可用应力 1024, 比值 64 → 16 RPM
+		#范围: 1-1024，默认 64
+		#Range: 1 ~ 1024
+		stress_to_rpm_ratio = 64
+
+	[squad_barracks.jump_charge]
+		#蓄力最高跳跃高度（格），最大蓄力时达到
+		#范围: 8.0-200.0，默认 80.0
+		#Range: 8.0 ~ 200.0
+		jump_charge_max_height = 80.0
+		#最大蓄力 tick 数（20 tick = 1 秒）
+		#范围: 20-200，默认 60（=3秒）
+		#Range: 20 ~ 200
+		jump_max_charge_ticks = 60
+		#蓄力门槛 tick（未达到此值视为短按）
+		#蓄力系统需 charge ≥ 此值才走蓄力公式
+		#范围: 5-59，默认 6（≈0.3秒）
+		#Range: 5 ~ 59
+		jump_charge_threshold = 6
+		#水中蓄力最低爆发速度（blocks/tick，蓄力门槛时达到）
+		#沿视线方向爆发，范围: 0.5-5.0，默认 1.5
+		#Range: 0.5 ~ 5.0
+		swim_charge_min_speed = 1.5
+		#蓄力最低跳跃高度（格），threshold 时达到
+		#范围: 3.0-80.0，默认 8.0
+		#Range: 3.0 ~ 80.0
+		jump_charge_min_height = 8.0
+		#水中蓄力最高爆发速度（blocks/tick，最大蓄力时达到）
+		#沿视线方向爆发，范围: 1.0-10.0，默认 4.0
+		#Range: 1.0 ~ 10.0
+		swim_charge_max_speed = 4.0
+		#短按跳跃高度（格）
+		#范围: 1.0-10.0，默认 3.0
+		#Range: 1.0 ~ 10.0
+		jump_tap_height = 3.0
+
+	[squad_barracks.stress_shield_focus]
+		#应力→护盾换算除数
+		#应力总值 / 此值 = 护盾值
+		#范围: 500-50000，默认 5000
+		#Range: 500 ~ 50000
+		divisor = 5000
+		#基础持续时间（秒）
+		#范围: 10-600，默认 60（=1分钟）
+		#Range: 10 ~ 600
+		base_duration = 60
+		#应力护盾聚晶的灵魂消耗
+		#范围: 0-1000，默认 100
+		#Range: 0 ~ 1000
+		soul_cost = 100
+		#施法冷却时间（tick）
+		#范围: 100-24000，默认 12000（=10分钟）
+		#Range: 100 ~ 24000
+		cooldown = 12000
+
+	[squad_barracks.rift_walk]
+		#裂纬聚晶冷却时间（tick）
+		#范围: 20-24000，默认 6000（5分钟）
+		#Range: 20 ~ 24000
+		unstable_rift_cooldown = 6000
+		#界旅聚晶冷却时间（tick）
+		#范围: 20-12000，默认 300（15秒）
+		#Range: 20 ~ 12000
+		stable_rift_cooldown = 300
+		#裂纬聚晶自动回传延迟（tick）
+		#范围: 40-600，默认 200（10秒）
+		#Range: 40 ~ 600
+		unstable_rift_return_delay = 200
+		#裂纬聚晶（低级裂隙）的灵魂消耗
+		#范围: 1-5000，默认 100
+		#Range: 1 ~ 5000
+		unstable_rift_cost = 100
+		#界旅聚晶（高级裂隙）的灵魂消耗
+		#范围: 1-5000，默认 500
+		#Range: 1 ~ 5000
+		stable_rift_cost = 500
+
+	[squad_barracks.void_blink_focus]
+		#基础传送次数
+		#范围: 1-20，默认 5
+		#Range: 1 ~ 20
+		max_uses = 5
+		#基础效果窗口（秒）
+		#范围: 1-60，默认 10
+		#Range: 1 ~ 60
+		window_seconds = 10
+		#虚空闪现聚晶的灵魂消耗
+		#范围: 1-1000，默认 140
+		#Range: 1 ~ 1000
+		soul_cost = 140
+		#虚空闪现聚晶冷却时间（tick）
+		#范围: 100-72000，默认 3600（3分钟）
+		#Range: 100 ~ 72000
+		cooldown = 3600
+		#基础锁定距离（格）
+		#范围: 5-64，默认 20
+		#Range: 5 ~ 64
+		range = 20
 

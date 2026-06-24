@@ -13,10 +13,13 @@ import com.goetypunk.addon.init.ModCreativeTab;
 import com.goetypunk.addon.init.ModEffects;
 import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModItems;
+import com.goetypunk.addon.common.entity.CrazedIllagerEntity;
+import com.goetypunk.addon.common.entity.CrazedIllagerServant;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,10 @@ public class GoetyPunkMod {
 
         ModNetwork.init();
         modEventBus.addListener(ModBlocks::registerStressValues);
+        modEventBus.addListener((EntityAttributeCreationEvent event) -> {
+            event.put(ModEntities.CRAZED_ILLAGER.get(), CrazedIllagerEntity.createAttributes().build());
+            event.put(ModEntities.CRAZED_ILLAGER_SERVANT.get(), CrazedIllagerServant.setCustomAttributes().build());
+        });
 
         MinecraftForge.EVENT_BUS.register(StressShieldEvents.class);
         MinecraftForge.EVENT_BUS.register(VoidBlinkEvents.class);

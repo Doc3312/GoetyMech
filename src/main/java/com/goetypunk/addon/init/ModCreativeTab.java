@@ -49,6 +49,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.FLESH_CASKET_C_2.get());
                         output.accept(ModItems.FLESH_CASKET_C_3.get());
                         output.accept(ModItems.VOID_BLINK_FOCUS.get());
+                        output.accept(ModItems.CRAZED_SUMMON_FOCUS.get());
                     })
                     .build()
     );

@@ -44,7 +44,7 @@ public class CrazedIllagerServant extends VindicatorServant {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(4, new CrazedServantAttackGoal());
+        this.goalSelector.addGoal(2, new CrazedServantAttackGoal());
     }
 
     @Override

@@ -120,5 +120,11 @@
   "info.goetypunk.stress_shield.no_stress": "§cNo stress network available!",
 
   "item.goetypunk.void_blink_focus": "Void Blink Focus",
-  "effect.goetypunk.void_mark": "Void Mark"
+  "effect.goetypunk.void_mark": "Void Mark",
+
+  "item.goetypunk.crazed_summon_focus": "Crazed Illager Focus",
+  "entity.goetypunk.crazed_illager": "Crazed Illager",
+  "entity.goetypunk.crazed_illager_servant": "Crazed Illager",
+
+  "info.goetypunk.crazed_summon.limit": "§cYou have reached the summon limit for Crazed Illagers!"
 }

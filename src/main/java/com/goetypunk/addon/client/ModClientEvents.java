@@ -3,6 +3,8 @@ package com.goetypunk.addon.client;
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.client.gui.FleshCasketScreen;
 import com.goetypunk.addon.client.gui.SquadBarracksScreen;
+import com.goetypunk.addon.client.render.CrazedIllagerModel;
+import com.goetypunk.addon.client.render.CrazedIllagerRenderer;
 import com.goetypunk.addon.client.render.CrushingWheelRenderer;
 import com.goetypunk.addon.client.render.RemoteEngineRenderer;
 import com.goetypunk.addon.client.render.SculkBidingModel;
@@ -61,6 +63,7 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SculkBidingRenderer.LAYER, SculkBidingModel::createBodyLayer);
+        event.registerLayerDefinition(CrazedIllagerModel.LAYER, CrazedIllagerModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -72,6 +75,8 @@ public class ModClientEvents {
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.SCULK_SPIKE.get(), SculkBidingRenderer::new);
         event.registerEntityRenderer(ModEntities.CRUSHING_WHEEL.get(), CrushingWheelRenderer::new);
+        event.registerEntityRenderer(ModEntities.CRAZED_ILLAGER.get(), CrazedIllagerRenderer::new);
+        event.registerEntityRenderer(ModEntities.CRAZED_ILLAGER_SERVANT.get(), CrazedIllagerRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.STRESS_READER_ENTITY.get(),
                 StressReaderRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.REMOTE_ENGINE_ENTITY.get(),
