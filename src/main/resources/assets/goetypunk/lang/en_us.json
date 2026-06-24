@@ -125,6 +125,7 @@
   "item.goetypunk.crazed_summon_focus": "Crazed Illager Focus",
   "entity.goetypunk.crazed_illager": "Crazed Illager",
   "entity.goetypunk.crazed_illager_servant": "Crazed Illager",
+  "item.goetypunk.crazed_illager_spawn_egg": "Crazed Illager Spawn Egg",
 
   "info.goetypunk.crazed_summon.limit": "§cYou have reached the summon limit for Crazed Illagers!"
 }

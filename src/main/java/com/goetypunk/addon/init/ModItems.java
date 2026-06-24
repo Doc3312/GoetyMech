@@ -22,6 +22,7 @@ import com.Polarice3.Goety.api.magic.SpellType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -100,6 +101,12 @@ public class ModItems {
     /** 疯狂的改造刌民召唤聚晶 — 召唤疯狂的改造刌民仆从 */
     public static final RegistryObject<Item> CRAZED_SUMMON_FOCUS =
             ITEMS.register("crazed_summon_focus", CrazedSummonFocus::new);
+
+    /** 疯狂的改造刌民刷怪蛋 */
+    public static final RegistryObject<Item> CRAZED_ILLAGER_SPAWN_EGG =
+            ITEMS.register("crazed_illager_spawn_egg",
+                    () -> new ForgeSpawnEggItem(ModEntities.CRAZED_ILLAGER,
+                            0x3D3D3D, 0xCC3333, new Item.Properties()));
 
     // ── 时空聚晶袋 — 继承 FocusPack（21 格），打开时冻结时间 ──
 

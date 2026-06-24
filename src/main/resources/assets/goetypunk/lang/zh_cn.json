@@ -124,6 +124,7 @@
   "item.goetypunk.crazed_summon_focus": "疯狂的改造刌民聚晶",
   "entity.goetypunk.crazed_illager": "失败的改造刌民",
   "entity.goetypunk.crazed_illager_servant": "失败的改造刌民",
+  "item.goetypunk.crazed_illager_spawn_egg": "失败的改造刌民刷怪蛋",
 
   "info.goetypunk.crazed_summon.limit": "§c你已经达到了疯狂的改造刌民的召唤上限！"
 }
