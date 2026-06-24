@@ -1,5 +1,8 @@
 package com.goetypunk.addon;
 
+import com.goetypunk.addon.common.capabilities.IStressShield;
+import com.goetypunk.addon.common.capabilities.StressShieldProvider;
+import com.goetypunk.addon.common.events.StressShieldEvents;
 import com.goetypunk.addon.common.menu.ModMenuTypes;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.compat.caelus.CaelusLoaded;
@@ -8,6 +11,11 @@ import com.goetypunk.addon.init.ModBlocks;
 import com.goetypunk.addon.init.ModCreativeTab;
 import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModItems;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,6 +52,21 @@ public class GoetyPunkMod {
 
         ModNetwork.init();
         modEventBus.addListener(ModBlocks::registerStressValues);
+
+        MinecraftForge.EVENT_BUS.register(StressShieldEvents.class);
+
+        modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
+            event.register(IStressShield.class);
+        });
+
+        MinecraftForge.EVENT_BUS.addGenericListener(Entity.class,
+                (AttachCapabilitiesEvent<Entity> event) -> {
+                    if (event.getObject() instanceof Player) {
+                        event.addCapability(
+                                new ResourceLocation(MOD_ID, "stress_shield"),
+                                new StressShieldProvider());
+                    }
+                });
 
         // 条件注册 Caelus 兼容 — 避免类加载找不到 CaelusApi 导致崩溃
         if (ModList.get().isLoaded("caelus")) {

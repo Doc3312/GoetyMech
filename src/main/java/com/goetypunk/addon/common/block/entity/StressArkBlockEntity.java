@@ -23,6 +23,11 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
     private static final Map<UUID, BlockPos> PLAYER_ACTIVE_ARK = new HashMap<>();
 
+    @Nullable
+    public static BlockPos getActiveArkPos(UUID playerUUID) {
+        return PLAYER_ACTIVE_ARK.get(playerUUID);
+    }
+
     @Nullable private UUID ownerUUID;
     private float cachedTotalCapacity;
     private float cachedTotalStress;

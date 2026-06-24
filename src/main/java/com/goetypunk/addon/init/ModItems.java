@@ -7,6 +7,7 @@ import com.goetypunk.addon.common.item.SculkBindFocus;
 import com.goetypunk.addon.common.item.SquadFocus;
 import com.goetypunk.addon.common.item.StableRiftFocus;
 import com.goetypunk.addon.common.item.StressFocus;
+import com.goetypunk.addon.common.item.StressShieldFocus;
 import com.goetypunk.addon.common.item.TimeFocusPouch;
 import com.goetypunk.addon.common.item.TwistedEmbryoItem;
 import com.goetypunk.addon.common.item.UnstableRiftFocus;
@@ -85,6 +86,10 @@ public class ModItems {
     /** 应力聚晶 — 绑定应力读取器，施放碾压飞轮法术 */
     public static final RegistryObject<Item> STRESS_FOCUS =
             ITEMS.register("stress_focus", StressFocus::new);
+
+    /** 应力护盾聚晶 — 绑定应力读取器或方舟，施放护盾 */
+    public static final RegistryObject<Item> STRESS_SHIELD_FOCUS =
+            ITEMS.register("stress_shield_focus", StressShieldFocus::new);
 
     // ── 时空聚晶袋 — 继承 FocusPack（21 格），打开时冻结时间 ──
 
