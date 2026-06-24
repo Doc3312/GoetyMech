@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -19,7 +20,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.AbstractIllager;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
@@ -109,12 +109,24 @@ public class CrazedIllagerEntity extends AbstractIllager {
 
     @Override
     public boolean doHurtTarget(Entity target) {
-        boolean hurt = super.doHurtTarget(target);
-        if (hurt && target instanceof LivingEntity living) {
+        if (target instanceof LivingEntity living) {
+            living.invulnerableTime = 0;
+
+            float prevHealth = living.getHealth();
+            float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            living.hurt(this.damageSources().mobAttack(this), damage);
+
+            float dealt = prevHealth - living.getHealth();
+            if (dealt > 0 && dealt < 1.0F && living.isAlive()) {
+                living.invulnerableTime = 0;
+                living.hurt(this.damageSources().magic(), 1.0F - dealt);
+            }
+
             living.invulnerableTime = 0;
             this.hurt(this.damageSources().generic(), 1.0F);
+            return true;
         }
-        return hurt;
+        return super.doHurtTarget(target);
     }
 
     @Override
@@ -194,19 +206,47 @@ public class CrazedIllagerEntity extends AbstractIllager {
         return SoundEvents.VINDICATOR_CELEBRATE;
     }
 
-    class CrazedAttackGoal extends MeleeAttackGoal {
+    class CrazedAttackGoal extends Goal {
         public CrazedAttackGoal() {
-            super(CrazedIllagerEntity.this, 1.0, true);
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         @Override
-        protected int getAttackInterval() {
-            return this.adjustedTickDelay(5);
+        public boolean canUse() {
+            LivingEntity target = CrazedIllagerEntity.this.getTarget();
+            return target != null && target.isAlive();
         }
 
         @Override
-        protected double getAttackReachSqr(LivingEntity target) {
-            return (this.mob.getBbWidth() * 2.0F * this.mob.getBbWidth() * 2.0F) + target.getBbWidth();
+        public boolean canContinueToUse() {
+            return canUse();
+        }
+
+        @Override
+        public void start() {
+            CrazedIllagerEntity.this.setAggressive(true);
+        }
+
+        @Override
+        public void stop() {
+            CrazedIllagerEntity.this.setAggressive(false);
+            CrazedIllagerEntity.this.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            LivingEntity target = CrazedIllagerEntity.this.getTarget();
+            if (target == null) return;
+
+            CrazedIllagerEntity.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
+
+            double reach = CrazedIllagerEntity.this.getBbWidth() * 2.0F + target.getBbWidth();
+            if (CrazedIllagerEntity.this.distanceToSqr(target) <= reach * reach) {
+                CrazedIllagerEntity.this.swing(InteractionHand.MAIN_HAND);
+                CrazedIllagerEntity.this.doHurtTarget(target);
+            } else {
+                CrazedIllagerEntity.this.getNavigation().moveTo(target, 1.0);
+            }
         }
     }
 

@@ -7,14 +7,17 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+
+import java.util.EnumSet;
 
 public class CrazedIllagerServant extends VindicatorServant {
 
@@ -76,27 +79,67 @@ public class CrazedIllagerServant extends VindicatorServant {
 
     @Override
     public boolean doHurtTarget(Entity target) {
-        boolean hurt = super.doHurtTarget(target);
-        if (hurt && target instanceof LivingEntity living) {
+        if (target instanceof LivingEntity living) {
+            living.invulnerableTime = 0;
+
+            float prevHealth = living.getHealth();
+            float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            living.hurt(this.damageSources().mobAttack(this), damage);
+
+            float dealt = prevHealth - living.getHealth();
+            if (dealt > 0 && dealt < 1.0F && living.isAlive()) {
+                living.invulnerableTime = 0;
+                living.hurt(this.damageSources().magic(), 1.0F - dealt);
+            }
+
             living.invulnerableTime = 0;
             this.hurt(this.damageSources().generic(), 1.0F);
+            return true;
         }
-        return hurt;
+        return super.doHurtTarget(target);
     }
 
-    class CrazedServantAttackGoal extends MeleeAttackGoal {
+    class CrazedServantAttackGoal extends Goal {
         public CrazedServantAttackGoal() {
-            super(CrazedIllagerServant.this, 1.0, true);
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
         @Override
-        protected int getAttackInterval() {
-            return this.adjustedTickDelay(5);
+        public boolean canUse() {
+            LivingEntity target = CrazedIllagerServant.this.getTarget();
+            return target != null && target.isAlive();
         }
 
         @Override
-        protected double getAttackReachSqr(LivingEntity target) {
-            return (this.mob.getBbWidth() * 2.0F * this.mob.getBbWidth() * 2.0F) + target.getBbWidth();
+        public boolean canContinueToUse() {
+            return canUse();
+        }
+
+        @Override
+        public void start() {
+            CrazedIllagerServant.this.setAggressive(true);
+        }
+
+        @Override
+        public void stop() {
+            CrazedIllagerServant.this.setAggressive(false);
+            CrazedIllagerServant.this.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            LivingEntity target = CrazedIllagerServant.this.getTarget();
+            if (target == null) return;
+
+            CrazedIllagerServant.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
+
+            double reach = CrazedIllagerServant.this.getBbWidth() * 2.0F + target.getBbWidth();
+            if (CrazedIllagerServant.this.distanceToSqr(target) <= reach * reach) {
+                CrazedIllagerServant.this.swing(InteractionHand.MAIN_HAND);
+                CrazedIllagerServant.this.doHurtTarget(target);
+            } else {
+                CrazedIllagerServant.this.getNavigation().moveTo(target, 1.0);
+            }
         }
     }
 }
