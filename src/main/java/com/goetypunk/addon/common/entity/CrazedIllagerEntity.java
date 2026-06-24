@@ -24,6 +24,10 @@ import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.ai.util.GoalUtils;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -97,7 +101,7 @@ public class CrazedIllagerEntity extends AbstractIllager {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source.isFire()) {
+        if (source.is(DamageTypeTags.IS_FIRE)) {
             amount *= 2.0F;
         }
         return super.hurt(source, amount);
@@ -116,9 +120,9 @@ public class CrazedIllagerEntity extends AbstractIllager {
     @Override
     public void customServerAiStep() {
         if (!this.isNoAi() && GoalUtils.hasGroundPathNavigation(this)) {
-            boolean flag = ((ServerLevel) this.level()).isDifficulty(this.blockPosition());
-            ((net.minecraft.world.entity.ai.navigation.GroundPathNavigation) this.getNavigation())
-                    .setCanOpenDoors(flag);
+            boolean canBreakDoors = this.level().getDifficulty() == Difficulty.NORMAL
+                    || this.level().getDifficulty() == Difficulty.HARD;
+            ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(canBreakDoors);
         }
         super.customServerAiStep();
     }
@@ -143,12 +147,8 @@ public class CrazedIllagerEntity extends AbstractIllager {
     @Override
     public void applyRaidBuffs(int wave, boolean leader) {
         ItemStack weapon = new ItemStack(Items.IRON_AXE);
-        Raid raid = this.getRaid();
-        int enchantLevel = 1;
-        if (raid != null && wave > raid.getNumGroups(Difficulty.NORMAL)) {
-            enchantLevel = 2;
-        }
-        if (this.random.nextFloat() <= (raid != null ? raid.getEnchantOdds() : 0.5F)) {
+        int enchantLevel = wave > 3 ? 2 : 1;
+        if (this.random.nextFloat() <= 0.5F) {
             weapon.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, enchantLevel);
         }
         this.setItemSlot(EquipmentSlot.MAINHAND, weapon);
@@ -196,7 +196,12 @@ public class CrazedIllagerEntity extends AbstractIllager {
 
     class CrazedAttackGoal extends MeleeAttackGoal {
         public CrazedAttackGoal() {
-            super(CrazedIllagerEntity.this, 1.0, true, 5);
+            super(CrazedIllagerEntity.this, 1.0, true);
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return this.adjustedTickDelay(5);
         }
 
         @Override

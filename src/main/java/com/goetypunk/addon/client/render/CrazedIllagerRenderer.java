@@ -4,9 +4,9 @@ import com.goetypunk.addon.GoetyPunkMod;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 
-public class CrazedIllagerRenderer extends MobRenderer<LivingEntity, CrazedIllagerModel<LivingEntity>> {
+public class CrazedIllagerRenderer extends MobRenderer<Mob, CrazedIllagerModel<Mob>> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
             GoetyPunkMod.MOD_ID, "textures/entity/crazed_illager.png");
@@ -16,7 +16,7 @@ public class CrazedIllagerRenderer extends MobRenderer<LivingEntity, CrazedIllag
     }
 
     @Override
-    public ResourceLocation getTextureLocation(LivingEntity entity) {
+    public ResourceLocation getTextureLocation(Mob entity) {
         return TEXTURE;
     }
 }

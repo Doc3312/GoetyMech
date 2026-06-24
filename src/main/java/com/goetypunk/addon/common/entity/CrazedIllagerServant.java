@@ -6,6 +6,7 @@ import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -67,7 +68,7 @@ public class CrazedIllagerServant extends VindicatorServant {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source.isFire()) {
+        if (source.is(DamageTypeTags.IS_FIRE)) {
             amount *= 2.0F;
         }
         return super.hurt(source, amount);
@@ -85,7 +86,12 @@ public class CrazedIllagerServant extends VindicatorServant {
 
     class CrazedServantAttackGoal extends MeleeAttackGoal {
         public CrazedServantAttackGoal() {
-            super(CrazedIllagerServant.this, 1.0, true, 5);
+            super(CrazedIllagerServant.this, 1.0, true);
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return this.adjustedTickDelay(5);
         }
 
         @Override

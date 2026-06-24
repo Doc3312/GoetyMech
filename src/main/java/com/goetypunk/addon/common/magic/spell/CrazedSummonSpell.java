@@ -113,7 +113,7 @@ public class CrazedSummonSpell extends SummonSpell {
             MobUtil.moveDownToGround(servant);
             servant.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
             servant.setPersistenceRequired();
-            servant.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()),
+            servant.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()),
                     net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED, null, null);
 
             this.buffSummon(caster, servant, potency);
