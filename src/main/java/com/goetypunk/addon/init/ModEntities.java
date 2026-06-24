@@ -1,6 +1,8 @@
 package com.goetypunk.addon.init;
 
 import com.goetypunk.addon.GoetyPunkMod;
+import com.goetypunk.addon.common.entity.CrazedIllagerEntity;
+import com.goetypunk.addon.common.entity.CrazedIllagerServant;
 import com.goetypunk.addon.common.entity.CrushingWheelEntity;
 import com.goetypunk.addon.common.entity.SculkSpikeEntity;
 import net.minecraft.world.entity.EntityType;
@@ -34,4 +36,20 @@ public class ModEntities {
                             .clientTrackingRange(10)
                             .updateInterval(1)
                             .build("crushing_wheel"));
+
+    /** 疯狂的改造刌民 — 敌对版本 */
+    public static final RegistryObject<EntityType<CrazedIllagerEntity>> CRAZED_ILLAGER =
+            ENTITIES.register("crazed_illager",
+                    () -> EntityType.Builder.<CrazedIllagerEntity>of(CrazedIllagerEntity::new, MobCategory.MONSTER)
+                            .sized(0.6F, 1.95F)
+                            .clientTrackingRange(10)
+                            .build("crazed_illager"));
+
+    /** 疯狂的改造刌民 — 仆从版本 */
+    public static final RegistryObject<EntityType<CrazedIllagerServant>> CRAZED_ILLAGER_SERVANT =
+            ENTITIES.register("crazed_illager_servant",
+                    () -> EntityType.Builder.<CrazedIllagerServant>of(CrazedIllagerServant::new, MobCategory.MISC)
+                            .sized(0.6F, 1.95F)
+                            .clientTrackingRange(10)
+                            .build("crazed_illager_servant"));
 }

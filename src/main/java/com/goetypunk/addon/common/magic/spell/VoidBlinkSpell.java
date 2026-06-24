@@ -2,6 +2,7 @@ package com.goetypunk.addon.common.magic.spell;
 
 import com.goetypunk.addon.common.magic.effect.VoidMarkEffect;
 import com.goetypunk.addon.config.ModConfig;
+import com.goetypunk.addon.init.ModEffects;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;

@@ -10,6 +10,7 @@ import com.goetypunk.addon.common.item.StressFocus;
 import com.goetypunk.addon.common.item.StressShieldFocus;
 import com.goetypunk.addon.common.item.TimeFocusPouch;
 import com.goetypunk.addon.common.item.VoidBlinkFocus;
+import com.goetypunk.addon.common.item.CrazedSummonFocus;
 import com.goetypunk.addon.common.item.TwistedEmbryoItem;
 import com.goetypunk.addon.common.item.UnstableRiftFocus;
 import com.goetypunk.addon.common.item.PrototypeItem;
@@ -95,6 +96,10 @@ public class ModItems {
     /** 虚空闪现聚晶 — 锁定目标后多次闪现传送 */
     public static final RegistryObject<Item> VOID_BLINK_FOCUS =
             ITEMS.register("void_blink_focus", VoidBlinkFocus::new);
+
+    /** 疯狂的改造刌民召唤聚晶 — 召唤疯狂的改造刌民仆从 */
+    public static final RegistryObject<Item> CRAZED_SUMMON_FOCUS =
+            ITEMS.register("crazed_summon_focus", CrazedSummonFocus::new);
 
     // ── 时空聚晶袋 — 继承 FocusPack（21 格），打开时冻结时间 ──
 
