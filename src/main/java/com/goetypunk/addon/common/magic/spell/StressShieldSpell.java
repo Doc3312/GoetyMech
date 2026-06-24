@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
@@ -119,7 +120,9 @@ public class StressShieldSpell extends Spell {
         shield.setMaxShield(shieldValue);
         shield.setExpireTick(worldIn.getGameTime() + durationSec * 20L);
         shield.setLastHurtTick(worldIn.getGameTime());
-        StressShieldHelper.sendUpdatePacket(player);
+        if (player instanceof ServerPlayer sp) {
+            StressShieldHelper.sendUpdatePacket(sp);
+        }
 
         int cooldown = (int) (ModConfig.STRESS_SHIELD_COOLDOWN.get()
                 * ModAttributes.getCooldownDiscount(player));
