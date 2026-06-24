@@ -348,11 +348,10 @@ public class PrototypeItem extends ElytraItem {
     }
 
     public static double getTierMultiplier(int kills) {
-        return switch (getAssimilationTier(kills)) {
-            case 0, 1 -> 1.0 / 3.0;
-            case 2 -> 2.0 / 3.0;
-            case 3 -> 1.0;
-        };
+        int tier = getAssimilationTier(kills);
+        if (tier <= 1) return 1.0 / 3.0;
+        if (tier == 2) return 2.0 / 3.0;
+        return 1.0;
     }
 
     public static boolean hasFlight(int kills) {
