@@ -26,3 +26,4 @@
 | 2026-06-24 | 删除 shouldSprint() 守卫，恢复直接按键轮询 sprintDown | shouldSprint() 在 grace 窗口期阻止 sprintDown 刷新 → 翻越后 sprint 断掉 | sprint-cutoff-fix incident |
 | 2026-06-24 | setWallNormal 加 !player.isInWater() 守卫；camera roll 加 !player.isInWater() | 水下不应触发墙跑（移动+相机旋转） | PrototypeEvents |
 | 2026-06-24 | 重构 charge jump C2S 发包逻辑：canCharge 下移到内层仅控制累加；外层改用 !isFallFlying；发包节流改为 tickCount%5；释放改为 !jumpDown | 跌落边缘时 onGround=false → canCharge=false → else 分支发 action=0 绕过服务端 3 格检测 | PrototypeEvents |
+| 2026-06-25 | 同化 tooltip：onItemTooltip 事件，Shift 展开显示能力列表（颜色标记解锁状态）+ 统计行（攻击力加成/病毒附加伤害） | RPG 成长体验 | PrototypeItem |
