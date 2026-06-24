@@ -99,7 +99,7 @@
 
 ### 2026-06-25 — 同化击杀计数成长系统
 
-- 改动：新增同化击杀计数系统（PersistentData `goetypunk.assimilation_kills`），4 阶能力解锁（<10=基础机动 ≥10=飞行 ≥50=Slam ≥100=终阶），边际收益伤害倍率函数（1-100k+ 无极 cap），病毒附加伤害（indirectMagic per hit），Shift 展开 tooltip 显示能力列表/状态/统计
+- 改动：新增同化击杀计数系统（PersistentData `goetypunk.assimilation_kills`），4 阶能力解锁（<10=基础机动+滑翔 ≥10=二级加速 ≥50=Slam ≥100=终阶），边际收益伤害倍率函数（1-100k+ 无极 cap），病毒附加伤害（indirectMagic per hit），Shift 展开 tooltip 显示能力列表/状态/统计
 - 原因：为 Prototype 提供成长的 RPG 要素，击杀越多能力越强
 - 关联：S2CAssimilationDataPacket.java, PrototypeItem.java (tier/damage utils), PrototypeEvents.java (kill tracking, login sync, damage mult), PrototypeTravelMixin.java (飞行/游泳 tier scaling), MixinWallRunTravel.java (墙跑 tier scaling), PrototypeRenderEvents.java (tooltip), zh_cn.json / en_us.json
 

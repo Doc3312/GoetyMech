@@ -355,7 +355,7 @@ public class PrototypeItem extends ElytraItem {
     }
 
     public static boolean hasFlight(int kills) {
-        return kills >= 10;
+        return true;
     }
 
     public static boolean hasSlam(int kills) {
