@@ -108,5 +108,12 @@
   "info.goetypunk.flesh_casket.type_a": "§a受伤时自动施法",
   "info.goetypunk.flesh_casket.type_b": "§a血量 ≤ 50%% 时自动施法",
   "info.goetypunk.flesh_casket.type_c": "§a血量 ≤ %d%% 时自动施法",
-  "container.goetypunk.flesh_casket": "血肉晶匣"
+  "container.goetypunk.flesh_casket": "血肉晶匣",
+
+  "item.goetypunk.stress_shield_focus": "应力护盾聚晶",
+  "info.goetypunk.stress_shield.bound": "§a已绑定至应力读取器",
+  "info.goetypunk.stress_shield.not_bound": "§c未绑定",
+  "info.goetypunk.stress_shield.unbound": "§e已解绑",
+  "info.goetypunk.stress_shield.shift_info": "将网络应力转化为个人护盾。潜行右键解绑。",
+  "info.goetypunk.stress_shield.no_stress": "§c无可用的应力网络！"
 }

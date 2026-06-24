@@ -109,5 +109,12 @@
   "info.goetypunk.flesh_casket.type_b": "§aAuto-casts when health ≤ 50%%",
   "info.goetypunk.flesh_casket.type_c": "§aAuto-casts when health ≤ %d%%",
 
-  "container.goetypunk.flesh_casket": "Flesh Casket"
+  "container.goetypunk.flesh_casket": "Flesh Casket",
+
+  "item.goetypunk.stress_shield_focus": "Stress Shield Focus",
+  "info.goetypunk.stress_shield.bound": "§aBound to Stress Reader",
+  "info.goetypunk.stress_shield.not_bound": "§cNot bound",
+  "info.goetypunk.stress_shield.unbound": "§eUnbound",
+  "info.goetypunk.stress_shield.shift_info": "Convert network stress into a personal shield. Sneak-right-click to unbind.",
+  "info.goetypunk.stress_shield.no_stress": "§cNo stress network available!"
 }
