@@ -21,7 +21,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            jvmArg '-Xmx1G'
+            jvmArg '-Xmx3G'
             property 'forge.enabledGameTestNamespaces', mod_id
 
             // 与 Goety 自身开发环境一致，禁用 refmap 重映射
