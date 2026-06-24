@@ -94,12 +94,15 @@ public class CrazedIllagerServant extends VindicatorServant {
 
             living.invulnerableTime = 0;
             this.hurt(this.damageSources().generic(), 1.0F);
+            this.invulnerableTime = 0;
             return true;
         }
         return super.doHurtTarget(target);
     }
 
     class CrazedServantAttackGoal extends Goal {
+        private int attackTimer;
+
         public CrazedServantAttackGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
@@ -118,6 +121,7 @@ public class CrazedIllagerServant extends VindicatorServant {
         @Override
         public void start() {
             CrazedIllagerServant.this.setAggressive(true);
+            this.attackTimer = 0;
         }
 
         @Override
@@ -135,8 +139,11 @@ public class CrazedIllagerServant extends VindicatorServant {
 
             double reach = CrazedIllagerServant.this.getBbWidth() * 2.0F + target.getBbWidth();
             if (CrazedIllagerServant.this.distanceToSqr(target) <= reach * reach) {
-                CrazedIllagerServant.this.swing(InteractionHand.MAIN_HAND);
-                CrazedIllagerServant.this.doHurtTarget(target);
+                if (--this.attackTimer <= 0) {
+                    this.attackTimer = 4;
+                    CrazedIllagerServant.this.swing(InteractionHand.MAIN_HAND);
+                    CrazedIllagerServant.this.doHurtTarget(target);
+                }
             } else {
                 CrazedIllagerServant.this.getNavigation().moveTo(target, 1.0);
             }

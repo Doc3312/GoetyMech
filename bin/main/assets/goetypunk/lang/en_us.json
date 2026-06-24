@@ -92,6 +92,7 @@
   "info.goetypunk.prototype.desc": "Infinite Elytra with boost and slam attack",
   "info.goetypunk.prototype.boost": "Hold W to accelerate while flying",
   "info.goetypunk.prototype.slam": "Press Shift while flying to perform a ground slam",
+  "info.goetypunk.prototype.assimilation": "Assimilated: %d",
 
   "item.goetypunk.flesh_casket_a_1": "Flesh Casket (Retaliatory - Basic)",
   "item.goetypunk.flesh_casket_a_2": "Flesh Casket (Retaliatory - Advanced)",
@@ -109,5 +110,22 @@
   "info.goetypunk.flesh_casket.type_b": "§aAuto-casts when health ≤ 50%%",
   "info.goetypunk.flesh_casket.type_c": "§aAuto-casts when health ≤ %d%%",
 
-  "container.goetypunk.flesh_casket": "Flesh Casket"
+  "container.goetypunk.flesh_casket": "Flesh Casket",
+
+  "item.goetypunk.stress_shield_focus": "Stress Shield Focus",
+  "info.goetypunk.stress_shield.bound": "§aBound to Stress Reader",
+  "info.goetypunk.stress_shield.not_bound": "§cNot bound",
+  "info.goetypunk.stress_shield.unbound": "§eUnbound",
+  "info.goetypunk.stress_shield.shift_info": "Convert network stress into a personal shield. Sneak-right-click to unbind.",
+  "info.goetypunk.stress_shield.no_stress": "§cNo stress network available!",
+
+  "item.goetypunk.void_blink_focus": "Void Blink Focus",
+  "effect.goetypunk.void_mark": "Void Mark",
+
+  "item.goetypunk.crazed_summon_focus": "Crazed Illager Focus",
+  "entity.goetypunk.crazed_illager": "Crazed Illager",
+  "entity.goetypunk.crazed_illager_servant": "Crazed Illager",
+  "item.goetypunk.crazed_illager_spawn_egg": "Crazed Illager Spawn Egg",
+
+  "info.goetypunk.crazed_summon.limit": "§cYou have reached the summon limit for Crazed Illagers!"
 }

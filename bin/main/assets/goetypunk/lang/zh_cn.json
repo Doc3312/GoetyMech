@@ -92,6 +92,7 @@
   "info.goetypunk.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
   "info.goetypunk.prototype.boost": "飞行中按住 W 可加速推进",
   "info.goetypunk.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸",
+  "info.goetypunk.prototype.assimilation": "已同化：%d",
 
   "item.goetypunk.flesh_casket_a_1": "血肉晶匣（盈蓄·初级）",
   "item.goetypunk.flesh_casket_a_2": "血肉晶匣（盈蓄·中级）",
@@ -108,5 +109,22 @@
   "info.goetypunk.flesh_casket.type_a": "§a受伤时自动施法",
   "info.goetypunk.flesh_casket.type_b": "§a血量 ≤ 50%% 时自动施法",
   "info.goetypunk.flesh_casket.type_c": "§a血量 ≤ %d%% 时自动施法",
-  "container.goetypunk.flesh_casket": "血肉晶匣"
+  "container.goetypunk.flesh_casket": "血肉晶匣",
+
+  "item.goetypunk.stress_shield_focus": "应力护盾聚晶",
+  "info.goetypunk.stress_shield.bound": "§a已绑定至应力读取器",
+  "info.goetypunk.stress_shield.not_bound": "§c未绑定",
+  "info.goetypunk.stress_shield.unbound": "§e已解绑",
+  "info.goetypunk.stress_shield.shift_info": "将网络应力转化为个人护盾。潜行右键解绑。",
+  "info.goetypunk.stress_shield.no_stress": "§c无可用的应力网络！",
+
+  "item.goetypunk.void_blink_focus": "虚空闪现聚晶",
+  "effect.goetypunk.void_mark": "虚空印记",
+
+  "item.goetypunk.crazed_summon_focus": "疯狂的改造刌民聚晶",
+  "entity.goetypunk.crazed_illager": "失败的改造刌民",
+  "entity.goetypunk.crazed_illager_servant": "失败的改造刌民",
+  "item.goetypunk.crazed_illager_spawn_egg": "失败的改造刌民刷怪蛋",
+
+  "info.goetypunk.crazed_summon.limit": "§c你已经达到了疯狂的改造刌民的召唤上限！"
 }

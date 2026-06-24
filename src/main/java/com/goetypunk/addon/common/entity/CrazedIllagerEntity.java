@@ -125,6 +125,7 @@ public class CrazedIllagerEntity extends AbstractIllager {
 
             living.invulnerableTime = 0;
             this.hurt(this.damageSources().generic(), 1.0F);
+            this.invulnerableTime = 0;
             return true;
         }
         return super.doHurtTarget(target);
@@ -208,6 +209,8 @@ public class CrazedIllagerEntity extends AbstractIllager {
     }
 
     class CrazedAttackGoal extends Goal {
+        private int attackTimer;
+
         public CrazedAttackGoal() {
             this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
@@ -226,6 +229,7 @@ public class CrazedIllagerEntity extends AbstractIllager {
         @Override
         public void start() {
             CrazedIllagerEntity.this.setAggressive(true);
+            this.attackTimer = 0;
         }
 
         @Override
@@ -243,8 +247,11 @@ public class CrazedIllagerEntity extends AbstractIllager {
 
             double reach = CrazedIllagerEntity.this.getBbWidth() * 2.0F + target.getBbWidth();
             if (CrazedIllagerEntity.this.distanceToSqr(target) <= reach * reach) {
-                CrazedIllagerEntity.this.swing(InteractionHand.MAIN_HAND);
-                CrazedIllagerEntity.this.doHurtTarget(target);
+                if (--this.attackTimer <= 0) {
+                    this.attackTimer = 4;
+                    CrazedIllagerEntity.this.swing(InteractionHand.MAIN_HAND);
+                    CrazedIllagerEntity.this.doHurtTarget(target);
+                }
             } else {
                 CrazedIllagerEntity.this.getNavigation().moveTo(target, 1.0);
             }
