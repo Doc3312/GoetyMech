@@ -31,6 +31,9 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -276,14 +279,40 @@ public class PrototypeRenderEvents {
 
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
-        if (event.getItemStack().getItem() instanceof PrototypeItem) {
-            net.minecraft.world.entity.player.Player player = event.getEntity();
-            if (player != null) {
-                int kills = PrototypeItem.getAssimilationKills(player);
-                event.getToolTip().add(
-                        net.minecraft.network.chat.Component.translatable(
-                                "info.goetypunk.prototype.assimilation", kills));
-            }
+        if (!(event.getItemStack().getItem() instanceof PrototypeItem)) return;
+        Player player = event.getEntity();
+        if (player == null) return;
+
+        int kills = PrototypeItem.getAssimilationKills(player);
+        var tooltip = event.getToolTip();
+
+        tooltip.add(Component.translatable("info.goetypunk.prototype.assimilation", kills));
+
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.literal("当前已解锁能力："));
+            tooltip.add(Component.literal("同化").withStyle(ChatFormatting.RED));
+            tooltip.add(Component.literal("自由奔跑").withStyle(ChatFormatting.RED));
+
+            int tier = PrototypeItem.getAssimilationTier(kills);
+            String speedSuffix = tier <= 1 ? "1/3" : tier == 2 ? "2/3" : "3/3";
+            tooltip.add(Component.literal("精灵之速(" + speedSuffix + ")").withStyle(ChatFormatting.RED));
+
+            boolean hasGlide = PrototypeItem.hasFlight(kills);
+            tooltip.add(Component.literal("滑翔").withStyle(hasGlide ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
+
+            boolean hasSlam = PrototypeItem.hasSlam(kills);
+            tooltip.add(Component.literal("子弹俯冲").withStyle(hasSlam ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
+
+            int multPercent = Math.round((PrototypeItem.getDamageMultiplier(kills) - 1.0f) * 100.0f);
+            int bonusDamage = Math.round(PrototypeItem.getBonusMagicDamage(kills));
+            tooltip.add(Component.literal("攻击力加成：+" + multPercent + "%  病毒附加伤害：+" + bonusDamage)
+                    .withStyle(ChatFormatting.GRAY));
+        } else {
+            tooltip.add(Component.literal("当前已解锁能力：")
+                    .withStyle(ChatFormatting.GRAY)
+                    .append(Component.literal("按住 ").withStyle(ChatFormatting.GRAY)
+                            .append(Component.literal("Shift").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                            .append(Component.literal(" 查看详情").withStyle(ChatFormatting.GRAY))));
         }
     }
 
