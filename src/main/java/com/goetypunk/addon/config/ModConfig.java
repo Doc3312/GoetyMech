@@ -114,6 +114,20 @@ public class ModConfig {
     /** 应力伤害除数（network capacity / 此值 = 基础伤害） */
     public static final ForgeConfigSpec.IntValue STRESS_DAMAGE_DIVISOR;
 
+    // ====== Stress Shield Focus 配置 ======
+
+    /** 应力护盾聚晶的灵魂消耗 */
+    public static final ForgeConfigSpec.IntValue STRESS_SHIELD_COST;
+
+    /** 施法冷却时间（tick） */
+    public static final ForgeConfigSpec.IntValue STRESS_SHIELD_COOLDOWN;
+
+    /** 应力→护盾换算除数 */
+    public static final ForgeConfigSpec.IntValue STRESS_SHIELD_DIVISOR;
+
+    /** 基础持续时间（秒） */
+    public static final ForgeConfigSpec.IntValue STRESS_SHIELD_BASE_DURATION;
+
     // ====== 热路径缓存 ======
     public static int cachedLinkRange;
     public static int cachedFurnaceCookingTime;
@@ -384,6 +398,27 @@ public class ModConfig {
         STRESS_DAMAGE_DIVISOR = BUILDER
                 .comment("应力伤害除数", "绑定的应力读取器的网络容量 / 此值 = 基础伤害", "范围: 100-10000，默认 2000")
                 .defineInRange("damage_divisor", 2000, 100, 10000);
+
+        BUILDER.pop();
+
+        // ====== Stress Shield Focus 配置 ======
+        BUILDER.push("stress_shield_focus");
+
+        STRESS_SHIELD_COST = BUILDER
+                .comment("应力护盾聚晶的灵魂消耗", "范围: 0-1000，默认 100")
+                .defineInRange("soul_cost", 100, 0, 1000);
+
+        STRESS_SHIELD_COOLDOWN = BUILDER
+                .comment("施法冷却时间（tick）", "范围: 100-24000，默认 12000（=10分钟）")
+                .defineInRange("cooldown", 12000, 100, 24000);
+
+        STRESS_SHIELD_DIVISOR = BUILDER
+                .comment("应力→护盾换算除数", "应力总值 / 此值 = 护盾值", "范围: 500-50000，默认 5000")
+                .defineInRange("divisor", 5000, 500, 50000);
+
+        STRESS_SHIELD_BASE_DURATION = BUILDER
+                .comment("基础持续时间（秒）", "范围: 10-600，默认 60（=1分钟）")
+                .defineInRange("base_duration", 60, 10, 600);
 
         BUILDER.pop();
 
