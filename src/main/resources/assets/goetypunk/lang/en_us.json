@@ -92,6 +92,7 @@
   "info.goetypunk.prototype.desc": "Infinite Elytra with boost and slam attack",
   "info.goetypunk.prototype.boost": "Hold W to accelerate while flying",
   "info.goetypunk.prototype.slam": "Press Shift while flying to perform a ground slam",
+  "info.goetypunk.prototype.assimilation": "Assimilated: %d",
 
   "item.goetypunk.flesh_casket_a_1": "Flesh Casket (Retaliatory - Basic)",
   "item.goetypunk.flesh_casket_a_2": "Flesh Casket (Retaliatory - Advanced)",

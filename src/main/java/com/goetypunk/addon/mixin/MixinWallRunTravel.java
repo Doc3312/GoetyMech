@@ -34,7 +34,9 @@ public abstract class MixinWallRunTravel {
             ClientWallRunState.sprintDown = true;
         }
 
-        double speed = ModConfig.WALL_RUN_SPEED.get();
+        int kills = PrototypeItem.getAssimilationKills(player);
+        double tierMult = PrototypeItem.getTierMultiplier(kills);
+        double speed = ModConfig.WALL_RUN_SPEED.get() * tierMult;
         Vec3 climbVec = wallUp.scale(wallFwd * speed);
         Vec3 strafeVec = wallRight.scale(wallStrafe * speed);
         Vec3 wallMove = climbVec

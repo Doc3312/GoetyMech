@@ -10,6 +10,7 @@ import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.common.utils.CuriosHelper;
 import com.goetypunk.addon.common.utils.WallUtil;
+import com.goetypunk.addon.common.net.s2c.S2CAssimilationDataPacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetypunk.addon.config.ModConfig;
@@ -38,6 +39,8 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -62,6 +65,7 @@ public class PrototypeEvents {
 
     private static final Map<ServerLevel, List<SlamAnimData>> ACTIVE_SLAMS = new ConcurrentHashMap<>();
     private static final Map<ServerLevel, List<DelayedDamageData>> PENDING_DAMAGES = new ConcurrentHashMap<>();
+    private static final Set<UUID> ASSIMILATION_BONUS_GUARD = new HashSet<>();
 
     private static class SlamAnimData {
         final UUID playerId;
@@ -130,6 +134,34 @@ public class PrototypeEvents {
             this.damage = damage;
             this.radius = radius;
             this.triggerTick = triggerTick;
+        }
+    }
+
+    // ── 伤害乘区 + 附加魔法伤害 ──
+
+    @SubscribeEvent
+    public static void onLivingHurt(LivingHurtEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (!(event.getSource().getEntity() instanceof Player player)) return;
+        if (!PrototypeItem.hasAnyPrototype(player)) return;
+
+        int kills = PrototypeItem.getAssimilationKills(player);
+
+        float mult = PrototypeItem.getDamageMultiplier(kills);
+        if (mult > 1.001f) {
+            event.setAmount(event.getAmount() * mult);
+        }
+
+        if (!ASSIMILATION_BONUS_GUARD.add(player.getUUID())) return;
+        try {
+            float bonus = PrototypeItem.getBonusMagicDamage(kills);
+            if (bonus > 0) {
+                event.getEntity().hurt(
+                        event.getEntity().level().damageSources().indirectMagic(player, player),
+                        bonus);
+            }
+        } finally {
+            ASSIMILATION_BONUS_GUARD.remove(player.getUUID());
         }
     }
 
@@ -209,6 +241,7 @@ public class PrototypeEvents {
                     && !player.isFallFlying()) {
                 int charge = PrototypeItem.getJumpChargeTick(player);
                 boolean isCJ = PrototypeItem.isChargedJumping(player);
+                int kills = PrototypeItem.getAssimilationKills(player);
                 double startHS = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
                 GoetyPunkMod.LOGGER.info("PROTO_DIAG START: isCJ={}, charge={}, onGround={}, zza={}, isSprint={}, isFly={}, hSpeed={}",
                         isCJ, charge, player.onGround(), player.zza, player.isSprinting(),
@@ -217,7 +250,7 @@ public class PrototypeEvents {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
                     GoetyPunkMod.LOGGER.info("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
-                } else if (!player.onGround() && player.zza > 0.0F && charge == 0 && !isCJ) {
+                } else if (PrototypeItem.hasFlight(kills) && !player.onGround() && player.zza > 0.0F && charge == 0 && !isCJ) {
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
@@ -252,6 +285,8 @@ public class PrototypeEvents {
                     && !player.isFallFlying()
                     && player.onGround()
                     && player.isSprinting()) {
+                int kills = PrototypeItem.getAssimilationKills(player);
+                double tierMult = PrototypeItem.getTierMultiplier(kills);
                 int current = PrototypeItem.getSprintTick(player) + 1;
                 PrototypeItem.setSprintTick(player, current);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -264,7 +299,7 @@ public class PrototypeEvents {
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                     if (current >= 1) {
                         double t = Math.min((current - 1) / 80.0, 1.0);
-                        double amount = t * ModConfig.SPRINT_MAX_MULTIPLIER.get();
+                        double amount = t * ModConfig.SPRINT_MAX_MULTIPLIER.get() * tierMult;
                         attr.addTransientModifier(new AttributeModifier(
                                 SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
@@ -404,7 +439,8 @@ public class PrototypeEvents {
     public static void handleWallJumpOff(ServerPlayer player) {
         Vec3 wallN = PrototypeItem.getWallNormal(player);
         if (wallN.lengthSqr() < 0.5) return;
-        Vec3 launch = wallN.scale(ModConfig.WALL_JUMP_OFF_VELOCITY.get());
+        double tierMult = PrototypeItem.getTierMultiplier(PrototypeItem.getAssimilationKills(player));
+        Vec3 launch = wallN.scale(ModConfig.WALL_JUMP_OFF_VELOCITY.get() * tierMult);
         Vec3 m = player.getDeltaMovement();
         player.setDeltaMovement(launch.x, Math.max(launch.y + 0.2, m.y + 0.2), launch.z);
         stopWallRun(player);
@@ -459,6 +495,7 @@ public class PrototypeEvents {
     }
 
     private static void applyChargedJump(Player player, int charge) {
+        double tierMult = PrototypeItem.getTierMultiplier(PrototypeItem.getAssimilationKills(player));
         if (player.isInWater()) {
             Vec3 look = player.getLookAngle();
             int threshold = ModConfig.JUMP_CHARGE_THRESHOLD.get();
@@ -468,7 +505,7 @@ public class PrototypeEvents {
             double t = charge >= threshold
                     ? Math.min((double)(charge - threshold) / (double)(maxTicks - threshold), 1.0)
                     : 0.0;
-            double speed = minSpeed + t * (maxSpeed - minSpeed);
+            double speed = minSpeed + t * (maxSpeed * tierMult - minSpeed);
             player.setDeltaMovement(look.scale(speed));
             PrototypeItem.setChargedJumping(player, true);
             PrototypeItem.clearJumpCharge(player);
@@ -503,7 +540,7 @@ public class PrototypeEvents {
             int maxTicks = ModConfig.JUMP_MAX_CHARGE_TICKS.get();
             double t = (double)(charge - threshold) / (double)(maxTicks - threshold);
             t = Math.min(t, 1.0);
-            double height = minH + t * (maxH - minH);
+            double height = minH + t * (maxH * tierMult - minH);
             double jumpPower = velocityForHeight(height);
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
             Vec3 after = player.getDeltaMovement();
@@ -548,7 +585,7 @@ public class PrototypeEvents {
         boolean nowCrouch = player.isShiftKeyDown();
         boolean prevCrouch = PrototypeItem.getPrevCrouch(player);
 
-        if (nowCrouch && !prevCrouch) {
+        if (nowCrouch && !prevCrouch && PrototypeItem.hasSlam(PrototypeItem.getAssimilationKills(player))) {
             enterSlamState(player);
         }
     }
@@ -573,6 +610,7 @@ public class PrototypeEvents {
 
     private static void handleSlamTick(Player player) {
         int tick = PrototypeItem.getSlamTick(player);
+        double tierMult = PrototypeItem.getTierMultiplier(PrototypeItem.getAssimilationKills(player));
         boolean onGround = player.onGround();
         boolean inFluid = player.isInWater() || player.isInLava();
 
@@ -588,7 +626,7 @@ public class PrototypeEvents {
         } else {
             int fallTick = tick - ModConfig.SLAM_HOVER_TICKS.get();
             double speed = 0.15 + ModConfig.SLAM_GRAVITY_PER_TICK.get() * fallTick;
-            speed = Math.min(speed, ModConfig.SLAM_MAX_SPEED.get());
+            speed = Math.min(speed, ModConfig.SLAM_MAX_SPEED.get() * tierMult);
             player.setDeltaMovement(motion.x, -speed, motion.z);
         }
 
@@ -607,8 +645,9 @@ public class PrototypeEvents {
 
         double startY = PrototypeItem.getSlamStartY(player);
         double fallDistance = Math.max(0, startY - player.getY());
+        double tierMult = PrototypeItem.getTierMultiplier(PrototypeItem.getAssimilationKills(player));
 
-        float damage = (float) Math.max(ModConfig.SLAM_MIN_DAMAGE.get(), Math.min(ModConfig.SLAM_MAX_DAMAGE.get(), fallDistance * ModConfig.SLAM_DAMAGE_MULTIPLIER.get()));
+        float damage = (float) Math.max(ModConfig.SLAM_MIN_DAMAGE.get(), Math.min(ModConfig.SLAM_MAX_DAMAGE.get() * tierMult, fallDistance * ModConfig.SLAM_DAMAGE_MULTIPLIER.get()));
         float radius = (float) Math.min(ModConfig.SLAM_MAX_RADIUS.get(), Math.max(8.0, fallDistance * ModConfig.SLAM_RADIUS_MULTIPLIER.get()));
 
         int rings = 4 + Math.max(0, (int)((fallDistance - 10.0f) / 20.0f));
@@ -976,6 +1015,14 @@ public class PrototypeEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            int kills = PrototypeItem.getAssimilationKills(sp);
+            ModNetwork.sendTo(sp, new S2CAssimilationDataPacket(kills));
+        }
+    }
+
     private static BlockPos findGroundPos(ServerLevel level, double x, int startY, double z) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, startY, z);
         BlockState state = level.getBlockState(pos);
@@ -1039,6 +1086,12 @@ public class PrototypeEvents {
                     player.getFoodData().setSaturation(newSat);
                 }
             }
+        }
+
+        // ── Assimilation kill count ──
+        PrototypeItem.incrementAssimilationKills(player);
+        if (player instanceof ServerPlayer sp) {
+            ModNetwork.sendTo(sp, new S2CAssimilationDataPacket(PrototypeItem.getAssimilationKills(player)));
         }
     }
 }

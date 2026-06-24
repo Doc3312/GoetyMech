@@ -37,6 +37,8 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_CJ_START_SPEED = "goetypunk.cj_start_speed";
     private static final String TAG_CHARGE_START_Y = "goetypunk.charge_start_y";
 
+    private static final String TAG_ASSIMILATION_KILLS = "goetypunk.assimilation_kills";
+
     public PrototypeItem() {
         super(new Properties()
                 .stacksTo(1)
@@ -316,5 +318,63 @@ public class PrototypeItem extends ElytraItem {
 
     public static void clearChargeStartY(LivingEntity entity) {
         entity.getPersistentData().remove(TAG_CHARGE_START_Y);
+    }
+
+    // ── Assimilation kill count ──
+
+    public static int getAssimilationKills(LivingEntity entity) {
+        return entity.getPersistentData().getInt(TAG_ASSIMILATION_KILLS);
+    }
+
+    public static void setAssimilationKills(LivingEntity entity, int kills) {
+        entity.getPersistentData().putInt(TAG_ASSIMILATION_KILLS, Math.max(0, kills));
+    }
+
+    public static void incrementAssimilationKills(LivingEntity entity) {
+        setAssimilationKills(entity, getAssimilationKills(entity) + 1);
+    }
+
+    // ── Assimilation tier utilities ──
+
+    public static int getAssimilationTier(int kills) {
+        if (kills < 10) return 0;
+        if (kills < 50) return 1;
+        if (kills < 100) return 2;
+        return 3;
+    }
+
+    public static int getAssimilationTier(LivingEntity entity) {
+        return getAssimilationTier(getAssimilationKills(entity));
+    }
+
+    public static double getTierMultiplier(int kills) {
+        return switch (getAssimilationTier(kills)) {
+            case 0, 1 -> 1.0 / 3.0;
+            case 2 -> 2.0 / 3.0;
+            case 3 -> 1.0;
+        };
+    }
+
+    public static boolean hasFlight(int kills) {
+        return kills >= 10;
+    }
+
+    public static boolean hasSlam(int kills) {
+        return kills >= 50;
+    }
+
+    // ── Damage multiplier ──
+
+    public static float getDamageMultiplier(int kills) {
+        if (kills <= 0) return 1.0f;
+        if (kills <= 100) return 1.0f + (float) kills / 100.0f;
+        if (kills <= 1000) return 2.0f + (float) (kills - 100) / 900.0f;
+        if (kills <= 10000) return 3.0f + (float) (kills - 1000) / 9000.0f;
+        if (kills <= 100000) return 4.0f + (float) (kills - 10000) / 10000.0f;
+        return 13.0f + (float) (kills - 100000) / 100000.0f;
+    }
+
+    public static float getBonusMagicDamage(int kills) {
+        return Math.max(1.0f, kills / 1000.0f);
     }
 }

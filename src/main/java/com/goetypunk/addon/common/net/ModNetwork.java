@@ -12,6 +12,7 @@ import com.goetypunk.addon.common.net.s2c.S2CTimeStopStatePacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamImpactPacket;
 import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetypunk.addon.common.net.s2c.S2CStressArkDataPacket;
+import com.goetypunk.addon.common.net.s2c.S2CAssimilationDataPacket;
 import com.goetypunk.addon.common.net.s2c.S2CStressShieldUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -85,6 +86,10 @@ public class ModNetwork {
                 S2CStressShieldUpdatePacket::encode,
                 S2CStressShieldUpdatePacket::decode,
                 S2CStressShieldUpdatePacket::handle);
+        CHANNEL.registerMessage(idx++, S2CAssimilationDataPacket.class,
+                S2CAssimilationDataPacket::encode,
+                S2CAssimilationDataPacket::decode,
+                S2CAssimilationDataPacket::handle);
     }
 
     public static <MSG> void sendTo(ServerPlayer player, MSG msg) {

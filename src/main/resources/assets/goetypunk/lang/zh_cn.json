@@ -92,6 +92,7 @@
   "info.goetypunk.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
   "info.goetypunk.prototype.boost": "飞行中按住 W 可加速推进",
   "info.goetypunk.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸",
+  "info.goetypunk.prototype.assimilation": "已同化：%d",
 
   "item.goetypunk.flesh_casket_a_1": "血肉晶匣（盈蓄·初级）",
   "item.goetypunk.flesh_casket_a_2": "血肉晶匣（盈蓄·中级）",

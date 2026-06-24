@@ -36,6 +36,7 @@ import org.joml.Vector3f;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -270,6 +271,22 @@ public class PrototypeRenderEvents {
     }
 
     // ═══════════════════════════════════════════════════
+    //  5. Item tooltip: assimilation kill count
+    // 
+
+    @SubscribeEvent
+    public static void onItemTooltip(ItemTooltipEvent event) {
+        if (event.getItemStack().getItem() instanceof PrototypeItem) {
+            net.minecraft.world.entity.player.Player player = event.getEntity();
+            if (player != null) {
+                int kills = PrototypeItem.getAssimilationKills(player);
+                event.getToolTip().add(
+                        net.minecraft.network.chat.Component.translatable(
+                                "info.goetypunk.prototype.assimilation", kills));
+            }
+        }
+    }
+
     //  Internal helpers (quaternion-based wall rotation)
     // ═══════════════════════════════════════════════════
 

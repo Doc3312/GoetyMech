@@ -28,7 +28,8 @@ public abstract class PrototypeTravelMixin {
         Vec3 current = player.getDeltaMovement();
         double base = ModConfig.FLIGHT_TARGET_SPEED.get();
         double accelRate = ModConfig.FLIGHT_ACCEL_RATE.get();
-        double maxMultiplier = ModConfig.FLIGHT_MAX_MULTIPLIER.get();
+        int kills = PrototypeItem.getAssimilationKills(player);
+        double maxMultiplier = ModConfig.FLIGHT_MAX_MULTIPLIER.get() * PrototypeItem.getTierMultiplier(kills);
         double currentLookSpeed = current.dot(look);
         double speed = Mth.clamp(currentLookSpeed + accelRate, base, base * maxMultiplier);
         double hoverLift = speed * 0.16;
@@ -138,7 +139,9 @@ public abstract class PrototypeTravelMixin {
                 int tick = PrototypeItem.getSwimTick(player) + 1;
                 PrototypeItem.setSwimTick(player, tick);
 
-                double desiredSpeedMult = 1.0 + Math.min((tick - 1) / 80.0, 1.0) * ModConfig.SWIM_MAX_MULTIPLIER.get();
+                int kills = PrototypeItem.getAssimilationKills(player);
+                double tierMult = PrototypeItem.getTierMultiplier(kills);
+                double desiredSpeedMult = 1.0 + Math.min((tick - 1) / 80.0, 1.0) * ModConfig.SWIM_MAX_MULTIPLIER.get() * tierMult;
                 double velocityMult = 1.25 - 0.25 / desiredSpeedMult;
 
                 if (velocityMult > 1.01) {
