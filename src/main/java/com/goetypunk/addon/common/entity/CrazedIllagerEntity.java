@@ -3,6 +3,7 @@ package com.goetypunk.addon.common.entity;
 import com.goetypunk.addon.init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
+import java.util.EnumSet;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
