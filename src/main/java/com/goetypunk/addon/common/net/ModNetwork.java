@@ -3,6 +3,7 @@ package com.goetypunk.addon.common.net;
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.net.c2s.C2SOpenFleshCasketPacket;
 import com.goetypunk.addon.common.net.c2s.C2SCancelSlamPacket;
+import com.goetypunk.addon.common.net.c2s.C2SVoidBlinkPacket;
 import com.goetypunk.addon.common.net.c2s.C2SJumpChargePacket;
 import com.goetypunk.addon.common.net.c2s.C2STimeStopPacket;
 import com.goetypunk.addon.common.net.c2s.C2SWallInputPacket;
@@ -95,6 +96,10 @@ public class ModNetwork {
                 C2SOpenFleshCasketPacket::encode,
                 C2SOpenFleshCasketPacket::decode,
                 C2SOpenFleshCasketPacket::handle);
+        CHANNEL.registerMessage(idx++, C2SVoidBlinkPacket.class,
+                C2SVoidBlinkPacket::encode,
+                C2SVoidBlinkPacket::decode,
+                C2SVoidBlinkPacket::handle);
     }
 
     public static <MSG> void sendTo(ServerPlayer player, MSG msg) {

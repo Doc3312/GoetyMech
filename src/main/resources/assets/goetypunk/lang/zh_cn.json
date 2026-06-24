@@ -116,5 +116,8 @@
   "info.goetypunk.stress_shield.not_bound": "§c未绑定",
   "info.goetypunk.stress_shield.unbound": "§e已解绑",
   "info.goetypunk.stress_shield.shift_info": "将网络应力转化为个人护盾。潜行右键解绑。",
-  "info.goetypunk.stress_shield.no_stress": "§c无可用的应力网络！"
+  "info.goetypunk.stress_shield.no_stress": "§c无可用的应力网络！",
+
+  "item.goetypunk.void_blink_focus": "虚空闪现聚晶",
+  "effect.goetypunk.void_mark": "虚空印记"
 }

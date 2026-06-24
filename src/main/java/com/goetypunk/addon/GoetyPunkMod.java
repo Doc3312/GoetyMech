@@ -3,12 +3,14 @@ package com.goetypunk.addon;
 import com.goetypunk.addon.common.capabilities.IStressShield;
 import com.goetypunk.addon.common.capabilities.StressShieldProvider;
 import com.goetypunk.addon.common.events.StressShieldEvents;
+import com.goetypunk.addon.common.events.VoidBlinkEvents;
 import com.goetypunk.addon.common.menu.ModMenuTypes;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.compat.caelus.CaelusLoaded;
 import com.goetypunk.addon.config.ModConfig;
 import com.goetypunk.addon.init.ModBlocks;
 import com.goetypunk.addon.init.ModCreativeTab;
+import com.goetypunk.addon.init.ModEffects;
 import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
@@ -47,6 +49,7 @@ public class GoetyPunkMod {
         ModBlocks.BLOCK_ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
+        ModEffects.EFFECTS.register(modEventBus);
         ModCreativeTab.TABS.register(modEventBus);
         ModMenuTypes.CONTAINER_TYPE.register(modEventBus);
 
@@ -54,6 +57,7 @@ public class GoetyPunkMod {
         modEventBus.addListener(ModBlocks::registerStressValues);
 
         MinecraftForge.EVENT_BUS.register(StressShieldEvents.class);
+        MinecraftForge.EVENT_BUS.register(VoidBlinkEvents.class);
 
         modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.register(IStressShield.class);

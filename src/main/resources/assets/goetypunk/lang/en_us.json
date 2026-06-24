@@ -117,5 +117,8 @@
   "info.goetypunk.stress_shield.not_bound": "§cNot bound",
   "info.goetypunk.stress_shield.unbound": "§eUnbound",
   "info.goetypunk.stress_shield.shift_info": "Convert network stress into a personal shield. Sneak-right-click to unbind.",
-  "info.goetypunk.stress_shield.no_stress": "§cNo stress network available!"
+  "info.goetypunk.stress_shield.no_stress": "§cNo stress network available!",
+
+  "item.goetypunk.void_blink_focus": "Void Blink Focus",
+  "effect.goetypunk.void_mark": "Void Mark"
 }
