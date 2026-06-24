@@ -142,7 +142,24 @@ public class PrototypeEvents {
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.getEntity().level().isClientSide) return;
-        if (!(event.getSource().getEntity() instanceof Player player)) return;
+
+        LivingEntity victim = event.getEntity();
+        DamageSource source = event.getSource();
+
+        if (victim instanceof Player player && source.getEntity() != null) {
+            if (PrototypeItem.hasAnyPrototype(player)) {
+                int kills = PrototypeItem.getAssimilationKills(player);
+                int threshold = PrototypeItem.getDamageImmunityThreshold(kills);
+                if (threshold > 0 && event.getAmount() <= threshold) {
+                    event.setCanceled(true);
+                    player.level().playSound(null, player.blockPosition(),
+                            SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4F, 1.8F);
+                    return;
+                }
+            }
+        }
+
+        if (!(source.getEntity() instanceof Player player)) return;
         if (!PrototypeItem.hasAnyPrototype(player)) return;
 
         int kills = PrototypeItem.getAssimilationKills(player);
@@ -156,8 +173,8 @@ public class PrototypeEvents {
         try {
             float bonus = PrototypeItem.getBonusMagicDamage(kills);
             if (bonus > 0) {
-                event.getEntity().hurt(
-                        event.getEntity().level().damageSources().indirectMagic(player, player),
+            victim.hurt(
+                    victim.level().damageSources().indirectMagic(player, player),
                         bonus);
             }
         } finally {

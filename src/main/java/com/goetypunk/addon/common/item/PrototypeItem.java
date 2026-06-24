@@ -376,4 +376,12 @@ public class PrototypeItem extends ElytraItem {
     public static float getBonusMagicDamage(int kills) {
         return Math.max(1.0f, kills / 1000.0f);
     }
+
+    public static int getDamageImmunityThreshold(int kills) {
+        if (kills < 150) return 0;
+        if (kills < 1000) return (kills - 150) / 200;
+        int t = 5 + (kills - 1000) / 1000;
+        if (kills >= 10000) t = 14 + (kills - 10000) / 5000;
+        return t;
+    }
 }

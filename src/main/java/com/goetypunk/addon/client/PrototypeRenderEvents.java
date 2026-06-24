@@ -303,9 +303,13 @@ public class PrototypeRenderEvents {
             boolean hasSlam = PrototypeItem.hasSlam(kills);
             tooltip.add(Component.literal("子弹俯冲").withStyle(hasSlam ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
 
+            tooltip.add(Component.literal("皮下护甲").withStyle(kills >= 150 ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
+
             int multPercent = Math.round((PrototypeItem.getDamageMultiplier(kills) - 1.0f) * 100.0f);
             int bonusDamage = Math.round(PrototypeItem.getBonusMagicDamage(kills));
-            tooltip.add(Component.literal("攻击力加成：+" + multPercent + "%  病毒附加伤害：+" + bonusDamage)
+            int immunityThreshold = PrototypeItem.getDamageImmunityThreshold(kills);
+            String immunitySuffix = kills >= 150 ? "  伤害免疫：" + immunityThreshold : "";
+            tooltip.add(Component.literal("攻击力加成：+" + multPercent + "%  病毒附加伤害：+" + bonusDamage + immunitySuffix)
                     .withStyle(ChatFormatting.GRAY));
         } else {
             tooltip.add(Component.literal("当前已解锁能力：")
