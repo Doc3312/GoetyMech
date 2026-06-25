@@ -25,3 +25,9 @@
 - 改动：SquadChunkTickets 从 `common/block/entity/` 移至 `common/utils/`
 - 原因：该类是工具类，不属于方块实体逻辑
 - 关联：openspec codebase-remediation
+
+### 2026-06-26 — 替换 armory platform 模型 + 拆分三阶独立纹理
+
+- 改动：用桌面 armory_platform_pack 的 Blockbench 导出替换模型，装饰元素烘焙到纹理中移除 3D vein/rivet/panel 元素。tier2/tier3 各 5 张贴图放入独立子文件夹，三个阶各自独立的 blockstate/item/model（已改为指向独立文件而非共享）
+- 原因：用户更新了资源包设计，三阶需要不同纹理
+- 关联：用户指令替换
