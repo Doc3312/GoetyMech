@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -42,21 +41,19 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
 
         Minecraft mc = Minecraft.getInstance();
         ItemRenderer itemRenderer = mc.getItemRenderer();
-        BakedModel sourceModel = itemRenderer.getModel(sourceStack, null, null, 0);
-        itemRenderer.render(sourceStack, transformType, false, poseStack, buffer, combinedLight, combinedOverlay, sourceModel);
+        itemRenderer.renderStatic(sourceStack, transformType, combinedLight, combinedOverlay, poseStack, buffer, mc.level, 0);
 
         if (transformType == ItemDisplayContext.GUI) {
             poseStack.pushPose();
-            poseStack.translate(0, 0, 0.001f);
-            sourceModel.getTransforms().getTransform(transformType).apply(false, poseStack);
-            poseStack.translate(-0.5F, -0.5F, -0.5F);
+            poseStack.translate(0.5F, 0.5F, 0.5F);
+            poseStack.scale(1.0F, -1.0F, -1.0F);
 
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(OVERLAY_TEXTURE));
+            VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(OVERLAY_TEXTURE));
             var matrix = poseStack.last().pose();
-            consumer.vertex(matrix, 0, 0, 0).color(1f, 1f, 1f, 1f).uv(0, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
-            consumer.vertex(matrix, 0, 1, 0).color(1f, 1f, 1f, 1f).uv(0, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
-            consumer.vertex(matrix, 1, 1, 0).color(1f, 1f, 1f, 1f).uv(1, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
-            consumer.vertex(matrix, 1, 0, 0).color(1f, 1f, 1f, 1f).uv(1, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            consumer.vertex(matrix, -0.5F, -0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(0, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            consumer.vertex(matrix, -0.5F, 0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(0, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            consumer.vertex(matrix, 0.5F, 0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(1, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            consumer.vertex(matrix, 0.5F, -0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(1, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
 
             poseStack.popPose();
         }
