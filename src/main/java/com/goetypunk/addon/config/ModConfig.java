@@ -170,6 +170,11 @@ public class ModConfig {
     /** 击杀食物恢复比例 */
     public static final ForgeConfigSpec.DoubleValue KILL_FOOD_RESTORE_RATIO;
 
+    // ====== Prototype — Mimic 配置 ======
+
+    /** 拟态合成系统开关 */
+    public static final ForgeConfigSpec.BooleanValue MIMIC_ENABLED;
+
     // ====== Prototype — Wall-running 配置 ======
 
     public static final ForgeConfigSpec.DoubleValue WALL_RUN_SPEED;
@@ -509,6 +514,10 @@ public class ModConfig {
         KILL_FOOD_RESTORE_RATIO = BUILDER
                 .comment("击杀食物恢复比例", "被击杀生物 maxHealth × 此值 = 食物恢复量", "范围: 0.0-2.0，默认 0.333")
                 .defineInRange("kill_food_restore_ratio", 0.333, 0.0, 2.0);
+
+        MIMIC_ENABLED = BUILDER
+                .comment("拟态合成系统开关", "关闭后原型 + 胸甲将无法合成为拟态", "范围: true/false，默认 true")
+                .define("mimic_enabled", true);
 
         BUILDER.pop();
 

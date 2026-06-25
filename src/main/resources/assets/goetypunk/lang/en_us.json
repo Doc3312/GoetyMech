@@ -89,6 +89,9 @@
   "info.goetypunk.soul_catcher.progress": "§5Souls: %d/%d",
 
   "item.goetypunk.prototype": "Prototype",
+  "item.goetypunk.prototype_mimic": "Prototype · %s · Mimic",
+  "info.goetypunk.prototype.mimic_enabled": "Mimic Crafting Enabled",
+  "info.goetypunk.prototype.mimic_disabled": "Mimic Crafting Disabled",
   "info.goetypunk.prototype.desc": "Infinite Elytra with boost and slam attack",
   "info.goetypunk.prototype.boost": "Hold W to accelerate while flying",
   "info.goetypunk.prototype.slam": "Press Shift while flying to perform a ground slam",

@@ -89,6 +89,9 @@
   "info.goetypunk.soul_catcher.progress": "§5聚魂：%d/%d",
 
   "item.goetypunk.prototype": "原型",
+  "item.goetypunk.prototype_mimic": "原型·%s·拟态",
+  "info.goetypunk.prototype.mimic_enabled": "拟态合成已启用",
+  "info.goetypunk.prototype.mimic_disabled": "拟态合成已禁用",
   "info.goetypunk.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
   "info.goetypunk.prototype.boost": "飞行中按住 W 可加速推进",
   "info.goetypunk.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸",
