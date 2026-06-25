@@ -14,9 +14,13 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 
 public class PrototypeMimicItem extends ElytraItem {
@@ -118,6 +122,24 @@ public class PrototypeMimicItem extends ElytraItem {
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
         return !PrototypeItem.isSlamming(entity);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        CompoundTag tag = stack.getTag();
+        if (tag != null && tag.contains(TAG_SOURCE_NAME)) {
+            Component sourceName = Component.Serializer.fromJson(tag.getString(TAG_SOURCE_NAME));
+            if (sourceName != null) {
+                tooltip.add(Component.translatable("info.goetypunk.prototype_mimic.source", sourceName));
+            }
+        }
+        int attrCount = tag != null && tag.contains(TAG_SOURCE_ATTRIBUTES)
+                ? tag.getCompound(TAG_SOURCE_ATTRIBUTES).getAllKeys().size() : 0;
+        int enchCount = tag != null && tag.contains(TAG_SOURCE_ENCHANTS)
+                ? tag.getCompound(TAG_SOURCE_ENCHANTS).getAllKeys().size() : 0;
+        if (attrCount > 0 || enchCount > 0) {
+            tooltip.add(Component.translatable("info.goetypunk.prototype_mimic.inherited", attrCount, enchCount));
+        }
     }
 
     @Override

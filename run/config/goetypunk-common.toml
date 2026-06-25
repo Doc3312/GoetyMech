@@ -322,7 +322,7 @@
 		#Range: 1 ~ 5000
 		stable_rift_cost = 500
 
-	[squad_barracks.void_blink_focus]
+	[squad_barracks.tracking_eye_focus]
 		#基础传送次数
 		#范围: 1-20，默认 5
 		#Range: 1 ~ 20
@@ -331,11 +331,11 @@
 		#范围: 1-60，默认 10
 		#Range: 1 ~ 60
 		window_seconds = 10
-		#虚空闪现聚晶的灵魂消耗
+		#追猎聚晶的灵魂消耗
 		#范围: 1-1000，默认 140
 		#Range: 1 ~ 1000
 		soul_cost = 140
-		#虚空闪现聚晶冷却时间（tick）
+		#追猎聚晶冷却时间（tick）
 		#范围: 100-72000，默认 3600（3分钟）
 		#Range: 100 ~ 72000
 		cooldown = 3600

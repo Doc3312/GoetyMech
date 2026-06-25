@@ -88,6 +88,9 @@
   "item.goetypunk.soul_catcher": "灵魂捕手",
   "info.goetypunk.soul_catcher.progress": "§5聚魂：%d/%d",
 
+  "info.goetypunk.prototype_mimic.source": "§7来源：%s",
+  "info.goetypunk.prototype_mimic.inherited": "§7继承：%d 属性，%d 附魔",
+
   "item.goetypunk.prototype": "原型",
   "item.goetypunk.prototype_mimic": "原型·%s·拟态",
   "info.goetypunk.prototype.mimic_enabled": "拟态合成已启用",

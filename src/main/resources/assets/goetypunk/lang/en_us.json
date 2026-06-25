@@ -88,6 +88,9 @@
   "item.goetypunk.soul_catcher": "Soul Catcher",
   "info.goetypunk.soul_catcher.progress": "§5Souls: %d/%d",
 
+  "info.goetypunk.prototype_mimic.source": "§7Source: %s",
+  "info.goetypunk.prototype_mimic.inherited": "§7Inherited: %d attributes, %d enchantments",
+
   "item.goetypunk.prototype": "Prototype",
   "item.goetypunk.prototype_mimic": "Prototype · %s · Mimic",
   "info.goetypunk.prototype.mimic_enabled": "Mimic Crafting Enabled",
