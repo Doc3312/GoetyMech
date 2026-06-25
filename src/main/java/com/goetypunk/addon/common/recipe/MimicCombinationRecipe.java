@@ -8,6 +8,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -48,9 +50,8 @@ public class MimicCombinationRecipe implements CraftingRecipe {
     }
 
     private boolean isChestplate(ItemStack stack) {
-        return stack.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.CHEST)
-                .values().stream().anyMatch(m ->
-                        m.getId().toString().contains("armor"));
+        EquipmentSlot slot = LivingEntity.getEquipmentSlotForItem(stack);
+        return slot == EquipmentSlot.CHEST;
     }
 
     @Override

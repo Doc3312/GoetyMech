@@ -1,11 +1,12 @@
 package com.goetypunk.addon.common.item;
 
+import com.goetypunk.addon.init.ModItems;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -45,10 +46,13 @@ public class PrototypeMimicItem extends ElytraItem {
         int i = 0;
         for (Map.Entry<Attribute, AttributeModifier> entry : modifiers.entries()) {
             CompoundTag entryTag = new CompoundTag();
-            entryTag.putString("attribute", entry.getKey().getDescriptionId());
-            CompoundTag modTag = entry.getValue().save();
-            entryTag.put("modifier", modTag);
-            attrTag.put("mod_" + (i++), entryTag);
+            ResourceLocation attrId = BuiltInRegistries.ATTRIBUTE.getKey(entry.getKey());
+            if (attrId != null) {
+                entryTag.putString("attribute", attrId.toString());
+                CompoundTag modTag = entry.getValue().save();
+                entryTag.put("modifier", modTag);
+                attrTag.put("mod_" + (i++), entryTag);
+            }
         }
         tag.put(TAG_SOURCE_ATTRIBUTES, attrTag);
 
@@ -93,9 +97,9 @@ public class PrototypeMimicItem extends ElytraItem {
         CompoundTag attrTag = tag.getCompound(TAG_SOURCE_ATTRIBUTES);
         for (String key : attrTag.getAllKeys()) {
             CompoundTag entryTag = attrTag.getCompound(key);
-            String attrDescId = entryTag.getString("attribute");
-            Attribute attribute = net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.get(
-                    net.minecraft.resources.ResourceLocation.tryParse(attrDescId));
+            ResourceLocation attrId = ResourceLocation.tryParse(entryTag.getString("attribute"));
+            if (attrId == null) continue;
+            Attribute attribute = BuiltInRegistries.ATTRIBUTE.get(attrId);
             if (attribute != null) {
                 AttributeModifier modifier = AttributeModifier.load(entryTag.getCompound("modifier"));
                 if (modifier != null) {
