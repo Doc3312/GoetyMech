@@ -14,6 +14,7 @@ import com.goetypunk.addon.common.item.CrazedSummonFocus;
 import com.goetypunk.addon.common.item.TwistedEmbryoItem;
 import com.goetypunk.addon.common.item.UnstableRiftFocus;
 import com.goetypunk.addon.common.item.PrototypeItem;
+import com.goetypunk.addon.common.item.PrototypeMimicItem;
 import com.goetypunk.addon.common.item.curio.AutoCastDummyWand;
 import com.goetypunk.addon.common.item.curio.FleshCasketItem;
 import com.goetypunk.addon.common.item.curio.SoulCatcherCurio;
@@ -144,6 +145,11 @@ public class ModItems {
 
     public static final RegistryObject<Item> PROTOTYPE =
             ITEMS.register("prototype", PrototypeItem::new);
+
+    // ── 拟态 — 原型 + 胸甲合成，继承属性 ──
+
+    public static final RegistryObject<Item> PROTOTYPE_MIMIC =
+            ITEMS.register("prototype_mimic", PrototypeMimicItem::new);
 
     // ── 血肉晶匣 ──
 
