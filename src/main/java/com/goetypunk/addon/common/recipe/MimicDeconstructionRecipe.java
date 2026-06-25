@@ -82,11 +82,6 @@ public class MimicDeconstructionRecipe implements CraftingRecipe {
         public static final Serializer INSTANCE = new Serializer();
 
         @Override
-        public @NotNull MapCodec<MimicDeconstructionRecipe> codec() {
-            return MapCodec.unit(new MimicDeconstructionRecipe(null));
-        }
-
-        @Override
         public MimicDeconstructionRecipe fromJson(ResourceLocation id, JsonObject json) {
             return new MimicDeconstructionRecipe(id);
         }

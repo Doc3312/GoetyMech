@@ -102,11 +102,6 @@ public class MimicCombinationRecipe implements CraftingRecipe {
         public static final Serializer INSTANCE = new Serializer();
 
         @Override
-        public @NotNull MapCodec<MimicCombinationRecipe> codec() {
-            return MapCodec.unit(new MimicCombinationRecipe(null));
-        }
-
-        @Override
         public MimicCombinationRecipe fromJson(ResourceLocation id, JsonObject json) {
             return new MimicCombinationRecipe(id);
         }
