@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "goetypunk:block/squad_barracks"
+      "model": "goetypunk:block/tier3_squad_barracks"
     }
   }
 }
