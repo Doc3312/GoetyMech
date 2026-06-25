@@ -13,6 +13,7 @@ import com.goetypunk.addon.init.ModCreativeTab;
 import com.goetypunk.addon.init.ModEffects;
 import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModItems;
+import com.goetypunk.addon.init.ModRecipeSerializers;
 import com.goetypunk.addon.common.entity.CrazedIllagerEntity;
 import com.goetypunk.addon.common.entity.CrazedIllagerServant;
 import net.minecraft.resources.ResourceLocation;
@@ -55,6 +56,7 @@ public class GoetyPunkMod {
         ModEffects.EFFECTS.register(modEventBus);
         ModCreativeTab.TABS.register(modEventBus);
         ModMenuTypes.CONTAINER_TYPE.register(modEventBus);
+        ModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
 
         ModNetwork.init();
         modEventBus.addListener(ModBlocks::registerStressValues);
