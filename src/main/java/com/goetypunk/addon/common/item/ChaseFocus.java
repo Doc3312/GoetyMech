@@ -3,9 +3,9 @@ package com.goetypunk.addon.common.item;
 import com.goetypunk.addon.common.magic.spell.VoidBlinkSpell;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;
 
-public class TrackingEyeFocus extends MagicFocus {
+public class ChaseFocus extends MagicFocus {
 
-    public TrackingEyeFocus() {
+    public ChaseFocus() {
         super(new VoidBlinkSpell());
     }
 }

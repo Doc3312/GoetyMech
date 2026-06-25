@@ -587,8 +587,8 @@ public class ModConfig {
 
         BUILDER.pop();
 
-        // ====== Tracking Eye Focus 配置 ======
-        BUILDER.push("tracking_eye_focus");
+        // ====== Chase Focus 配置 ======
+        BUILDER.push("chase_focus");
 
         VOID_BLINK_COST = BUILDER
                 .comment("追猎聚晶的灵魂消耗", "范围: 1-1000，默认 140")

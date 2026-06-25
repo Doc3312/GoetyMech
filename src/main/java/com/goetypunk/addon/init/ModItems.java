@@ -9,7 +9,7 @@ import com.goetypunk.addon.common.item.StableRiftFocus;
 import com.goetypunk.addon.common.item.StressFocus;
 import com.goetypunk.addon.common.item.StressShieldFocus;
 import com.goetypunk.addon.common.item.TimeFocusPouch;
-import com.goetypunk.addon.common.item.TrackingEyeFocus;
+import com.goetypunk.addon.common.item.ChaseFocus;
 import com.goetypunk.addon.common.item.CrazedSummonFocus;
 import com.goetypunk.addon.common.item.TwistedEmbryoItem;
 import com.goetypunk.addon.common.item.UnstableRiftFocus;
@@ -96,8 +96,8 @@ public class ModItems {
             ITEMS.register("stress_shield_focus", StressShieldFocus::new);
 
     /** 追猎聚晶 — 锁定目标后多次闪现传送 */
-    public static final RegistryObject<Item> TRACKING_EYE_FOCUS =
-            ITEMS.register("tracking_eye_focus", TrackingEyeFocus::new);
+    public static final RegistryObject<Item> CHASE_FOCUS =
+            ITEMS.register("chase_focus", ChaseFocus::new);
 
     /** 疯狂的改造刌民召唤聚晶 — 召唤疯狂的改造刌民仆从 */
     public static final RegistryObject<Item> CRAZED_SUMMON_FOCUS =
