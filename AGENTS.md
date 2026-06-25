@@ -16,6 +16,7 @@ Single-context repo。参见 `docs/agents/domain.md`。
 
 | skill | 触发关键词 |
 |-------|-----------|
+| **item-ister-flat-quads** | **★最高优先级★ texture / png / 纹理 / overlay / 叠加层 / quad / 四边面 / ISTER / BEWLR / item/generated / flat item / 物品渲染 / 图标 / scale(1,-1,-1) / UV mapping / vertex / 顶点渲染** |
 | create-dev | Create machines / Ponder / kinetic BE / BESR |
 | entity-render-dev | entity render / collision / invisible |
 | goety-addon-dev | Goety Focus / Spell / servant / soul / 聚晶 / 法术 / 仆从 / 灵魂 |
