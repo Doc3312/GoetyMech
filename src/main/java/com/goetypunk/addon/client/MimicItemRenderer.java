@@ -1,10 +1,8 @@
 package com.goetypunk.addon.client;
 
 import com.goetypunk.addon.common.item.PrototypeMimicItem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -21,21 +19,8 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
     private static final ResourceLocation OVERLAY_TEXTURE =
             new ResourceLocation("goetypunk", "textures/item/prototype_mimic_overlay.png");
 
-    private static final RenderType OVERLAY_RENDER_TYPE = RenderType.create(
-            "goetypunk_mimic_overlay",
-            DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS,
-            256, false, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RenderType.RENDERTYPE_ENTITY_CUTOUT_NOCULL_SHADER)
-                    .setTextureState(new RenderType.TextureState(OVERLAY_TEXTURE, false, false))
-                    .setTransparencyState(RenderType.NO_TRANSPARENCY)
-                    .setDepthTestState(RenderType.NO_DEPTH_TEST)
-                    .setCullState(RenderType.NO_CULL)
-                    .setLightmapState(RenderType.LIGHTMAP)
-                    .setOverlayState(RenderType.OVERLAY)
-                    .createCompositeState(false)
-    );
+    private static final RenderType OVERLAY_RENDER_TYPE =
+            RenderType.entityCutoutNoCull(OVERLAY_TEXTURE);
 
     private static MimicItemRenderer INSTANCE;
 
