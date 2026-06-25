@@ -303,7 +303,10 @@ public class PrototypeRenderEvents {
             boolean hasSlam = PrototypeItem.hasSlam(kills);
             tooltip.add(Component.literal("子弹俯冲").withStyle(hasSlam ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
 
-            tooltip.add(Component.literal("皮下护甲").withStyle(kills >= 150 ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
+            int nextMilestone = PrototypeItem.getNextImmunityMilestone(kills);
+            tooltip.add(kills >= 150
+                    ? Component.literal("皮下护甲  下次进化：" + nextMilestone + "击杀").withStyle(ChatFormatting.RED)
+                    : Component.literal("皮下护甲").withStyle(ChatFormatting.DARK_GRAY));
 
             int multPercent = Math.round((PrototypeItem.getDamageMultiplier(kills) - 1.0f) * 100.0f);
             int bonusDamage = Math.round(PrototypeItem.getBonusMagicDamage(kills));
