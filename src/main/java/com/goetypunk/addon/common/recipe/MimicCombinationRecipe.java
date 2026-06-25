@@ -3,9 +3,7 @@ package com.goetypunk.addon.common.recipe;
 import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.common.item.PrototypeMimicItem;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +13,6 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -103,6 +100,11 @@ public class MimicCombinationRecipe implements CraftingRecipe {
 
     public static class Serializer implements RecipeSerializer<MimicCombinationRecipe> {
         public static final Serializer INSTANCE = new Serializer();
+
+        @Override
+        public @NotNull MapCodec<MimicCombinationRecipe> codec() {
+            return MapCodec.unit(new MimicCombinationRecipe(null));
+        }
 
         @Override
         public MimicCombinationRecipe fromJson(ResourceLocation id, JsonObject json) {
