@@ -108,6 +108,11 @@
 - 原因：为 Prototype 提供成长的 RPG 要素，击杀越多能力越强
 - 关联：S2CAssimilationDataPacket.java, PrototypeItem.java (tier/damage utils), PrototypeEvents.java (kill tracking, login sync, damage mult), PrototypeTravelMixin.java (飞行/游泳 tier scaling), MixinWallRunTravel.java (墙跑 tier scaling), PrototypeRenderEvents.java (tooltip), zh_cn.json / en_us.json
 
+### 2026-06-25 — Mimic 合成体系 + 不可摧毁守卫 + 统一检测
+
+- 改动：新增 `isPrototype(ItemStack)` / `isPrototypeItem(Item)` / `hasAnyPrototype()` 统一检测方法；ItemEntityPrototypeMixin 免疫伤害；ItemEntityVoidMixin 虚空拉回 Y=260；PrototypeMimicItem `createFrom()` 合成继承属性；MimicCombinationRecipe + MimicDeconstructionRecipe 注册
+- 原因：prototype 物品需要统一的归属检测接口；mimic 合成系统允许将 prototype+ 胸甲合成为可穿戴 ElytraItem
+
 ### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
 
 - 改动：移除旧冲刺粒子（DustParticleOptions 随机散布）和蓄力跳粒子（CRIT + ENCHANTED_HIT）；新增 6 身体锚点粒子系统（左手/右手外侧、头顶左/右、左脚/右脚外侧）；S2CSlamStatePacket 同步下砸客户端状态；下砸时生成深红体线 + FLAME 火星 + 淡红尾迹三层混合
