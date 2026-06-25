@@ -107,6 +107,7 @@ dependencies {
 
     // JEI — 编译时需要完整 jar（IModPlugin 在 API 中不存在），运行时为可选
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
     // Patchouli — 编译时仅用 API，运行时使用完整 jar
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")

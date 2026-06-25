@@ -322,7 +322,7 @@
 		#Range: 1 ~ 5000
 		stable_rift_cost = 500
 
-	[squad_barracks.tracking_eye_focus]
+	[squad_barracks.chase_focus]
 		#基础传送次数
 		#范围: 1-20，默认 5
 		#Range: 1 ~ 20
