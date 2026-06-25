@@ -12,7 +12,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ElytraItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -27,6 +29,7 @@ public class PrototypeMimicItem extends ElytraItem {
 
     private static final String TAG_SOURCE_ID = "goetypunk.mimic_source_id";
     private static final String TAG_SOURCE_NAME = "goetypunk.mimic_source_name";
+    private static final String TAG_SOURCE_REGISTRY = "goetypunk.mimic_source_registry";
     private static final String TAG_SOURCE_ATTRIBUTES = "goetypunk.mimic_attributes";
     private static final String TAG_SOURCE_ENCHANTS = "goetypunk.mimic_enchants";
     private static final String TAG_SOURCE_TAG = "goetypunk.mimic_source_tag";
@@ -44,6 +47,11 @@ public class PrototypeMimicItem extends ElytraItem {
 
         tag.putString(TAG_SOURCE_ID, source.getItem().getDescriptionId());
         tag.putString(TAG_SOURCE_NAME, Component.Serializer.toJson(source.getHoverName()));
+
+        ResourceLocation registryKey = BuiltInRegistries.ITEM.getKey(source.getItem());
+        if (registryKey != null) {
+            tag.putString(TAG_SOURCE_REGISTRY, registryKey.toString());
+        }
 
         CompoundTag attrTag = new CompoundTag();
         Multimap<Attribute, AttributeModifier> modifiers = source.getAttributeModifiers(EquipmentSlot.CHEST);
@@ -74,6 +82,17 @@ public class PrototypeMimicItem extends ElytraItem {
 
         result.setTag(tag);
         return result;
+    }
+
+    public static ItemStack getSourceStack(ItemStack mimicStack) {
+        CompoundTag tag = mimicStack.getTag();
+        if (tag == null || !tag.contains(TAG_SOURCE_REGISTRY)) return ItemStack.EMPTY;
+        String regName = tag.getString(TAG_SOURCE_REGISTRY);
+        ResourceLocation id = ResourceLocation.tryParse(regName);
+        if (id == null) return ItemStack.EMPTY;
+        Item item = BuiltInRegistries.ITEM.get(id);
+        if (item == null || item == Items.AIR) return ItemStack.EMPTY;
+        return new ItemStack(item);
     }
 
     @Override

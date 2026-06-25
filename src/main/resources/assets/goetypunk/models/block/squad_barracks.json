@@ -1,0 +1,276 @@
+{
+    "textures": {
+        "10": "goetypunk:block/armory_anvil",
+        "11": "goetypunk:block/armory_body",
+        "12": "goetypunk:block/armory_dark_metal",
+        "13": "goetypunk:block/armory_frame",
+        "15": "goetypunk:block/armory_vein",
+        "particle": "goetypunk:block/armory_dark_metal"
+    },
+    "elements": [
+        {
+            "name": "base_slab",
+            "from": [0, 0, 0],
+            "to": [16, 4, 16],
+            "faces": {
+                "north": {"uv": [0, 0, 16, 4], "texture": "#12"},
+                "east": {"uv": [0, 0, 16, 4], "texture": "#12"},
+                "south": {"uv": [0, 0, 16, 4], "texture": "#12"},
+                "west": {"uv": [0, 0, 16, 4], "texture": "#12"},
+                "up": {"uv": [0, 0, 16, 16], "texture": "#12"},
+                "down": {"uv": [0, 0, 16, 16], "texture": "#12", "cullface": "down"}
+            }
+        },
+        {
+            "name": "core_body",
+            "from": [1, 4, 1],
+            "to": [15, 12, 15],
+            "faces": {
+                "north": {"uv": [2, 0, 16, 8], "texture": "#11"},
+                "east": {"uv": [1, 4, 15, 12], "texture": "#11"},
+                "south": {"uv": [1, 4, 15, 12], "texture": "#11"},
+                "west": {"uv": [0.40645, 8, 14.40645, 16], "texture": "#11"},
+                "up": {"uv": [1, 1, 15, 15], "texture": "#11"},
+                "down": {"uv": [1, 1, 15, 15], "texture": "#11"}
+            }
+        },
+        {
+            "name": "pillar_se",
+            "from": [14, 0, 14],
+            "to": [16, 16, 16],
+            "faces": {
+                "north": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "east": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "south": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "west": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "up": {"uv": [0, 0, 2, 2], "texture": "#13"},
+                "down": {"uv": [0, 0, 2, 2], "texture": "#13"}
+            }
+        },
+        {
+            "name": "upper_trim",
+            "from": [0, 12, 0],
+            "to": [16, 14, 16],
+            "faces": {
+                "north": {"uv": [0, 0, 16, 2], "texture": "#13"},
+                "east": {"uv": [0, 0, 16, 2], "texture": "#13"},
+                "south": {"uv": [0, 0, 16, 2], "texture": "#13"},
+                "west": {"uv": [0, 0, 16, 2], "texture": "#13"},
+                "up": {"uv": [0, 0, 16, 16], "texture": "#13"},
+                "down": {"uv": [0, 0, 16, 16], "texture": "#13"}
+            }
+        },
+        {
+            "name": "pillar_ne",
+            "from": [14, 0, 0],
+            "to": [16, 16, 2],
+            "faces": {
+                "north": {"uv": [3, 0, 13, 16], "texture": "#13"},
+                "east": {"uv": [3, 0, 13, 16], "texture": "#13"},
+                "south": {"uv": [3, 0, 13, 16], "texture": "#13"},
+                "west": {"uv": [3, 0, 13, 16], "texture": "#13"},
+                "up": {"uv": [10, 0, 13, 3], "texture": "#13"},
+                "down": {"uv": [3, 0, 6, 3], "texture": "#13"}
+            }
+        },
+        {
+            "name": "pillar_nw",
+            "from": [0, 0, 0],
+            "to": [2, 16, 2],
+            "faces": {
+                "north": {"uv": [3, 0, 13, 16], "texture": "#13"},
+                "east": {"uv": [3, 0, 13, 16], "texture": "#13"},
+                "south": {"uv": [3, 0, 12, 16], "texture": "#13"},
+                "west": {"uv": [3, 0, 13, 16], "texture": "#13"},
+                "up": {"uv": [3, 0, 6, 3], "texture": "#13"},
+                "down": {"uv": [3, 0, 6, 3], "texture": "#13"}
+            }
+        },
+        {
+            "name": "pillar_sw",
+            "from": [0, 0, 14],
+            "to": [2, 16, 16],
+            "faces": {
+                "north": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "east": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "south": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "west": {"uv": [0, 0, 2, 16], "texture": "#13"},
+                "up": {"uv": [0, 0, 2, 2], "texture": "#13"},
+                "down": {"uv": [0, 0, 2, 2], "texture": "#13"}
+            }
+        },
+        {
+            "name": "anvil_station",
+            "from": [4, 14, 4],
+            "to": [12, 16, 12],
+            "faces": {
+                "north": {"uv": [0, 0, 8, 8], "texture": "#10"},
+                "east": {"uv": [0, 0, 8, 8], "texture": "#10"},
+                "south": {"uv": [0, 0, 8, 8], "texture": "#10"},
+                "west": {"uv": [0, 0, 8, 8], "texture": "#10"},
+                "up": {"uv": [8, 8, 16, 16], "texture": "#10"},
+                "down": {"uv": [0, 8, 8, 16], "texture": "#10"}
+            }
+        },
+        {
+            "name": "vein_e_upper",
+            "from": [14.9, 10, 4],
+            "to": [15.9, 11, 12],
+            "rotation": {"angle": 0, "axis": "y", "origin": [-0.1, 0, 0]},
+            "faces": {
+                "east": {"uv": [0, 7, 16, 9], "texture": "#15"},
+                "west": {"uv": [0, 0, 8, 1], "texture": "#15"}
+            }
+        },
+        {
+            "name": "rivet_ec",
+            "from": [15, 8, 7],
+            "to": [16, 9, 8],
+            "faces": {
+                "north": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "east": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "south": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "west": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "up": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "down": {"uv": [0, 0, 1, 1], "texture": "#10"}
+            }
+        },
+        {
+            "name": "rivet_ee",
+            "from": [15, 5, 12],
+            "to": [16, 6, 13],
+            "faces": {
+                "north": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "east": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "south": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "west": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "up": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "down": {"uv": [0, 0, 1, 1], "texture": "#10"}
+            }
+        },
+        {
+            "name": "vein_e_lower",
+            "from": [15, 6, 2],
+            "to": [16, 7, 14],
+            "faces": {
+                "east": {"uv": [0, 7, 16, 9], "texture": "#15"},
+                "west": {"uv": [0, 0, 12, 1], "texture": "#15"}
+            }
+        },
+        {
+            "name": "rivet_ew",
+            "from": [15, 5, 3],
+            "to": [16, 6, 4],
+            "faces": {
+                "north": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "east": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "south": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "west": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "up": {"uv": [0, 0, 1, 1], "texture": "#10"},
+                "down": {"uv": [0, 0, 1, 1], "texture": "#10"}
+            }
+        },
+        {
+            "name": "panel_east",
+            "from": [15, 7, 5],
+            "to": [16, 11, 11],
+            "faces": {
+                "east": {"uv": [5, 5, 11, 9], "texture": "#10"}
+            }
+        },
+        {
+            "name": "panel_north",
+            "from": [5, 7, 0.2],
+            "to": [11, 11, 1.2],
+            "rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 0.2]},
+            "faces": {
+                "north": {"uv": [1, 1, 7, 5], "texture": "#10"},
+                "east": {"uv": [0, 1, 1, 5], "texture": "#10"},
+                "south": {"uv": [8, 1, 14, 5], "texture": "#10"},
+                "west": {"uv": [7, 1, 8, 5], "texture": "#10"},
+                "up": {"uv": [7, 1, 1, 0], "texture": "#10"},
+                "down": {"uv": [13, 0, 7, 1], "texture": "#10"}
+            }
+        },
+        {
+            "name": "vein_n_upper",
+            "from": [4, 10, 0.3],
+            "to": [12, 11, 1.3],
+            "rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 0.3]},
+            "faces": {
+                "north": {"uv": [1, 7, 16, 9], "texture": "#15"},
+                "east": {"uv": [0, 1, 1, 2], "texture": "#15"},
+                "south": {"uv": [10, 1, 18, 2], "texture": "#15"},
+                "west": {"uv": [9, 1, 10, 2], "texture": "#15"},
+                "up": {"uv": [9, 1, 1, 0], "texture": "#15"},
+                "down": {"uv": [17, 0, 9, 1], "texture": "#15"}
+            }
+        },
+        {
+            "name": "vein_n_lower",
+            "from": [2, 6, 0],
+            "to": [14, 7, 1],
+            "faces": {
+                "north": {"uv": [0, 7, 16, 9], "texture": "#15"},
+                "east": {"uv": [0, 1, 1, 2], "texture": "#15"},
+                "south": {"uv": [14, 1, 26, 2], "texture": "#15"},
+                "west": {"uv": [13, 1, 14, 2], "texture": "#15"},
+                "up": {"uv": [13, 1, 1, 0], "texture": "#15"},
+                "down": {"uv": [25, 0, 13, 1], "texture": "#15"}
+            }
+        },
+        {
+            "name": "rivet_ne",
+            "from": [12, 5, 0],
+            "to": [13, 6, 1],
+            "faces": {
+                "north": {"uv": [1, 2, 2, 3], "texture": "#10"},
+                "east": {"uv": [0, 2, 1, 3], "texture": "#10"},
+                "south": {"uv": [3, 2, 4, 3], "texture": "#10"},
+                "west": {"uv": [2, 2, 3, 3], "texture": "#10"},
+                "up": {"uv": [2, 2, 1, 1], "texture": "#10"},
+                "down": {"uv": [3, 1, 2, 2], "texture": "#10"}
+            }
+        },
+        {
+            "name": "step_north",
+            "from": [2, 4, 0],
+            "to": [14, 5, 1],
+            "faces": {
+                "north": {"uv": [0, 9, 16, 7], "texture": "#15"},
+                "east": {"uv": [0, 2, 1, 3], "texture": "#15"},
+                "south": {"uv": [14, 2, 26, 3], "texture": "#15"},
+                "west": {"uv": [13, 2, 14, 3], "texture": "#15"},
+                "up": {"uv": [13, 2, 1, 1], "texture": "#15"},
+                "down": {"uv": [25, 1, 13, 2], "texture": "#15"}
+            }
+        },
+        {
+            "name": "rivet_nw",
+            "from": [3, 5, 0],
+            "to": [4, 6, 1],
+            "faces": {
+                "north": {"uv": [13, 8, 16, 12], "texture": "#10"},
+                "east": {"uv": [0, 2, 1, 3], "texture": "#10"},
+                "south": {"uv": [9, 8, 11, 10], "texture": "#10"},
+                "west": {"uv": [2, 2, 3, 3], "texture": "#10"},
+                "up": {"uv": [2, 2, 1, 1], "texture": "#10"},
+                "down": {"uv": [3, 1, 2, 2], "texture": "#10"}
+            }
+        },
+        {
+            "name": "rivet_nc",
+            "from": [7.5, 8, 0.1],
+            "to": [8.5, 9, 1.1],
+            "rotation": {"angle": 0, "axis": "y", "origin": [0.5, 0, 0.1]},
+            "faces": {
+                "north": {"uv": [1, 2, 2, 3], "texture": "#10"},
+                "east": {"uv": [0, 2, 1, 3], "texture": "#10"},
+                "south": {"uv": [3, 2, 4, 3], "texture": "#10"},
+                "west": {"uv": [2, 2, 3, 3], "texture": "#10"},
+                "up": {"uv": [2, 2, 1, 1], "texture": "#10"},
+                "down": {"uv": [3, 1, 2, 2], "texture": "#10"}
+            }
+        }
+    ]
+}
