@@ -2,6 +2,7 @@ package com.goetypunk.addon.common.recipe;
 
 import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.common.item.PrototypeMimicItem;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -104,11 +105,8 @@ public class MimicCombinationRecipe implements CraftingRecipe {
         public static final Serializer INSTANCE = new Serializer();
 
         @Override
-        public @NotNull com.mojang.serialization.MapCodec<MimicCombinationRecipe> codec() {
-            return com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec(inst ->
-                    inst.group(com.mojang.serialization.Codec.STRING.fieldOf("prototype")
-                            .forGetter(r -> "goetypunk:prototype"))
-                    .apply(inst, proto -> new MimicCombinationRecipe(null)));
+        public MimicCombinationRecipe fromJson(ResourceLocation id, JsonObject json) {
+            return new MimicCombinationRecipe(id);
         }
 
         @Override

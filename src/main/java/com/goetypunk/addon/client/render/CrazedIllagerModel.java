@@ -62,19 +62,19 @@ public class CrazedIllagerModel<T extends LivingEntity> extends HierarchicalMode
 
         sawBlade.addOrReplaceChild("blade_center",
                 CubeListBuilder.create()
-                        .texOffs(48, 32).addBox(-4.0F, -1.0F, -1.0F, 8.0F, 2.0F, 2.0F),
+                        .texOffs(48, 32).addBox(-4.0F, -4.0F, -0.5F, 8.0F, 8.0F, 1.0F),
                 PartPose.ZERO);
 
         float toothAngleStep = 45.0F * DEG;
-        float toothRadius = 3.5F;
+        float toothRadius = 4.5F;
         for (int i = 0; i < 8; i++) {
             float angle = i * toothAngleStep;
             float tx = Mth.cos(angle) * toothRadius;
-            float tz = Mth.sin(angle) * toothRadius;
+            float ty = Mth.sin(angle) * toothRadius;
             sawBlade.addOrReplaceChild("tooth_" + i,
                     CubeListBuilder.create()
-                            .texOffs(48, 35).addBox(-1.0F, -1.5F, -1.0F, 2.0F, 3.0F, 2.0F),
-                    PartPose.offset(tx, 0.0F, tz));
+                            .texOffs(48, 41).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 3.0F, 1.0F),
+                    PartPose.offset(tx, ty, 0.0F));
         }
 
         root.addOrReplaceChild("left_arm",

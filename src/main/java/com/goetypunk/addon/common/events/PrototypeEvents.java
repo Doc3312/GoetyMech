@@ -17,6 +17,8 @@ import com.goetypunk.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetypunk.addon.config.ModConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -1024,6 +1026,16 @@ public class PrototypeEvents {
                 PENDING_DAMAGES.remove(serverLevel);
             }
         }
+
+        // ── Indestructible guard: pull prototype from void ──
+        AABB voidBox = new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
+                Double.POSITIVE_INFINITY, -64.0, Double.POSITIVE_INFINITY);
+        for (ItemEntity item : serverLevel.getEntitiesOfClass(ItemEntity.class, voidBox)) {
+            if (PrototypeItem.isPrototype(item.getItem())) {
+                item.setPos(item.getX(), 260.0, item.getZ());
+                item.setDeltaMovement(0, 0, 0);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -1132,29 +1144,4 @@ public class PrototypeEvents {
         }
     }
 
-    // ── Indestructible guard: prevent forced item destruction via attack ──
-    @SubscribeEvent
-    public static void onLivingAttack(LivingAttackEvent event) {
-        if (event.getSource().getEntity() instanceof Player) return;
-        if (event.getEntity() instanceof ItemEntity itemEntity) {
-            if (PrototypeItem.isPrototype(itemEntity.getItem())) {
-                event.setCanceled(true);
-            }
-        }
-    }
-
-    // ── Indestructible guard: pull prototype from void ──
-    @SubscribeEvent
-    public static void onLevelTick(net.minecraftforge.event.TickEvent.LevelTickEvent event) {
-        if (event.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
-        if (event.level.isClientSide) return;
-        for (net.minecraft.world.entity.Entity entity : event.level.getEntities().getAll()) {
-            if (entity instanceof ItemEntity item && PrototypeItem.isPrototype(item.getItem())) {
-                if (item.getY() < -64.0) {
-                    item.setPos(item.getX(), 260.0, item.getZ());
-                    item.setDeltaMovement(0, 0, 0);
-                }
-            }
-        }
-    }
 }

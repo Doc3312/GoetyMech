@@ -24,6 +24,7 @@
     "LevelMixin",
     "LivingEntityHurtMixin",
     "LivingEntityTickMixin",
+    "ItemEntityPrototypeMixin",
     "PrototypePlayerMixin",
     "PrototypeStepHeightMixin",
     "PrototypeTravelMixin",
