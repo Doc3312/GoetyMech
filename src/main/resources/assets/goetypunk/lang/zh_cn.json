@@ -129,5 +129,7 @@
   "entity.goetypunk.crazed_illager_servant": "失败的改造刌民",
   "item.goetypunk.crazed_illager_spawn_egg": "失败的改造刌民刷怪蛋",
 
-  "info.goetypunk.crazed_summon.limit": "§c你已经达到了疯狂的改造刌民的召唤上限！"
+  "info.goetypunk.crazed_summon.limit": "§c你已经达到了疯狂的改造刌民的召唤上限！",
+
+  "jei.goetypunk.info.prototype_mimic": "原型·拟态是由原型与任意胸甲在 2×2 合成格中合成获得。\n\n它会继承胸甲的所有属性、附魔和修饰符。\n\n将原型·拟态放回合成格即可还原出原型。"
 }

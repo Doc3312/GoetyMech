@@ -1,4 +1,6 @@
 {
   "type": "goetypunk:mimic_combination",
-  "prototype": "goetypunk:prototype"
+  "result": {
+    "item": "goetypunk:prototype_mimic"
+  }
 }

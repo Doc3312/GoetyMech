@@ -43,9 +43,7 @@ public class MimicDeconstructionRecipe implements CraftingRecipe {
 
     @Override
     public @NotNull ItemStack assemble(CraftingContainer container, RegistryAccess access) {
-        return new ItemStack(
-                net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
-                        new ResourceLocation("goetypunk", "prototype")));
+        return new ItemStack(ModItems.PROTOTYPE.get());
     }
 
     @Override
@@ -55,9 +53,7 @@ public class MimicDeconstructionRecipe implements CraftingRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(RegistryAccess access) {
-        return new ItemStack(
-                net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
-                        new ResourceLocation("goetypunk", "prototype")));
+        return result;
     }
 
     @Override
@@ -85,16 +81,20 @@ public class MimicDeconstructionRecipe implements CraftingRecipe {
 
         @Override
         public MimicDeconstructionRecipe fromJson(ResourceLocation id, JsonObject json) {
-            return new MimicDeconstructionRecipe(id);
+            JsonObject resultObj = GsonHelper.getAsJsonObject(json, "result");
+            ItemStack result = ShapedRecipe.itemStackFromJson(resultObj);
+            return new MimicDeconstructionRecipe(id, result);
         }
 
         @Override
         public MimicDeconstructionRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            return new MimicDeconstructionRecipe(id);
+            ItemStack result = buf.readItem();
+            return new MimicDeconstructionRecipe(id, result);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buf, MimicDeconstructionRecipe recipe) {
+            buf.writeItem(recipe.result);
         }
     }
 }
