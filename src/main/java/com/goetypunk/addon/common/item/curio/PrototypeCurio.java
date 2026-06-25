@@ -1,6 +1,7 @@
 package com.goetypunk.addon.common.item.curio;
 
 import com.goetypunk.addon.common.item.PrototypeItem;
+import com.goetypunk.addon.common.item.PrototypeMimicItem;
 import com.goetypunk.addon.compat.caelus.CaelusLoaded;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -25,7 +26,7 @@ public class PrototypeCurio {
     @SubscribeEvent
     public static void onAttachCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
         ItemStack stack = event.getObject();
-        if (!(stack.getItem() instanceof PrototypeItem)) return;
+        if (!PrototypeItem.isPrototype(stack)) return;
 
         LazyOptional<ICurio> curio = LazyOptional.of(() -> new ICurio() {
             @Override
@@ -50,7 +51,7 @@ public class PrototypeCurio {
                 if (!CaelusLoaded.isLoaded()) return false;
                 // 防止与胸甲槽冲突
                 ItemStack chest = slotContext.entity().getItemBySlot(EquipmentSlot.CHEST);
-                return !(chest.getItem() instanceof PrototypeItem);
+                return !PrototypeItem.isPrototype(chest);
             }
 
             @Override

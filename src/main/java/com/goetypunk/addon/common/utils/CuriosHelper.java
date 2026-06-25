@@ -2,6 +2,7 @@ package com.goetypunk.addon.common.utils;
 
 import com.goetypunk.addon.common.item.PrototypeItem;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.curios.api.CuriosApi;
 
 public class CuriosHelper {
@@ -10,7 +11,17 @@ public class CuriosHelper {
         try {
             var inv = CuriosApi.getCuriosInventory(player);
             return inv.map(i -> i.findFirstCurio(
-                    s -> s.getItem() instanceof PrototypeItem).isPresent()).orElse(false);
+                    s -> PrototypeItem.isPrototype(s)).isPresent()).orElse(false);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean hasMimicInCurios(Player player) {
+        try {
+            var inv = CuriosApi.getCuriosInventory(player);
+            return inv.map(i -> i.findFirstCurio(
+                    s -> s.getItem() instanceof com.goetypunk.addon.common.item.PrototypeMimicItem).isPresent()).orElse(false);
         } catch (Exception e) {
             return false;
         }

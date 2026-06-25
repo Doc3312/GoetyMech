@@ -146,7 +146,7 @@ public class PrototypeRenderEvents {
 
         // ── Jump charge C2S ──
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        boolean hasPrototype = chest.getItem() instanceof PrototypeItem;
+        boolean hasPrototype = PrototypeItem.isPrototype(chest);
         if (!hasPrototype) {
             hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
         }
@@ -184,7 +184,7 @@ public class PrototypeRenderEvents {
         }
 
         // ── Flight forward input C2S ──
-        boolean hasPrototypeForFlight = chest.getItem() instanceof PrototypeItem;
+        boolean hasPrototypeForFlight = PrototypeItem.isPrototype(chest);
         if (!hasPrototypeForFlight) {
             hasPrototypeForFlight = CuriosHelper.hasPrototypeInCurios(player);
         }
@@ -250,7 +250,7 @@ public class PrototypeRenderEvents {
         int packedLight = event.getPackedLight();
 
         ItemStack chestStack = player.getItemBySlot(EquipmentSlot.CHEST);
-        boolean hasInChest = chestStack.getItem() instanceof PrototypeItem;
+        boolean hasInChest = PrototypeItem.isPrototype(chestStack);
 
         if (!hasInChest) {
             hasInChest = CuriosHelper.hasPrototypeInCurios(player);
@@ -279,7 +279,7 @@ public class PrototypeRenderEvents {
 
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
-        if (!(event.getItemStack().getItem() instanceof PrototypeItem)) return;
+        if (!PrototypeItem.isPrototype(event.getItemStack())) return;
         Player player = event.getEntity();
         if (player == null) return;
 
