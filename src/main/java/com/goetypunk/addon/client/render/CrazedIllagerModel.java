@@ -62,19 +62,19 @@ public class CrazedIllagerModel<T extends LivingEntity> extends HierarchicalMode
 
         sawBlade.addOrReplaceChild("blade_center",
                 CubeListBuilder.create()
-                        .texOffs(48, 32).addBox(-4.0F, -4.0F, -0.5F, 8.0F, 8.0F, 1.0F),
+                        .texOffs(48, 32).addBox(-0.5F, -4.0F, -4.0F, 1.0F, 8.0F, 8.0F),
                 PartPose.ZERO);
 
         float toothAngleStep = 45.0F * DEG;
         float toothRadius = 4.5F;
         for (int i = 0; i < 8; i++) {
             float angle = i * toothAngleStep;
-            float tx = Mth.cos(angle) * toothRadius;
-            float ty = Mth.sin(angle) * toothRadius;
+            float ty = Mth.cos(angle) * toothRadius;
+            float tz = Mth.sin(angle) * toothRadius;
             sawBlade.addOrReplaceChild("tooth_" + i,
                     CubeListBuilder.create()
-                            .texOffs(48, 41).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 3.0F, 1.0F),
-                    PartPose.offset(tx, ty, 0.0F));
+                            .texOffs(48, 41).addBox(-0.5F, -1.5F, -1.5F, 1.0F, 3.0F, 3.0F),
+                    PartPose.offset(0.0F, ty, tz));
         }
 
         root.addOrReplaceChild("left_arm",
@@ -111,8 +111,7 @@ public class CrazedIllagerModel<T extends LivingEntity> extends HierarchicalMode
         this.leftArm.xRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
         this.rightArm.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
 
-        this.sawBlade.zRot = ageInTicks * 0.5F;
-        this.sawBlade.yRot = (float) (Math.PI / 2);
+        this.sawBlade.xRot = ageInTicks * 0.5F;
     }
 
     @Override
