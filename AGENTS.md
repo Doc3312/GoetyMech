@@ -95,6 +95,24 @@ IF 需要压缩上下文 / 关闭对话 / 切换话题 THEN AI 必须自动执�
 3. 检查是否有架构/流程相关教训（比如这次 runClient 规则的设计失误），写入 `docs/incidents/`。
 4. 全部完成后才能执行压缩。
 
+### 多对话协同约束
+
+IF 开始一个新任务（修改代码） THEN 必须先声索文件：
+1. `node .opencode/scripts/task-mgmt.mjs start --desc "<任务描述>" --files "<文件1,文件2>"`
+2. 文件路径相对于项目根目录，用逗号分隔
+
+IF 编译报错 THEN：
+1. 读取 `run/logs/latest.log`，提取栈追踪中的文件名
+2. 对照自己的声索文件：错误涉及其中任何一个？
+   - **是** → 修复自己的代码
+   - **否** → ⛔ 立即停止，不动任何代码，报告用户：`编译错误不在声索文件范围内，可能是其他对话的任务未完成`
+
+IF 声索文件不在出错栈中 THEN 禁止执行任何 `edit` / `write` 操作（工具不能改代码）。
+
+IF 任务完成 THEN 执行 `node .opencode/scripts/task-mgmt.mjs complete [--id <id>]`。
+
+IF 想编辑一个被其他任务声索的文件 THEN plugin 会警告，此时必须停止。
+
 ### 用户说「归档」时做什么
 
 IF 用户说「归档 / 记录一下 / 记下来」THEN：
