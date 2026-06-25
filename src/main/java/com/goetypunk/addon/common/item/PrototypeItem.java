@@ -388,9 +388,9 @@ public class PrototypeItem extends ElytraItem {
 
     public static int getDamageImmunityThreshold(int kills) {
         if (kills < 150) return 0;
-        if (kills < 1000) return (kills - 150) / 200 + 1;
-        int t = 5 + (kills - 1000) / 1000;
-        if (kills >= 10000) t = 14 + (kills - 10000) / 5000;
+        if (kills < 1000) return kills / 100;
+        int t = 10 + (kills - 1000) / 1000;
+        if (kills >= 10000) t = 19 + (kills - 10000) / 2000;
         return t;
     }
 
@@ -398,15 +398,15 @@ public class PrototypeItem extends ElytraItem {
         if (kills < 150) return 150;
         int current = getDamageImmunityThreshold(kills);
         if (kills < 1000) {
-            int next = 150 + current * 200;
+            int next = (current + 1) * 100;
             if (next < 1000) return next;
-            return 1000 + (current - 4) * 1000;
+            return 1000 + (current - 9) * 1000;
         }
         if (kills < 10000) {
-            int next = 1000 + (current - 4) * 1000;
+            int next = 1000 + (current - 9) * 1000;
             if (next <= 10000) return next;
-            return 10000 + (current - 13) * 5000;
+            return 10000 + (current - 18) * 2000;
         }
-        return 10000 + (current - 13) * 5000;
+        return 10000 + (current - 18) * 2000;
     }
 }
