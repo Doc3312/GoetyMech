@@ -61,18 +61,26 @@ public class PrototypeItem extends ElytraItem {
         return false;
     }
 
+    public static boolean isPrototypeItem(Item item) {
+        return item instanceof PrototypeItem || item instanceof PrototypeMimicItem;
+    }
+
+    public static boolean isPrototype(ItemStack stack) {
+        return isPrototypeItem(stack.getItem());
+    }
+
     public static boolean isHoldingPrototype(LivingEntity entity) {
-        return entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PrototypeItem;
+        return isPrototype(entity.getItemBySlot(EquipmentSlot.CHEST));
     }
 
     public static boolean hasAnyPrototype(LivingEntity entity) {
-        if (entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PrototypeItem)
+        if (isPrototype(entity.getItemBySlot(EquipmentSlot.CHEST)))
             return true;
         if (entity instanceof Player player) {
             try {
                 var inv = CuriosApi.getCuriosInventory(player);
                 return inv.map(i -> i.findFirstCurio(
-                        s -> s.getItem() instanceof PrototypeItem).isPresent()).orElse(false);
+                        s -> isPrototype(s)).isPresent()).orElse(false);
             } catch (Exception e) {
                 return false;
             }
