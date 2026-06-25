@@ -57,10 +57,11 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
         if (transformType == ItemDisplayContext.GUI) {
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(OVERLAY_TEXTURE));
             var matrix = poseStack.last().pose();
-            consumer.vertex(matrix, -0.5F, -0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(0, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
-            consumer.vertex(matrix, -0.5F, 0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(0, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
-            consumer.vertex(matrix, 0.5F, 0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(1, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
-            consumer.vertex(matrix, 0.5F, -0.5F, 0.01F).color(1f, 1f, 1f, 1f).uv(1, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            // 在 T(-0.5) 空间，0..1 映射到 (-0.5,-0.5)..(0.5,0.5) 居中
+            consumer.vertex(matrix, 0, 1, 0.01F).color(1f, 1f, 1f, 1f).uv(0, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            consumer.vertex(matrix, 0, 0, 0.01F).color(1f, 1f, 1f, 1f).uv(0, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            consumer.vertex(matrix, 1, 0, 0.01F).color(1f, 1f, 1f, 1f).uv(1, 0).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
+            consumer.vertex(matrix, 1, 1, 0.01F).color(1f, 1f, 1f, 1f).uv(1, 1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0, 0, 1).endVertex();
         }
 
         poseStack.popPose();
