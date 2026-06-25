@@ -714,5 +714,17 @@
     },
     "done": true
   },
+  "minecraft:adventure/fall_from_world_height": {
+    "criteria": {
+      "fall_from_world_height": "2026-06-25 22:54:00 +0800"
+    },
+    "done": true
+  },
+  "minecraft:story/shiny_gear": {
+    "criteria": {
+      "diamond_chestplate": "2026-06-25 22:55:51 +0800"
+    },
+    "done": true
+  },
   "DataVersion": 3465
 }

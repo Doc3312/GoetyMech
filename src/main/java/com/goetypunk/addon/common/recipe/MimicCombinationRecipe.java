@@ -2,11 +2,12 @@ package com.goetypunk.addon.common.recipe;
 
 import com.goetypunk.addon.common.item.PrototypeItem;
 import com.goetypunk.addon.common.item.PrototypeMimicItem;
+import com.goetypunk.addon.init.ModItems;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -15,16 +16,18 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 public class MimicCombinationRecipe implements CraftingRecipe {
 
     private final ResourceLocation id;
+    private final ItemStack result;
 
-    public MimicCombinationRecipe(ResourceLocation id) {
+    public MimicCombinationRecipe(ResourceLocation id, ItemStack result) {
         this.id = id;
+        this.result = result;
     }
 
     @Override
@@ -74,8 +77,7 @@ public class MimicCombinationRecipe implements CraftingRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(RegistryAccess access) {
-        return new ItemStack(ForgeRegistries.ITEMS.getValue(
-                new ResourceLocation("goetypunk", "prototype_mimic")));
+        return result;
     }
 
     @Override
@@ -103,16 +105,20 @@ public class MimicCombinationRecipe implements CraftingRecipe {
 
         @Override
         public MimicCombinationRecipe fromJson(ResourceLocation id, JsonObject json) {
-            return new MimicCombinationRecipe(id);
+            JsonObject resultObj = GsonHelper.getAsJsonObject(json, "result");
+            ItemStack result = ShapedRecipe.itemStackFromJson(resultObj);
+            return new MimicCombinationRecipe(id, result);
         }
 
         @Override
         public MimicCombinationRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            return new MimicCombinationRecipe(id);
+            ItemStack result = buf.readItem();
+            return new MimicCombinationRecipe(id, result);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buf, MimicCombinationRecipe recipe) {
+            buf.writeItem(recipe.result);
         }
     }
 }

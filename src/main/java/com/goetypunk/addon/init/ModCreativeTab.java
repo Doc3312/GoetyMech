@@ -48,7 +48,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.FLESH_CASKET_C_1.get());
                         output.accept(ModItems.FLESH_CASKET_C_2.get());
                         output.accept(ModItems.FLESH_CASKET_C_3.get());
-                        output.accept(ModItems.VOID_BLINK_FOCUS.get());
+                        output.accept(ModItems.TRACKING_EYE_FOCUS.get());
                         output.accept(ModItems.CRAZED_SUMMON_FOCUS.get());
                         output.accept(ModItems.CRAZED_ILLAGER_SPAWN_EGG.get());
                     })

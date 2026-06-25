@@ -587,15 +587,15 @@ public class ModConfig {
 
         BUILDER.pop();
 
-        // ====== Void Blink Focus 配置 ======
-        BUILDER.push("void_blink_focus");
+        // ====== Tracking Eye Focus 配置 ======
+        BUILDER.push("tracking_eye_focus");
 
         VOID_BLINK_COST = BUILDER
-                .comment("虚空闪现聚晶的灵魂消耗", "范围: 1-1000，默认 140")
+                .comment("追猎聚晶的灵魂消耗", "范围: 1-1000，默认 140")
                 .defineInRange("soul_cost", 140, 1, 1000);
 
         VOID_BLINK_COOLDOWN = BUILDER
-                .comment("虚空闪现聚晶冷却时间（tick）", "范围: 100-72000，默认 3600（3分钟）")
+                .comment("追猎聚晶冷却时间（tick）", "范围: 100-72000，默认 3600（3分钟）")
                 .defineInRange("cooldown", 3600, 100, 72000);
 
         VOID_BLINK_RANGE = BUILDER
