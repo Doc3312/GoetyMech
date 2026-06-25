@@ -8,11 +8,9 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
 
@@ -24,18 +22,13 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
     public static MimicItemRenderer getInstance() {
         if (INSTANCE == null) {
             Minecraft mc = Minecraft.getInstance();
-            INSTANCE = new MimicItemRenderer(mc.getBlockEntityRenderDispatcher(), mc.getItemRenderer());
+            INSTANCE = new MimicItemRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
         }
         return INSTANCE;
     }
 
-    private MimicItemRenderer() {
-        super(null, null);
-    }
-
-    private MimicItemRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher dispatcher,
-                              net.minecraft.client.renderer.entity.ItemRenderer itemRenderer) {
-        super(dispatcher, itemRenderer);
+    private MimicItemRenderer(BlockEntityRenderDispatcher dispatcher, net.minecraft.client.model.geom.EntityModelSet modelSet) {
+        super(dispatcher, modelSet);
     }
 
     @Override
@@ -46,7 +39,7 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
         if (sourceStack.isEmpty()) return;
 
         Minecraft mc = Minecraft.getInstance();
-        mc.getItemRenderer().renderStatic(sourceStack, transformType, combinedLight, combinedOverlay, poseStack, buffer);
+        mc.getItemRenderer().renderStatic(sourceStack, transformType, combinedLight, combinedOverlay, poseStack, buffer, mc.level, 0);
 
         if (transformType == ItemDisplayContext.GUI) {
             poseStack.pushPose();
