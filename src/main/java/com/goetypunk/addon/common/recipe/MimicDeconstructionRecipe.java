@@ -20,9 +20,11 @@ import org.jetbrains.annotations.NotNull;
 public class MimicDeconstructionRecipe implements CraftingRecipe {
 
     private final ResourceLocation id;
+    private final ItemStack result;
 
-    public MimicDeconstructionRecipe(ResourceLocation id) {
+    public MimicDeconstructionRecipe(ResourceLocation id, ItemStack result) {
         this.id = id;
+        this.result = result;
     }
 
     @Override

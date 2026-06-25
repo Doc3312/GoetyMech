@@ -7,7 +7,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 
 @JeiPlugin
 public class GoetyPunkJeiPlugin implements IModPlugin {
@@ -23,7 +22,7 @@ public class GoetyPunkJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         registration.addIngredientInfo(
-                new ItemStack(ModItems.PROTOTYPE_MIMIC.get()),
+                ModItems.PROTOTYPE_MIMIC.get(),
                 Component.translatable("jei.goetypunk.info.prototype_mimic")
         );
     }
