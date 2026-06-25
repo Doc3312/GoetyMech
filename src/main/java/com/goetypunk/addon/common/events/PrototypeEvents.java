@@ -39,6 +39,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -1128,6 +1129,32 @@ public class PrototypeEvents {
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CAssimilationDataPacket(PrototypeItem.getAssimilationKills(player)));
             AssimilationSaveManager.markDirty(sp);
+        }
+    }
+
+    // ── Indestructible guard: prevent forced item destruction via attack ──
+    @SubscribeEvent
+    public static void onLivingAttack(LivingAttackEvent event) {
+        if (event.getSource().getEntity() instanceof Player) return;
+        if (event.getEntity() instanceof ItemEntity itemEntity) {
+            if (PrototypeItem.isPrototype(itemEntity.getItem())) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    // ── Indestructible guard: pull prototype from void ──
+    @SubscribeEvent
+    public static void onLevelTick(net.minecraftforge.event.TickEvent.LevelTickEvent event) {
+        if (event.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+        if (event.level.isClientSide) return;
+        for (net.minecraft.world.entity.Entity entity : event.level.getEntities().getAll()) {
+            if (entity instanceof ItemEntity item && PrototypeItem.isPrototype(item.getItem())) {
+                if (item.getY() < -64.0) {
+                    item.setPos(item.getX(), 260.0, item.getZ());
+                    item.setDeltaMovement(0, 0, 0);
+                }
+            }
         }
     }
 }
