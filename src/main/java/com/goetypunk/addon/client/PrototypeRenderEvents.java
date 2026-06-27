@@ -2,6 +2,7 @@ package com.goetypunk.addon.client;
 
 import com.goetypunk.addon.GoetyPunkMod;
 import com.goetypunk.addon.common.item.PrototypeItem;
+import com.goetypunk.addon.common.item.PrototypeMimicItem;
 import com.goetypunk.addon.common.net.ModNetwork;
 import com.goetypunk.addon.common.utils.CuriosHelper;
 import com.goetypunk.addon.common.utils.WallUtil;
@@ -250,6 +251,10 @@ public class PrototypeRenderEvents {
         int packedLight = event.getPackedLight();
 
         ItemStack chestStack = player.getItemBySlot(EquipmentSlot.CHEST);
+
+        if (chestStack.getItem() instanceof PrototypeMimicItem
+                && !PrototypeMimicItem.getSourceStack(chestStack).isEmpty()) return;
+
         boolean hasInChest = PrototypeItem.isPrototype(chestStack);
 
         if (!hasInChest) {

@@ -17,8 +17,7 @@
     "ParticleEngineMixin",
     "TimerAccessor",
     "TutorialMixin",
-    "EntityMixin",
-    "ElytraLayerMixin"
+    "EntityMixin"
   ],
   "mixins": [
     "CollectingNeighborUpdaterMixin",
