@@ -1,4 +1,4 @@
-package com.goetypunk.addon.mixin.client;
+package com.goetypunk.addon.mixin;
 
 import com.goetypunk.addon.common.item.PrototypeMimicItem;
 import com.mojang.blaze3d.vertex.PoseStack;
