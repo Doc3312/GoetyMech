@@ -13,14 +13,12 @@ import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -31,12 +29,6 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends 
     private HumanoidArmorLayerMixin(RenderLayerParent<T, A> renderer) {
         super(renderer);
     }
-
-    @Shadow
-    private void setPartVisibility(A model, EquipmentSlot slot) {}
-
-    @Shadow
-    private ResourceLocation getArmorResource(Entity entity, ItemStack stack, EquipmentSlot slot, @Nullable String type) {}
 
     @Inject(
         method = "renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V",
@@ -51,11 +43,18 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends 
         if (source.isEmpty()) return;
 
         this.getParentModel().copyPropertiesTo(model);
-        this.setPartVisibility(model, slot);
+
+        model.head.visible = false;
+        model.hat.visible = false;
+        model.body.visible = true;
+        model.rightArm.visible = true;
+        model.leftArm.visible = true;
+        model.rightLeg.visible = false;
+        model.leftLeg.visible = false;
 
         Model armorModel = IClientItemExtensions.of(source).getGenericArmorModel(entity, source, slot, model);
 
-        ResourceLocation tex = this.getArmorResource(entity, source, slot, null);
+        ResourceLocation tex = resolveTexture(source, entity, slot);
         if (tex == null) {
             tex = new ResourceLocation("minecraft", "textures/models/armor/iron_layer_1.png");
         }
@@ -71,5 +70,24 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends 
         }
 
         ci.cancel();
+    }
+
+    private static ResourceLocation resolveTexture(ItemStack source, LivingEntity entity, EquipmentSlot slot) {
+        String custom = source.getItem().getArmorTexture(source, entity, slot, null);
+        if (custom != null) {
+            return new ResourceLocation(custom);
+        }
+        if (source.getItem() instanceof ArmorItem armorItem) {
+            String matName = armorItem.getMaterial().getName();
+            String domain = "minecraft";
+            String texture = matName;
+            int idx = matName.indexOf(':');
+            if (idx != -1) {
+                domain = matName.substring(0, idx);
+                texture = matName.substring(idx + 1);
+            }
+            return new ResourceLocation(domain, "textures/models/armor/" + texture + "_layer_1.png");
+        }
+        return null;
     }
 }
