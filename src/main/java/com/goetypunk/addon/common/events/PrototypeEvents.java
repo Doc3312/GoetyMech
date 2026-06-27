@@ -43,6 +43,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -155,6 +156,7 @@ public class PrototypeEvents {
                 int threshold = PrototypeItem.getDamageImmunityThreshold(kills);
                 if (threshold > 0 && event.getAmount() <= threshold) {
                     event.setCanceled(true);
+                    PrototypeItem.setKnockbackImmune(player, true);
                     player.level().playSound(null, player.blockPosition(),
                             SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4F, 1.8F);
                     return;
@@ -205,6 +207,17 @@ public class PrototypeEvents {
         }
     }
 
+    // ── 击退免疫（配合免伤阈值：伤害 ≤ 阈值时免疫击退） ──
+
+    @SubscribeEvent
+    public static void onLivingKnockBack(LivingKnockBackEvent event) {
+        if (event.getEntity() instanceof Player player
+                && PrototypeItem.isKnockbackImmune(player)) {
+            PrototypeItem.setKnockbackImmune(player, false);
+            event.setCanceled(true);
+        }
+    }
+
     // ── LivingTick: Slam 状态机（fires before updateFallFlying → 可同 tick 停飞） ──
 
     @SubscribeEvent
@@ -228,6 +241,8 @@ public class PrototypeEvents {
         if (invuln > 0) {
             PrototypeItem.setSlamInvulnTick(player, invuln - 1);
         }
+
+        PrototypeItem.setKnockbackImmune(player, false);
     }
 
     // ── PlayerTick (END): 推进 + 抗 drag（fires after travel → 修饰持久到下一 tick） ──

@@ -10,6 +10,7 @@
     "ClientLevelMixin",
     "GameRendererMixin",
     "GuiMixin",
+    "HumanoidArmorLayerMixin",
     "ItemInHandRendererMixin",
     "LevelRendererMixin",
     "MinecraftMixin",
