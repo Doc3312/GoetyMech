@@ -67,7 +67,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     private String placerName = "";
 
     // === Create 漏斗兼容 ===
-    private final LazyOptional<IItemHandlerModifiable>[] handlers = SidedInvWrapper.create(this, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+    private final LazyOptional<IItemHandlerModifiable>[] handlers = SidedInvWrapper.create(this, Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
     private int outputWaitTicks;
 
     public FleshFurnaceBlockEntity(BlockPos pos, BlockState state) {
