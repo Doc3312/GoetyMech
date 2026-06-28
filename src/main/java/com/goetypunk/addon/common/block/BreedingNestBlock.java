@@ -56,12 +56,9 @@ public class BreedingNestBlock extends BaseEntityBlock implements SimpleWaterlog
             if (food != null) {
                 if (!level.isClientSide) {
                     BlockEntity be = level.getBlockEntity(pos);
-                    if (be instanceof BreedingNestBlockEntity nest) {
+                    if (be instanceof BreedingNestBlockEntity nest && nest.canAcceptInput()) {
                         nest.insertFood(held);
                         held.shrink(1);
-                        if (player.getFoodData() != null && !player.isCreative()) {
-                            // do not actually feed the player
-                        }
                         level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.8F, 1.0F);
                     }
                 }

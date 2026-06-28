@@ -51,14 +51,12 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             FoodProperties food = inputBuffer.getItem().getFoodProperties(inputBuffer, null);
             if (food != null) {
                 energy += food.getNutrition();
+                level.playSound(null, worldPosition, SoundEvents.PLAYER_BURP, SoundSource.BLOCKS, 0.6F, 0.9F + level.random.nextFloat() * 0.2F);
                 checkProduce();
             }
             inputBuffer = ItemStack.EMPTY;
             markUpdated();
         }
-
-        // 音效冷却衰减
-        if (soundCooldown > 0) soundCooldown--;
     }
 
     private void checkProduce() {
@@ -70,6 +68,10 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             tryOutputToContainer(embryo);
             level.playSound(null, worldPosition, SoundEvents.VILLAGER_CELEBRATE, SoundSource.BLOCKS, 0.8F, 1.0F);
         }
+    }
+
+    public boolean canAcceptInput() {
+        return inputBuffer.isEmpty();
     }
 
     public void insertFood(ItemStack stack) {
