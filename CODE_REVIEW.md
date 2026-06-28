@@ -18,7 +18,9 @@
 | `MinionSpawnHelper` 折扣不生效 | ⚠️ **降级** | `effectiveCost` 仅用做门槛判断；实际扣费由 Goety `decreaseSouls` 内部处理（需读 Goety 源码确认） |
 | `TimeStopUtils` 计数器清零目标反转 | ⚠️ **降级** | 逻辑可疑但可能有意（拒绝他人解冻），需读 Goety EndLibrary 源码确认 |
 | `TimeStopRandom` 字段遮蔽 | ❌ **误报，撤销** | `AtomicLong seed` 遮蔽父类字段 — 但该类独立于父类的随机状态，不会导致问题 |
-| `HumanoidArmorLayerMixin` 包路径错 | ✅ **确认** | Config `minVersion=0.8` 下 Mixin 静默失效 |
+| `HumanoidArmorLayerMixin` 包路径错 | ❌ **误报，撤销** | 文件实际在 `com.goetypunk.addon.mixin` 包，与 mixins.json 配置一致 |
+| `HumanoidArmorLayerMixin` 附魔参数错 | ❌ **误报，撤销** | 二次渲染已用 `if (hasFoil)` 守卫，glint/false 基础层+true 闪光层是标准模式 |
+| `CrazedIllagerEntity` 自伤 (G1) | ❌ **误报，撤销** | `crazed-illager.md:7` 记录为设计决策 |
 | 所有 [TEST]/[WheelTest] 日志 | ✅ **确认** | 残留调式代码，docs 未注明其必要性 |
 
 ---
@@ -28,7 +30,7 @@
 | 等级 | 修正前 | 修正后 | 净变化 |
 |------|--------|--------|--------|
 | 🔴 崩溃级 | 4 | **2** | -2 |
-| 🔴 玩法级 | 3 | **3** | 0（1 确认 + 2 待定） |
+| 🔴 玩法级 | 3 | **1**（均为待定） | -2 |
 | 🟡 日志污染 | ~40 处 | **~40 处** | 不变 |
 | 🟡 逻辑缺陷 | 8 | **5** | -3 |
 | 🟡 性能 | 5 | **5** | 不变 |
@@ -54,14 +56,7 @@
       Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
   ```
 
-## C2. `HumanoidArmorLayerMixin` — Mixin 静默失效
-
-- **文件**: `src/main/java/com/goetypunk/addon/mixin/client/HumanoidArmorLayerMixin.java:1`
-- **Config**: `goetypunk.mixins.json:13` 条目 `"HumanoidArmorLayerMixin"` 在 `basePackage=com.goetypunk.addon.mixin` 下解析为 `com.goetypunk.addon.mixin.HumanoidArmorLayerMixin`，但文件实际在 `mixin.client` 子包中。
-- **影响**: 拟态盔甲（PrototypeMimicItem）盔甲层渲染功能完全不可用。
-- **修复**: 在 mixins.json 中改为 `"client.HumanoidArmorLayerMixin"`。
-
-## C3. `TimeContext.safeClientFrameTime()` 缺少 `@OnlyIn`
+## C2. `TimeContext.safeClientFrameTime()` 缺少 `@OnlyIn`
 
 - **文件**: `src/main/java/com/goetypunk/addon/common/time/TimeContext.java:15-17`
 - **问题**: 调用 `Minecraft.getInstance().getFrameTime()` 但无 `@OnlyIn(Dist.CLIENT)`。在 Dedicated Server 上抛出 `ClassNotFoundException` 或直接崩溃。
@@ -71,23 +66,13 @@
 
 # 🔴 玩法级
 
-## G1. `CrazedIllagerEntity` / `CrazedIllagerServant` — 自伤导致 3 秒自杀
+## ~~G1. `CrazedIllagerEntity` / `CrazedIllagerServant` — 自伤导致 3 秒自杀~~ → ❌ **误报，撤销**
 
-- **文件**: `CrazedIllagerEntity.java:127`, `CrazedIllagerServant.java:96`
-- **问题**: `doHurtTarget()` 末尾执行 `this.hurt(this.damageSources().generic(), 1.0F)`。实体 15 点血量，攻击间隔 4 tick，约 3 秒自杀。
-- **文档对照**: `docs/items/misc/crazed-illager.md` 和 `crazed-illager-servant.md` 均仅有"初始实现"记录，未提及任何自伤/狂暴机制。
-- **根因推测**: 疑似复制粘贴 `VindicatorServant.doHurtTarget()` 时遗留的副作用代码。原版 Vindicator 无此逻辑。
-- **修复**: 移除 `this.hurt(...)` 行，或改为有条件的狂暴自伤（半血以下触发）。
+- **重新评估**: `docs/items/misc/crazed-illager.md:7` 明确记录 "攻击机制改为 4 帧/次 × 5 次/秒，无视无敌帧，**自伤 1 HP**" 为 2026-06-25 的故意改动。
+- **结论**: 自伤是设计决策，非 bug。虽然实战中 15 HP / 1/tick = 3 秒自杀看似极端，但文档记录为有意行为，不予标记。
+- **保留意见**: 建议开发者在文档中补充自伤的玩法意图（如狂暴/怒气机制），以便未来回顾。
 
-## G2. `HumanoidArmorLayerMixin` — 附魔闪光参数错位
-
-- **文件**: `src/main/java/com/goetypunk/addon/mixin/client/HumanoidArmorLayerMixin.java:63-70`
-- **问题**: `ItemRenderer.getArmorFoilBuffer(buffer, renderType, glint, isItem)` 传参翻转：
-  - 首次渲染: `glint=false, isItem=stack.hasFoil()` → 闪光永不为真
-  - 二次渲染: `glint=true, isItem=true` → 无附魔也发光
-- **修复**: 首次渲染 `(buffer, rt, stack.hasFoil(), false)`，二次包裹 `if (stack.hasFoil())`。
-
-## G3. ~~`MinionSpawnHelper` 灵魂折扣不生效~~ → **待定，需验证 Goety 源码**
+## G2. ~~`MinionSpawnHelper` 灵魂折扣不生效~~ → **待定，需验证 Goety 源码**
 
 - **文件**: `src/main/java/com/goetypunk/addon/common/utils/MinionSpawnHelper.java:163-181`
 - **问题表面**: `effectiveCost = Math.max(1, (int)(soulCost * discount))` 计算了折扣价但扣费仍用 `soulCost`。
@@ -95,7 +80,7 @@
 - **结论**: **不能确认是 bug**。如果 `SEHelper.decreaseSouls()` 内部自动应用 `soulDiscount`，则逻辑正确。需读 `D:\Libcode\Goety-2-1.20\` 中 `SEHelper.java` 源码确认。
 - **修复**: 如果 Goety 不处理内部折扣，应将 `decreaseSouls(player, soulCost)` 改为 `decreaseSouls(player, effectiveCost)`。
 
-## G4. ~~`TimeStopUtils.use() !z 分支计数器清零目标反转`~~ → **待定，需验证设计意图**
+## G3. ~~`TimeStopUtils.use() !z 分支计数器清零目标反转`~~ → **待定，需验证设计意图**
 
 - **文件**: `src/main/java/com/goetypunk/addon/common/time/TimeStopUtils.java:59`
 - **问题表面**: `setTimeStopCount(source, 0)` 设置来源者（而不是其他实体）的计时器为 0。
@@ -285,10 +270,7 @@
 | ID | 文件 | 问题 | 工作量 |
 |----|------|------|--------|
 | C1 | `FleshFurnaceBlockEntity.java:70,584` | 数组越界 + 方向错乱 | 5 分钟 |
-| C2 | `goetypunk.mixins.json` | `HumanoidArmorLayerMixin` 包路径 | 2 分钟 |
-| C3 | `TimeContext.java:15` | 缺 `@OnlyIn(Dist.CLIENT)` | 5 分钟 |
-| G1 | `CrazedIllagerEntity.java:127` / `CrazedIllagerServant.java:96` | 自伤 3 秒自杀 | 10 分钟 |
-| G2 | `HumanoidArmorLayerMixin.java:63` | 盔甲闪光参数错位 | 10 分钟 |
+| C2 | `TimeContext.java:15` | 缺 `@OnlyIn(Dist.CLIENT)` | 5 分钟 |
 
 ## 必须修复
 
@@ -302,8 +284,8 @@
 
 | ID | 问题 | 需验证 |
 |----|------|--------|
-| G3 | `MinionSpawnHelper` 折扣逻辑 | Goety `SEHelper.decreaseSouls` 是否内部应用 `soulDiscount` |
-| G4 | `TimeStopUtils` 解冻逻辑 | EndLibrary 原始行为 / 项目设计意图 |
+| G2 | `MinionSpawnHelper` 折扣逻辑 | Goety `SEHelper.decreaseSouls` 是否内部应用 `soulDiscount` |
+| G3 | `TimeStopUtils` 解冻逻辑 | EndLibrary 原始行为 / 项目设计意图 |
 
 ## 渐进改进
 
