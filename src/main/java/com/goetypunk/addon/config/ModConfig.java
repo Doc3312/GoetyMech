@@ -133,6 +133,11 @@ public class ModConfig {
     public static int cachedFurnaceCookingTime;
 
     @SubscribeEvent
+    public static void onConfigLoad(ModConfigEvent.Loading event) {
+        refreshCache();
+    }
+
+    @SubscribeEvent
     public static void onConfigReload(ModConfigEvent.Reloading event) {
         refreshCache();
     }
