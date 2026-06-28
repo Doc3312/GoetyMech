@@ -72,14 +72,14 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         this.consumedRemotely = amount;
         float spd = Math.abs(getSpeed());
         float stressApplied = spd < 0.001f ? 0 : amount / spd;
-        LOGGER.info("[TEST] SR{} REMOTE | old={} | new={} | stressApplied={} | speed={} | hasNet={} | capBefore={} | stressBefore={}",
+        LOGGER.debug("[TEST] SR{} REMOTE | old={} | new={} | stressApplied={} | speed={} | hasNet={} | capBefore={} | stressBefore={}",
                 fmtPos(worldPosition), old, amount, stressApplied, getSpeed(), hasNetwork(), capBefore, stressBefore);
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             if (hasNetwork())
                 getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
-            LOGGER.info("[TEST] SR{} REMOTE_AFTER | cap={} | stress={} | avail={}",
+            LOGGER.debug("[TEST] SR{} REMOTE_AFTER | cap={} | stress={} | avail={}",
                     fmtPos(worldPosition), capacity, stress, getAvailableStress());
         }
     }
@@ -103,7 +103,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         float prevCapacity = this.capacity;
         float prevStress = this.stress;
         super.updateFromNetwork(capacity, stress, networkSize);
-        LOGGER.info("[TEST] SR{} NET | cap={}{} | stress={}{} | consumedRemotely={} | networkSize={}",
+        LOGGER.debug("[TEST] SR{} NET | cap={}{} | stress={}{} | consumedRemotely={} | networkSize={}",
                 fmtPos(worldPosition),
                 this.capacity, (prevCapacity != this.capacity ? " (was " + prevCapacity + ")" : ""),
                 this.stress, (prevStress != this.stress ? " (was " + prevStress + ")" : ""),

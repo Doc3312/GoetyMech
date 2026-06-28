@@ -40,7 +40,7 @@ public class CrushingWheelRenderer extends EntityRenderer<CrushingWheelEntity> {
         BakedModel bakedModel = modelManager.getModel(MODEL_ID);
         boolean missing = bakedModel == modelManager.getMissingModel();
 
-        GoetyPunkMod.LOGGER.info("WheelRenderer: entity={}, model=missing:{}",
+        GoetyPunkMod.LOGGER.debug("WheelRenderer: entity={}, model=missing:{}",
                 entity.getId(), missing);
 
         if (missing) return;

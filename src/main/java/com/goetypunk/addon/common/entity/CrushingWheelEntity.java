@@ -52,7 +52,7 @@ public class CrushingWheelEntity extends Entity {
         if (level().isClientSide) return;
 
         if (tickCount >= MAX_LIFETIME_TICKS) {
-            GoetyPunkMod.LOGGER.info("Wheel {} reached max lifetime, despawning", getId());
+            GoetyPunkMod.LOGGER.debug("Wheel {} reached max lifetime, despawning", getId());
             discard();
             return;
         }
@@ -127,38 +127,38 @@ public class CrushingWheelEntity extends Entity {
         List<Entity> targets = level().getEntities(this, box.inflate(0.5),
                 e -> e instanceof LivingEntity && !e.getUUID().equals(ownerUUID));
 
-        GoetyPunkMod.LOGGER.info("[WheelTest] tick={} box={} inflated={} targets={} owner={}",
+        GoetyPunkMod.LOGGER.debug("[WheelTest] tick={} box={} inflated={} targets={} owner={}",
                 tickCount, box, box.inflate(0.5), targets.size(), ownerUUID);
 
         for (Entity target : targets) {
             UUID uuid = target.getUUID();
-            GoetyPunkMod.LOGGER.info("[WheelTest] found target id={} pos={} box={} class={}",
+            GoetyPunkMod.LOGGER.debug("[WheelTest] found target id={} pos={} box={} class={}",
                     target.getDisplayName().getString(),
                     target.position(), target.getBoundingBox(),
                     target.getClass().getSimpleName());
 
             Integer lastHit = hitCooldowns.get(uuid);
             if (lastHit != null && tickCount - lastHit < 10) {
-                GoetyPunkMod.LOGGER.info("[WheelTest] skip {} (cooldown {})", uuid, 10 - (tickCount - lastHit));
+                GoetyPunkMod.LOGGER.debug("[WheelTest] skip {} (cooldown {})", uuid, 10 - (tickCount - lastHit));
                 continue;
             }
 
             LivingEntity owner = getOwner();
-            GoetyPunkMod.LOGGER.info("[WheelTest] owner={} ownerUUID={} damage={}",
+            GoetyPunkMod.LOGGER.debug("[WheelTest] owner={} ownerUUID={} damage={}",
                     owner, ownerUUID, damage);
 
             if (target instanceof AbstractObsidianMonolith monolith) {
                 boolean emerging = monolith.isEmerging();
-                GoetyPunkMod.LOGGER.info("[WheelTest] >>> MONOLITH detected! emerging={} empowered={} health={}",
+                GoetyPunkMod.LOGGER.debug("[WheelTest] >>> MONOLITH detected! emerging={} empowered={} health={}",
                         emerging, monolith.empowered, monolith.getHealth());
             }
 
             boolean hurtResult = target.hurt(damageSources().indirectMagic(this, owner), damage);
-            GoetyPunkMod.LOGGER.info("[WheelTest] hurt()={} on {} dmg={}",
+            GoetyPunkMod.LOGGER.debug("[WheelTest] hurt()={} on {} dmg={}",
                     hurtResult, target.getDisplayName().getString(), damage);
 
             if (target instanceof AbstractObsidianMonolith monolith) {
-                GoetyPunkMod.LOGGER.info("[WheelTest] after hurt: health={} emerging={} empowered={}",
+                GoetyPunkMod.LOGGER.debug("[WheelTest] after hurt: health={} emerging={} empowered={}",
                         monolith.getHealth(), monolith.isEmerging(), monolith.empowered);
             }
 

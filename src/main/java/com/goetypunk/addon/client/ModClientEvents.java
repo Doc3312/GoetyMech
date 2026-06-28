@@ -40,7 +40,7 @@ public class ModClientEvents {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        LOGGER.error("[MOD_CLIENT] onClientSetup called");
+        LOGGER.info("[MOD_CLIENT] onClientSetup called");
 
         event.enqueueWork(() -> {
             net.minecraft.client.gui.screens.MenuScreens.register(
@@ -58,7 +58,7 @@ public class ModClientEvents {
                     ArrayUtils.add(Minecraft.getInstance().options.keyMappings, fleshCasketKey);
         });
 
-        LOGGER.error("[MOD_CLIENT] Flywheel Visuals DISABLED for diagnosis - using BESR only");
+        LOGGER.info("[MOD_CLIENT] Flywheel Visuals DISABLED for diagnosis - using BESR only");
     }
 
     @SubscribeEvent

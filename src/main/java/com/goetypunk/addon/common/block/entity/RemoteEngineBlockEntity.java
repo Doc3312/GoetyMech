@@ -53,7 +53,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         super.initialize();
         if (linkedPos != null && cachedRpm > 0 && getSpeed() == 0)
             updateGeneratedRotation();
-        LOGGER.info("[TEST] RE{} INIT | linked={} | rpm={} | speed={}",
+        LOGGER.debug("[TEST] RE{} INIT | linked={} | rpm={} | speed={}",
                 fmtPos(worldPosition), linkedPos != null ? fmtPos(linkedPos) : "null", cachedRpm, getSpeed());
         if (linkedPos != null && !level.isClientSide)
             tryRefreshRpm();
@@ -84,7 +84,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         float newStress = reader.getNetworkStress();
         float rawAvailable = newCapacity - newStress;
 
-        LOGGER.info("[TEST] RE{} REFRESH | cap={} | stress={} | avail={} | linkedTarget={}",
+        LOGGER.debug("[TEST] RE{} REFRESH | cap={} | stress={} | avail={} | linkedTarget={}",
                 fmtPos(worldPosition), newCapacity, newStress, rawAvailable, fmtPos(linkedPos));
 
         if (Math.abs(rawAvailable - cachedAvailableStress) <= 0.01f
@@ -102,7 +102,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             float prv = cachedRpm;
             cachedRpm = newRpm;
             updateGeneratedRotation();
-            LOGGER.info("[TEST] RE{} RPM | new={} | prev={} | speed={} | hasNet={}",
+            LOGGER.debug("[TEST] RE{} RPM | new={} | prev={} | speed={} | hasNet={}",
                     fmtPos(worldPosition), newRpm, prv, getSpeed(), hasNetwork());
             if (!level.isClientSide) sendData();
         }
@@ -112,7 +112,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 || Math.abs(cachedRpm) > 0.5f && Math.abs(prevRpm) < 0.5f) {
             oscillationCount++;
             if (oscillationCount >= 3) {
-                LOGGER.warn("[TEST] RE{} OSCILLATION DETECTED! rpm 0/non-0 alternated {} times. "
+                LOGGER.debug("[TEST] RE{} OSCILLATION DETECTED! rpm 0/non-0 alternated {} times. "
                         + "cachedAvailableStress={} | consumedRemotely on reader needs damping.",
                         fmtPos(worldPosition), oscillationCount, cachedAvailableStress);
             }
@@ -126,7 +126,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         reader.setConsumedRemotely(cachedAvailableStress);
         cachedEffectiveAvailable = reader.getAvailableStress();
 
-        LOGGER.info("[TEST] RE{} STRESS | reported={} | speed={} | effAvail={}",
+        LOGGER.debug("[TEST] RE{} STRESS | reported={} | speed={} | effAvail={}",
                 fmtPos(worldPosition), cachedAvailableStress, this.speed, cachedEffectiveAvailable);
 
         if (Math.abs(cachedEffectiveAvailable - prevEffective) > 0.01f && !level.isClientSide) {
@@ -155,7 +155,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         this.linkedPos = pos;
         this.linkedDim = dim;
         setChanged();
-        LOGGER.info("[TEST] RE{} LINK | target={} | prevTarget={} | prevRpm={}",
+        LOGGER.debug("[TEST] RE{} LINK | target={} | prevTarget={} | prevRpm={}",
                 fmtPos(worldPosition), fmtPos(pos), prevLinked != null ? fmtPos(prevLinked) : "null", cachedRpm);
         if (level != null && !level.isClientSide)
             tryRefreshRpm();
@@ -165,7 +165,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void updateGeneratedRotation() {
         float prevSpeed = this.speed;
         super.updateGeneratedRotation();
-        LOGGER.info("[TEST] RE{} GEN | speed={} | prevSpeed={} | hasNet={} | rpm={}",
+        LOGGER.debug("[TEST] RE{} GEN | speed={} | prevSpeed={} | hasNet={} | rpm={}",
                 fmtPos(worldPosition), this.speed, prevSpeed, hasNetwork(), cachedRpm);
     }
 

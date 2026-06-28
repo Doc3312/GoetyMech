@@ -211,7 +211,7 @@ public class PrototypeRenderEvents {
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         float rollDeg = quatRollDeg(clientWallQuat);
-        GoetyPunkMod.LOGGER.info("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
+        GoetyPunkMod.LOGGER.debug("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
                 String.format("%.2f", rollDeg),
                 String.format("%.3f", clientWallQuat.x),
                 String.format("%.3f", clientWallQuat.y),
@@ -337,7 +337,7 @@ public class PrototypeRenderEvents {
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
-        GoetyPunkMod.LOGGER.info("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
+        GoetyPunkMod.LOGGER.debug("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
                 mc.options.keySprint.isDown(), player.isSprinting(), hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
                 player.isFallFlying());
         boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && !player.isInWater() && wallDir != null;

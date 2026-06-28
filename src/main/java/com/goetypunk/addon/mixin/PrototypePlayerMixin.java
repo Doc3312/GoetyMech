@@ -20,13 +20,13 @@ public abstract class PrototypePlayerMixin extends LivingEntity {
 
     @Inject(method = "aiStep", at = @At("HEAD"))
     private void gp$logAiStepHead(CallbackInfo ci) {
-        GoetyPunkMod.LOGGER.info("MIXIN_AISTEP_HEAD: zza={}, jumping={}, onGround={}, sprint={}",
+        GoetyPunkMod.LOGGER.debug("MIXIN_AISTEP_HEAD: zza={}, jumping={}, onGround={}, sprint={}",
                 this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
     }
 
     @Inject(method = "aiStep", at = @At("RETURN"))
     private void gp$logAiStepReturn(CallbackInfo ci) {
-        GoetyPunkMod.LOGGER.info("MIXIN_AISTEP_RETURN: zza={}, jumping={}, onGround={}, sprint={}",
+        GoetyPunkMod.LOGGER.debug("MIXIN_AISTEP_RETURN: zza={}, jumping={}, onGround={}, sprint={}",
                 this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
     }
 
@@ -34,13 +34,13 @@ public abstract class PrototypePlayerMixin extends LivingEntity {
     private void gp$cancelJumpWhileCharging(CallbackInfo ci) {
         Player player = (Player) (Object) this;
         if (PrototypeItem.getJumpChargeTick(player) > 0) {
-            GoetyPunkMod.LOGGER.info("Prototype Mixin: cancelled jump (charge={})",
+            GoetyPunkMod.LOGGER.debug("Prototype Mixin: cancelled jump (charge={})",
                     PrototypeItem.getJumpChargeTick(player));
             ci.cancel();
             return;
         }
         if (this.jumping && PrototypeItem.hasAnyPrototype(player)) {
-            GoetyPunkMod.LOGGER.info("Prototype Mixin: cancelled jump (jumping=true, hasPrototype=true)");
+            GoetyPunkMod.LOGGER.debug("Prototype Mixin: cancelled jump (jumping=true, hasPrototype=true)");
             ci.cancel();
         }
     }

@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TimeContext {
 
+    @OnlyIn(Dist.CLIENT)
     public static float safeClientFrameTime() {
         return Minecraft.getInstance().getFrameTime();
     }
