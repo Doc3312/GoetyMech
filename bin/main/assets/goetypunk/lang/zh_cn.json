@@ -88,7 +88,11 @@
   "item.goetypunk.soul_catcher": "灵魂捕手",
   "info.goetypunk.soul_catcher.progress": "§5聚魂：%d/%d",
 
+  "info.goetypunk.prototype_mimic.source": "§7来源：%s",
+  "info.goetypunk.prototype_mimic.inherited": "§7继承：%d 属性，%d 附魔",
+
   "item.goetypunk.prototype": "原型",
+  "item.goetypunk.prototype_mimic": "原型·%s·拟态",
   "info.goetypunk.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
   "info.goetypunk.prototype.boost": "飞行中按住 W 可加速推进",
   "info.goetypunk.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸",
@@ -118,7 +122,7 @@
   "info.goetypunk.stress_shield.shift_info": "将网络应力转化为个人护盾。潜行右键解绑。",
   "info.goetypunk.stress_shield.no_stress": "§c无可用的应力网络！",
 
-  "item.goetypunk.void_blink_focus": "虚空闪现聚晶",
+  "item.goetypunk.chase_focus": "追猎聚晶",
   "effect.goetypunk.void_mark": "虚空印记",
 
   "item.goetypunk.crazed_summon_focus": "疯狂的改造刌民聚晶",
@@ -126,5 +130,10 @@
   "entity.goetypunk.crazed_illager_servant": "失败的改造刌民",
   "item.goetypunk.crazed_illager_spawn_egg": "失败的改造刌民刷怪蛋",
 
-  "info.goetypunk.crazed_summon.limit": "§c你已经达到了疯狂的改造刌民的召唤上限！"
+  "info.goetypunk.crazed_summon.limit": "§c你已经达到了疯狂的改造刌民的召唤上限！",
+
+  "jei.goetypunk.info.prototype_mimic": "原型·拟态是由原型与任意胸甲在 2×2 合成格中合成获得。\n\n它会继承胸甲的所有属性、附魔和修饰符。\n\n将原型·拟态放回合成格即可还原出原型。",
+
+  "jei.goetypunk.category.mimic_combination": "原型拟态组合",
+  "jei.goetypunk.category.mimic_deconstruction": "原型拟态还原"
 }
