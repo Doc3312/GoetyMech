@@ -43,6 +43,16 @@ description: Create machines / Ponder / kinetic BE / BESR
 
 > 前置模组源码路径见 `.opencode/skills/_shared/libcode-paths.md`。
 
+## ⚠️ 容器兼容注意事项
+
+Create 漏斗/传送带通过 `IItemHandler` 与容器交互。当你实现 `WorldlyContainer` 时：
+
+- `SidedInvWrapper` 在**空槽满额接受**路径中传原始 stack 引用
+- `setItem()` 中**禁止**用 `stack.split(n)`，会让 Create 传送带侧数据损坏
+- 改用 `stack.copyWithCount(n)`
+
+**详见** `goety-addon-dev/forge-basics.md` →「⚠️ 容器开发陷阱」章节。
+
 ## 版本对照
 
 | Create | MC | Ponder | Flywheel | Registrate |
