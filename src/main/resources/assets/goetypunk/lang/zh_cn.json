@@ -4,6 +4,8 @@
   "item.goetypunk.mature_embryo.named": "成熟胚胎(%s)",
   "block.goetypunk.flesh_furnace": "血肉熔炉",
   "item.goetypunk.flesh_furnace": "血肉熔炉",
+  "block.goetypunk.breeding_nest": "育巢",
+  "item.goetypunk.breeding_nest": "育巢",
   "itemGroup.goetypunk": "GoetyPunk",
 
   "info.goetypunk.soul_insufficient": "§c灵魂不足！召唤的%s 只有一半生命 ",
@@ -21,6 +23,7 @@
 
   "info.goetypunk.hud.cooking": "血肉转化中",
   "info.goetypunk.hud.linked": "已链接：",
+  "info.goetypunk.hud.nest": "育巢充能中",
 
   "item.goetypunk.sculk_bind_focus": "幽匿束缚聚晶",
   "info.goetypunk.sculk_bind_focus.no_target": "§c请瞄准一个实体！",

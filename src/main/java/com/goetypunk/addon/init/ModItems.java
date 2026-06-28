@@ -51,6 +51,11 @@ public class ModItems {
                     new BlockItem(ModBlocks.FLESH_FURNACE.get(), new Item.Properties())
             );
 
+    public static final RegistryObject<Item> BREEDING_NEST =
+            ITEMS.register("breeding_nest", () ->
+                    new BlockItem(ModBlocks.BREEDING_NEST.get(), new Item.Properties())
+            );
+
     /** 幽匿束缚聚晶 — 锁定+召唤复合法术 */
     public static final RegistryObject<Item> SCULK_BIND_FOCUS =
             ITEMS.register("sculk_bind_focus", SculkBindFocus::new);

@@ -4,6 +4,8 @@
   "item.goetypunk.mature_embryo.named": "Mature Embryo (%s)",
   "block.goetypunk.flesh_furnace": "Flesh Furnace",
   "item.goetypunk.flesh_furnace": "Flesh Furnace",
+  "block.goetypunk.breeding_nest": "Breeding Nest",
+  "item.goetypunk.breeding_nest": "Breeding Nest",
   "itemGroup.goetypunk": "GoetyPunk",
 
   "info.goetypunk.soul_insufficient": "§cSouls insufficient! %s summoned at half health",
@@ -21,6 +23,7 @@
 
   "info.goetypunk.hud.cooking": "Converting in Flesh Furnace",
   "info.goetypunk.hud.linked": "Linked: ",
+  "info.goetypunk.hud.nest": "Breeding Nest Charging",
 
   "item.goetypunk.sculk_bind_focus": "Sculk Bind Focus",
   "info.goetypunk.sculk_bind_focus.no_target": "§cNo target in sight!",

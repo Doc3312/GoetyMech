@@ -128,9 +128,15 @@ public class ModConfig {
     /** 基础持续时间（秒） */
     public static final ForgeConfigSpec.IntValue STRESS_SHIELD_BASE_DURATION;
 
+    // ====== 育巢配置 ======
+
+    /** 育巢满能量阈值（hunger 点数） */
+    public static final ForgeConfigSpec.IntValue NEST_MAX_ENERGY;
+
     // ====== 热路径缓存 ======
     public static int cachedLinkRange;
     public static int cachedFurnaceCookingTime;
+    public static int cachedNestMaxEnergy;
 
     @SubscribeEvent
     public static void onConfigLoad(ModConfigEvent.Loading event) {
@@ -145,6 +151,7 @@ public class ModConfig {
     public static void refreshCache() {
         cachedLinkRange = LINK_RANGE.get();
         cachedFurnaceCookingTime = FLESH_FURNACE_COOKING_TIME.get();
+        cachedNestMaxEnergy = NEST_MAX_ENERGY.get();
     }
 
     // ====== Prototype 配置 ======
@@ -296,6 +303,14 @@ public class ModConfig {
         LINK_RANGE = BUILDER
                 .comment("血肉熔炉放置时自动扫描不祥火炬的范围（格）", "范围: 2-32，默认 8")
                 .defineInRange("link_range", 8, 2, 32);
+
+        BUILDER.pop();
+
+        BUILDER.push("breeding_nest");
+
+        NEST_MAX_ENERGY = BUILDER
+                .comment("育巢满能量阈值（hunger 点数）", "5 个面包 = 25 hunger", "范围: 1-1000，默认 25")
+                .defineInRange("max_energy", 25, 1, 1000);
 
         BUILDER.pop();
 

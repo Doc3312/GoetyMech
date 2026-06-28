@@ -1,6 +1,7 @@
 package com.goetypunk.addon.init;
 
 import com.goetypunk.addon.GoetyPunkMod;
+import com.goetypunk.addon.common.block.BreedingNestBlock;
 import com.goetypunk.addon.common.block.FleshFurnaceBlock;
 import com.goetypunk.addon.common.block.RemoteEngineBlock;
 import com.goetypunk.addon.common.block.StressArkBlock;
@@ -8,6 +9,7 @@ import com.goetypunk.addon.common.block.StressReaderBlock;
 import com.goetypunk.addon.common.block.Tier1SquadBarracksBlock;
 import com.goetypunk.addon.common.block.Tier2SquadBarracksBlock;
 import com.goetypunk.addon.common.block.Tier3SquadBarracksBlock;
+import com.goetypunk.addon.common.block.entity.BreedingNestBlockEntity;
 import com.goetypunk.addon.common.block.entity.FleshFurnaceBlockEntity;
 import com.goetypunk.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetypunk.addon.common.block.entity.SquadBarracksBlockEntity;
@@ -38,6 +40,15 @@ public class ModBlocks {
     public static final RegistryObject<BlockEntityType<FleshFurnaceBlockEntity>> FLESH_FURNACE_ENTITY =
             BLOCK_ENTITIES.register("flesh_furnace",
                     () -> BlockEntityType.Builder.of(FleshFurnaceBlockEntity::new, FLESH_FURNACE.get()).build(null));
+
+    // ── 育巢 ──
+
+    public static final RegistryObject<Block> BREEDING_NEST =
+            BLOCKS.register("breeding_nest", BreedingNestBlock::new);
+
+    public static final RegistryObject<BlockEntityType<BreedingNestBlockEntity>> BREEDING_NEST_ENTITY =
+            BLOCK_ENTITIES.register("breeding_nest",
+                    () -> BlockEntityType.Builder.of(BreedingNestBlockEntity::new, BREEDING_NEST.get()).build(null));
 
     // ── 点将台三阶方块 ──
 
