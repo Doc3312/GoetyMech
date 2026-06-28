@@ -229,7 +229,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     }
 
     public void setCookingStack(ItemStack stack) {
-        this.cookingStack = stack.split(1);
+        this.cookingStack = stack.copyWithCount(1);
         this.cookingProgress = 0;
         this.cookingTotalTime = 0;
         markUpdated();
@@ -556,7 +556,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     @Override
     public void setItem(int index, ItemStack stack) {
         if (index == 0) {
-            cookingStack = stack.split(1);
+            cookingStack = stack.copyWithCount(1);
             cookingProgress = 0;
             cookingTotalTime = 0;
             setChanged();
