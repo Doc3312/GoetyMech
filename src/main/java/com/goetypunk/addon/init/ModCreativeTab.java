@@ -24,6 +24,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.TWISTED_EMBRYO.get());
                         output.accept(ModItems.MATURE_EMBRYO.get());
                         output.accept(ModItems.FLESH_FURNACE.get());
+                        output.accept(ModItems.BREEDING_NEST.get());
                         output.accept(ModItems.SCULK_BIND_FOCUS.get());
                         output.accept(ModItems.TIER1_SQUAD_BARRACKS.get());
                         output.accept(ModItems.TIER2_SQUAD_BARRACKS.get());
