@@ -113,6 +113,14 @@
 - 改动：新增 `isPrototype(ItemStack)` / `isPrototypeItem(Item)` / `hasAnyPrototype()` 统一检测方法；ItemEntityPrototypeMixin 免疫伤害；ItemEntityVoidMixin 虚空拉回 Y=260；PrototypeMimicItem `createFrom()` 合成继承属性；MimicCombinationRecipe + MimicDeconstructionRecipe 注册
 - 原因：prototype 物品需要统一的归属检测接口；mimic 合成系统允许将 prototype+ 胸甲合成为可穿戴 ElytraItem
 
+### 2026-06-25 — 皮下护甲：击杀成长型免伤系统
+
+- 改动：新增 `getDamageImmunityThreshold(int kills)` 三段公式计算免伤阈值；`getNextImmunityMilestone(int kills)` 计算下次进化所需击杀；`LivingHurtEvent` 中受害者免伤判定（有来源伤害且 `amount <= threshold` 时 cancel 事件，播放 EXP_ORB 叮声）；tooltip 子弹俯冲后新增"皮下护甲"行（红/深灰），攻击力加成行末尾追加"伤害免疫：X"
+- 公式：`<150=0, 150~1000=kills/100, 1000~10000=10+(kills-1000)/1000, 10000+=19+(kills-10000)/2000`
+- 原因：为 prototype 提供与额外生命/护盾不同的第三类防御机制；低伤害被完全无视，随击杀增长阈值提高
+- 教训：初始 `(kills-150)/200+1` 增速太慢（200 杀才+1），用户认为含金量不足，改为 `kills/100` 后每 100 击杀稳定+1
+- 关联：PrototypeItem.java (formula), PrototypeEvents.java (immunity check), PrototypeRenderEvents.java (tooltip)
+
 ### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
 
 - 改动：移除旧冲刺粒子（DustParticleOptions 随机散布）和蓄力跳粒子（CRIT + ENCHANTED_HIT）；新增 6 身体锚点粒子系统（左手/右手外侧、头顶左/右、左脚/右脚外侧）；S2CSlamStatePacket 同步下砸客户端状态；下砸时生成深红体线 + FLAME 火星 + 淡红尾迹三层混合
