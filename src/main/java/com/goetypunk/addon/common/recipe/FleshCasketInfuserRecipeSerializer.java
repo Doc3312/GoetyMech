@@ -53,10 +53,10 @@ public class FleshCasketInfuserRecipeSerializer implements RecipeSerializer<Fles
     }
 
     public void toNetwork(FriendlyByteBuf pBuffer, FleshCasketInfuserRecipe pRecipe) {
-        pBuffer.writeUtf(pRecipe.group);
-        pRecipe.ingredient.toNetwork(pBuffer);
-        pBuffer.writeItem(pRecipe.result);
-        pBuffer.writeVarInt(pRecipe.cookingTime);
+        pBuffer.writeUtf(pRecipe.getGroup());
+        pRecipe.getIngredient().toNetwork(pBuffer);
+        pBuffer.writeItem(pRecipe.getResult());
+        pBuffer.writeVarInt(pRecipe.getCookingTime());
         pBuffer.writeBoolean(pRecipe.grim);
     }
 }

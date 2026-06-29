@@ -2,6 +2,7 @@ package com.goetypunk.addon.common.recipe;
 
 import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
 import com.goetypunk.addon.common.item.curio.FleshCasketItem;
+import com.goetypunk.addon.init.ModRecipeSerializers;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -24,6 +25,14 @@ public class FleshCasketInfuserRecipe extends CursedInfuserRecipes {
         FleshCasketItem.cycleTriggerType(result);
         return result;
     }
+
+    public String getGroup() { return this.group; }
+
+    public Ingredient getIngredient() { return this.ingredient; }
+
+    public ItemStack getResult() { return this.result; }
+
+    public int getCookingTime() { return this.cookingTime; }
 
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.FLESH_CASKET_INFUSER.get();
