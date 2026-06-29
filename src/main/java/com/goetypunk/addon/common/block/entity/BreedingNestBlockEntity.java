@@ -37,8 +37,8 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
 
     private int energy;
     private ItemStack inputBuffer = ItemStack.EMPTY;
+    private int conversionTicks = -1;
     private ItemStack outputStack = ItemStack.EMPTY;
-    private int processingTicks;
     private int outputWaitTicks;
     private int soundCooldown;
 
@@ -54,32 +54,49 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         // 音效冷却
         if (soundCooldown > 0) soundCooldown--;
 
-        // === 加工延时 ===
+        // === 输入缓冲：立即消化，无延迟 ===
         if (!inputBuffer.isEmpty()) {
-            processingTicks++;
+            FoodProperties food = inputBuffer.getItem().getFoodProperties(inputBuffer, null);
+            if (food != null) {
+                energy += food.getNutrition();
+                if (soundCooldown <= 0) {
+                    level.playSound(null, worldPosition, SoundEvents.PLAYER_BURP, SoundSource.BLOCKS, 0.6F, 0.9F + level.random.nextFloat() * 0.2F);
+                    soundCooldown = 30;
+                }
+            }
+            inputBuffer = ItemStack.EMPTY;
+            markUpdated();
+        }
+
+        int maxEnergy = ModConfig.cachedNestMaxEnergy;
+
+        // === 能量满且空闲 → 开始 2s 转化 ===
+        if (conversionTicks < 0 && energy >= maxEnergy && outputStack.isEmpty()) {
+            energy -= maxEnergy;
+            conversionTicks = 0;
+            markUpdated();
+        }
+
+        // === 转化进行中 ===
+        if (conversionTicks >= 0) {
+            conversionTicks++;
             // 红石粒子
             if (level instanceof ServerLevel server && level.getGameTime() % 3 == 0) {
-                double x = worldPosition.getX() + 0.5D;
-                double y = worldPosition.getY() + 0.8D;
-                double z = worldPosition.getZ() + 0.5D;
                 server.sendParticles(new DustParticleOptions(new Vector3f(1.0F, 0.0F, 0.0F), 0.8F),
-                        x, y, z, 1, 0.3D, 0.2D, 0.3D, 0.01D);
+                        worldPosition.getX() + 0.5D, worldPosition.getY() + 0.8D, worldPosition.getZ() + 0.5D,
+                        1, 0.3D, 0.2D, 0.3D, 0.01D);
             }
-            // 满 2s → 消化
-            if (processingTicks >= 40) {
-                FoodProperties food = inputBuffer.getItem().getFoodProperties(inputBuffer, null);
-                if (food != null) {
-                    energy += food.getNutrition();
-                    level.playSound(null, worldPosition, SoundEvents.PLAYER_BURP, SoundSource.BLOCKS, 0.6F, 0.9F + level.random.nextFloat() * 0.2F);
-                    checkProduce();
-                }
-                inputBuffer = ItemStack.EMPTY;
-                processingTicks = 0;
+            // 满 2s → 产出
+            if (conversionTicks >= 40) {
+                outputStack = new ItemStack(ModItems.TWISTED_EMBRYO.get(), 1);
+                conversionTicks = -1;
+                outputWaitTicks = 0;
+                level.playSound(null, worldPosition, SoundEvents.VILLAGER_CELEBRATE, SoundSource.BLOCKS, 0.8F, 1.0F);
                 markUpdated();
             }
         }
 
-        // === 输出等待窗口：产物等待侧面漏斗提取 ===
+        // === 输出等待：产物等待侧面漏斗提取（20 tick fallback） ===
         if (!outputStack.isEmpty()) {
             outputWaitTicks++;
             if (outputWaitTicks > 20) {
@@ -91,31 +108,10 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    private void checkProduce() {
-        if (level == null) return;
-        int maxEnergy = ModConfig.cachedNestMaxEnergy;
-        while (energy >= maxEnergy) {
-            energy -= maxEnergy;
-            if (!outputStack.isEmpty()) return;
-            outputStack = new ItemStack(ModItems.TWISTED_EMBRYO.get(), 1);
-            outputWaitTicks = 0;
-            level.playSound(null, worldPosition, SoundEvents.VILLAGER_CELEBRATE, SoundSource.BLOCKS, 0.8F, 1.0F);
-            markUpdated();
-        }
-    }
-
     // ===== 输入控制 =====
 
     public boolean canAcceptInput() {
         return inputBuffer.isEmpty() && outputStack.isEmpty();
-    }
-
-    public boolean canPlaySound() {
-        return soundCooldown <= 0;
-    }
-
-    public void onSoundPlayed() {
-        soundCooldown = 30;
     }
 
     public void insertFood(ItemStack stack) {
@@ -123,7 +119,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             FoodProperties food = stack.getItem().getFoodProperties(stack, null);
             if (food != null) {
                 inputBuffer = stack.copyWithCount(1);
-                processingTicks = 0;
                 markUpdated();
             }
         }
@@ -162,7 +157,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putInt("Energy", energy);
-        tag.putInt("ProcessingTicks", processingTicks);
+        tag.putInt("ConversionTicks", conversionTicks);
         tag.putInt("OutputWaitTicks", outputWaitTicks);
         if (!inputBuffer.isEmpty()) {
             CompoundTag buf = new CompoundTag();
@@ -180,7 +175,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     public void load(CompoundTag tag) {
         super.load(tag);
         energy = tag.getInt("Energy");
-        processingTicks = tag.getInt("ProcessingTicks");
+        conversionTicks = tag.getInt("ConversionTicks");
         outputWaitTicks = tag.getInt("OutputWaitTicks");
         if (tag.contains("InputBuffer")) {
             inputBuffer = ItemStack.of(tag.getCompound("InputBuffer"));
@@ -275,10 +270,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             }
             if (!inputBuffer.isEmpty()) {
                 ItemStack result = inputBuffer.split(count);
-                if (inputBuffer.isEmpty()) {
-                    processingTicks = 0;
-                    markUpdated();
-                }
+                if (inputBuffer.isEmpty()) markUpdated();
                 return result;
             }
         }
@@ -297,7 +289,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             if (!inputBuffer.isEmpty()) {
                 ItemStack result = inputBuffer;
                 inputBuffer = ItemStack.EMPTY;
-                processingTicks = 0;
                 return result;
             }
         }
@@ -310,7 +301,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             FoodProperties food = stack.getItem().getFoodProperties(stack, null);
             if (food != null) {
                 inputBuffer = stack.copyWithCount(1);
-                processingTicks = 0;
                 setChanged();
             }
         }
@@ -326,7 +316,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     public void clearContent() {
         inputBuffer = ItemStack.EMPTY;
         outputStack = ItemStack.EMPTY;
-        processingTicks = 0;
+        conversionTicks = -1;
         outputWaitTicks = 0;
     }
 
