@@ -26,10 +26,10 @@
 
 | 项目 | 值 |
 |------|-----|
-| 仪式类型 | `goety:craft` (暂定，未来可能改为自定义 `goetypunk:flesh_casket_upgrade`) |
+| 仪式类型 | `goety:craft` |
 | craftType | `forge` |
 | 中心祭坛 | 黑暗魔杖（`goety:dark_wand`）→ 消耗 |
-| 材料 | 苍白金属锭 ×2, 黑暗金属锭 ×2, 灵质 ×1, 任意生肉 ×1（`#forge:raw_meat`） |
+| 材料 | 苍白钢锭（`goety:pale_steel_ingot`）×2, 黑暗合金锭（`goety:dark_ingot`）×2, 灵质（`goety:soul_powder`）×1, 任意生肉 ×1（`#forge:raw_meat`） |
 | 启动条件 | 献祭村民（`#goety:villagers`） |
 | 灵魂消耗 | 111/秒（JSON `soulCost: 111`） |
 | 持续时间 | 6 秒（JSON `duration: 6`） |
@@ -39,10 +39,10 @@
 
 | 项目 | 值 |
 |------|-----|
-| 仪式类型 | `goety:craft` (暂定) |
+| 仪式类型 | `goetypunk:upgrade_casket`（自定义，NBT 保留）|
 | craftType | `forge` |
 | 中心祭坛 | 血肉晶匣 I → 消耗，NBT 复制到产出 |
-| 材料 | 不洁之血 ×1, 聚晶袋 ×1, 暗夜之心 ×1, 不洁布料 ×2, 灵质 ×2 |
+| 材料 | 不洁之血（`goety:unholy_blood`）×1, 聚晶袋（`goety:focus_pack`）×1, 暗夜之心（`goety:heart_of_the_night`）×1, 不洁布料（`goety:unholy_fabric`）×2, 灵质（`goety:soul_powder`）×2 |
 | 启动条件 | 献祭村民（`#goety:villagers`） |
 | 灵魂消耗 | 111/秒（JSON `soulCost: 111`） |
 | 持续时间 | 6 秒（JSON `duration: 6`） |
@@ -52,10 +52,10 @@
 
 | 项目 | 值 |
 |------|-----|
-| 仪式类型 | `goety:craft` (暂定) |
+| 仪式类型 | `goetypunk:upgrade_casket`（自定义，NBT 保留）|
 | craftType | `forge` |
 | 中心祭坛 | 血肉晶匣 II → 消耗，NBT 复制到产出 |
-| 材料 | 至纯之血 ×1, 多晶大袋 ×1, 下界合金锭 ×2, 不洁布料 ×2 |
+| 材料 | 不洁之血（`goety:unholy_blood`）×1, 多晶大袋（`goety:focus_pack`）×1, 下界合金锭 ×2, 不洁布料（`goety:unholy_fabric`）×2 |
 | 启动条件 | 献祭村民（`#goety:villagers`） |
 | 灵魂消耗 | 111/秒（JSON `soulCost: 111`） |
 | 持续时间 | 6 秒（JSON `duration: 6`） |
@@ -66,8 +66,10 @@
 ### JSON 配方位置
 
 ```
-src/main/resources/data/goety/recipes/<name>.json
+src/main/resources/data/goetypunk/recipes/<name>.json
 ```
+
+配方 type 为 `goety:ritual`（标准仪式），注册在 `data/goetypunk/` 下而非 `data/goety/`，但 Goety 能跨 mod 读取。**注意**：item ID 必须使用 Goety 的注册名（`goety:pale_steel_ingot` 而非 `pale_metal_ingot`），错误 ID 不会报错但 JEI 不显示配方。
 
 ### JSON 通用结构（craft 类型）
 
@@ -155,12 +157,12 @@ src/main/resources/data/goety/recipes/<name>.json
 
 `CraftItemRitual.finish()` 默认不保留激活物品的 NBT。仅 Wand→Wand 时复制物品容量，且受配置控制。
 
-### 实现方式
+### 实现方式（实际方案）
 
-需要自定义 `Ritual` 子类 `UpgradeCasketRitual`，注册为新的 `ritual_type`：
+自定义 `Ritual` 子类 `UpgradeCasketRitual`，关键点：**必须先调 `super.finish()` 再 shrink**（否则激活物品提前消失导致 super 内 NPE）：
 
 ```java
-public class UpgradeCasketRitual extends CraftItemRitual {
+public class UpgradeCasketRitual extends Ritual {
     public UpgradeCasketRitual(RitualRecipe recipe) {
         super(recipe);
     }
@@ -168,36 +170,73 @@ public class UpgradeCasketRitual extends CraftItemRitual {
     @Override
     public void finish(Level world, BlockPos blockPos, DarkAltarBlockEntity tileEntity,
                        Player castingPlayer, ItemStack activationItem) {
+        super.finish(world, blockPos, tileEntity, castingPlayer, activationItem);
         ItemStack result = this.recipe.getResultItem(world.registryAccess()).copy();
-        // 复制激活物品的全部 NBT（含内部聚晶、触发类型、冷却等）
-        result.setTag(activationItem.getTag());
+        if (activationItem.hasTag()) {
+            result.setTag(activationItem.getTag().copy());
+        }
         activationItem.shrink(1);
         result.onCraftedBy(world, castingPlayer, 1);
         IItemHandler handler = tileEntity.itemStackHandler.orElseThrow(RuntimeException::new);
         handler.insertItem(0, result, false);
-        // 调用 super.finish 触发粒子效果
-        super.finish(world, blockPos, tileEntity, castingPlayer, activationItem);
     }
 }
 ```
 
-### 注册新 ritual_type
+### 注册新 ritual_type（实际方案）
 
-新增 `GoetyRitualRegistry` 类，通过 `InterModComms` 或自定义 Forge 注册表注册：
-
-```java
-// 方案 A：在 ModRituals 风格中注册
-public static final RegistryObject<ModRitualFactory> UPGRADE_CASKET =
-        RITUALS.register("upgrade_casket",
-                () -> new ModRitualFactory(UpgradeCasketRitual::new));
-```
+Goety 将 `ritual_factory` 注册为 Forge 原版注册表，可直接用 `DeferredRegister` 绑定到 `goety:ritual_factory`：
 
 ```java
-// 方案 B：通过 InterModComms 发送
-// Goety 是否支持 IMC 需要确认
+public class ModRituals {
+    public static final ResourceLocation RITUAL_FACTORY_REGISTRY =
+            new ResourceLocation("goety", "ritual_factory");
+
+    public static final DeferredRegister<ModRitualFactory> RITUALS =
+            DeferredRegister.create(RITUAL_FACTORY_REGISTRY, GoetyPunkMod.MOD_ID);
+
+    public static final RegistryObject<ModRitualFactory> UPGRADE_CASKET =
+            RITUALS.register("upgrade_casket",
+                    () -> new ModRitualFactory(UpgradeCasketRitual::new));
+}
 ```
 
-> **确定 `ritual_type` JSON 值后**，将 `"ritual_type": "goety:upgrade_casket"` 用于 II/III 级配方（I 级用标准 `goety:craft`）。
+然后在主类注册到 mod 事件总线：
+```java
+ModRituals.RITUALS.register(modBus);
+```
+
+> JSON 中 `ritual_type` 写为 `"goetypunk:upgrade_casket"`（命名空间 = 注册时用的 mod id）。
+
+## 触发类型切换系统（诅咒注入器循环）
+
+触发类型 A（满盈）/ B（平衡）/ C（濒死）作为 NBT key `"goetypunk.triggerType"` 存储，通过诅咒注入器配方循环切换。不消耗材料，不损失物品。
+
+### 配方 JSON（`data/goetypunk/recipes/flesh_casket_cycle_{1,2,3}.json`）
+
+```json
+{
+  "type": "goety:cursed_infuser",
+  "cookingtime": 100,
+  "experience": 0.0,
+  "ingredient": { "item": "goetypunk:flesh_casket_1" },
+  "result": "goetypunk:flesh_casket_1",
+  "ritual_type": "goetypunk:flesh_casket_infuser",
+  "update": true,
+  "updateAndCheckNBT": { "item": "goetypunk:flesh_casket_1", "nbt_match": false },
+  "wanderingTraderRarity": "RARE"
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| `type` | `"goety:cursed_infuser"`（使用 Goety 内置 recipe type） |
+| `ritual_type` | `"goetypunk:flesh_casket_infuser"`（自定义 serializer 处理 NBT） |
+| `updateAndCheckNBT` | 避免 JEI 配方冲突，`nbt_match: false` 保证显示且不匹配 NBT |
+
+### 自定义 Serializer
+
+`FleshCasketInfuserRecipeSerializer` 读取标准 cursed infuser 字段并注册为 `goetypunk:flesh_casket_infuser`。`assemble()` 负责复制输入物品的 Tag 并调用 `FleshCasketItem.cycleTriggerType()`。
 
 ## 新增/修改文件清单
 
@@ -206,15 +245,20 @@ public static final RegistryObject<ModRitualFactory> UPGRADE_CASKET =
 | 路径 | 说明 |
 |------|------|
 | `common/ritual/UpgradeCasketRitual.java` | 自定义仪式，保留激活物品 NBT |
-| `init/ModRituals.java` | 注册 `upgrade_casket` ritual_type |
+| `init/ModRituals.java` | 注册 `upgrade_casket` ritual_type（`goety:ritual_factory` 注册表）|
+| `common/recipe/FleshCasketInfuserRecipe.java` | 诅咒注入器配方，NBT 复制 + 触发类型循环 |
+| `common/recipe/FleshCasketInfuserRecipeSerializer.java` | 注入器配方序列化器 |
 
 ### 新增 JSON 配方
 
 | 路径 | 说明 |
 |------|------|
-| `data/goety/recipes/flesh_casket_1.json` | I 级仪式配方 |
-| `data/goety/recipes/flesh_casket_1_to_2.json` | II 级升级配方 |
-| `data/goety/recipes/flesh_casket_2_to_3.json` | III 级升级配方 |
+| `data/goetypunk/recipes/flesh_casket_1.json` | I 级仪式配方（`goety:craft`）|
+| `data/goetypunk/recipes/flesh_casket_1_to_2.json` | II 级升级配方（`goetypunk:upgrade_casket`）|
+| `data/goetypunk/recipes/flesh_casket_2_to_3.json` | III 级升级配方（`goetypunk:upgrade_casket`）|
+| `data/goetypunk/recipes/flesh_casket_cycle_1.json` | 触发类型循环配方（诅咒注入器）|
+| `data/goetypunk/recipes/flesh_casket_cycle_2.json` | 同上 |
+| `data/goetypunk/recipes/flesh_casket_cycle_3.json` | 同上 |
 
 ### 新增物品注册
 
@@ -230,16 +274,19 @@ public static final RegistryObject<ModRitualFactory> UPGRADE_CASKET =
 |------|------|
 | `flesh_casket_a_1` ~ `flesh_casket_c_3` 共 9 个注册项 | 合为 3 个 |
 | 9 个诅咒注入器转化配方 | 改为 NBT 内切换触发类型 |
-| 对应模型/纹理 | 更新为新的 3 个 |
+| 对应模型/纹理（12 个旧模型 JSON + 9 个旧配方 JSON） | 更新为新的 3 个 |
 
 ### 修改文件
 
 | 文件 | 内容 |
 |------|------|
-| `FleshCasketItem.java` | 触发类型改为 NBT 可切换属性 |
-| `TriggerType.java` | 可能不需要改动或微调 |
-| `FleshCasketEvents.java` | 确认适配新结构 |
+| `FleshCasketItem.java` | 触发类型改为 NBT 可切换属性，移除 `TriggerType` import |
+| `TriggerType.java` | 保留但可能不再直接引用（NBT key 替代）|
+| `FleshCasketEvents.java` | 适配新 NBT 触发类型读取 |
 | `ModItems.java` | 9 个旧注册 → 3 个新注册 |
+| `ModCreativeTab.java` | 更新为 3 个物品 |
+| `ModRecipeSerializers.java` | 添加 `FLESH_CASKET_INFUSER` |
+| `GoetyPunkMod.java` | 注册 `ModRituals.RITUALS` |
 | 语言文件 `zh_cn.json` / `en_us.json` | 更新物品名称和描述 |
 | `back.json` (Curios tag) | 更新为新的 3 个物品 |
 | `flesh-casket.md`（文档） | 更新演化记录 |

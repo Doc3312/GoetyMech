@@ -3,7 +3,7 @@
 ## 身份
 
 - 类型：curio
-- 注册类：ModItems.FLESH_CASKET_A / B / C
+- 注册类：ModItems.FLESH_CASKET_1 / 2 / 3
 - Java 类：FleshCasketItem (extends Item, implements ICurioItem)
 - 首次创建：2026-06-23
 
@@ -48,6 +48,18 @@ Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储
 - 改动：per-focus 独立冷却 → 单物品全局冷却（以最长法术冷却为准）；添加 damage bar 可视化；`canUnequip` 始终返回 true
 - 原因：玩家反馈无法直观看到冷却、取不下饰品；只有全部聚晶冷却完才能再次触发
 - 关联：commit 0548c30, f48d756
+
+### 2026-06-29 — 重构为 3 阶线性升级 + NBT 触发类型切换
+
+- 改动：9 个变体（A1~C3）→ 3 个阶位物品（flesh_casket_1/2/3）；触发类型从 enum 类重构为 NBT 字段；添加诅咒注入器循环配方（A→B→C→A，`FleshCasketInfuserRecipe`）；创建自定义仪式 `UpgradeCasketRitual` 复制 NBT；删除 12 个旧模型 JSON + 9 个旧配方 + 2 个旧物品引用
+- 原因：9 个变体太冗余，线性升级 + NBT 切换更简洁；NBT 保留保证升级不掉聚晶
+- 关联：FleshCasketInfuserRecipe.java, FleshCasketInfuserRecipeSerializer.java, UpgradeCasketRitual.java, ModRituals.java, ModItems 去 9→3；新增 6 个配方 JSON；commit b10c2c8
+
+### 2026-06-29 — 仪式配方修复：Goety 物品 ID 纠正 + 占位纹理
+
+- 改动：修正 3 个 Upgrade 配方 JSON 中 6 个错误 Goety 物品 ID（pale_metal_ingot→pale_steel_ingot, dark_metal_ingot→dark_ingot, night_core→heart_of_the_night, unholy_cloth→unholy_fabric, large_focus_bag→focus_pack, pure_blood→unholy_blood）；创建 3 个占位 PNG 纹理（flesh_casket_1/2/3.png）
+- 原因：配方中 item ID 不存在导致 JEI 不显示；缺失纹理导致物品栏显示紫黑块
+- 关联：commit [current session]
 
 ### 2026-06-23 — 三个 Bug 修复
 
