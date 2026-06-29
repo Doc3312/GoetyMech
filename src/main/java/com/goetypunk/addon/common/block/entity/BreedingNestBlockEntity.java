@@ -39,8 +39,8 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     private ItemStack inputBuffer = ItemStack.EMPTY;
     private int conversionTicks = -1;
     private ItemStack outputStack = ItemStack.EMPTY;
-    private int outputWaitTicks;
     private int soundCooldown;
+    private int inputCooldown;
 
     private final LazyOptional<IItemHandlerModifiable>[] handlers = SidedInvWrapper.create(this, Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 
@@ -51,8 +51,9 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     public void tick() {
         if (level == null || level.isClientSide) return;
 
-        // 音效冷却
+        // 音效冷却 + 输入冷却
         if (soundCooldown > 0) soundCooldown--;
+        if (inputCooldown > 0) inputCooldown--;
 
         // === 输入缓冲：立即消化，无延迟 ===
         if (!inputBuffer.isEmpty()) {
@@ -90,19 +91,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             if (conversionTicks >= 40) {
                 outputStack = new ItemStack(ModItems.TWISTED_EMBRYO.get(), 1);
                 conversionTicks = -1;
-                outputWaitTicks = 0;
                 level.playSound(null, worldPosition, SoundEvents.VILLAGER_CELEBRATE, SoundSource.BLOCKS, 0.8F, 1.0F);
-                markUpdated();
-            }
-        }
-
-        // === 输出等待：产物等待侧面漏斗提取（20 tick fallback） ===
-        if (!outputStack.isEmpty()) {
-            outputWaitTicks++;
-            if (outputWaitTicks > 20) {
-                tryOutputToContainer(outputStack);
-                outputStack = ItemStack.EMPTY;
-                outputWaitTicks = 0;
                 markUpdated();
             }
         }
@@ -111,7 +100,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     // ===== 输入控制 =====
 
     public boolean canAcceptInput() {
-        return inputBuffer.isEmpty() && outputStack.isEmpty();
+        return inputBuffer.isEmpty() && outputStack.isEmpty() && inputCooldown <= 0;
     }
 
     public void insertFood(ItemStack stack) {
@@ -119,6 +108,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             FoodProperties food = stack.getItem().getFoodProperties(stack, null);
             if (food != null) {
                 inputBuffer = stack.copyWithCount(1);
+                inputCooldown = 10;
                 markUpdated();
             }
         }
@@ -158,7 +148,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         super.saveAdditional(tag);
         tag.putInt("Energy", energy);
         tag.putInt("ConversionTicks", conversionTicks);
-        tag.putInt("OutputWaitTicks", outputWaitTicks);
+        tag.putInt("InputCooldown", inputCooldown);
         if (!inputBuffer.isEmpty()) {
             CompoundTag buf = new CompoundTag();
             inputBuffer.save(buf);
@@ -176,7 +166,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         super.load(tag);
         energy = tag.getInt("Energy");
         conversionTicks = tag.getInt("ConversionTicks");
-        outputWaitTicks = tag.getInt("OutputWaitTicks");
+        inputCooldown = tag.getInt("InputCooldown");
         if (tag.contains("InputBuffer")) {
             inputBuffer = ItemStack.of(tag.getCompound("InputBuffer"));
         }
@@ -230,7 +220,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
         if (direction == Direction.DOWN) return false;
-        if (index != 0 || !inputBuffer.isEmpty() || !outputStack.isEmpty()) return false;
+        if (index != 0 || !inputBuffer.isEmpty() || !outputStack.isEmpty() || inputCooldown > 0) return false;
         return stack.getItem().getFoodProperties(stack, null) != null;
     }
 
@@ -263,7 +253,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             if (!outputStack.isEmpty()) {
                 ItemStack result = outputStack.split(count);
                 if (outputStack.isEmpty()) {
-                    outputWaitTicks = 0;
                     markUpdated();
                 }
                 return result;
@@ -283,7 +272,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             if (!outputStack.isEmpty()) {
                 ItemStack result = outputStack;
                 outputStack = ItemStack.EMPTY;
-                outputWaitTicks = 0;
                 return result;
             }
             if (!inputBuffer.isEmpty()) {
@@ -301,6 +289,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             FoodProperties food = stack.getItem().getFoodProperties(stack, null);
             if (food != null) {
                 inputBuffer = stack.copyWithCount(1);
+                inputCooldown = 10;
                 setChanged();
             }
         }
@@ -317,7 +306,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         inputBuffer = ItemStack.EMPTY;
         outputStack = ItemStack.EMPTY;
         conversionTicks = -1;
-        outputWaitTicks = 0;
     }
 
     // ===== Capability =====

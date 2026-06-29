@@ -68,7 +68,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
 
     // === Create 漏斗兼容 ===
     private final LazyOptional<IItemHandlerModifiable>[] handlers = SidedInvWrapper.create(this, Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
-    private int outputWaitTicks;
 
     public FleshFurnaceBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.FLESH_FURNACE_ENTITY.get(), pos, state);
@@ -108,17 +107,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
             BlockState bs = getBlockState();
             if (bs.getValue(BlockStateProperties.LIT) != shouldBeLit) {
                 level.setBlock(worldPosition, bs.setValue(BlockStateProperties.LIT, shouldBeLit), 3);
-            }
-        }
-
-        // === 输出等待：已完成的产物等待漏斗从侧面抽取 ===
-        if (isServer && !cookingStack.isEmpty() && !cookingStack.is(ModItems.TWISTED_EMBRYO.get())) {
-            outputWaitTicks++;
-            if (outputWaitTicks > 20) {
-                tryOutputToContainer(cookingStack);
-                cookingStack = ItemStack.EMPTY;
-                outputWaitTicks = 0;
-                markUpdated();
             }
         }
 
@@ -169,7 +157,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
                         // 产物放入槽位，等待漏斗从侧面抽取
                         cookingStack = matureStack;
                         cookingTotalTime = 0;
-                        outputWaitTicks = 0;
 
                         // 烹制完成音效
                         level.playSound(null, worldPosition, SoundEvents.BLASTFURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 0.8F, 0.6F);
