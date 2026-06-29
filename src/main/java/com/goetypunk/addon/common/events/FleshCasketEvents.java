@@ -52,8 +52,7 @@ public class FleshCasketEvents {
         float currentHealth = player.getHealth();
 
         for (ItemStack casketStack : caskets) {
-            FleshCasketItem casketItem = (FleshCasketItem) casketStack.getItem();
-            TriggerType trigger = casketItem.getTriggerType();
+            TriggerType trigger = FleshCasketItem.getTriggerType(casketStack);
 
             if (trigger == TriggerType.A) {
                 tryAutoCast(player, casketStack);

@@ -1,6 +1,7 @@
 package com.goetypunk.addon.init;
 
 import com.goetypunk.addon.GoetyPunkMod;
+import com.goetypunk.addon.common.recipe.FleshCasketInfuserRecipeSerializer;
 import com.goetypunk.addon.common.recipe.MimicCombinationRecipe;
 import com.goetypunk.addon.common.recipe.MimicDeconstructionRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -18,4 +19,7 @@ public class ModRecipeSerializers {
 
     public static final RegistryObject<RecipeSerializer<?>> MIMIC_DECONSTRUCTION =
             RECIPE_SERIALIZERS.register("mimic_deconstruction", () -> MimicDeconstructionRecipe.Serializer.INSTANCE);
+
+    public static final RegistryObject<RecipeSerializer<?>> FLESH_CASKET_INFUSER =
+            RECIPE_SERIALIZERS.register("flesh_casket_infuser", () -> FleshCasketInfuserRecipeSerializer.INSTANCE);
 }

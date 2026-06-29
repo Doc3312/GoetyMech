@@ -25,19 +25,38 @@ import javax.annotation.Nullable;
 
 public class FleshCasketItem extends Item implements ICurioItem {
     private static final String TAG_COOLDOWN = "flesh_casket_cooldown";
+    private static final String TAG_TRIGGER_TYPE = "flesh_casket_trigger_type";
     private static final int MAX_COOLDOWN_TICKS = 600;
 
-    private final TriggerType triggerType;
     private final int tier;
 
-    public FleshCasketItem(TriggerType triggerType, int tier) {
+    public FleshCasketItem(int tier) {
         super(new Properties().stacksTo(1).setNoRepair());
-        this.triggerType = triggerType;
         this.tier = tier;
     }
 
-    public TriggerType getTriggerType() {
-        return triggerType;
+    public static int getTier(ItemStack stack) {
+        if (stack.getItem() instanceof FleshCasketItem casket) {
+            return casket.tier;
+        }
+        return 1;
+    }
+
+    public static TriggerType getTriggerType(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        if (tag != null && tag.contains(TAG_TRIGGER_TYPE)) {
+            return TriggerType.fromName(tag.getString(TAG_TRIGGER_TYPE));
+        }
+        return TriggerType.A;
+    }
+
+    public static void setTriggerType(ItemStack stack, TriggerType type) {
+        stack.getOrCreateTag().putString(TAG_TRIGGER_TYPE, type.name());
+    }
+
+    public static void cycleTriggerType(ItemStack stack) {
+        TriggerType current = getTriggerType(stack);
+        setTriggerType(stack, current.next());
     }
 
     @Override
@@ -50,13 +69,6 @@ public class FleshCasketItem extends Item implements ICurioItem {
             NetworkHooks.openScreen((ServerPlayer) player, provider, buf -> buf.writeInt(tier));
         }
         return InteractionResultHolder.success(stack);
-    }
-
-    public static int getTier(ItemStack stack) {
-        if (stack.getItem() instanceof FleshCasketItem casket) {
-            return casket.tier;
-        }
-        return 1;
     }
 
     public static int getSlotCount(int tier) {

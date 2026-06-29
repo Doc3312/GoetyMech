@@ -40,15 +40,9 @@ public class ModCreativeTab {
                         output.accept(ModItems.SOUL_CATCHER.get());
                         output.accept(ModItems.PROTOTYPE.get());
                         output.accept(ModItems.STRESS_ARK.get());
-                        output.accept(ModItems.FLESH_CASKET_A_1.get());
-                        output.accept(ModItems.FLESH_CASKET_A_2.get());
-                        output.accept(ModItems.FLESH_CASKET_A_3.get());
-                        output.accept(ModItems.FLESH_CASKET_B_1.get());
-                        output.accept(ModItems.FLESH_CASKET_B_2.get());
-                        output.accept(ModItems.FLESH_CASKET_B_3.get());
-                        output.accept(ModItems.FLESH_CASKET_C_1.get());
-                        output.accept(ModItems.FLESH_CASKET_C_2.get());
-                        output.accept(ModItems.FLESH_CASKET_C_3.get());
+                        output.accept(ModItems.FLESH_CASKET_1.get());
+                        output.accept(ModItems.FLESH_CASKET_2.get());
+                        output.accept(ModItems.FLESH_CASKET_3.get());
                         output.accept(ModItems.CHASE_FOCUS.get());
                         output.accept(ModItems.CRAZED_SUMMON_FOCUS.get());
                         output.accept(ModItems.CRAZED_ILLAGER_SPAWN_EGG.get());

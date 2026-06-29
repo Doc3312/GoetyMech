@@ -1,0 +1,40 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goetypunk:upgrade_casket",
+  "activation_item": {
+    "item": "goetypunk:flesh_casket_1"
+  },
+  "craftType": "forge",
+  "entity_to_sacrifice": {
+    "tag": "goety:villagers",
+    "display_name": "entity.minecraft.villager"
+  },
+  "soulCost": 111,
+  "duration": 6,
+  "ingredients": [
+    {
+      "item": "goety:unholy_blood"
+    },
+    {
+      "item": "goety:focus_bag"
+    },
+    {
+      "item": "goety:night_core"
+    },
+    {
+      "item": "goety:unholy_cloth"
+    },
+    {
+      "item": "goety:unholy_cloth"
+    },
+    {
+      "item": "goety:ectoplasm"
+    },
+    {
+      "item": "goety:ectoplasm"
+    }
+  ],
+  "result": {
+    "item": "goetypunk:flesh_casket_2"
+  }
+}

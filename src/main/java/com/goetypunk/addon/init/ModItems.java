@@ -18,7 +18,6 @@ import com.goetypunk.addon.common.item.PrototypeMimicItem;
 import com.goetypunk.addon.common.item.curio.AutoCastDummyWand;
 import com.goetypunk.addon.common.item.curio.FleshCasketItem;
 import com.goetypunk.addon.common.item.curio.SoulCatcherCurio;
-import com.goetypunk.addon.common.item.curio.TriggerType;
 import com.Polarice3.Goety.api.magic.SpellType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -156,28 +155,14 @@ public class ModItems {
     public static final RegistryObject<Item> PROTOTYPE_MIMIC =
             ITEMS.register("prototype_mimic", PrototypeMimicItem::new);
 
-    // ── 血肉晶匣 ──
+    // ── 血肉晶匣（按等级合并，触发类型为 NBT 属性）──
 
-    public static final RegistryObject<Item> FLESH_CASKET_A_1 =
-            ITEMS.register("flesh_casket_a_1", () -> new FleshCasketItem(TriggerType.A, 1));
-    public static final RegistryObject<Item> FLESH_CASKET_A_2 =
-            ITEMS.register("flesh_casket_a_2", () -> new FleshCasketItem(TriggerType.A, 2));
-    public static final RegistryObject<Item> FLESH_CASKET_A_3 =
-            ITEMS.register("flesh_casket_a_3", () -> new FleshCasketItem(TriggerType.A, 3));
-
-    public static final RegistryObject<Item> FLESH_CASKET_B_1 =
-            ITEMS.register("flesh_casket_b_1", () -> new FleshCasketItem(TriggerType.B, 1));
-    public static final RegistryObject<Item> FLESH_CASKET_B_2 =
-            ITEMS.register("flesh_casket_b_2", () -> new FleshCasketItem(TriggerType.B, 2));
-    public static final RegistryObject<Item> FLESH_CASKET_B_3 =
-            ITEMS.register("flesh_casket_b_3", () -> new FleshCasketItem(TriggerType.B, 3));
-
-    public static final RegistryObject<Item> FLESH_CASKET_C_1 =
-            ITEMS.register("flesh_casket_c_1", () -> new FleshCasketItem(TriggerType.C, 1));
-    public static final RegistryObject<Item> FLESH_CASKET_C_2 =
-            ITEMS.register("flesh_casket_c_2", () -> new FleshCasketItem(TriggerType.C, 2));
-    public static final RegistryObject<Item> FLESH_CASKET_C_3 =
-            ITEMS.register("flesh_casket_c_3", () -> new FleshCasketItem(TriggerType.C, 3));
+    public static final RegistryObject<Item> FLESH_CASKET_1 =
+            ITEMS.register("flesh_casket_1", () -> new FleshCasketItem(1));
+    public static final RegistryObject<Item> FLESH_CASKET_2 =
+            ITEMS.register("flesh_casket_2", () -> new FleshCasketItem(2));
+    public static final RegistryObject<Item> FLESH_CASKET_3 =
+            ITEMS.register("flesh_casket_3", () -> new FleshCasketItem(3));
 
     public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND =
             ITEMS.register("auto_cast_dummy_wand", AutoCastDummyWand::new);
