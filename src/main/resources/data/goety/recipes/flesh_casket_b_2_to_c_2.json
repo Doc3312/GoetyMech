@@ -1,8 +1,0 @@
-{
-  "type": "goety:cursed_infuser_recipes",
-  "ingredient": {
-    "item": "goetypunk:flesh_casket_b_2"
-  },
-  "result": "goetypunk:flesh_casket_c_2",
-  "cookingTime": 60
-}
