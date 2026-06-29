@@ -60,7 +60,10 @@ public class BreedingNestBlock extends BaseEntityBlock implements SimpleWaterlog
                     if (be instanceof BreedingNestBlockEntity nest && nest.canAcceptInput()) {
                         nest.insertFood(held);
                         held.shrink(1);
-                        level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.8F, 1.0F);
+                        if (nest.canPlaySound()) {
+                            level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.8F, 1.0F);
+                            nest.onSoundPlayed();
+                        }
                     }
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
