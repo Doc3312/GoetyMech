@@ -806,5 +806,53 @@
     },
     "done": true
   },
+  "goety:goety/craft_dark_altar": {
+    "criteria": {
+      "1": "2026-06-29 20:55:19 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/food/cooked_rabbit": {
+    "criteria": {
+      "has_rabbit": "2026-06-29 20:57:25 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/decorations/smoker": {
+    "criteria": {
+      "has_furnace": "2026-06-29 20:54:38 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/food/cooked_rabbit_from_smoking": {
+    "criteria": {
+      "has_rabbit": "2026-06-29 20:57:25 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/food/cooked_rabbit_from_campfire_cooking": {
+    "criteria": {
+      "has_rabbit": "2026-06-29 20:57:25 +0800"
+    },
+    "done": true
+  },
+  "goety:goety/craft_dark_wand": {
+    "criteria": {
+      "dark_wand": "2026-06-29 20:57:39 +0800"
+    },
+    "done": true
+  },
+  "goety:goety/craft_dark_ingot": {
+    "criteria": {
+      "dark_ingot": "2026-06-29 20:56:51 +0800"
+    },
+    "done": true
+  },
+  "goety:goety/craft_cursed_cage": {
+    "criteria": {
+      "cursed_cage": "2026-06-29 20:54:55 +0800"
+    },
+    "done": true
+  },
   "DataVersion": 3465
 }

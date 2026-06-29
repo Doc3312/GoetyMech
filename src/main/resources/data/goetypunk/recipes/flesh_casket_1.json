@@ -13,16 +13,16 @@
   "duration": 6,
   "ingredients": [
     {
-      "item": "goety:pale_metal_ingot"
+      "item": "goety:pale_steel_ingot"
     },
     {
-      "item": "goety:pale_metal_ingot"
+      "item": "goety:pale_steel_ingot"
     },
     {
-      "item": "goety:dark_metal_ingot"
+      "item": "goety:dark_ingot"
     },
     {
-      "item": "goety:dark_metal_ingot"
+      "item": "goety:dark_ingot"
     },
     {
       "item": "goety:ectoplasm"
