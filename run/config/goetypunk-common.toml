@@ -32,6 +32,13 @@
 	#Range: 1 ~ 100
 	threshold = 20
 
+[breeding_nest]
+	#育巢满能量阈值（hunger 点数）
+	#5 个面包 = 25 hunger
+	#范围: 1-1000，默认 25
+	#Range: 1 ~ 1000
+	max_energy = 25
+
 [blocks]
 	#血肉熔炉放置时自动扫描不祥火炬的范围（格）
 	#范围: 2-32，默认 8
