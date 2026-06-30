@@ -56,11 +56,7 @@ public class ModFluids {
     private static final EphemeralFluidConfig SOUL_LIQUID_CONFIG = EphemeralFluidConfig.builder()
             .particle(ParticleTypes.SCULK_SOUL)
             .particleProbability(0.025f)
-            .contactEffect(player -> {
-                if (player.tickCount % 20 == 0) {
-                    SEHelper.increaseSouls(player, 50);
-                }
-            })
+            .contactEffect(player -> SEHelper.increaseSouls(player, 50))
             .build();
 
     public static final RegistryObject<EphemeralLiquidBlock> SOUL_LIQUID_BLOCK =

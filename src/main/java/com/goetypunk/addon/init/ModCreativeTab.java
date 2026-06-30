@@ -46,6 +46,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.CHASE_FOCUS.get());
                         output.accept(ModItems.CRAZED_SUMMON_FOCUS.get());
                         output.accept(ModItems.CRAZED_ILLAGER_SPAWN_EGG.get());
+                        output.accept(ModFluids.SOUL_LIQUID_BUCKET.get());
                     })
                     .build()
     );
