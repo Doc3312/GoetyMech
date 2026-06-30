@@ -1,6 +1,6 @@
 ---
 name: create-dev
-description: Create machines / Ponder / kinetic BE / BESR
+description: Create machines / Ponder / kinetic BE / BESR / 流体(Fluid tank/pipe/pump/spout/recipe/API)
 ---
 
 # Create 附属开发指南 (Forge 1.20.1 / Create 6.0.8)
@@ -17,6 +17,10 @@ description: Create machines / Ponder / kinetic BE / BESR
 - 理解 KineticBlockEntity 运行时行为（tick/speed/stress/NBT/Rotation Propagation）
 - 实现 BESR / Flywheel Visual 自定义渲染
 - 编写 Block Model JSON / 配置 blockstate 旋转
+- 接入 Create 流体系统（储罐 / 管道 / 泵 / 喷头 / 流体配方）
+- 实现流体 API 扩展点（BlockSpoutingBehaviour / OpenPipeEffectHandler / BoilerHeater）
+- 自定义流体 Ponder 场景
+- 流体 DataGen 与流体渲染
 
 ## 文档索引
 
@@ -27,6 +31,7 @@ description: Create machines / Ponder / kinetic BE / BESR
 | [processing-ponder-api.md](processing-ponder-api.md) | ProcessingRecipe + Ponder + API 扩展点 |
 | [kinetics-runtime.md](kinetics-runtime.md) | KineticBlockEntity 生命周期 / GeneratingBE / RotationPropagator / KineticNetwork / DirectionalKineticBlock / Config |
 | [rendering-pipeline.md](rendering-pipeline.md) | BESR 管线(SafeBlockEntityRenderer / KineticBlockEntityRenderer) / Flywheel interplay / CachedBuffers / PartialModel / 标准渲染模式 / Block Model UV 惯例 |
+| [create-fluids.md](create-fluids.md) | Forge 流体基础 + Create 流体体系(SmartFluidTank/SmartFluidTankBehaviour/CombinedTankWrapper/FluidHelper) / 管道与传输 / 流体配方(ProcessingRecipe/FillingRecipe) / API 扩展点(BlockSpoutingBehaviour/OpenPipeEffectHandler/BoilerHeater/PipeCollisionEvent) / DataGen / Ponder / 渲染 |
 
 ## 本项目当前配置
 
