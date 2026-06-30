@@ -17,7 +17,7 @@ public class MimicItemDecorator implements IItemDecorator {
         if (PrototypeMimicItem.getSourceStack(stack).isEmpty()) return false;
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 400);
+        guiGraphics.pose().translate(0, 0, 0);
         guiGraphics.blit(OVERLAY_TEXTURE, xOffset, yOffset, 16, 16, 0, 0, 16, 16, 16, 16);
         guiGraphics.pose().popPose();
         return false;
