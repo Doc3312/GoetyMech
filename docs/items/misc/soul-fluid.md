@@ -36,3 +36,4 @@ public static class Flowing extends SoulFluid {
 |------|------|------|
 | 2026-07-01 | 创建 | 短暂流体框架具体实现 |
 | 2026-07-01 | `getTimerDuration()` 移除；`getDecayRate()` → public | 框架重构 |
+| 2026-07-01 | 添加 `zh_cn.json` 中文译名"灵魂液" | 中文译名强制规则 |
