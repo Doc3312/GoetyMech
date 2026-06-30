@@ -14,6 +14,7 @@ import com.goetypunk.addon.init.ModEffects;
 import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModItems;
 import com.goetypunk.addon.init.ModRecipeSerializers;
+import com.goetypunk.addon.init.ModFluids;
 import com.goetypunk.addon.init.ModRituals;
 import com.goetypunk.addon.common.entity.CrazedIllagerEntity;
 import com.goetypunk.addon.common.entity.CrazedIllagerServant;
@@ -59,6 +60,10 @@ public class GoetyPunkMod {
         ModMenuTypes.CONTAINER_TYPE.register(modEventBus);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         ModRituals.RITUALS.register(modEventBus);
+        ModFluids.FLUID_TYPES.register(modEventBus);
+        ModFluids.FLUIDS.register(modEventBus);
+        ModFluids.BLOCKS.register(modEventBus);
+        ModFluids.ITEMS.register(modEventBus);
 
         ModNetwork.init();
         modEventBus.addListener(ModBlocks::registerStressValues);

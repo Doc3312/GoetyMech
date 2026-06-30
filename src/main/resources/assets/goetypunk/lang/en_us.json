@@ -133,5 +133,9 @@
   "jei.goetypunk.info.prototype_mimic": "A Prototype Mimic is crafted by combining a Prototype with any chestplate in the 2×2 crafting grid.\n\nIt inherits all attributes, enchantments, and modifiers from the chestplate.\n\nCombine a Prototype Mimic back into a crafting grid to retrieve the Prototype.",
 
   "jei.goetypunk.category.mimic_combination": "Prototype Mimic Combination",
-  "jei.goetypunk.category.mimic_deconstruction": "Prototype Mimic Deconstruction"
+  "jei.goetypunk.category.mimic_deconstruction": "Prototype Mimic Deconstruction",
+
+  "fluid.goetypunk.soul_liquid": "Soul Liquid",
+  "item.goetypunk.soul_liquid_bucket": "Soul Liquid Bucket",
+  "block.goetypunk.soul_liquid": "Soul Liquid"
 }

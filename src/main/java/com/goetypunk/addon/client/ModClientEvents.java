@@ -13,6 +13,7 @@ import com.goetypunk.addon.client.render.StressReaderRenderer;
 import com.goetypunk.addon.common.menu.ModMenuTypes;
 import com.goetypunk.addon.init.ModBlocks;
 import com.goetypunk.addon.init.ModEntities;
+import com.goetypunk.addon.init.ModFluids;
 import com.goetypunk.addon.init.ModItems;
 import com.goetypunk.addon.common.item.SquadFocus;
 import net.minecraft.client.KeyMapping;
@@ -43,6 +44,12 @@ public class ModClientEvents {
         LOGGER.info("[MOD_CLIENT] onClientSetup called");
 
         event.enqueueWork(() -> {
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.SOUL_LIQUID_SOURCE.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.SOUL_LIQUID_FLOWING.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
             net.minecraft.client.gui.screens.MenuScreens.register(
                     ModMenuTypes.SQUAD_BARRACKS.get(), SquadBarracksScreen::new);
             net.minecraft.client.gui.screens.MenuScreens.register(
