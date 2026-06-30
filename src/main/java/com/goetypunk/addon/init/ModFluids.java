@@ -73,7 +73,8 @@ public class ModFluids {
                             .strength(100.0F)
                             .noLootTable(),
                     SOUL_LIQUID_CONFIG,
-                    100
+                    100,
+                    2
             ));
 
     // ── Soul Liquid Bucket ──

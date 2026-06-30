@@ -9,17 +9,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraftforge.fluids.FluidType;
 
 public abstract class SoulFluid extends AbstractEphemeralFluid {
 
     @Override
-    protected int getTimerDuration() {
-        return 100;
-    }
-
-    @Override
-    protected int getDecayRate() {
+    public int getDecayRate() {
         return 2;
     }
 
@@ -61,6 +57,12 @@ public abstract class SoulFluid extends AbstractEphemeralFluid {
     }
 
     public static class Flowing extends SoulFluid {
+        @Override
+        protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> builder) {
+            super.createFluidStateDefinition(builder);
+            builder.add(LEVEL);
+        }
+
         @Override
         public int getAmount(FluidState state) {
             return state.getValue(LEVEL);
