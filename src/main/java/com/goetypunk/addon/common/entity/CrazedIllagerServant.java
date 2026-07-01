@@ -89,23 +89,21 @@ public class CrazedIllagerServant extends VindicatorServant {
     public boolean doHurtTarget(Entity target) {
         if (target instanceof LivingEntity living) {
             living.invulnerableTime = 0;
-
-            float prevHealth = living.getHealth();
             float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
-            DamageSource source = this.getTrueOwner() != null
-                    ? ModDamageSource.summonAttack(this, this.getTrueOwner())
-                    : this.damageSources().mobAttack(this);
-
             Vec3 prevMotion = living.getDeltaMovement();
-            living.hurt(source, damage);
-            living.setDeltaMovement(prevMotion);
-
-            float dealt = prevHealth - living.getHealth();
-            if (dealt < 1.0F && living.isAlive()) {
-                living.invulnerableTime = 0;
-                living.hurt(this.damageSources().magic(), 1.0F - dealt);
+            if (living.getArmorValue() <= 20) {
+                living.hurt(this.damageSources().magic(), damage);
+                if (this.getTrueOwner() != null) {
+                    living.setLastHurtByMob(this.getTrueOwner());
+                }
+            } else {
+                DamageSource source = this.getTrueOwner() != null
+                        ? ModDamageSource.summonAttack(this, this.getTrueOwner())
+                        : this.damageSources().mobAttack(this);
+                living.hurt(source, damage);
             }
+            living.setDeltaMovement(prevMotion);
 
             this.hurt(this.damageSources().generic(), 1.0F);
             this.invulnerableTime = 0;
