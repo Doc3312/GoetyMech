@@ -12,14 +12,14 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * 瀹炰綋绫诲瀷娉ㄥ唽
+ * 实体类型注册
  */
 public class ModEntities {
 
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, GoetyMechMod.MOD_ID);
 
-    /** 骞藉尶灏栧埡 鈥?瀹氳韩閿氱偣瀹炰綋锛屽昂瀵镐笌 Goety TangleEntity 涓€鑷?*/
+    /** 幽匿尖刺 — 定身锚点实体，尺寸与 Goety TangleEntity 一致 */
     public static final RegistryObject<EntityType<SculkSpikeEntity>> SCULK_SPIKE =
             ENTITIES.register("sculk_spike",
                     () -> EntityType.Builder.<SculkSpikeEntity>of(SculkSpikeEntity::new, MobCategory.MISC)
@@ -28,7 +28,7 @@ public class ModEntities {
                             .updateInterval(1)
                             .build("sculk_spike"));
 
-    /** 绮夌杞?鈥?搴斿姏鑱氭櫠鏂芥硶鍙敜鐨勯琛屽疄浣?*/
+    /** 粉碎轮 — 应力聚晶施法召唤的飞行实体 */
     public static final RegistryObject<EntityType<CrushingWheelEntity>> CRUSHING_WHEEL =
             ENTITIES.register("crushing_wheel",
                     () -> EntityType.Builder.<CrushingWheelEntity>of(CrushingWheelEntity::new, MobCategory.MISC)
@@ -37,7 +37,7 @@ public class ModEntities {
                             .updateInterval(1)
                             .build("crushing_wheel"));
 
-    /** 鐤媯鐨勬敼閫犲垖姘?鈥?鏁屽鐗堟湰 */
+    /** 疯狂的改造刌民 — 敌对版本 */
     public static final RegistryObject<EntityType<CrazedIllagerEntity>> CRAZED_ILLAGER =
             ENTITIES.register("crazed_illager",
                     () -> EntityType.Builder.<CrazedIllagerEntity>of(CrazedIllagerEntity::new, MobCategory.MONSTER)
@@ -45,7 +45,7 @@ public class ModEntities {
                             .clientTrackingRange(10)
                             .build("crazed_illager"));
 
-    /** 鐤媯鐨勬敼閫犲垖姘?鈥?浠嗕粠鐗堟湰 */
+    /** 疯狂的改造刌民 — 仆从版本 */
     public static final RegistryObject<EntityType<CrazedIllagerServant>> CRAZED_ILLAGER_SERVANT =
             ENTITIES.register("crazed_illager_servant",
                     () -> EntityType.Builder.<CrazedIllagerServant>of(CrazedIllagerServant::new, MobCategory.MISC)

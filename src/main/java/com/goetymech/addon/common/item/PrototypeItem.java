@@ -137,7 +137,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().putInt(TAG_FLIGHT_TICK, tick);
     }
 
-    // 鈹€鈹€ Wall-running 鈹€鈹€
+    // ── Wall-running ──
 
     public static boolean isWallRunning(LivingEntity entity) {
         return entity.getPersistentData().getBoolean(TAG_WALL_RUNNING);
@@ -185,7 +185,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_WALL_RECOVERY_TICKS);
     }
 
-    // 鈹€鈹€ Wall input (synced from client) 鈹€鈹€
+    // ── Wall input (synced from client) ──
 
     public static float getWallForward(LivingEntity entity) {
         return entity.getPersistentData().getFloat(TAG_WALL_FORWARD);
@@ -203,7 +203,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().putFloat(TAG_WALL_STRAFE, strafe);
     }
 
-    // 鈹€鈹€ Jump charging 鈹€鈹€
+    // ── Jump charging ──
 
     public static int getJumpChargeTick(LivingEntity entity) {
         return entity.getPersistentData().getInt(TAG_JUMP_CHARGE_TICK);
@@ -217,7 +217,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_JUMP_CHARGE_TICK);
     }
 
-    // 鈹€鈹€ Slam invulnerability 鈹€鈹€
+    // ── Slam invulnerability ──
 
     public static int getSlamInvulnTick(LivingEntity entity) {
         return entity.getPersistentData().getInt(TAG_SLAM_INVULN_TICK);
@@ -227,7 +227,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().putInt(TAG_SLAM_INVULN_TICK, tick);
     }
 
-    // 鈹€鈹€ Sprint acceleration 鈹€鈹€
+    // ── Sprint acceleration ──
 
     public static int getSprintTick(LivingEntity entity) {
         return entity.getPersistentData().getInt(TAG_SPRINT_TICK);
@@ -241,7 +241,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_SPRINT_TICK);
     }
 
-    // 鈹€鈹€ Flight forward input 鈹€鈹€
+    // ── Flight forward input ──
 
     public static float getFlightForward(LivingEntity entity) {
         return entity.getPersistentData().getFloat(TAG_FLIGHT_FORWARD);
@@ -251,7 +251,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().putFloat(TAG_FLIGHT_FORWARD, forward);
     }
 
-    // 鈹€鈹€ Swim acceleration 鈹€鈹€
+    // ── Swim acceleration ──
 
     public static int getSwimTick(LivingEntity entity) {
         return entity.getPersistentData().getInt(TAG_SWIM_TICK);
@@ -265,7 +265,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_SWIM_TICK);
     }
 
-    // 鈹€鈹€ Charged jump state 鈹€鈹€
+    // ── Charged jump state ──
 
     public static boolean isChargedJumping(LivingEntity entity) {
         return entity.getPersistentData().getBoolean(TAG_CHARGED_JUMPING);
@@ -306,7 +306,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().putDouble(TAG_CJ_START_SPEED, speed);
     }
 
-    // 鈹€鈹€ Ground speed tracking 鈹€鈹€
+    // ── Ground speed tracking ──
 
     public static double getGroundSpeed(LivingEntity entity) {
         return entity.getPersistentData().getDouble(TAG_GROUND_SPEED);
@@ -316,7 +316,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().putDouble(TAG_GROUND_SPEED, speed);
     }
 
-    // 鈹€鈹€ Charge start Y tracking 鈹€鈹€
+    // ── Charge start Y tracking ──
 
     public static double getChargeStartY(LivingEntity entity) {
         return entity.getPersistentData().getDouble(TAG_CHARGE_START_Y);
@@ -330,7 +330,7 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().remove(TAG_CHARGE_START_Y);
     }
 
-    // 鈹€鈹€ Knockback immunity 鈹€鈹€
+    // ── Knockback immunity ──
 
     public static boolean isKnockbackImmune(LivingEntity entity) {
         return entity.getPersistentData().getBoolean(TAG_KNOCKBACK_IMMUNE);
@@ -344,7 +344,7 @@ public class PrototypeItem extends ElytraItem {
         }
     }
 
-    // 鈹€鈹€ Assimilation kill count 鈹€鈹€
+    // ── Assimilation kill count ──
 
     public static int getAssimilationKills(LivingEntity entity) {
         return entity.getPersistentData().getInt(TAG_ASSIMILATION_KILLS);
@@ -358,7 +358,7 @@ public class PrototypeItem extends ElytraItem {
         setAssimilationKills(entity, getAssimilationKills(entity) + 1);
     }
 
-    // 鈹€鈹€ Assimilation tier utilities 鈹€鈹€
+    // ── Assimilation tier utilities ──
 
     public static int getAssimilationTier(int kills) {
         if (kills < 10) return 0;
@@ -386,7 +386,7 @@ public class PrototypeItem extends ElytraItem {
         return kills >= 50;
     }
 
-    // 鈹€鈹€ Damage multiplier 鈹€鈹€
+    // ── Damage multiplier ──
 
     public static float getDamageMultiplier(int kills) {
         if (kills <= 0) return 1.0f;

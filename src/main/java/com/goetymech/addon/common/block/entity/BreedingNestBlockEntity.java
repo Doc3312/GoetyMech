@@ -51,11 +51,11 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
     public void tick() {
         if (level == null || level.isClientSide) return;
 
-        // 闊虫晥鍐峰嵈 + 杈撳叆鍐峰嵈
+        // 音效冷却 + 输入冷却
         if (soundCooldown > 0) soundCooldown--;
         if (inputCooldown > 0) inputCooldown--;
 
-        // === 杈撳叆缂撳啿锛氱珛鍗虫秷鍖栵紝鏃犲欢杩?===
+        // === 输入缓冲：立即消化，无延迟 ===
         if (!inputBuffer.isEmpty()) {
             FoodProperties food = inputBuffer.getItem().getFoodProperties(inputBuffer, null);
             if (food != null) {
@@ -71,23 +71,23 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
 
         int maxEnergy = ModConfig.cachedNestMaxEnergy;
 
-        // === 鑳介噺婊′笖绌洪棽 鈫?寮€濮?2s 杞寲 ===
+        // === 能量满且空闲 → 开始 2s 转化 ===
         if (conversionTicks < 0 && energy >= maxEnergy && outputStack.isEmpty()) {
             energy -= maxEnergy;
             conversionTicks = 0;
             markUpdated();
         }
 
-        // === 杞寲杩涜涓?===
+        // === 转化进行中 ===
         if (conversionTicks >= 0) {
             conversionTicks++;
-            // 绾㈢煶绮掑瓙
+            // 红石粒子
             if (level instanceof ServerLevel server && level.getGameTime() % 3 == 0) {
                 server.sendParticles(new DustParticleOptions(new Vector3f(1.0F, 0.0F, 0.0F), 0.8F),
                         worldPosition.getX() + 0.5D, worldPosition.getY() + 0.8D, worldPosition.getZ() + 0.5D,
                         1, 0.3D, 0.2D, 0.3D, 0.01D);
             }
-            // 婊?2s 鈫?浜у嚭
+            // 满 2s → 产出
             if (conversionTicks >= 40) {
                 outputStack = new ItemStack(ModItems.TWISTED_EMBRYO.get(), 1);
                 conversionTicks = -1;
@@ -97,7 +97,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    // ===== 杈撳叆鎺у埗 =====
+    // ===== 输入控制 =====
 
     public boolean canAcceptInput() {
         return inputBuffer.isEmpty() && outputStack.isEmpty() && inputCooldown <= 0;
@@ -130,7 +130,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         Containers.dropItemStack(level, worldPosition.getX() + 0.5D, worldPosition.getY() + 1.0D, worldPosition.getZ() + 0.5D, stack);
     }
 
-    // ===== HUD 鏁版嵁 =====
+    // ===== HUD 数据 =====
 
     public int getEnergy() { return energy; }
 
@@ -175,7 +175,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    // ===== 缃戠粶鍚屾 =====
+    // ===== 网络同步 =====
 
     @Override
     public CompoundTag getUpdateTag() {

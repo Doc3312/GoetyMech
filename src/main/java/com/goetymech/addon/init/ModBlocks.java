@@ -24,7 +24,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * 鏂瑰潡娉ㄥ唽
+ * 方块注册
  */
 public class ModBlocks {
 
@@ -41,7 +41,7 @@ public class ModBlocks {
             BLOCK_ENTITIES.register("flesh_furnace",
                     () -> BlockEntityType.Builder.of(FleshFurnaceBlockEntity::new, FLESH_FURNACE.get()).build(null));
 
-    // 鈹€鈹€ 鑲插发 鈹€鈹€
+    // ── 育巢 ──
 
     public static final RegistryObject<Block> BREEDING_NEST =
             BLOCKS.register("breeding_nest", BreedingNestBlock::new);
@@ -50,7 +50,7 @@ public class ModBlocks {
             BLOCK_ENTITIES.register("breeding_nest",
                     () -> BlockEntityType.Builder.of(BreedingNestBlockEntity::new, BREEDING_NEST.get()).build(null));
 
-    // 鈹€鈹€ 鐐瑰皢鍙颁笁闃舵柟鍧?鈹€鈹€
+    // ── 点将台三阶方块 ──
 
     public static final RegistryObject<Block> TIER1_SQUAD_BARRACKS =
             BLOCKS.register("tier1_squad_barracks", Tier1SquadBarracksBlock::new);
@@ -68,7 +68,7 @@ public class ModBlocks {
                             TIER2_SQUAD_BARRACKS.get(),
                             TIER3_SQUAD_BARRACKS.get()).build(null));
 
-    // 鈹€鈹€ 搴斿姏璇诲彇鍣?鈹€鈹€
+    // ── 应力读取器 ──
 
     public static final RegistryObject<Block> STRESS_READER =
             BLOCKS.register("stress_reader", StressReaderBlock::new);
@@ -79,7 +79,7 @@ public class ModBlocks {
                             StressReaderBlockEntity::new,
                             STRESS_READER.get()).build(null));
 
-    // 鈹€鈹€ 杩滅▼寮曟搸 鈹€鈹€
+    // ── 远程引擎 ──
 
     public static final RegistryObject<Block> REMOTE_ENGINE =
             BLOCKS.register("remote_engine", RemoteEngineBlock::new);
@@ -90,7 +90,7 @@ public class ModBlocks {
                             RemoteEngineBlockEntity::new,
                             REMOTE_ENGINE.get()).build(null));
 
-    // 鈹€鈹€ 搴斿姏鏂硅垷 鈹€鈹€
+    // ── 应力方舟 ──
 
     public static final RegistryObject<Block> STRESS_ARK =
             BLOCKS.register("stress_ark", StressArkBlock::new);

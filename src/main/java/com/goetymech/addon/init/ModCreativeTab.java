@@ -9,14 +9,14 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * 鍒涢€犳ā寮忔爣绛鹃〉娉ㄥ唽
+ * 创造模式标签页注册
  */
 public class ModCreativeTab {
 
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GoetyMechMod.MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> goetymech_TAB = TABS.register("goetymech",
+    public static final RegistryObject<CreativeModeTab> GOETYPUNK_TAB = TABS.register("goetymech",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.goetymech"))
                     .icon(() -> new ItemStack(ModItems.TWISTED_EMBRYO.get()))

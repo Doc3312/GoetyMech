@@ -7,11 +7,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
 /**
- * goetymech 鑷畾涔夋爣绛? * 鐢ㄤ簬鏍囪闇€瑕佸畬鏁磋缁冪粨鏋勭殑鍏电绫诲瀷锛堢啍鐐変笉鍙洿鎺ヨ浆鍖栵級
+ * GoetyMech 自定义标签
+ * 用于标记需要完整训练结构的兵种类型（熔炉不可直接转化）
  */
 public class ModTags {
 
-    /** 闇€瑕佷笉绁ョ伀鐐畬鏁磋缁冪粨鏋勬墠鑳借浆鍖栫殑鍏电鏍囩 */
+    /** 需要不祥火炬完整训练结构才能转化的兵种标签 */
     public static final TagKey<EntityType<?>> REQUIRES_TRAINING_STRUCTURE =
             TagKey.create(Registries.ENTITY_TYPE,
                     new ResourceLocation(GoetyMechMod.MOD_ID, "requires_training_structure"));

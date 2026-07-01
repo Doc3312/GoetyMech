@@ -41,7 +41,7 @@ public class RemoteEngineBlockItem extends BlockItem {
 
         if (player != null) {
             if (player.isShiftKeyDown()) {
-                // Sneak + right-click on bound reader 鈫?let StressReaderBlock handle unbind
+                // Sneak + right-click on bound reader → let StressReaderBlock handle unbind
                 if (isBound(stack) && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
                     BlockPos boundPos = getBoundPos(stack);
                     if (boundPos.equals(clickedPos))

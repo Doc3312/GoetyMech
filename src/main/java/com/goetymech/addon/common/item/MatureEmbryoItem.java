@@ -22,9 +22,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
- * 鎴愮啛鑳氳儙 - 澶氭€佸埛鎬泲
- * 鐗╁搧 NBT 涓繚瀛?EntityTypeId 纭畾鍏电绫诲瀷
- * 鍙抽敭鐢熸垚瀵瑰簲鍏电鐨勭帺瀹朵粏浠庯紝娑堣€楃伒榄? * 闇€鍏堢粡杩囪鑲夌啍鐐夌児鍒舵壄鏇茶儦鑳庝骇鍑? */
+ * 成熟胚胎 - 多态刷怪蛋
+ * 物品 NBT 中保存 EntityTypeId 确定兵种类型
+ * 右键生成对应兵种的玩家仆从，消耗灵魂
+ * 需先经过血肉熔炉烹制扭曲胚胎产出
+ */
 public class MatureEmbryoItem extends Item {
 
     private static final String TAG_ENTITY_TYPE = "EntityTypeId";
@@ -44,7 +46,7 @@ public class MatureEmbryoItem extends Item {
             if (rl != null) {
                 EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(rl);
                 if (entityType != null) {
-                    // 浣跨敤鏈湴鍖栧疄浣撳悕锛堜腑鏂囨樉绀?鍔帬鍏?锛岃嫳鏂囨樉绀?Vindicator"锛?
+                    // 使用本地化实体名（中文显示"劫掠兽"，英文显示"Vindicator"）
                     return Component.translatable("item.goetymech.mature_embryo.named", entityType.getDescription());
                 }
             }
@@ -83,7 +85,7 @@ public class MatureEmbryoItem extends Item {
     }
 
     /**
-     * 鏍稿績鐢熸垚閫昏緫
+     * 核心生成逻辑
      */
     private void spawnMinion(ServerLevel level, Player player, ItemStack stack, Vec3 spawnPos) {
         CompoundTag tag = stack.getTag();
@@ -118,7 +120,7 @@ public class MatureEmbryoItem extends Item {
             return;
         }
 
-        // 浣跨敤娉涘瀷鍒涘缓瀹炰綋
+        // 使用泛型创建实体
         Mob mob = MinionSpawnHelper.spawnMinion((EntityType<? extends Mob>) entityType, level, player, spawnPos);
         if (mob != null) {
             int soulCost = ModConfig.MATURE_EMBRYO_SOUL_COST.get();

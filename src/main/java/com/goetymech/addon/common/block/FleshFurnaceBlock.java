@@ -33,9 +33,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 /**
- * 琛€鑲夌啍鐐?- 鎵洸鑳氳儙鐨勭児鍒惰浆鍖栧櫒
- * 鏀惧叆鎵洸鑳氳儙 鈫?鐑瑰埗 鈫?鑷姩寮瑰嚭鎴愮啛鑳氳儙
- * 闇€鍏堥€氳繃鎸囪矾鐭崇粦瀹氫笉绁ョ伀鐐‘瀹氬叺绉嶇被鍨? */
+ * 血肉熔炉 - 扭曲胚胎的烹制转化器
+ * 放入扭曲胚胎 → 烹制 → 自动弹出成熟胚胎
+ * 需先通过指路石绑定不祥火炬确定兵种类型
+ */
 public class FleshFurnaceBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
 
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
@@ -62,7 +63,7 @@ public class FleshFurnaceBlock extends BaseEntityBlock implements SimpleWaterlog
 
         ItemStack held = player.getItemInHand(hand);
 
-        // 鎵嬫寔鎵洸鑳氳儙 鈫?灏濊瘯鏀惧叆鐔旂倝鐑瑰埗
+        // 手持扭曲胚胎 → 尝试放入熔炉烹制
         if (held.is(com.goetymech.addon.init.ModItems.TWISTED_EMBRYO.get())) {
             if (furnace.canAcceptInput() && furnace.getTargetEntityTypeId() != null) {
                 if (!level.isClientSide) {
@@ -71,11 +72,11 @@ public class FleshFurnaceBlock extends BaseEntityBlock implements SimpleWaterlog
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
-            // 鐔旂倝蹇欑鎴栨棤鏈夋晥璁粌鐩爣锛岄樆姝㈡壄鏇茶儦鑳庤嚜韬Е鍙戝彫鍞?
+            // 熔炉忙碌或无有效训练目标，阻止扭曲胚胎自身触发召唤
             return InteractionResult.FAIL;
         }
 
-        // 绌烘墜 鈫?鍙栧嚭褰撳墠姝ｅ湪杞寲鐨勭墿鍝?
+        // 空手 → 取出当前正在转化的物品
         if (held.isEmpty()) {
             if (!level.isClientSide) {
                 ItemStack extracted = furnace.removeItem(0, 1);
@@ -167,12 +168,10 @@ public class FleshFurnaceBlock extends BaseEntityBlock implements SimpleWaterlog
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof FleshFurnaceBlockEntity furnace) {
                 furnace.setPlacerName(player.getDisplayName().getString());
-       
-         // 鏀剧疆鏃惰嚜鍔ㄦ壂鎻忛摼鎺ラ檮杩戠殑涓嶇ゥ鐏偓
+                // 放置时自动扫描链接附近的不祥火炬
                 if (!level.isClientSide) {
                     boolean found = furnace.scanAndLink();
-            
-        if (found) {
+                    if (found) {
                         level.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 0.3F, 1.2F);
                     }
                 }

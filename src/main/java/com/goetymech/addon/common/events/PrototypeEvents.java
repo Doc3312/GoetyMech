@@ -63,9 +63,10 @@ public class PrototypeEvents {
     private static final String TAG_SLAM_START_Y = "goetymech.slam_start_y";
     private static final String TAG_PREV_CROUCH = "goetymech.prev_crouch";
 
-    // 鈹€鈹€ Ring animation sequencer 鈹€鈹€
+    // ── Ring animation sequencer ──
     private static final int RINGS_DELAY = 1;
-    private static final int SLAM_DELAY_TICKS = 40; // 2绉?
+    private static final int SLAM_DELAY_TICKS = 40; // 2秒
+
     private static final Map<ServerLevel, List<SlamAnimData>> ACTIVE_SLAMS = new ConcurrentHashMap<>();
     private static final Map<ServerLevel, List<DelayedDamageData>> PENDING_DAMAGES = new ConcurrentHashMap<>();
     private static final Set<UUID> ASSIMILATION_BONUS_GUARD = new HashSet<>();
@@ -140,7 +141,7 @@ public class PrototypeEvents {
         }
     }
 
-    // 鈹€鈹€ 浼ゅ涔樺尯 + 闄勫姞榄旀硶浼ゅ 鈹€鈹€
+    // ── 伤害乘区 + 附加魔法伤害 ──
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
@@ -186,7 +187,7 @@ public class PrototypeEvents {
         }
     }
 
-    // 鈹€鈹€ 鍧犺惤鍏嶄激 鈹€鈹€
+    // ── 坠落免伤 ──
 
     @SubscribeEvent
     public static void onLivingFall(LivingFallEvent event) {
@@ -206,7 +207,7 @@ public class PrototypeEvents {
         }
     }
 
-    // 鈹€鈹€ 鍑婚€€鍏嶇柅锛堥厤鍚堝厤浼ら槇鍊硷細浼ゅ 鈮?闃堝€兼椂鍏嶇柅鍑婚€€锛?鈹€鈹€
+    // ── 击退免疫（配合免伤阈值：伤害 ≤ 阈值时免疫击退） ──
 
     @SubscribeEvent
     public static void onLivingKnockBack(LivingKnockBackEvent event) {
@@ -217,7 +218,7 @@ public class PrototypeEvents {
         }
     }
 
-    // 鈹€鈹€ LivingTick: Slam 鐘舵€佹満锛坒ires before updateFallFlying 鈫?鍙悓 tick 鍋滈锛?鈹€鈹€
+    // ── LivingTick: Slam 状态机（fires before updateFallFlying → 可同 tick 停飞） ──
 
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
@@ -244,7 +245,7 @@ public class PrototypeEvents {
         PrototypeItem.setKnockbackImmune(player, false);
     }
 
-    // 鈹€鈹€ PlayerTick (END): 鎺ㄨ繘 + 鎶?drag锛坒ires after travel 鈫?淇グ鎸佷箙鍒颁笅涓€ tick锛?鈹€鈹€
+    // ── PlayerTick (END): 推进 + 抗 drag（fires after travel → 修饰持久到下一 tick） ──
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -260,7 +261,7 @@ public class PrototypeEvents {
             GoetyMechMod.LOGGER.debug("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
                     player.zza, player.onGround(), player.isFallFlying(), startHSpeed);
 
-            // 鈹€鈹€ 鐖妫€娴嬶紙鏀惧湪椋炶鍓嶉潰锛?鈹€鈹€
+            // ── 爬墙检测（放在飞行前面） ──
             if (hasPrototype && !isSlamming) {
                 if (PrototypeItem.isWallRunning(player)) {
                     handleWallRunTick(player);
@@ -269,7 +270,7 @@ public class PrototypeEvents {
                 }
             }
 
-            // 鈹€鈹€ Ground takeoff / mid-air flight start 鈹€鈹€
+            // ── Ground takeoff / mid-air flight start ──
             if (!PrototypeItem.isWallRunning(player)
                     && (PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player))
                     && !player.isFallFlying()) {
@@ -297,14 +298,14 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
-            // 鈹€鈹€ Post-travel diagnostic 鈹€鈹€
+            // ── Post-travel diagnostic ──
             Vec3 postTravelM = player.getDeltaMovement();
             GoetyMechMod.LOGGER.debug("D POST_TRAVEL: zza={}, motion=({}, {}, {}), onGround={}",
                     player.zza,
                     String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
                     player.onGround());
 
-            // 鈹€鈹€ 杩借釜瀹為檯鍦伴潰閫熷害锛堜粎褰撴鍦ㄧЩ鍔ㄦ椂鏇存柊锛岃搫鍔涙椂涓嶈鐩栵級 鈹€鈹€
+            // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
             double moved = Math.sqrt(
                     (player.getX() - player.xo) * (player.getX() - player.xo)
                     + (player.getZ() - player.zo) * (player.getZ() - player.zo));
@@ -313,7 +314,7 @@ public class PrototypeEvents {
                 PrototypeItem.setGroundSpeed(player, moved);
             }
 
-            // 鈹€鈹€ 鍦伴潰鍐插埡鍔犻€?鈹€鈹€
+            // ── 地面冲刺加速 ──
             if (hasPrototype && !isSlamming
                     && !PrototypeItem.isWallRunning(player)
                     && !player.isFallFlying()
@@ -338,7 +339,7 @@ public class PrototypeEvents {
                                 SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
                         double attrAfter = attr.getValue();
-                        GoetyMechMod.LOGGER.debug("SprintMod AFTER: current={}, amount={}, attr {}鈫抺}, hasMod={}",
+                        GoetyMechMod.LOGGER.debug("SprintMod AFTER: current={}, amount={}, attr {}→{}, hasMod={}",
                                 current, String.format("%.4f", amount),
                                 String.format("%.4f", attrBefore), String.format("%.4f", attrAfter),
                                 attr.getModifier(SPRINT_MODIFIER_UUID) != null);
@@ -354,7 +355,7 @@ public class PrototypeEvents {
             }
 
 
-            // 鈹€鈹€ Charged jump 姘村钩閫熷害鎸佺画娉ㄥ叆锛堟姷娑?move() 鐨勬懇鎿﹁“鍑忥級 鈹€鈹€
+            // ── Charged jump 水平速度持续注入（抵消 move() 的摩擦衰减） ──
             if (PrototypeItem.isWallRunning(player)) {
                 PrototypeItem.clearChargedJump(player);
             } else if (PrototypeItem.isChargedJumping(player)) {
@@ -391,19 +392,19 @@ public class PrototypeEvents {
                         player.zza);
             }
 
-            // 鈹€鈹€ Wall movement (server tracks state only; client handles velocity via setDeltaMovement) 鈹€鈹€
+            // ── Wall movement (server tracks state only; client handles velocity via setDeltaMovement) ──
             if (PrototypeItem.isWallRunning(player)) {
                 return;
             }
 
-            // 鈹€鈹€ 闈為琛岀姸鎬?鈹€鈹€
+            // ── 非飞行状态 ──
             if (!player.isFallFlying()) {
                 return;
             }
         }
     }
 
-    // 鈹€鈹€ 妫€娴?鈹€鈹€
+    // ── 检测 ──
 
     private static boolean isFlyingWithPrototype(Player player) {
         if (!player.isFallFlying()) return false;
@@ -411,7 +412,7 @@ public class PrototypeEvents {
         return CuriosHelper.hasPrototypeInCurios(player);
     }
 
-    // 鈹€鈹€ Wall-running detection 鈹€鈹€
+    // ── Wall-running detection ──
 
     private static void tryStartWallRun(Player player) {
         if (!player.isSprinting()) return;
@@ -441,7 +442,7 @@ public class PrototypeEvents {
             return;
         }
 
-        // 鈹€鈹€ 瑙掕惤妫€娴嬶細褰撳墠澧欓潰娑堝け 鈫?鎵弿鎵€鏈夋柟鍚戞壘鏈€杩戠殑澧?鈹€鈹€
+        // ── 角落检测：当前墙面消失 → 扫描所有方向找最近的墙 ──
         Vec3 currentWall = WallUtil.getWallDirection(player, 0.5);
         if (currentWall == null) {
             Vec3 newDir = WallUtil.findBestWallDirection(player, 0.8);
@@ -457,14 +458,14 @@ public class PrototypeEvents {
                 return;
             }
         } else {
-            // 鈹€鈹€ 澧欓潰鎽╂摝妫€娴嬶紙鍐伴潰涓嶅彲璺戯級 鈹€鈹€
+            // ── 墙面摩擦检测（冰面不可跑） ──
             if (WallUtil.getWallFriction(player, wallN) >= 0.8f) {
                 stopWallRun(player);
                 return;
             }
         }
 
-        // 鈹€鈹€ 绱姞璺戝 tick 鈹€鈹€
+        // ── 累加跑墙 tick ──
         PrototypeItem.setWallRunTicks(player, PrototypeItem.getWallRunTicks(player) + 1);
 
         // Jump-off is handled via C2SWallJumpOffPacket from client
@@ -486,7 +487,7 @@ public class PrototypeEvents {
         PrototypeItem.setWallRunning(player, false);
     }
 
-    // 鈹€鈹€ Jump charging (called from C2S packet handler) 鈹€鈹€
+    // ── Jump charging (called from C2S packet handler) ──
 
     public static void handleJumpChargeFromClient(ServerPlayer player, int action, float forward, boolean jumping, double clientGroundSpeed) {
         if (player.isFallFlying() || PrototypeItem.isWallRunning(player)) return;
@@ -613,7 +614,7 @@ public class PrototypeEvents {
         return (lo + hi) / 2;
     }
 
-    // 鈹€鈹€ Slam 鈹€鈹€
+    // ── Slam ──
 
     private static void handleSlamTrigger(Player player) {
         boolean nowCrouch = player.isShiftKeyDown();
@@ -630,7 +631,7 @@ public class PrototypeEvents {
         PrototypeItem.setSlamStartY(player, player.getY());
         PrototypeItem.setSlamInvulnTick(player, 9999);
 
-        // elytraFlightTick() 杩斿洖 false 鈫?鍚?tick 鏅氫簺 updateFallFlying 娓呴櫎椋炶鏍囧織
+        // elytraFlightTick() 返回 false → 同 tick 晚些 updateFallFlying 清除飞行标志
         Vec3 motion = player.getDeltaMovement();
         player.setDeltaMovement(motion.x, -0.15, motion.z);
 
@@ -671,7 +672,7 @@ public class PrototypeEvents {
         PrototypeItem.setSlamTick(player, tick + 1);
     }
 
-    // 鈹€鈹€ 鍐插嚮 鈹€鈹€
+    // ── 冲击 ──
 
     private static void triggerSlamImpact(Player player, boolean onGround) {
         Level level = player.level();
@@ -809,7 +810,7 @@ public class PrototypeEvents {
         double cz = dd.pz;
         float r = dd.radius;
 
-        // 鈹€鈹€ 鐧借壊榄旀硶鎵╁紶鐜?鈹€鈹€
+        // ── 白色魔法扩张环 ──
         level.sendParticles(
                 new CircleExplodeParticleOption(0.8f, 0.8f, 1.0f, r, 1),
                 cx, cy + 1.25, cz, 1, 0, 0, 0, 0);
@@ -822,10 +823,10 @@ public class PrototypeEvents {
         double pz = player.getZ();
         int floorY = (int) Math.floor(BlockFinder.moveDownToGround(player) - 0.0625);
 
-        // 鈹€鈹€ 鍚姩閫愬湀閿欏紑鍗囪捣鍔ㄧ敾 鈹€鈹€
+        // ── 启动逐圈错开升起动画 ──
         startRingAnimation(player, level, new Vec3(px, py, pz), floorY, radius, fallDistance, rings, random);
 
-        // 鈹€鈹€ MOBILE 椋炴暎纰庡潡锛堜腑蹇冨悜澶栭锛岃寖鍥?3 鏍煎唴锛?鈹€鈹€
+        // ── MOBILE 飞散碎块（中心向外飞，范围 3 格内） ──
         int debrisCount = 20;
         for (int i = 0; i < debrisCount; i++) {
             double angle = random.nextDouble() * 2 * Math.PI;
@@ -846,7 +847,7 @@ public class PrototypeEvents {
             level.addFreshEntity(debris);
         }
 
-        // 鈹€鈹€ 涓績 DEBRIS 纰庡潡锛?5涓紝姘村钩 0.5~2.0 鍚戝椋炴暎锛?鈹€鈹€
+        // ── 中心 DEBRIS 碎块（15个，水平 0.5~2.0 向外飞散） ──
         for (int i = 0; i < 15; i++) {
             double angle = random.nextDouble() * 2 * Math.PI;
             double dist = 0.5 + random.nextDouble() * 1.5;
@@ -866,7 +867,7 @@ public class PrototypeEvents {
             level.addFreshEntity(debris);
         }
 
-        // 鈹€鈹€ 绮掑瓙锛氱孩鑹?CircleExplode 澶栧湀杈圭晫锛堝嵆鏃剁垎鍙戯級 鈹€鈹€
+        // ── 粒子：红色 CircleExplode 外圈边界（即时爆发） ──
         try {
             level.sendParticles(
                     new CircleExplodeParticleOption(1.0f, 0.0f, 0.0f, radius, 2),
@@ -874,7 +875,7 @@ public class PrototypeEvents {
         } catch (Exception ignored) {
         }
 
-        // 鈹€鈹€ 绮掑瓙锛欰oEParticleOption 鍦伴潰鍗婇€忔槑绾㈣壊鍦嗗舰锛堟寔缁樉绀轰激瀹宠寖鍥达級 鈹€鈹€
+        // ── 粒子：AoEParticleOption 地面半透明红色圆形（持续显示伤害范围） ──
         try {
             double aoeGroundY = BlockFinder.moveDownToGround(player) + 0.25;
             GoetyMechMod.LOGGER.debug("AoE particle: radius={}, pos=({}, {}, {})",
@@ -886,7 +887,7 @@ public class PrototypeEvents {
         } catch (Exception ignored) {
         }
 
-        // 鈹€鈹€ 闀滃ご闇囧姩 CameraShake 鈹€鈹€
+        // ── 镜头震动 CameraShake ──
         try {
             CameraShake.cameraShake(level, player.position(),
                     radius * 1.5f, 0.15f, 15, 10);
@@ -894,7 +895,7 @@ public class PrototypeEvents {
         }
     }
 
-    // 鈹€鈹€ Ring animation system 鈹€鈹€
+    // ── Ring animation system ──
 
     private static void startRingAnimation(Player player, ServerLevel level, Vec3 center, int floorY,
                                            float radius, float fallDistance, int rings, RandomSource random) {
@@ -982,7 +983,7 @@ public class PrototypeEvents {
         if (event.phase != TickEvent.Phase.END) return;
         if (!(event.level instanceof ServerLevel serverLevel)) return;
 
-        // 鈹€鈹€ Ring animation 鈹€鈹€
+        // ── Ring animation ──
         List<SlamAnimData> slams = ACTIVE_SLAMS.get(serverLevel);
         if (slams != null && !slams.isEmpty()) {
             synchronized (slams) {
@@ -1020,7 +1021,7 @@ public class PrototypeEvents {
             }
         }
 
-        // 鈹€鈹€ Delayed AoE damage 鈹€鈹€
+        // ── Delayed AoE damage ──
         List<DelayedDamageData> pending = PENDING_DAMAGES.get(serverLevel);
         if (pending != null) {
             synchronized (pending) {
@@ -1040,7 +1041,7 @@ public class PrototypeEvents {
             }
         }
 
-        // 鈹€鈹€ Indestructible guard: pull prototype from void 鈹€鈹€
+        // ── Indestructible guard: pull prototype from void ──
         AABB voidBox = new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY, -64.0, Double.POSITIVE_INFINITY);
         for (ItemEntity item : serverLevel.getEntitiesOfClass(ItemEntity.class, voidBox)) {
@@ -1100,7 +1101,7 @@ public class PrototypeEvents {
         return null;
     }
 
-    // 鈹€鈹€ Kill Absorption 鈹€鈹€
+    // ── Kill Absorption ──
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
@@ -1114,7 +1115,7 @@ public class PrototypeEvents {
         LivingEntity killed = event.getEntity();
         float mobMaxHealth = killed.getMaxHealth();
 
-        // 鈹€鈹€ Health absorption 鈹€鈹€
+        // ── Health absorption ──
         float ratio = (float)(double)ModConfig.KILL_HEALTH_ABSORB_RATIO.get();
         if (ratio > 0.0F) {
             float absorbAmount = mobMaxHealth * ratio;
@@ -1131,7 +1132,7 @@ public class PrototypeEvents {
             }
         }
 
-        // 鈹€鈹€ Food restoration 鈹€鈹€
+        // ── Food restoration ──
         float foodRatio = (float)(double)ModConfig.KILL_FOOD_RESTORE_RATIO.get();
         if (foodRatio > 0.0F) {
             float foodAmount = mobMaxHealth * foodRatio;
@@ -1149,7 +1150,7 @@ public class PrototypeEvents {
             }
         }
 
-        // 鈹€鈹€ Assimilation kill count 鈹€鈹€
+        // ── Assimilation kill count ──
         PrototypeItem.incrementAssimilationKills(player);
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CAssimilationDataPacket(PrototypeItem.getAssimilationKills(player)));

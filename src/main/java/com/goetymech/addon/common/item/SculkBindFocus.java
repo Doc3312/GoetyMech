@@ -4,8 +4,8 @@ import com.goetymech.addon.common.magic.spell.SculkBindSpell;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;
 
 /**
- * 骞藉尶鏉熺細鑱氭櫠
- * 澶嶅悎鍨嬫硶鏈細閿佸畾鐩爣 鈫?鍙敜灏栧埡 鈫?澹版尝鐗规晥 鈫?鍙敜Warden
+ * 幽匿束缚聚晶
+ * 复合型法术：锁定目标 → 召唤尖刺 → 声波特效 → 召唤Warden
  */
 public class SculkBindFocus extends MagicFocus {
 

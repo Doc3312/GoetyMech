@@ -49,15 +49,15 @@ public class S2CSlamImpactPacket {
 
             Vec3 pos = new Vec3(packet.x, packet.y, packet.z);
 
-            // 鎾斁鍐插嚮闊虫晥
+            // 播放冲击音效
             level.playLocalSound(
                     packet.x, packet.y, packet.z,
                     net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE,
                     net.minecraft.sounds.SoundSource.PLAYERS,
                     2.0F, 0.8F + level.random.nextFloat() * 0.4F, false);
 
-            // 闆惧寲绮掑瓙锛氬ぇ閲?block 鐮磋绮掑瓙锛屽瘑搴﹂殢鍗婂緞鍔ㄦ€佽皟鏁?    
-        int particleCount = Math.max(30, (int)(packet.radius * 8));
+            // 雾化粒子：大量 block 破裂粒子，密度随半径动态调整
+            int particleCount = Math.max(30, (int)(packet.radius * 8));
             for (int i = 0; i < particleCount; i++) {
                 double ox = (level.random.nextDouble() - 0.5) * packet.radius * 2;
                 double oz = (level.random.nextDouble() - 0.5) * packet.radius * 2;

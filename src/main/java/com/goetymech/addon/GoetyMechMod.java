@@ -37,7 +37,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 /**
- * goetymech 涓绘ā缁勭被
+ * GoetyMech 主模组类
  */
 @Mod(GoetyMechMod.MOD_ID)
 public class GoetyMechMod {
@@ -88,17 +88,17 @@ public class GoetyMechMod {
                     }
                 });
 
-        // 鏉′欢娉ㄥ唽 Caelus 鍏煎 鈥?閬垮厤绫诲姞杞芥壘涓嶅埌 CaelusApi 瀵艰嚧宕╂簝
+        // 条件注册 Caelus 兼容 — 避免类加载找不到 CaelusApi 导致崩溃
         if (ModList.get().isLoaded("caelus")) {
             try {
                 Class<?> handler = Class.forName("com.goetymech.addon.compat.caelus.CaelusFlightHandler");
                 MinecraftForge.EVENT_BUS.register(handler);
-                LOGGER.info("Caelus detected 鈥?Prototype Curios flight enabled");
+                LOGGER.info("Caelus detected — Prototype Curios flight enabled");
             } catch (Throwable e) {
                 LOGGER.warn("CaelusFlightHandler not available: {}", e.getMessage());
             }
         } else {
-            LOGGER.info("Caelus not detected 鈥?Prototype chest slot only");
+            LOGGER.info("Caelus not detected — Prototype chest slot only");
         }
     }
 }

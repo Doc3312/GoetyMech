@@ -18,34 +18,36 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
- * 骞藉尶灏栧埡 + 瀹氳韩閿氱偣瀹炰綋
- * 瑙嗚鏁堟灉锛氫粠鍦伴潰鍗囪捣鍚庢秷澶? * 瀹氳韩锛氭瘡 tick 灏嗛攣瀹氱洰鏍囧己鍒跺綊浣嶏紙浠?Goety TangleEntity 鏈哄埗锛? */
+ * 幽匿尖刺 + 定身锚点实体
+ * 视觉效果：从地面升起后消失
+ * 定身：每 tick 将锁定目标强制归位（仿 Goety TangleEntity 机制）
+ */
 public class SculkSpikeEntity extends Entity {
 
     private static final EntityDataAccessor<Float> RISE =
             SynchedEntityData.defineId(SculkSpikeEntity.class, EntityDataSerializers.FLOAT);
 
-    private static final int RISE_DURATION = 40;  // 鍗囪捣闃舵 2 绉?
-    private static final int DEFAULT_LIFE = 60;   // 榛樿瀛樻椿锛堝皷鍒鸿瑙夛級
+    private static final int RISE_DURATION = 40;  // 升起阶段 2 秒
+    private static final int DEFAULT_LIFE = 60;   // 默认存活（尖刺视觉）
 
     private int life = DEFAULT_LIFE;
     private int lifeSpan = DEFAULT_LIFE;
 
-    // 瀹氳韩鐩爣
+    // 定身目标
     @Nullable
     private LivingEntity target;
     @Nullable
     private UUID targetUUID;
 
-    // 棣栨缁戝畾鍚庣殑 tick 璁℃暟锛岀敤浜庨檺鍒跺彂鍖呴鐜?
+    // 首次绑定后的 tick 计数，用于限制发包频率
     private int bindTick;
 
     public SculkSpikeEntity(EntityType<?> type, Level level) {
         super(type, level);
-        this.noCulling = true;   // 濮嬬粓娓叉煋
+        this.noCulling = true;   // 始终渲染
     }
 
-    // ==== 璁剧疆瀹氳韩鐩爣涓庡瓨娲绘椂闂?====
+    // ==== 设置定身目标与存活时间 ====
 
     public void setBindTarget(@Nullable LivingEntity target) {
         this.target = target;
@@ -75,10 +77,10 @@ public class SculkSpikeEntity extends Entity {
         super.tick();
         if (this.level().isClientSide) return;
 
-        // 瀹氳韩锛氭瘡 tick 灏嗙洰鏍囧己鍒舵媺鍥為敋鐐逛綅缃?
+        // 定身：每 tick 将目标强制拉回锚点位置
         this.bindTarget();
 
-        // 鍗囪捣鍔ㄧ敾
+        // 升起动画
         if (life > lifeSpan - RISE_DURATION) {
             float progress = 1.0F - (float)(life - (lifeSpan - RISE_DURATION)) / RISE_DURATION;
             this.entityData.set(RISE, Math.min(progress, 1.0F));
@@ -90,30 +92,29 @@ public class SculkSpikeEntity extends Entity {
     }
 
     /**
-     * 瀹氳韩閫昏緫 鈥?浠?Goety TangleEntity.tangleTarget()
-     * 灏栧埡瀹炰綋浣滀负鐙珛瀹炰綋锛宼ick 鍦ㄧ洰鏍囦箣鍚庢墽琛岋紝鍙鐩?AI 绉诲姩
+     * 定身逻辑 — 仿 Goety TangleEntity.tangleTarget()
+     * 尖刺实体作为独立实体，tick 在目标之后执行，可覆盖 AI 移动
      */
     private void bindTarget() {
         LivingEntity t = this.getBindTarget();
         if (t == null || !t.isAlive()) return;
         if (this.life <= 0) return;
 
-        // 寮哄埗褰掍綅
+        // 强制归位
         t.setPos(this.position());
         t.setDeltaMovement(Vec3.ZERO);
         t.move(MoverType.SELF, Vec3.ZERO);
         t.moveRelative(0.0F, Vec3.ZERO);
 
-        // 瀹㈡埛绔悓姝ワ細鍓?10 tick 姣?tick 鍙戝寘锛屼箣鍚庝緷璧?setPos 鍚屾
+        // 客户端同步：前 10 tick 每 tick 发包，之后依赖 setPos 同步
         if (this.bindTick < 10) {
             ModNetwork.sentToTrackingEntityAndPlayer(t,
                     new SRepositionPacket(t.getId(), this.position()));
         }
-
         this.bindTick++;
     }
 
-    /** 瀹㈡埛绔鍙?rising 鍊肩敤浜庢覆鏌撳亸绉?*/
+    /** 客户端读取 rising 值用于渲染偏移 */
     public float getRise() {
         return this.entityData.get(RISE);
     }

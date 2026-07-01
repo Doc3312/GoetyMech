@@ -23,13 +23,17 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 /**
- * 浠嗕粠鐢熸垚杈呭姪绫? * 灏?TwistedEmbryoItem 鍜?MatureEmbryoItem 涓噸澶嶇殑鐢熸垚閫昏緫鎻愬彇鍑烘潵锛岄伩鍏嶄唬鐮侀噸澶? * 鏀寔鎵€鏈?Goety 鏉冪粦瀹氬拰 Neollager 榄旀硶鐘舵€佸鐞? */
+ * 仆从生成辅助类
+ * 将 TwistedEmbryoItem 和 MatureEmbryoItem 中重复的生成逻辑提取出来，避免代码重复
+ * 支持所有 Goety 权绑定和 Neollager 魔法状态处理
+ */
 public class MinionSpawnHelper {
 
     public static final double SPAWN_HEIGHT_OFFSET = 0.5D;
 
     /**
-     * 妫€鏌?BlockPos 鏄惁涓哄悎娉曠珯绔嬩綅缃?     * 鏉′欢锛氳剼涓嬫槸鍥轰綋鏂瑰潡 && 鑷韩浣嶇疆闈炲浐浣?&& 澶撮《涓€鏍奸潪鍥轰綋锛?鏍煎噣绌猴級
+     * 检查 BlockPos 是否为合法站立位置
+     * 条件：脚下是固体方块 && 自身位置非固体 && 头顶一格非固体（2格净空）
      */
     public static boolean isValidStanding(ServerLevel level, BlockPos pos) {
         return level.getBlockState(pos.below()).isSolid()
@@ -38,17 +42,18 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 浠?startPos 寮€濮嬫部 Y 杞村弻鍚戞壂鎻忥紝鎵惧埌绗竴涓悎娉曠珯绔嬩綅缃?     * @return 鍚堟硶 BlockPos锛屾垨 null锛堟暣涓瀭鐩寸┖闂撮兘鎵句笉鍒帮級
+     * 从 startPos 开始沿 Y 轴双向扫描，找到第一个合法站立位置
+     * @return 合法 BlockPos，或 null（整个垂直空间都找不到）
      */
     @Nullable
     public static BlockPos findGroundPos(ServerLevel level, BlockPos startPos) {
         BlockPos.MutableBlockPos m = startPos.mutable();
-        // Phase 1: 鍚戜笂鎵弿
+        // Phase 1: 向上扫描
         while (m.getY() < level.getMaxBuildHeight() - 2) {
             if (isValidStanding(level, m)) return m.immutable();
             m.move(0, 1, 0);
         }
-        // Phase 2: 鍚戜笅鎵弿
+        // Phase 2: 向下扫描
         m.set(startPos.getX(), startPos.getY() - 1, startPos.getZ());
         while (m.getY() > level.getMinBuildHeight()) {
             if (isValidStanding(level, m)) return m.immutable();
@@ -58,8 +63,8 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 閫氳繃灏勭嚎杩借釜鑾峰彇鐢熸垚浣嶇疆
-     * 鎻愬彇鑷?TwistedEmbryoItem 鍜?MatureEmbryoItem 涓殑閲嶅閫昏緫
+     * 通过射线追踪获取生成位置
+     * 提取自 TwistedEmbryoItem 和 MatureEmbryoItem 中的重复逻辑
      */
     public static Vec3 findSpawnPosition(Player player, Level level, double reachDistance) {
         Vec3 eyePos = player.getEyePosition(1.0F);
@@ -74,14 +79,16 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 鐢熸垚灞炰簬鐜╁鐨勪粏浠?     * 鑷姩澶勭悊: MobUtil.summonTame (绉垎淇濇寔銆乸ersistence銆佽窡闅忔ā寮?銆乻pawnUpgraded,
-     * 浠ュ強 Neollager finalizeSpawn 鍓嶅悗涓ゆ setMagic(false)
+     * 生成属于玩家的仆从
+     * 自动处理: MobUtil.summonTame (积分保持、persistence、跟随模式)、spawnUpgraded,
+     * 以及 Neollager finalizeSpawn 前后两次 setMagic(false)
      *
-     * @param <T>       Mob 绫诲瀷
-     * @param type      瀹炰綋绫诲瀷
-     * @param level     鏈嶅姟鍣ㄤ笘鐣?     * @param player    鐜╁
-     * @param spawnPos  鐢熸垚浣嶇疆
-     * @return 鐢熸垚鎴愬姛鐨勫疄浣擄紝澶辫触杩斿洖 null
+     * @param <T>       Mob 类型
+     * @param type      实体类型
+     * @param level     服务器世界
+     * @param player    玩家
+     * @param spawnPos  生成位置
+     * @return 生成成功的实体，失败返回 null
      */
     @Nullable
     public static Mob spawnMinion(EntityType<? extends Mob> type, ServerLevel level, Player player, Vec3 spawnPos) {
@@ -121,7 +128,8 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 鎾斁鐢熸垚闊虫晥鍜岀矑瀛?     */
+     * 播放生成音效和粒子
+     */
     public static void playSpawnEffects(ServerLevel level, Vec3 spawnPos) {
         level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
                 SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.PLAYERS,
@@ -132,22 +140,25 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 鐏甸瓊娑堣€楃粨鏋滄灇涓?     */
+     * 灵魂消耗结果枚举
+     */
     public enum SoulCostResult {
-        /** 鐏甸瓊瓒冲锛屽凡鎵ｉ瓊锛屾弧琛€ */
+        /** 灵魂足够，已扣魂，满血 */
         SUFFICIENT,
-        /** 鐏甸瓊涓嶈冻浣?> 0锛屽凡鎵ｉ瓊锛屽崐琛€ */
+        /** 灵魂不足但 > 0，已扣魂，半血 */
         INSUFFICIENT,
-        /** 鐏甸瓊涓?0锛屽厤璐瑰彫鍞わ紝鍗婅 */
+        /** 灵魂为 0，免费召唤，半血 */
         DEPLETED
     }
 
     /**
-     * 妫€鏌ョ伒榄傛槸鍚﹁冻澶燂紝澶勭悊鍗婅鎯╃綒鍜岀伒榄傛秷鑰?     * 璇箟瑙勫垯锛?     *   - currentSouls >= effectiveCost 鈫?婊¤锛屾墸 soulCost锛堝唴閮ㄦ墦鎶橈級鈫?SUFFICIENT
-     *   - 0 < currentSouls < effectiveCost 鈫?鍗婅锛屾墸 soulCost 鈫?INSUFFICIENT
-     *   - currentSouls == 0 鈫?鍗婅锛屼笉鎵ｇ伒榄?鈫?DEPLETED
+     * 检查灵魂是否足够，处理半血惩罚和灵魂消耗
+     * 语义规则：
+     *   - currentSouls >= effectiveCost → 满血，扣 soulCost（内部打折）→ SUFFICIENT
+     *   - 0 < currentSouls < effectiveCost → 半血，扣 soulCost → INSUFFICIENT
+     *   - currentSouls == 0 → 半血，不扣灵魂 → DEPLETED
      *
-     * @return SoulCostResult 鏋氫妇锛岃皟鐢ㄦ柟鎹鍐冲畾 UI 鎻愮ず
+     * @return SoulCostResult 枚举，调用方据此决定 UI 提示
      */
     public static SoulCostResult handleSoulCost(Player player, int soulCost, Mob mob) {
         float discount = SEHelper.soulDiscount(player);
@@ -155,7 +166,7 @@ public class MinionSpawnHelper {
         int currentSouls = SEHelper.getSoulAmountInt(player);
 
         if (currentSouls < effectiveCost) {
-            // 鐏甸瓊涓嶈冻 鈫?鍗婅浠嗕粠
+            // 灵魂不足 → 半血仆从
             mob.setHealth(mob.getMaxHealth() * 0.5F);
             if (currentSouls > 0) {
                 SEHelper.decreaseSouls(player, soulCost);
@@ -164,7 +175,7 @@ public class MinionSpawnHelper {
             return SoulCostResult.DEPLETED;
         }
 
-        // 鐏甸瓊瓒冲 鈫?婊¤
+        // 灵魂足够 → 满血
         SEHelper.decreaseSouls(player, soulCost);
         return SoulCostResult.SUFFICIENT;
     }

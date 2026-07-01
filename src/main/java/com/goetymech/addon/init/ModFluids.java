@@ -38,12 +38,12 @@ public class ModFluids {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, GoetyMechMod.MOD_ID);
 
-    // 鈹€鈹€ Soul Liquid FluidType 鈹€鈹€
+    // ── Soul Liquid FluidType ──
 
     public static final RegistryObject<FluidType> SOUL_LIQUID_TYPE =
             FLUID_TYPES.register("soul_liquid", SoulFluidType::new);
 
-    // 鈹€鈹€ Soul Liquid Fluids 鈹€鈹€
+    // ── Soul Liquid Fluids ──
 
     public static final RegistryObject<FlowingFluid> SOUL_LIQUID_SOURCE =
             FLUIDS.register("soul_liquid", () -> new SoulFluid.Source());
@@ -51,7 +51,7 @@ public class ModFluids {
     public static final RegistryObject<FlowingFluid> SOUL_LIQUID_FLOWING =
             FLUIDS.register("soul_liquid_flowing", () -> new SoulFluid.Flowing());
 
-    // 鈹€鈹€ Soul Liquid Block 鈹€鈹€
+    // ── Soul Liquid Block ──
 
     private static final EphemeralFluidConfig SOUL_LIQUID_CONFIG = EphemeralFluidConfig.builder()
             .particle(ParticleTypes.SCULK_SOUL)
@@ -73,7 +73,7 @@ public class ModFluids {
                     2
             ));
 
-    // 鈹€鈹€ Soul Liquid Bucket 鈹€鈹€
+    // ── Soul Liquid Bucket ──
 
     public static final RegistryObject<BucketItem> SOUL_LIQUID_BUCKET =
             ITEMS.register("soul_liquid_bucket", () -> new BucketItem(

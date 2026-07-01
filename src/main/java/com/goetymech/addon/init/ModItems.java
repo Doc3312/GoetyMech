@@ -28,7 +28,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * 鐗╁搧娉ㄥ唽
+ * 物品注册
  */
 public class ModItems {
 
@@ -55,11 +55,11 @@ public class ModItems {
                     new BlockItem(ModBlocks.BREEDING_NEST.get(), new Item.Properties())
             );
 
-    /** 骞藉尶鏉熺細鑱氭櫠 鈥?閿佸畾+鍙敜澶嶅悎娉曟湳 */
+    /** 幽匿束缚聚晶 — 锁定+召唤复合法术 */
     public static final RegistryObject<Item> SCULK_BIND_FOCUS =
             ITEMS.register("sculk_bind_focus", SculkBindFocus::new);
 
-    // 鈹€鈹€ 鐐瑰皢鍙颁笁闃?BlockItems 鈹€鈹€
+    // ── 点将台三阶 BlockItems ──
 
     public static final RegistryObject<Item> TIER1_SQUAD_BARRACKS =
             ITEMS.register("tier1_squad_barracks", () ->
@@ -79,46 +79,46 @@ public class ModItems {
                             new Item.Properties().rarity(Rarity.RARE))
             );
 
-    /** 鍏靛洟鑱氭櫠 鈥?杩滅▼涓€閿紪闃熷彫鍞?*/
+    /** 兵团聚晶 — 远程一键编队召唤 */
     public static final RegistryObject<Item> SQUAD_FOCUS =
             ITEMS.register("squad_focus", SquadFocus::new);
 
-    /** 瑁傜含鑱氭櫠 鈥?涓嶇ǔ瀹氱殑缁村害瑁傞殭锛?0s鑷姩鍥炰紶锛?*/
+    /** 裂纬聚晶 — 不稳定的维度裂隙（10s自动回传） */
     public static final RegistryObject<Item> UNSTABLE_RIFT_FOCUS =
             ITEMS.register("unstable_rift_focus", UnstableRiftFocus::new);
 
-    /** 鐣屾梾鑱氭櫠 鈥?绋冲畾鐨勭淮搴︽梾琛岋紙瀹夊叏鐫€闄嗭級 */
+    /** 界旅聚晶 — 稳定的维度旅行（安全着陆） */
     public static final RegistryObject<Item> STABLE_RIFT_FOCUS =
             ITEMS.register("stable_rift_focus", StableRiftFocus::new);
 
-    /** 搴斿姏鑱氭櫠 鈥?缁戝畾搴斿姏璇诲彇鍣紝鏂芥斁纰惧帇椋炶疆娉曟湳 */
+    /** 应力聚晶 — 绑定应力读取器，施放碾压飞轮法术 */
     public static final RegistryObject<Item> STRESS_FOCUS =
             ITEMS.register("stress_focus", StressFocus::new);
 
-    /** 搴斿姏鎶ょ浘鑱氭櫠 鈥?缁戝畾搴斿姏璇诲彇鍣ㄦ垨鏂硅垷锛屾柦鏀炬姢鐩?*/
+    /** 应力护盾聚晶 — 绑定应力读取器或方舟，施放护盾 */
     public static final RegistryObject<Item> STRESS_SHIELD_FOCUS =
             ITEMS.register("stress_shield_focus", StressShieldFocus::new);
 
-    /** 杩界寧鑱氭櫠 鈥?閿佸畾鐩爣鍚庡娆￠棯鐜颁紶閫?*/
+    /** 追猎聚晶 — 锁定目标后多次闪现传送 */
     public static final RegistryObject<Item> CHASE_FOCUS =
             ITEMS.register("chase_focus", ChaseFocus::new);
 
-    /** 鐤媯鐨勬敼閫犲垖姘戝彫鍞よ仛鏅?鈥?鍙敜鐤媯鐨勬敼閫犲垖姘戜粏浠?*/
+    /** 疯狂的改造刌民召唤聚晶 — 召唤疯狂的改造刌民仆从 */
     public static final RegistryObject<Item> CRAZED_SUMMON_FOCUS =
             ITEMS.register("crazed_summon_focus", CrazedSummonFocus::new);
 
-    /** 鐤媯鐨勬敼閫犲垖姘戝埛鎬泲 */
+    /** 疯狂的改造刌民刷怪蛋 */
     public static final RegistryObject<Item> CRAZED_ILLAGER_SPAWN_EGG =
             ITEMS.register("crazed_illager_spawn_egg",
                     () -> new ForgeSpawnEggItem(ModEntities.CRAZED_ILLAGER,
                             0x3D3D3D, 0xCC3333, new Item.Properties()));
 
-    // 鈹€鈹€ 鏃剁┖鑱氭櫠琚?鈥?缁ф壙 FocusPack锛?1 鏍硷級锛屾墦寮€鏃跺喕缁撴椂闂?鈹€鈹€
+    // ── 时空聚晶袋 — 继承 FocusPack（21 格），打开时冻结时间 ──
 
     public static final RegistryObject<Item> TIME_FOCUS_POUCH =
             ITEMS.register("time_focus_pouch", TimeFocusPouch::new);
 
-    // 鈹€鈹€ 搴斿姏璇诲彇鍣?BlockItem 鈹€鈹€
+    // ── 应力读取器 BlockItem ──
 
     public static final RegistryObject<Item> STRESS_READER =
             ITEMS.register("stress_reader", () ->
@@ -126,7 +126,7 @@ public class ModItems {
                             new Item.Properties().rarity(Rarity.UNCOMMON))
             );
 
-    // 鈹€鈹€ 杩滅▼寮曟搸 BlockItem 鈹€鈹€
+    // ── 远程引擎 BlockItem ──
 
     public static final RegistryObject<Item> REMOTE_ENGINE =
             ITEMS.register("remote_engine", () ->
@@ -134,7 +134,7 @@ public class ModItems {
                             new Item.Properties().rarity(Rarity.UNCOMMON))
             );
 
-    // 鈹€鈹€ 搴斿姏鏂硅垷 BlockItem 鈹€鈹€
+    // ── 应力方舟 BlockItem ──
 
     public static final RegistryObject<Item> STRESS_ARK =
             ITEMS.register("stress_ark", () ->
@@ -145,17 +145,17 @@ public class ModItems {
     public static final RegistryObject<Item> SOUL_CATCHER =
             ITEMS.register("soul_catcher", SoulCatcherCurio::new);
 
-    // 鈹€鈹€ 鍘熷瀷 鈥?闉樼繀绫荤墿鍝侊紝鏃犻檺鑰愪箙锛屾帹杩?+ Slam 鎶€鑳?鈹€鈹€
+    // ── 原型 — 鞘翅类物品，无限耐久，推进 + Slam 技能 ──
 
     public static final RegistryObject<Item> PROTOTYPE =
             ITEMS.register("prototype", PrototypeItem::new);
 
-    // 鈹€鈹€ 鎷熸€?鈥?鍘熷瀷 + 鑳哥敳鍚堟垚锛岀户鎵垮睘鎬?鈹€鈹€
+    // ── 拟态 — 原型 + 胸甲合成，继承属性 ──
 
     public static final RegistryObject<Item> PROTOTYPE_MIMIC =
             ITEMS.register("prototype_mimic", PrototypeMimicItem::new);
 
-    // 鈹€鈹€ 琛€鑲夋櫠鍖ｏ紙鎸夌瓑绾у悎骞讹紝瑙﹀彂绫诲瀷涓?NBT 灞炴€э級鈹€鈹€
+    // ── 血肉晶匣（按等级合并，触发类型为 NBT 属性）──
 
     public static final RegistryObject<Item> FLESH_CASKET_1 =
             ITEMS.register("flesh_casket_1", () -> new FleshCasketItem(1));

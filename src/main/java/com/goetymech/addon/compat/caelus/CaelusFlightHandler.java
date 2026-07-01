@@ -13,8 +13,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.UUID;
 
 /**
- * 褰?Prototype 瑁呭鍦?Curios 鑳岄儴妲芥椂锛岄€氳繃 Caelus API 娣诲姞椋炶 attribute
- * 娉ㄦ剰锛氭湰绫讳笉鐩存帴 import CaelusApi锛岄€氳繃 ResourceLocation 瀛楃涓叉煡璇?attribute锛岄伩鍏嶇被鍔犺浇澶辫触
+ * 当 Prototype 装备在 Curios 背部槽时，通过 Caelus API 添加飞行 attribute
+ * 注意：本类不直接 import CaelusApi，通过 ResourceLocation 字符串查询 attribute，避免类加载失败
  */
 public class CaelusFlightHandler {
 
@@ -24,7 +24,7 @@ public class CaelusFlightHandler {
     private static Attribute flightAttribute = null;
 
     /**
-     * 瀹夊叏鑾峰彇 Caelus flight attribute 鈥?鑻?Caelus 鏈姞杞藉垯杩斿洖 null
+     * 安全获取 Caelus flight attribute — 若 Caelus 未加载则返回 null
      */
     private static Attribute getFlightAttribute() {
         if (flightAttribute != null) return flightAttribute;

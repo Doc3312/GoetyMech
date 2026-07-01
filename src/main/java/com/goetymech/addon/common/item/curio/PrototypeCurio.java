@@ -47,9 +47,9 @@ public class PrototypeCurio {
 
             @Override
             public boolean canEquip(SlotContext slotContext) {
-                // 鏃燙aelus鏃剁姝㈡斁鍏urios鑳?鑳告Ы
+                // 无Caelus时禁止放入Curios背/胸槽
                 if (!CaelusLoaded.isLoaded()) return false;
-                // 闃叉涓庤兏鐢叉Ы鍐茬獊
+                // 防止与胸甲槽冲突
                 ItemStack chest = slotContext.entity().getItemBySlot(EquipmentSlot.CHEST);
                 return !PrototypeItem.isPrototype(chest);
             }

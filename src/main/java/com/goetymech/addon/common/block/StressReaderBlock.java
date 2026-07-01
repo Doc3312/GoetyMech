@@ -92,7 +92,7 @@ public class StressReaderBlock extends DirectionalKineticBlock
                                  InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(hand);
 
-        // Sneak + RemoteEngineBlockItem on bound reader 鈫?unbind
+        // Sneak + RemoteEngineBlockItem on bound reader → unbind
         if (player.isShiftKeyDown() && stack.getItem() instanceof RemoteEngineBlockItem) {
             if (!level.isClientSide && RemoteEngineBlockItem.isBound(stack)) {
                 BlockPos boundPos = RemoteEngineBlockItem.getBoundPos(stack);

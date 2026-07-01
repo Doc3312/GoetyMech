@@ -18,8 +18,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 鎵洸鑳氳儙 - 鍙抽敭鐢熸垚灞炰簬鐜╁鐨勬柊鍒屾皯锛圢eollager锛? * 鍙爢鍙?4涓紝鏃犺€愪箙
- * 娑堣€楃伒榄傚彫鍞わ紝鐏甸瓊涓嶈冻鏃跺彫鍞ゅ崐琛€鐗堟湰骞舵彁绀? */
+ * 扭曲胚胎 - 右键生成属于玩家的新刌民（Neollager）
+ * 可堆叠64个，无耐久
+ * 消耗灵魂召唤，灵魂不足时召唤半血版本并提示
+ */
 public class TwistedEmbryoItem extends Item {
 
     private static final double REACH_DISTANCE = 4.5D;
@@ -59,7 +61,7 @@ public class TwistedEmbryoItem extends Item {
     }
 
     /**
-     * 鏍稿績鐢熸垚閫昏緫
+     * 核心生成逻辑
      */
     private void spawnMinion(ServerLevel level, Player player, ItemStack stack, Vec3 spawnPos) {
         int soulCost = ModConfig.TWISTED_EMBRYO_SOUL_COST.get();

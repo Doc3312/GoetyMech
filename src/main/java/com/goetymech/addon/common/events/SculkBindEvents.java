@@ -12,7 +12,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * 骞藉尶鏉熺細浜嬩欢澶勭悊鍣? * 瀹氳韩宸茬敱 SculkSpikeEntity 鎺ョ锛堢嫭绔?Entity tick锛屼豢 Goety TangleEntity 鏈哄埗锛? * Warden 鍙鎬?鈥?寤惰繜 15 tick 鍚庢仮澶嶏紝閬垮厤鍑哄湡鍔ㄧ敾棣栧抚闂幇
+ * 幽匿束缚事件处理器
+ * 定身已由 SculkSpikeEntity 接管（独立 Entity tick，仿 Goety TangleEntity 机制）
+ * Warden 可见性 — 延迟 15 tick 后恢复，避免出土动画首帧闪现
  */
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SculkBindEvents {
@@ -54,9 +56,9 @@ public class SculkBindEvents {
         tag.remove("goetymech.bind_target");
     }
 
-    // ==== Warden 寤惰繜鍙鎬?====
+    // ==== Warden 延迟可见性 ====
 
-    /** 淇鍑哄湡鍔ㄧ敾棣栧抚闂幇锛歴pawn 鏃惰 invisible锛?5 tick 鍚庤剳娲诲姩宸插垵濮嬪寲锛屾仮澶嶅彲瑙?*/
+    /** 修复出土动画首帧闪现：spawn 时设 invisible，15 tick 后脑活动已初始化，恢复可见 */
     private static void handleWardenVisibility(LivingEntity entity) {
         if (!(entity instanceof Warden warden)) return;
         CompoundTag tag = entity.getPersistentData();
