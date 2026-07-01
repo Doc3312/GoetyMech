@@ -31,3 +31,15 @@
 - 改动：用桌面 armory_platform_pack 的 Blockbench 导出替换模型，装饰元素烘焙到纹理中移除 3D vein/rivet/panel 元素。tier2/tier3 各 5 张贴图放入独立子文件夹，三个阶各自独立的 blockstate/item/model（已改为指向独立文件而非共享）
 - 原因：用户更新了资源包设计，三阶需要不同纹理
 - 关联：用户指令替换
+
+### 2026-06-26~07-02 — 模型迭代修复（6 轮）
+
+- 改动：
+  1. 对称化 south 面 + 修复 z-fighting（两个相邻 face 在同一平面竞争渲染）
+  2. UV 水平翻转修复 13 个镜像 element（6 West + 7 South）
+  3. 1.20.1 兼容 rotation 格式修正（禁止 -180，改为 0）
+  4. Core_body / pillar / anvil_station UV 精细调整
+  5. 7 张贴图更新（armory_anvil/body/frame/vein + 新增 blacklight_virus_overlay.png）
+  6. 最终 clean export 去除装饰性 3D 元素，全部烘焙到纹理
+- 原因：Blockbench 导出在 1.20.1 上的兼容性问题和视觉瑕疵逐步修复
+- 关联：commit a47b006, 549d6fe, bbf035e, 0ed93e1, c5f74cd, 49a279c, 2bccdd9
