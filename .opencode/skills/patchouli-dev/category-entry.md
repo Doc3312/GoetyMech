@@ -2,35 +2,35 @@
 
 `/assets/<modid>/patchouli_books/<book_name>/en_us/categories/<name>.json`
 
-## 瀛楁琛?
+## 字段表
 
-| 瀛楁 | 绫诲瀷 | 蹇呴渶 | 璇存槑 |
+| 字段 | 类型 | 必需 | 说明 |
 |---|---|---|---|
-| `name` | String | 鉁?| 鍒嗙被鍚嶇О锛屽彲鐢?i18n key |
-| `description` | String | 鉁?| 鍒嗙被鎻忚堪锛屾敮鎸佹牸寮忓寲 |
-| `icon` | String | 鉁?| 鍥炬爣锛圛temStack String 鎴?.png 绾圭悊锛?|
-| `parent` | String | - | 鐖跺垎绫?ID锛屾牸寮?`domain:name` |
-| `flag` | String | - | Config flag 琛ㄨ揪寮?|
-| `sortnum` | Integer | - | 鎺掑簭鍙凤紝榛樿 0 |
-| `secret` | Boolean | - | 闅愯棌鍒嗙被锛岄粯璁?false |
+| `name` | String | ✅ | 分类名称，可用 i18n key |
+| `description` | String | ✅ | 分类描述，支持格式化 |
+| `icon` | String | ✅ | 图标（ItemStack String 或 .png 纹理） |
+| `parent` | String | - | 父分类 ID，格式 `domain:name` |
+| `flag` | String | - | Config flag 表达式 |
+| `sortnum` | Integer | - | 排序号，默认 0 |
+| `secret` | Boolean | - | 隐藏分类，默认 false |
 
-## 绀轰緥
+## 示例
 
 ```json
 {
   "name": "GoetyMech.category.machines",
-  "description": "GoetyMech 娣诲姞鐨勫悇绫绘満鍣?,
+  "description": "GoetyMech 添加的各类机器",
   "icon": "GoetyMech:example_machine",
   "sortnum": 0
 }
 ```
 
-### 瀛愬垎绫?
+### 子分类
 
 ```json
 {
   "name": "GoetyMech.category.machines.flesh_furnace",
-  "description": "琛€鑲夌啍鐐夌殑浣跨敤鎸囧崡",
+  "description": "血肉熔炉的使用指南",
   "icon": "GoetyMech:flesh_furnace",
   "parent": "GoetyMech:machines",
   "sortnum": 1
@@ -43,25 +43,25 @@
 
 `/assets/<modid>/patchouli_books/<book_name>/en_us/entries/<category>/<name>.json`
 
-## 瀛楁琛?
+## 字段表
 
-| 瀛楁 | 绫诲瀷 | 蹇呴渶 | 璇存槑 |
+| 字段 | 类型 | 必需 | 说明 |
 |---|---|---|---|
-| `name` | String | 鉁?| 璇嶆潯鍚嶇О |
-| `category` | String | 鉁?| 鎵€灞炲垎绫?ID |
-| `icon` | String | 鉁?| 鍥炬爣 |
-| `pages` | Object[] | 鉁?| 椤甸潰鏁扮粍 |
-| `advancement` | String | - | 閿佸畾杩涘害 ID |
-| `flag` | String | - | Config flag 琛ㄨ揪寮?|
-| `priority` | Boolean | - | 缃《锛岄粯璁?false |
-| `secret` | Boolean | - | 闅愯棌锛岄粯璁?false |
-| `read_by_default` | Boolean | - | 涓嶆樉绀烘湭璇绘爣璁帮紝榛樿 false |
-| `sortnum` | Integer | - | 鎺掑簭鍙?|
-| `turnin` | String | - | 瀹屾垚杩涘害 ID |
+| `name` | String | ✅ | 词条名称 |
+| `category` | String | ✅ | 所属分类 ID |
+| `icon` | String | ✅ | 图标 |
+| `pages` | Object[] | ✅ | 页面数组 |
+| `advancement` | String | - | 锁定进度 ID |
+| `flag` | String | - | Config flag 表达式 |
+| `priority` | Boolean | - | 置顶，默认 false |
+| `secret` | Boolean | - | 隐藏，默认 false |
+| `read_by_default` | Boolean | - | 不显示未读标记，默认 false |
+| `sortnum` | Integer | - | 排序号 |
+| `turnin` | String | - | 完成进度 ID |
 | `extra_recipe_mappings` | Object | - | `{ "itemstack_string": pageIndex }` |
-| `entry_color` | String | - | 鍒嗙被鍒楄〃涓瘝鏉￠摼鎺ラ鑹?|
+| `entry_color` | String | - | 分类列表中词条链接颜色 |
 
-## 绀轰緥
+## 示例
 
 ```json
 {

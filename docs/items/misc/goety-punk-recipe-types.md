@@ -1,19 +1,19 @@
-﻿# GoetyMechRecipeTypes 鈥?GoetyMech
+﻿# GoetyMechRecipeTypes — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歮isc
-- Java 绫伙細GoetyMechRecipeTypes
-- 棣栨鍒涘缓锛?026-06-25
+- 类型：misc
+- Java 类：GoetyMechRecipeTypes
+- 首次创建：2026-06-25
 
-## 璁捐鎰忓浘
+## 设计意图
 
-JEI 閰嶆柟绫诲瀷娉ㄥ唽锛屼负 MimicCombination 鍜?MimicDeconstruction 鎻愪緵 JEI 灞曠ず鏀寔銆?
+JEI 配方类型注册，为 MimicCombination 和 MimicDeconstruction 提供 JEI 展示支持。
 
-## 婕斿寲璁板綍
+## 演化记录
 
-### 2026-06-25 鈥?鍒涘缓
+### 2026-06-25 — 创建
 
-- 鏀瑰姩锛氬垱寤?GoetyMechRecipeTypes锛屾敞鍐屼袱涓?JEI recipe category
-- 鍘熷洜锛氶渶瑕?JEI 鏄剧ず Mod 鐨勮嚜瀹氫箟鍚堟垚/鍒嗚В閰嶆柟
-- 鍏宠仈锛歰penspec mimic-jei
+- 改动：创建 GoetyMechRecipeTypes，注册两个 JEI recipe category
+- 原因：需要 JEI 显示 Mod 的自定义合成/分解配方
+- 关联：openspec mimic-jei

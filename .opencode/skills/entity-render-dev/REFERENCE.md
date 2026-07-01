@@ -52,12 +52,12 @@ VertexConsumer vc = new VertexConsumer() {
 ### Rules
 - **Entity position is at FEET** when render starts (`EntityRenderer.render()` translates to entity pos)
 - **BlockBench Y=16 = 1 block in Minecraft** (16 model units = 1 block)
-- **Do NOT** `translate(0, -1, 0)` 鈥?model center already at correct height
+- **Do NOT** `translate(0, -1, 0)` — model center already at correct height
 - **Last rotation = first on vertices** (matrix stack order)
 
 ### Common Fixes
 ```java
-// Wheel/disk lying flat 鈫?upright
+// Wheel/disk lying flat → upright
 poseStack.mulPose(Axis.XP.rotationDegrees(-90));
 
 // Face movement direction
@@ -87,10 +87,10 @@ public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
 
 ## Debug Checklist
 
-1. Model registered? `latest.log` 鈫?check renderer log: `model=missing:true/false`
+1. Model registered? `latest.log` → check renderer log: `model=missing:true/false`
 2. Texture at correct path? `assets/<modid>/textures/entity/<name>.png`
 3. Namespace correct in JSON? `"1": "modid:path"` not `"1": "path"`
 4. Render type correct? `entityCutout` not `cutout`
-5. Atlas stitching errors in `latest.log` 鈥?search for texture name
+5. Atlas stitching errors in `latest.log` — search for texture name
 6. `OverlayTexture.NO_OVERLAY` used?
 7. `model.renderToBuffer()` called after transforms?

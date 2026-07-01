@@ -1,14 +1,14 @@
-﻿# 鐏甸瓊鎹曟墜 鈥?GoetyMech
+﻿# 灵魂捕手 — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歝urio
-- 娉ㄥ唽绫伙細ModItems.SOUL_CATCHER
-- Java 绫伙細SoulCatcherCurio (extends Item, implements ICurioItem)
-- 棣栨鍒涘缓锛?026-06-14
+- 类型：curio
+- 注册类：ModItems.SOUL_CATCHER
+- Java 类：SoulCatcherCurio (extends Item, implements ICurioItem)
+- 首次创建：2026-06-14
 
-## 璁捐鎰忓浘
+## 设计意图
 
-楗板搧锛圕urio 妲戒綅锛夛紝鎻愪緵鐏甸瓊鐩稿叧鐨勮鍔ㄨ兘鍔涒€斺€斿彲鑳芥槸鍚搁瓊銆侀瓊閲忓姞鎴愭垨娑堣€楀噺鍏嶃€?
+饰品（Curio 槽位），提供灵魂相关的被动能力——可能是吸魂、魂量加成或消耗减免。
 
-## 婕斿寲璁板綍
+## 演化记录

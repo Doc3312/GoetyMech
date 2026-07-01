@@ -1,10 +1,12 @@
 ﻿---
 name: "jei-dev"
-description: "JEI 闆嗘垚寮€鍙戞寚鍗椼€傛兜鐩?Plugin 娉ㄥ唽銆丷ecipe Category 瀹炵幇銆丷ecipe Transfer銆丆atalyst 鍏宠仈銆丟host 鎷栨嫿銆佽繍琛屾椂浜や簰銆傚綋闇€瑕佹坊鍔?JEI 閰嶆柟鏌ョ湅銆佹満鍣ㄩ厤鏂瑰吋瀹规椂璋冪敤鏈?skill銆?
+description: "JEI 集成开发指南。涵盖 Plugin 注册、Recipe Category 实现、Recipe Transfer、Catalyst 关联、Ghost 拖拽、运行时交互。当需要添加 JEI 配方查看、机器配方兼容时调用本 skill。"
 ---
 
-# JEI 闆嗘垚寮€鍙戞寚鍗?
-## Plugin 鏈€灏忓疄鐜?
+# JEI 集成开发指南
+
+## Plugin 最小实现
+
 ```java
 @JeiPlugin
 public class GoetyMechJeiPlugin implements IModPlugin {
@@ -27,7 +29,7 @@ public class GoetyMechRecipeTypes {
 }
 ```
 
-## Recipe Category 瀹炵幇
+## Recipe Category 实现
 
 ```java
 public class MyMachineCategory extends AbstractRecipeCategory<MyMachineRecipe> {
@@ -56,13 +58,15 @@ public class MyMachineCategory extends AbstractRecipeCategory<MyMachineRecipe> {
     @Override
     public void draw(MyMachineRecipe recipe, IRecipeSlotsView slotsView, GuiGraphics guiGraphics,
                      double mouseX, double mouseY) {
-        // 鑷畾涔夌粯鍒?    }
+        // 自定义绘制
+    }
 }
 ```
 
 ## Recipe Transfer
 
-### 鍩虹 Transfer锛堥€傚悎鏍囧噯 slot 瀹瑰櫒锛?```java
+### 基础 Transfer（适合标准 slot 容器）
+```java
 @Override
 public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
     registration.addRecipeTransferHandler(
@@ -77,11 +81,13 @@ public void registerRecipeTransferHandlers(IRecipeTransferRegistration registrat
 }
 ```
 
-### 楂樼骇 Transfer锛堝畬鍏ㄦ帶鍒讹級
-瀹炵幇 `IRecipeTransferInfo` 澶勭悊闈炶繛缁Ы浣嶏紝鎴栧疄鐜?`IRecipeTransferHandler` 瀹屽叏鑷畾涔夈€?
+### 高级 Transfer（完全控制）
+实现 `IRecipeTransferInfo` 处理非连续槽位，或实现 `IRecipeTransferHandler` 完全自定义。
+
 ## Recipe Catalyst
 
-灏嗘満鍣?鏂瑰潡鍏宠仈鍒?Recipe Type锛岀偣鍑绘柟鍧楀嵆鍙煡鐪嬬浉鍏抽厤鏂广€?
+将机器/方块关联到 Recipe Type，点击方块即可查看相关配方。
+
 ```java
 @Override
 public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
@@ -92,7 +98,7 @@ public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 }
 ```
 
-## Ghost 鎷栨嫿
+## Ghost 拖拽
 
 ```java
 @Override
@@ -105,7 +111,7 @@ public void registerGuiHandlers(IGuiHandlerRegistration registration) {
                         MyMachineScreen screen, ITypedIngredient<I> ingredient, boolean doStart) {
                     return List.of(new Target<I>() {
                         @Override public Rect2i getArea() { return new Rect2i(10, 20, 18, 18); }
-                        @Override public void accept(I ingredient) { /* 澶勭悊涓㈠叆 */ }
+                        @Override public void accept(I ingredient) { /* 处理丢入 */ }
                     });
                 }
                 @Override public void onComplete() {}
@@ -121,14 +127,15 @@ public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 }
 ```
 
-## 杩愯鏃朵氦浜?
+## 运行时交互
+
 ```java
 @Override
 public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
     IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
-    // 闅愯棌 Recipe Category
+    // 隐藏 Recipe Category
     // recipeManager.hideRecipeCategory(VanillaRecipeTypes.CRAFTING);
-    // 闅愯棌鐗瑰畾閰嶆柟
+    // 隐藏特定配方
     // recipeManager.hideRecipes(GoetyMechRecipeTypes.MY_MACHINE, List.of(recipe));
 }
 ```

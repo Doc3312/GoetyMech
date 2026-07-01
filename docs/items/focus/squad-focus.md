@@ -1,26 +1,26 @@
-﻿# 鍏靛洟鑱氭櫠 鈥?GoetyMech
+﻿# 兵团聚晶 — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歠ocus
-- 娉ㄥ唽绫伙細ModItems.SQUAD_FOCUS
-- Java 绫伙細SquadFocus (extends MagicFocus)
-- 棣栨鍒涘缓锛?026-06-14
+- 类型：focus
+- 注册类：ModItems.SQUAD_FOCUS
+- Java 类：SquadFocus (extends MagicFocus)
+- 首次创建：2026-06-14
 
-## 璁捐鎰忓浘
+## 设计意图
 
-杩滅▼缁戝畾銆岀偣灏嗗彴銆嶅悗锛屾秷鑰楄儦鑳?鐏甸瓊鎵归噺鍙敜缂栭槦浠嗕粠銆備粠"鍗曞叺浣滄垬"鍗囩骇鍒?鍏靛洟鎸囨尌"銆?
+远程绑定「点将台」后，消耗胚胎+灵魂批量召唤编队仆从。从"单兵作战"升级到"兵团指挥"。
 
-## 婕斿寲璁板綍
+## 演化记录
 
-### 2026-06-15 鈥?鍒濆璁捐涓庢敞鍐?
+### 2026-06-15 — 初始设计与注册
 
-- 鏀瑰姩锛氬垱寤?SquadFocus + SquadSpell锛屽疄鐜扮粦瀹氱偣灏嗗彴銆佽繙绋嬪彫鍞ゃ€佸姩鎬佺伒榄傛秷鑰椼€佺紪闃熺紦瀛樸€? 鍒嗛挓浠嗕粠闄愭椂
-- 鍘熷洜锛氭垚鐔熻儦鑳庡彧鑳芥墜鎸佸彸閿崟娆″彫鍞わ紝鏃犳硶鎵归噺缂栭槦
-- 鍏宠仈锛歰penspec squad-summon-system
+- 改动：创建 SquadFocus + SquadSpell，实现绑定点将台、远程召唤、动态灵魂消耗、编队缓存、5 分钟仆从限时
+- 原因：成熟胚胎只能手持右键单次召唤，无法批量编队
+- 关联：openspec squad-summon-system
 
-### 2026-06-24 鈥?浼樺寲锛歳ightStaff + cooldown 瀹堝崼
+### 2026-06-24 — 优化：rightStaff + cooldown 守卫
 
-- 鏀瑰姩锛氭坊鍔?`rightStaff(staff)` 鈫?娉曟潠鍖归厤鏃跺彫鍞ゅ鍛?脳1.5锛沜ooldown 娣诲姞 `isEmpty()` 瀹堝崼
-- 鍘熷洜锛氱鍚?Goety Spell 瑙勮寖锛屼慨澶嶈嚜鍔ㄦ柦娉曡矾寰勪笅娼滃湪鐨勭┖鑱氭櫠鍐峰嵈闂
-- 鍏宠仈锛歋quadSpell SpellResult
+- 改动：添加 `rightStaff(staff)` → 法杖匹配时召唤寿命 ×1.5；cooldown 添加 `isEmpty()` 守卫
+- 原因：符合 Goety Spell 规范，修复自动施法路径下潜在的空聚晶冷却问题
+- 关联：SquadSpell SpellResult

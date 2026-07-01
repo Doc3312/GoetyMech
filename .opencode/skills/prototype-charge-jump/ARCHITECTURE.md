@@ -1,69 +1,87 @@
-﻿# 绯荤粺鏋舵瀯 鈥?钃勫姏璺宠穬鍏ㄩ摼璺?
-## 璁捐鍐崇瓥锛歊elease-Based
+﻿# 系统架构 — 蓄力跳跃全链路
 
-钃勫姏绯荤粺**涓嶅湪鎸変綇鏃剁珛鍗宠捣璺?*锛岃€屾槸**鍦ㄦ澗寮€鏃舵墽琛岃烦**锛?
+## 设计决策：Release-Based
+
+蓄力系统**不在按住时立即起跳**，而是**在松开时执行跳**：
+
 ```
-鎸変綇绌烘牸 (action=1) 鈫?姣?tick 绱姞钃勫姏鍊硷紙NBT: GoetyMech.jump_charge_tick锛?鏉惧紑绌烘牸 (action=0) 鈫?鏍规嵁鎬昏搫鍔涘€艰绠楅€熷害骞舵墽琛岃烦
-```
-
-### 涓轰粈涔堜笉鐢?Client-Predictive
-
-- 鏈嶅姟绔潈濞侊細鎵€鏈夎烦璺冨喅绛栧湪鏈嶅姟绔仛锛宑lient 鍙鍙?action
-- 閬垮厤鍙嶄綔寮婂啿绐?- 绠€鍖栧悓姝ラ€昏緫
-
-## 鏁版嵁娴?
-```
-Client 鈫愨啋 Server
-  鈹?  鈹溾攢鈹€ C2SJumpChargePacket(action)
-  鈹?    鈹溾攢鈹€ action > 0: 钃勫姏涓?鈫?PrototypeItem.setJumpChargeTick(player, charge)
-  鈹?    鈹斺攢鈹€ action == 0: 閲婃斁 鈫?PrototypeEvents.applyChargedJump(player, charge)
-  鈹?  鈹斺攢鈹€ PrototypeEvents.onPlayerTick(PlayerTickEvent)
-        鈹溾攢鈹€ START phase: 钃勫姏绱姞 / 鍦伴潰璧烽 / 钀藉湴妫€娴?/ 椋炶鍚姩
-        鈹斺攢鈹€ END phase: 椋炶鍔犻€?/ 澹侀潰绉诲姩
+按住空格 (action=1) → 每 tick 累加蓄力值（NBT: GoetyMech.jump_charge_tick）
+松开空格 (action=0) → 根据总蓄力值计算速度并执行跳
 ```
 
-### 鍏抽敭鏂囦欢
+### 为什么不用 Client-Predictive
 
-| 鏂囦欢 | 鑱岃矗 |
+- 服务端权威：所有跳跃决策在服务端做，client 只管发 action
+- 避免反作弊冲突
+- 简化同步逻辑
+
+## 数据流
+
+```
+Client ←→ Server
+  │
+  ├── C2SJumpChargePacket(action)
+  │     ├── action > 0: 蓄力中 → PrototypeItem.setJumpChargeTick(player, charge)
+  │     └── action == 0: 释放 → PrototypeEvents.applyChargedJump(player, charge)
+  │
+  └── PrototypeEvents.onPlayerTick(PlayerTickEvent)
+        ├── START phase: 蓄力累加 / 地面起飞 / 落地检测 / 飞行启动
+        └── END phase: 飞行加速 / 壁面移动
+```
+
+### 关键文件
+
+| 文件 | 职责 |
 |------|------|
-| `common/events/PrototypeEvents.java` | 鏍稿績閫昏緫锛氳搫鍔涘鐞嗐€佽烦璺冩墽琛屻€佺墿鐞嗗叕寮?|
-| `common/item/PrototypeItem.java` | NBT 瀛樺彇鏂规硶锛歡et/set/clearJumpCharge, hasAnyPrototype |
-| `mixin/PrototypePlayerMixin.java` | 钃勫姏鏃跺帇鍒?`jumpFromGround()` 闃叉鍐茬獊 |
-| `common/net/c2s/C2SJumpChargePacket.java` | 缃戠粶鍖?encode/decode/handle |
-| `common/net/ModNetwork.java` | SimpleChannel 娉ㄥ唽 |
-| `common/utils/CuriosHelper.java` | Curios 妲戒綅妫€娴?|
-| `config/ModConfig.java` | JUMP_* 閰嶇疆椤?|
-| `client/PrototypeRenderEvents.java` | 瀹㈡埛绔搫鍔涜繘搴︽覆鏌?|
+| `common/events/PrototypeEvents.java` | 核心逻辑：蓄力处理、跳跃执行、物理公式 |
+| `common/item/PrototypeItem.java` | NBT 存取方法：get/set/clearJumpCharge, hasAnyPrototype |
+| `mixin/PrototypePlayerMixin.java` | 蓄力时压制 `jumpFromGround()` 防止冲突 |
+| `common/net/c2s/C2SJumpChargePacket.java` | 网络包 encode/decode/handle |
+| `common/net/ModNetwork.java` | SimpleChannel 注册 |
+| `common/utils/CuriosHelper.java` | Curios 槽位检测 |
+| `config/ModConfig.java` | JUMP_* 配置项 |
+| `client/PrototypeRenderEvents.java` | 客户端蓄力进度渲染 |
 
-## 鏃跺簭缁嗚妭
+## 时序细节
 
-### PlayerTickEvent.START 闃舵闄烽槺
+### PlayerTickEvent.START 阶段陷阱
 
-START phase 鐨勪簨浠堕『搴忥細
+START phase 的事件顺序：
 
 ```
-涓婁竴涓?tick 缁撴潫鏃剁殑 onGround = false/true
-        鈫?褰撳墠 tick START phase fires
-        鈫?  鈫?姝ゆ椂 player.onGround() 浠嶅弽鏄犱笂涓€ tick 鐨勮惤鍦扮姸鎬?  鈫?涓嶆槸褰撳墠 tick 鐨勮惤鍦扮姸鎬侊紒鈫?鍏抽敭
-        鈫?aiStep() 鈫?travel() 鈫?move()锛堟洿鏂?onGround锛?        鈫?PlayerTickEvent.END phase fires
+上一个 tick 结束时的 onGround = false/true
+        ↓
+当前 tick START phase fires
+        ↓
+  → 此时 player.onGround() 仍反映上一 tick 的落地状态
+  → 不是当前 tick 的落地状态！← 关键
+        ↓
+aiStep() → travel() → move()（更新 onGround）
+        ↓
+PlayerTickEvent.END phase fires
 ```
 
-**褰卞搷**锛?- 钀藉湴妫€娴嬶細涓嶈兘鍦?START 鐩存帴妫€鏌?`onGround()`锛岃鐢?`WAS_AIRBORNE` 鐘舵€佹満
-- 鍦伴潰璧烽锛氬悓鏍?START 鏃?`onGround()` 涓?true锛宍zza > 0` 鏃朵細鏃犳潯浠惰鍐欓€熷害
+**影响**：
+- 落地检测：不能在 START 直接检查 `onGround()`，要用 `WAS_AIRBORNE` 状态机
+- 地面起飞：同样 START 时 `onGround()` 为 true，`zza > 0` 时会无条件覆写速度
 
-### 鍦伴潰璧烽瑕嗙洊闄烽槺
+### 地面起飞覆盖陷阱
 
-`onPlayerTick` START phase 涓湁濡備笅浠ｇ爜锛坄PrototypeEvents.java` ~line 238锛夛細
+`onPlayerTick` START phase 中有如下代码（`PrototypeEvents.java` ~line 238）：
 
 ```java
 if (player.onGround() && player.zza > 0.0F && charge == 0) {
-    player.setDeltaMovement(m.x, 2.0, m.z);  // 鈫?瑕嗙洊钃勫姏璺抽€熷害锛?}
+    player.setDeltaMovement(m.x, 2.0, m.z);  // ← 覆盖蓄力跳速度！
+}
 ```
 
-`charge == 0` 鍦?`clearJumpCharge()` 鍚庡缁堟垚绔嬨€傚鏋滅帺瀹舵寜 W锛宍zza > 0` 鈫?閫熷害琚鍐欎负 `2.0`锛堢害 15 鏍奸珮搴︼級銆?
-**淇**锛氱粰杩欐浠ｇ爜鍔?`&& !hasPendingChargeJump` 鏉′欢锛屾垨鍦ㄨ搫鍔涜烦鍚庤涓€涓复鏃舵爣蹇椼€?
-## Curios 妲戒綅妫€娴?
-蹇呴』鍚屾椂鏌?chest 鍜?Curios 涓や釜妲斤細
+`charge == 0` 在 `clearJumpCharge()` 后始终成立。如果玩家按 W，`zza > 0` → 速度被覆写为 `2.0`（约 15 格高度）。
+
+**修复**：给这段代码加 `&& !hasPendingChargeJump` 条件，或在蓄力跳后设一个临时标志。
+
+## Curios 槽位检测
+
+必须同时查 chest 和 Curios 两个槽：
 
 ```java
 public static boolean hasAnyPrototype(LivingEntity entity) {
@@ -78,8 +96,9 @@ public static boolean hasAnyPrototype(LivingEntity entity) {
 }
 ```
 
-浠呮煡 chest 浼氭紡鎺?Curios 妲戒綅鐨勫師鍨嬨€?
-## Mixin 璺宠穬鍘嬪埗
+仅查 chest 会漏掉 Curios 槽位的原型。
+
+## Mixin 跳跃压制
 
 ```java
 @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
@@ -90,14 +109,16 @@ private void gp$cancelJumpWhileCharging(CallbackInfo ci) {
 }
 ```
 
-鍘熺増鐨?`jumpFromGround()` 浼氱粰 0.42 閫熷害锛屼細涓庤搫鍔涜烦鍐茬獊銆傝搫鍔涗腑蹇呴』鍙栨秷瀹冦€?
-## Config 閰嶇疆椤?
-| 閰嶇疆 | 榛樿 | 璇存槑 |
-|------|------|------|
-| `jump_tap_height` | 3.0 | 鐭寜璺宠穬楂樺害锛堜綆浜?threshold 鏃讹級 |
-| `jump_charge_threshold` | 6 | 钃勫姏闂ㄦ tick锛堚墺姝ゅ€艰蛋钃勫姏鍏紡锛?|
-| `jump_charge_min_height` | 8.0 | threshold 鏃剁殑楂樺害 |
-| `jump_charge_max_height` | 80.0 | 鏈€澶ц搫鍔涙椂鐨勯珮搴︼紙瀹炴祴 ~60锛?|
-| `jump_max_charge_ticks` | 60 | 鏈€澶ц搫鍔涙椂闂达紙tick锛?|
+原版的 `jumpFromGround()` 会给 0.42 速度，会与蓄力跳冲突。蓄力中必须取消它。
 
-**娉ㄦ剰**锛氫慨鏀归厤缃粯璁ゅ€煎悗锛屽繀椤诲垹闄?`run/config/GoetyMech-common.toml` 寮哄埗鍐嶇敓锛屽惁鍒?TOML 涓殑鏃у€艰鐩栨柊榛樿鍊笺€?
+## Config 配置项
+
+| 配置 | 默认 | 说明 |
+|------|------|------|
+| `jump_tap_height` | 3.0 | 短按跳跃高度（低于 threshold 时） |
+| `jump_charge_threshold` | 6 | 蓄力门槛 tick（≥此值走蓄力公式） |
+| `jump_charge_min_height` | 8.0 | threshold 时的高度 |
+| `jump_charge_max_height` | 80.0 | 最大蓄力时的高度（实测 ~60） |
+| `jump_max_charge_ticks` | 60 | 最大蓄力时间（tick） |
+
+**注意**：修改配置默认值后，必须删除 `run/config/GoetyMech-common.toml` 强制再生，否则 TOML 中的旧值覆盖新默认值。

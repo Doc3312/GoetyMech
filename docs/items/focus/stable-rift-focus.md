@@ -1,20 +1,20 @@
-﻿# 绋冲畾瑁傞殭鑱氭櫠 鈥?GoetyMech
+﻿# 稳定裂隙聚晶 — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歠ocus
-- 娉ㄥ唽绫伙細ModItems.STABLE_RIFT_FOCUS
-- Java 绫伙細StableRiftFocus (extends MagicFocus)
-- 棣栨鍒涘缓锛?026-06-14
+- 类型：focus
+- 注册类：ModItems.STABLE_RIFT_FOCUS
+- Java 类：StableRiftFocus (extends MagicFocus)
+- 首次创建：2026-06-14
 
-## 璁捐鎰忓浘
+## 设计意图
 
-鍒涘缓绋冲畾鐨勩€佹寔缁殑鏃剁┖瑁傞殭锛屽彲浣滀负闀挎湡浼犻€侀€氶亾浣跨敤銆備笌涓嶇ǔ瀹氳闅欒仛鏅跺舰鎴?涓存椂/姘镐箙"閰嶅銆?
+创建稳定的、持续的时空裂隙，可作为长期传送通道使用。与不稳定裂隙聚晶形成"临时/永久"配对。
 
-## 婕斿寲璁板綍
+## 演化记录
 
-### 2026-06-24 鈥?浼樺寲锛歳ightStaff + cooldown 瀹堝崼
+### 2026-06-24 — 优化：rightStaff + cooldown 守卫
 
-- 鏀瑰姩锛氭坊鍔?`rightStaff(staff)` 鈫?娉曟潠鍖归厤鏃剁伒榄傛秷鑰楀噺鍗婏紱cooldown 娣诲姞 `isEmpty()` 瀹堝崼
-- 鍘熷洜锛氱鍚?Goety Spell 瑙勮寖锛屼慨澶嶈嚜鍔ㄦ柦娉曡矾寰勪笅娼滃湪鐨勭┖鑱氭櫠鍐峰嵈闂
-- 鍏宠仈锛歋tableRiftSpell SpellResult
+- 改动：添加 `rightStaff(staff)` → 法杖匹配时灵魂消耗减半；cooldown 添加 `isEmpty()` 守卫
+- 原因：符合 Goety Spell 规范，修复自动施法路径下潜在的空聚晶冷却问题
+- 关联：StableRiftSpell SpellResult

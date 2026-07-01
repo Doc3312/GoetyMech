@@ -1,6 +1,6 @@
-﻿# Template 绯荤粺
+﻿# Template 系统
 
-## 妯℃澘 JSON
+## 模板 JSON
 
 `/assets/<modid>/patchouli_books/<book_name>/en_us/templates/<name>.json`
 
@@ -26,30 +26,30 @@
 }
 ```
 
-鍓嶇紑 `#` 鐨勪负鍙橀噺锛屽湪 entry 涓祴鍊笺€俙include` 宓屽鍏朵粬妯℃澘锛宍processor` 涓轰唬鐮佸鐞嗗櫒銆?
+前缀 `#` 的为变量，在 entry 中赋值。`include` 嵌套其他模板，`processor` 为代码处理器。
 
-## 缁勪欢绫诲瀷
+## 组件类型
 
-| 绫诲瀷 | 鏍囪瘑 | 璇存槑 |
+| 类型 | 标识 | 说明 |
 |---|---|---|
-| 鏂囨湰 | `patchouli:text` | `text`(蹇呴渶), `color`, `max_width`, `line_height` |
-| 鐗╁搧 | `patchouli:item` | `item`(蹇呴渶), `framed`, `link_recipe` |
-| 鍥剧墖 | `patchouli:image` | `image`(蹇呴渶), `width`, `height`, `u`, `v`, `texture_width`, `texture_height`, `scale` |
-| 鏍囬 | `patchouli:header` | `text`(蹇呴渶), `color`, `centered`, `scale` |
-| 瀹炰綋 | `patchouli:entity` | `entity`(蹇呴渶), `render_size`, `rotate`, `default_rotation` |
-| 鍒嗛殧绾?| `patchouli:separator` | 鏃犻澶栧睘鎬?|
-| 杈规 | `patchouli:frame` | 涓?200x200 鍥剧墖缁樺埗杈规 |
-| 鎻愮ず | `patchouli:tooltip` | `tooltip`(String[]), `width`, `height` |
-| 鑷畾涔?| `patchouli:custom` | `class`(瀹炵幇 `ICustomComponent`) |
+| 文本 | `patchouli:text` | `text`(必需), `color`, `max_width`, `line_height` |
+| 物品 | `patchouli:item` | `item`(必需), `framed`, `link_recipe` |
+| 图片 | `patchouli:image` | `image`(必需), `width`, `height`, `u`, `v`, `texture_width`, `texture_height`, `scale` |
+| 标题 | `patchouli:header` | `text`(必需), `color`, `centered`, `scale` |
+| 实体 | `patchouli:entity` | `entity`(必需), `render_size`, `rotate`, `default_rotation` |
+| 分隔线 | `patchouli:separator` | 无额外属性 |
+| 边框 | `patchouli:frame` | 为 200x200 图片绘制边框 |
+| 提示 | `patchouli:tooltip` | `tooltip`(String[]), `width`, `height` |
+| 自定义 | `patchouli:custom` | `class`(实现 `ICustomComponent`) |
 
-鎵€鏈夌粍浠堕€氱敤灞炴€э細`x`, `y`, `advancement`, `negate_advancement`, `guard`, `flag`, `group`銆?
+所有组件通用属性：`x`, `y`, `advancement`, `negate_advancement`, `guard`, `flag`, `group`。
 
-## 浣跨敤妯℃澘鐨?Entry
+## 使用模板的 Entry
 
 ```json
 {
   "type": "GoetyMech:my_template",
-  "text": "浼犲叆鐨勬枃鏈唴瀹?,
+  "text": "传入的文本内容",
   "item": "GoetyMech:example_item"
 }
 ```

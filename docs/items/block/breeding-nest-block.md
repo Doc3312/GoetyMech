@@ -1,18 +1,18 @@
-﻿# BreedingNestBlockEntity 鈥?GoetyMech
+﻿# BreedingNestBlockEntity — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歜lock-entity
-- Java 绫伙細BreedingNestBlockEntity
-- 鍏宠仈鏂瑰潡锛欱reedingNestBlock (`docs/items/block/breeding-nest.md`)
-- 棣栨鍒涘缓锛?026-06-29
+- 类型：block-entity
+- Java 类：BreedingNestBlockEntity
+- 关联方块：BreedingNestBlock (`docs/items/block/breeding-nest.md`)
+- 首次创建：2026-06-29
 
-## 璁捐鎰忓浘
+## 设计意图
 
-鑲插发鐨勬柟鍧楀疄浣擄紝澶勭悊鑳介噺绱Н銆侀鐗╂秷鑰椼€佷骇鐗╄緭鍑洪€昏緫銆?
-鏀寔婕忔枟/Create 杈撳叆锛圵orldlyContainer + SidedInvWrapper锛夈€?
+育巢的方块实体，处理能量累积、食物消耗、产物输出逻辑。
+支持漏斗/Create 输入（WorldlyContainer + SidedInvWrapper）。
 
 ## Timeline
 
-- **2026-06-29** 鈥?鍒涘缓锛屽疄鐜拌兘閲忕疮绉?+ 鑷姩浜у嚭 + NBT 鎸佷箙鍖?+ 缃戠粶鍚屾 + 瀹瑰櫒鍏煎
-- **2026-06-29** 鈥?澧炲姞杈撳叆鍐峰嵈銆佽浆鍖栧欢鏃?2s銆乷utputStack 鏃犻檺绛夊緟鎻愬彇銆佺孩鐭崇矑瀛?
+- **2026-06-29** — 创建，实现能量累积 + 自动产出 + NBT 持久化 + 网络同步 + 容器兼容
+- **2026-06-29** — 增加输入冷却、转化延时 2s、outputStack 无限等待提取、红石粒子

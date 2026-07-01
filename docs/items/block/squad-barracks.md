@@ -1,45 +1,45 @@
-﻿# 鐐瑰皢鍙?鈥?GoetyMech
+﻿# 点将台 — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歜lock
-- 娉ㄥ唽绫伙細ModBlocks.TIER1/2/3_SQUAD_BARRACKS
-- Java 绫伙細Tier1/2/3SquadBarracksBlock (extends SquadBarracksBlock)
-- 鏂瑰潡瀹炰綋锛歋quadBarracksBlockEntity
-- 棣栨鍒涘缓锛?026-06-14
+- 类型：block
+- 注册类：ModBlocks.TIER1/2/3_SQUAD_BARRACKS
+- Java 类：Tier1/2/3SquadBarracksBlock (extends SquadBarracksBlock)
+- 方块实体：SquadBarracksBlockEntity
+- 首次创建：2026-06-14
 
-## 璁捐鎰忓浘
+## 设计意图
 
-涓夐樁鍗囩骇鐨勫鍔熻兘鏂瑰潡锛氱紪闃熼厤缃?鈫?娑堣€楄儦鑳?鈫?鎵归噺鍙敜銆傛敮鎸佹満姊板姩鍔涘叏鏂瑰悜杈撳叆銆丆hunk 甯稿姞杞姐€佽法缁村害鎿嶄綔銆?
+三阶升级的多功能方块：编队配置 → 消耗胚胎 → 批量召唤。支持机械动力全方向输入、Chunk 常加载、跨维度操作。
 
-## 婕斿寲璁板綍
+## 演化记录
 
-### 2026-06-15 鈥?鍒濆璁捐涓庢敞鍐?
+### 2026-06-15 — 初始设计与注册
 
-- 鏀瑰姩锛氬垱寤?Tier1/2/3SquadBarracksBlock + SquadBarracksBlockEntity + SquadBarracksMenu + SquadBarracksScreen銆傚疄鐜颁笁闃跺崌绾с€佺紪闃?GUI銆佹満姊板姩鍔涘吋瀹广€丆hunk Ticket銆佽法缁村害鎿嶄綔
-- 鍘熷洜锛氶渶瑕佷竴涓泦涓鐞嗙紪闃熷彫鍞ょ殑浜や簰鐐癸紝浠ｆ浛闆舵暎鐨勫彸閿崟娆″彫鍞?
-- 鍏宠仈锛歰penspec squad-summon-system
+- 改动：创建 Tier1/2/3SquadBarracksBlock + SquadBarracksBlockEntity + SquadBarracksMenu + SquadBarracksScreen。实现三阶升级、编队 GUI、机械动力兼容、Chunk Ticket、跨维度操作
+- 原因：需要一个集中管理编队召唤的交互点，代替零散的右键单次召唤
+- 关联：openspec squad-summon-system
 
-### 2026-06-16 鈥?Codebase Remediation: SquadChunkTickets 绉诲姩
+### 2026-06-16 — Codebase Remediation: SquadChunkTickets 移动
 
-- 鏀瑰姩锛歋quadChunkTickets 浠?`common/block/entity/` 绉昏嚦 `common/utils/`
-- 鍘熷洜锛氳绫绘槸宸ュ叿绫伙紝涓嶅睘浜庢柟鍧楀疄浣撻€昏緫
-- 鍏宠仈锛歰penspec codebase-remediation
+- 改动：SquadChunkTickets 从 `common/block/entity/` 移至 `common/utils/`
+- 原因：该类是工具类，不属于方块实体逻辑
+- 关联：openspec codebase-remediation
 
-### 2026-06-26 鈥?鏇挎崲 armory platform 妯″瀷 + 鎷嗗垎涓夐樁鐙珛绾圭悊
+### 2026-06-26 — 替换 armory platform 模型 + 拆分三阶独立纹理
 
-- 鏀瑰姩锛氱敤妗岄潰 armory_platform_pack 鐨?Blockbench 瀵煎嚭鏇挎崲妯″瀷锛岃楗板厓绱犵儤鐒欏埌绾圭悊涓Щ闄?3D vein/rivet/panel 鍏冪礌銆倀ier2/tier3 鍚?5 寮犺创鍥炬斁鍏ョ嫭绔嬪瓙鏂囦欢澶癸紝涓変釜闃跺悇鑷嫭绔嬬殑 blockstate/item/model锛堝凡鏀逛负鎸囧悜鐙珛鏂囦欢鑰岄潪鍏变韩锛?
-- 鍘熷洜锛氱敤鎴锋洿鏂颁簡璧勬簮鍖呰璁★紝涓夐樁闇€瑕佷笉鍚岀汗鐞?
-- 鍏宠仈锛氱敤鎴锋寚浠ゆ浛鎹?
+- 改动：用桌面 armory_platform_pack 的 Blockbench 导出替换模型，装饰元素烘焙到纹理中移除 3D vein/rivet/panel 元素。tier2/tier3 各 5 张贴图放入独立子文件夹，三个阶各自独立的 blockstate/item/model（已改为指向独立文件而非共享）
+- 原因：用户更新了资源包设计，三阶需要不同纹理
+- 关联：用户指令替换
 
-### 2026-06-26~07-02 鈥?妯″瀷杩唬淇锛? 杞級
+### 2026-06-26~07-02 — 模型迭代修复（6 轮）
 
-- 鏀瑰姩锛?
-  1. 瀵圭О鍖?south 闈?+ 淇 z-fighting锛堜袱涓浉閭?face 鍦ㄥ悓涓€骞抽潰绔炰簤娓叉煋锛?
-  2. UV 姘村钩缈昏浆淇 13 涓暅鍍?element锛? West + 7 South锛?
-  3. 1.20.1 鍏煎 rotation 鏍煎紡淇锛堢姝?-180锛屾敼涓?0锛?
-  4. Core_body / pillar / anvil_station UV 绮剧粏璋冩暣
-  5. 7 寮犺创鍥炬洿鏂帮紙armory_anvil/body/frame/vein + 鏂板 blacklight_virus_overlay.png锛?
-  6. 鏈€缁?clean export 鍘婚櫎瑁呴グ鎬?3D 鍏冪礌锛屽叏閮ㄧ儤鐒欏埌绾圭悊
-- 鍘熷洜锛欱lockbench 瀵煎嚭鍦?1.20.1 涓婄殑鍏煎鎬ч棶棰樺拰瑙嗚鐟曠柕閫愭淇
-- 鍏宠仈锛歝ommit a47b006, 549d6fe, bbf035e, 0ed93e1, c5f74cd, 49a279c, 2bccdd9
+- 改动：
+  1. 对称化 south 面 + 修复 z-fighting（两个相邻 face 在同一平面竞争渲染）
+  2. UV 水平翻转修复 13 个镜像 element（6 West + 7 South）
+  3. 1.20.1 兼容 rotation 格式修正（禁止 -180，改为 0）
+  4. Core_body / pillar / anvil_station UV 精细调整
+  5. 7 张贴图更新（armory_anvil/body/frame/vein + 新增 blacklight_virus_overlay.png）
+  6. 最终 clean export 去除装饰性 3D 元素，全部烘焙到纹理
+- 原因：Blockbench 导出在 1.20.1 上的兼容性问题和视觉瑕疵逐步修复
+- 关联：commit a47b006, 549d6fe, bbf035e, 0ed93e1, c5f74cd, 49a279c, 2bccdd9

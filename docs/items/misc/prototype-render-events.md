@@ -1,29 +1,29 @@
-﻿# PrototypeRenderEvents 鈥?GoetyMech
+﻿# PrototypeRenderEvents — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歮isc (Forge event subscriber, CLIENT)
-- Java 绫伙細PrototypeRenderEvents
-- 棣栨璁板綍锛?026-06-24
+- 类型：misc (Forge event subscriber, CLIENT)
+- Java 类：PrototypeRenderEvents
+- 首次记录：2026-06-24
 
-## 璁捐鎰忓浘
+## 设计意图
 
-瀹㈡埛绔晶鐨?Prototype 绯荤粺娓叉煋涓庤緭鍏ュ鐞嗭細
+客户端侧的 Prototype 系统渲染与输入处理：
 
-1. **Client tick** 鈥?鎸夐敭杈撳叆閲囬泦锛圵ASD/鍐插埡/璺宠穬锛夛紝澧欓潰妫€娴嬶紝C2S 鍙戝寘锛堢埇澧欒緭鍏ャ€佽搫鍔涜烦璺冦€佸璺炽€佸彇娑?slam銆侀琛岃緭鍏ワ級
-2. **Camera roll** 鈥?鐖鏃舵憚鍍忔満娌垮闈㈡硶绾挎棆杞紙quaternion SLERP锛?
-3. **Model rotation** 鈥?鐖鏃剁帺瀹舵ā鍨?body/head/arms/legs 鍖归厤鎽勫儚鏈烘棆杞?
-4. **Body render** 鈥?鍦ㄧ帺瀹惰韩浣撲笂鍙犲姞 Prototype 绾圭悊娓叉煋
-5. **Particles** 鈥?Slam 涓嬪潬鏃?body trail 绮掑瓙锛圖ustParticle + Flame锛?
+1. **Client tick** — 按键输入采集（WASD/冲刺/跳跃），墙面检测，C2S 发包（爬墙输入、蓄力跳跃、墙跳、取消 slam、飞行输入）
+2. **Camera roll** — 爬墙时摄像机沿墙面法线旋转（quaternion SLERP）
+3. **Model rotation** — 爬墙时玩家模型 body/head/arms/legs 匹配摄像机旋转
+4. **Body render** — 在玩家身体上叠加 Prototype 纹理渲染
+5. **Particles** — Slam 下坠时 body trail 粒子（DustParticle + Flame）
 
-## 婕斿寲璁板綍
+## 演化记录
 
 | Date | Change | Reason | Relates to |
 |------|--------|--------|-----------|
-| 2026-06-24 | 棣栨鏂囨。璁板綍 | 杩樻竻鏂囨。鍊哄姟 | ClientWallRunState, PrototypeEvents, PrototypeItem |
-| 2026-06-24 | START 闃舵鍔?shift 妫€娴嬮€€鍑哄璺?| 鐢ㄦ埛闇€姹傦細Shift 閿澗寮€澧欓潰 | MixinWallRunTravel |
-| 2026-06-24 | START 闃舵鐢?shouldSprint() 瀹堝崼 sprintDown锛宻printing 鍙橀噺鍔?|| ClientWallRunState.shouldSprint() | 缈昏秺鍚?sprint 涓㈠け锛岀敤 sprintRetainTicks 淇濇寔 30 tick | ClientWallRunState |
-| 2026-06-24 | 鍒犻櫎 shouldSprint() 瀹堝崼锛屾仮澶嶇洿鎺ユ寜閿疆璇?sprintDown | shouldSprint() 鍦?grace 绐楀彛鏈熼樆姝?sprintDown 鍒锋柊 鈫?缈昏秺鍚?sprint 鏂帀 | sprint-cutoff-fix incident |
-| 2026-06-24 | setWallNormal 鍔?!player.isInWater() 瀹堝崼锛沜amera roll 鍔?!player.isInWater() | 姘翠笅涓嶅簲瑙﹀彂澧欒窇锛堢Щ鍔?鐩告満鏃嬭浆锛?| PrototypeEvents |
-| 2026-06-24 | 閲嶆瀯 charge jump C2S 鍙戝寘閫昏緫锛歝anCharge 涓嬬Щ鍒板唴灞備粎鎺у埗绱姞锛涘灞傛敼鐢?!isFallFlying锛涘彂鍖呰妭娴佹敼涓?tickCount%5锛涢噴鏀炬敼涓?!jumpDown | 璺岃惤杈圭紭鏃?onGround=false 鈫?canCharge=false 鈫?else 鍒嗘敮鍙?action=0 缁曡繃鏈嶅姟绔?3 鏍兼娴?| PrototypeEvents |
-| 2026-06-25 | 鍚屽寲 tooltip锛歰nItemTooltip 浜嬩欢锛孲hift 灞曞紑鏄剧ず鑳藉姏鍒楄〃锛堥鑹叉爣璁拌В閿佺姸鎬侊級+ 缁熻琛岋紙鏀诲嚮鍔涘姞鎴?鐥呮瘨闄勫姞浼ゅ锛?| RPG 鎴愰暱浣撻獙 | PrototypeItem |
+| 2026-06-24 | 首次文档记录 | 还清文档债务 | ClientWallRunState, PrototypeEvents, PrototypeItem |
+| 2026-06-24 | START 阶段加 shift 检测退出墙跑 | 用户需求：Shift 键松开墙面 | MixinWallRunTravel |
+| 2026-06-24 | START 阶段用 shouldSprint() 守卫 sprintDown，sprinting 变量加 || ClientWallRunState.shouldSprint() | 翻越后 sprint 丢失，用 sprintRetainTicks 保持 30 tick | ClientWallRunState |
+| 2026-06-24 | 删除 shouldSprint() 守卫，恢复直接按键轮询 sprintDown | shouldSprint() 在 grace 窗口期阻止 sprintDown 刷新 → 翻越后 sprint 断掉 | sprint-cutoff-fix incident |
+| 2026-06-24 | setWallNormal 加 !player.isInWater() 守卫；camera roll 加 !player.isInWater() | 水下不应触发墙跑（移动+相机旋转） | PrototypeEvents |
+| 2026-06-24 | 重构 charge jump C2S 发包逻辑：canCharge 下移到内层仅控制累加；外层改用 !isFallFlying；发包节流改为 tickCount%5；释放改为 !jumpDown | 跌落边缘时 onGround=false → canCharge=false → else 分支发 action=0 绕过服务端 3 格检测 | PrototypeEvents |
+| 2026-06-25 | 同化 tooltip：onItemTooltip 事件，Shift 展开显示能力列表（颜色标记解锁状态）+ 统计行（攻击力加成/病毒附加伤害） | RPG 成长体验 | PrototypeItem |

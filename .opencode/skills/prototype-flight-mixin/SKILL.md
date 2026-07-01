@@ -3,26 +3,35 @@ name: "prototype-flight-mixin"
 description: "elytra flight / Mixin / velocity"
 ---
 
-# Prototype 椋炶 Mixin 鈥?鎺㈢储涓庡疄鐜?
-> 鍓嶇疆妯＄粍婧愮爜璺緞瑙?`.opencode/skills/_shared/libcode-paths.md`銆?> 蹇€熸帓闄わ細褰撳墠浠诲姟濡傛灉涓嶆秹鍙婇灅缈呴琛岀墿鐞嗐€丮ixin 娉ㄥ叆鐐归€夋嫨鎴栧鎴风-鏈嶅姟绔?velocity 鍚屾锛岃璺宠繃鏈?skill銆?
-## 闂
+# Prototype 飞行 Mixin — 探索与实现
 
-涓?Prototype 闉樼繀瀹炵幇"鎸?W 鏃舵部瑙嗙嚎鏂瑰悜鍖€閫熼琛?锛坴elocity-set 妯″瀷锛夛紝鏇夸唬鍘熺増闉樼繀鐨勭儫鑺辩伀绠姞閫熴€傝姹傦細
-- 骞抽涓嶄笅娌?- 浠板ご娌?y 杞翠笂鍗?- 淇啿鍚戞爣淇啿
-- 涓嶆寜 W 鏃舵仮澶嶅師鐗堥灅缈呯墿鐞?
-## 灏濊瘯璺緞
+> 前置模组源码路径见 `.opencode/skills/_shared/libcode-paths.md`。
+> 快速排除：当前任务如果不涉及鞘翅飞行物理、Mixin 注入点选择或客户端-服务端 velocity 同步，请跳过本 skill。
 
-### V4锛歅layerTickEvent.END + 鍔犳硶鍔犻€熷櫒
+## 问题
+
+为 Prototype 鞘翅实现"按 W 时沿视线方向匀速飞行"（velocity-set 模型），替代原版鞘翅的烟花火箭加速。要求：
+- 平飞不下沉
+- 仰头沿 y 轴上升
+- 俯冲向标俯冲
+- 不按 W 时恢复原版鞘翅物理
+
+## 尝试路径
+
+### V4：PlayerTickEvent.END + 加法加速器
 
 ```
-motion += look 脳 BOOST_FORCE + (0, HOVER_LIFT, 0)
+motion += look × BOOST_FORCE + (0, HOVER_LIFT, 0)
 ```
 
-**缁撴灉锛?* 瀹屽叏鏃犳晥銆傚姞娉曞姏鍦ㄤ话澶存椂姘村钩鍒嗛噺涓?0锛屽瀭鐩村垎閲忎笉瓒充互瀵规姉閲嶅姏銆?
-**鏁欒锛?* 鍔犳硶妯″瀷涓嶉€傚悎浠绘剰鏂瑰悜鐨勫寑閫熼琛屻€傚繀椤荤敤 velocity-set锛堟瘡 tick 閲嶇疆閫熷害涓虹洰鏍囧€硷級銆?
+**结果：** 完全无效。加法力在仰头时水平分量为 0，垂直分量不足以对抗重力。
+
+**教训：** 加法模型不适合任意方向的匀速飞行。必须用 velocity-set（每 tick 重置速度为目标值）。
+
 ---
 
-### V5锛歁ixin @Inject LivingEntity.travel() HEAD锛堟棤 cancel锛?
+### V5：Mixin @Inject LivingEntity.travel() HEAD（无 cancel）
+
 ```java
 @Mixin(LivingEntity.class)
 @Inject(method = "travel", at = @At("HEAD"))
@@ -31,12 +40,16 @@ void gp$onTravelHead(...) {
 }
 ```
 
-**缁撴灉锛?* 鏈嶅姟绔Е鍙戯紝浣嗗鎴风"鎵€鏈夋诞鍔涢兘娑堝け浜?鈥斺€斿畬鍏ㄩ€€鍥炲師鐗堥灅缈呫€?
-**鏍瑰洜锛?* 瀹㈡埛绔?`getFlightForward()` 濮嬬粓杩斿洖 0銆俙C2SFlightInputPacket` 浠呭湪鏈嶅姟绔 `setFlightForward`锛屽鎴风 `LocalPlayer` 鐨?PersistentData 浠庢湭鍐欏叆銆?
-**鏁欒锛?* C2S 鍖呯殑 handler 鍙窇鍦ㄦ湇鍔＄銆傚鎴风瑕佽鍚屼竴浠芥暟鎹紝蹇呴』鍦ㄥ彂閫佺涔熷啓鏈銆?
+**结果：** 服务端触发，但客户端"所有浮力都消失了"——完全退回原版鞘翅。
+
+**根因：** 客户端 `getFlightForward()` 始终返回 0。`C2SFlightInputPacket` 仅在服务端设 `setFlightForward`，客户端 `LocalPlayer` 的 PersistentData 从未写入。
+
+**教训：** C2S 包的 handler 只跑在服务端。客户端要读同一份数据，必须在发送端也写本端。
+
 ---
 
-### V5b锛歁ixin @Inject Player.travel() HEAD锛坈ancellable = true锛?
+### V5b：Mixin @Inject Player.travel() HEAD（cancellable = true）
+
 ```java
 @Mixin(Player.class)
 @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
@@ -47,61 +60,78 @@ void gp$onTravelHead(Vec3 travelVec, CallbackInfo ci) {
 }
 ```
 
-**缁撴灉锛?* 鏈嶅姟绔?Mixin 瑙﹀彂锛坒orward=1.0锛夛紝瀹㈡埛绔?Mixin 涓嶈Е鍙戯紙forward=0锛夈€?
-**鏍瑰洜锛?* 鍚屼笂鈥斺€斿鎴风 `getFlightForward` 鏈銆侻ixin 浠呭湪 `Server thread` 鍛戒腑锛宍Render thread` 涓婃潯浠朵笉閫氳繃銆?
-**鏁欒锛?* 鍒ゆ柇 Mixin 鏄惁鐢熸晥鏃讹紝涓嶄粎瑕佺湅鏈嶅姟绔棩蹇楋紝杩樿纭瀹㈡埛绔嚎绋嬫槸鍚﹁Е鍙戙€?
+**结果：** 服务端 Mixin 触发（forward=1.0），客户端 Mixin 不触发（forward=0）。
+
+**根因：** 同上——客户端 `getFlightForward` 未设。Mixin 仅在 `Server thread` 命中，`Render thread` 上条件不通过。
+
+**教训：** 判断 Mixin 是否生效时，不仅要看服务端日志，还要确认客户端线程是否触发。
+
 ---
 
-## 鍏抽敭鎶€鏈彂鐜?
-### 1. Player.travel() 濮旀墭閾?
+## 关键技术发现
+
+### 1. Player.travel() 委托链
+
 ```java
-// Player.travel() 濮嬬粓璋冪敤 super.travel()
+// Player.travel() 始终调用 super.travel()
 public void travel(Vec3 pTravelVector) {
-    // 娓告吵淇銆佸垱閫犻琛?-> 鏈€缁堥兘璋?super.travel()
-    super.travel(pTravelVector);  // 鈫?LivingEntity.travel()
+    // 游泳修正、创造飞行 -> 最终都调 super.travel()
+    super.travel(pTravelVector);  // → LivingEntity.travel()
     this.checkMovementStatistics(...);
 }
 ```
 
-`super.travel()` 鏄?`LivingEntity.travel()`锛岄灅缈呯墿鐞嗕唬鐮佸湪鍏朵腑銆傛墍浠?Mixin 娉ㄥ叆 `LivingEntity.travel()` HEAD **鐞嗚鍙**銆?
-### 2. ServerPlayer.isEffectiveAi() 杩斿洖 true
+`super.travel()` 是 `LivingEntity.travel()`，鞘翅物理代码在其中。所以 Mixin 注入 `LivingEntity.travel()` HEAD **理论可行**。
+
+### 2. ServerPlayer.isEffectiveAi() 返回 true
 
 ```java
-// Entity.java锛圥layer 鏈鐩栨鏂规硶锛?public boolean isEffectiveAi() {
+// Entity.java（Player 未覆盖此方法）
+public boolean isEffectiveAi() {
     return !this.level().isClientSide;
 }
 ```
 
-鏈嶅姟绔潪鏃佽鑰呯帺瀹?鈫?`isEffectiveAi() = true` 鈫?`travel()` 浣撳唴閫昏緫锛堥灅缈呯墿鐞嗭級鎵ц銆?
-### 3. ServerPlayer.zza 姘歌繙涓?0
+服务端非旁观者玩家 → `isEffectiveAi() = true` → `travel()` 体内逻辑（鞘翅物理）执行。
+
+### 3. ServerPlayer.zza 永远为 0
 
 ```java
-// LivingEntity.aiStep() 鈥?涓嶄細浠?input 璁剧疆 zza
-this.zza = this.zza * 0.98f;  // 浠呰“鍑?
-// LocalPlayer.aiStep() 鈥?瀹㈡埛绔墠鍋氭嫹璐?this.zza = this.input.forwardImpulse;  // 鎸?W -> 1.0
+// LivingEntity.aiStep() — 不会从 input 设置 zza
+this.zza = this.zza * 0.98f;  // 仅衰减
+
+// LocalPlayer.aiStep() — 客户端才做拷贝
+this.zza = this.input.forwardImpulse;  // 按 W -> 1.0
 ```
 
-`LocalPlayer`锛堝鎴风锛夊湪 `aiStep()` 涓皢 `input.forwardImpulse` 鎷疯礉鍒?`this.zza`銆?**鏈嶅姟绔?`ServerPlayer` 娌℃湁杩欎釜閫昏緫**锛宍zza` 姘歌繙涓?0銆?
-**缁撹锛?* 鐢?`player.zza` 鍒ゆ柇 W 鎸変笅鐨勬柟娉?*鍙湪瀹㈡埛绔湁鏁?*锛屾湇鍔＄涓嶈銆?
-### 4. 瀹㈡埛绔?鏈嶅姟绔?forward 鍒嗚
+`LocalPlayer`（客户端）在 `aiStep()` 中将 `input.forwardImpulse` 拷贝到 `this.zza`。
+**服务端 `ServerPlayer` 没有这个逻辑**，`zza` 永远为 0。
 
-| 瀛樺偍鏂瑰紡 | 瀹㈡埛绔?| 鏈嶅姟绔?|
+**结论：** 用 `player.zza` 判断 W 按下的方法**只在客户端有效**，服务端不行。
+
+### 4. 客户端-服务端 forward 分裂
+
+| 存储方式 | 客户端 | 服务端 |
 |----------|--------|--------|
-| `player.zza` | 鉁?1.0 (浠?input 鎷疯礉) | 鉂?姘歌繙 0 |
-| `PrototypeItem.getFlightForward()` | 鉂?榛樿 0 | 鉁?C2S packet 璁剧疆 |
+| `player.zza` | ✅ 1.0 (从 input 拷贝) | ❌ 永远 0 |
+| `PrototypeItem.getFlightForward()` | ❌ 默认 0 | ✅ C2S packet 设置 |
 
-**淇锛?* 鍦?C2S 鍙戦€佺鍚屾椂鍐欐湰绔?PersistentData锛?
+**修复：** 在 C2S 发送端同时写本端 PersistentData：
+
 ```java
 // PrototypeRenderEvents.java
 float forwardVal = forwardDown ? 1.0f : 0.0f;
-PrototypeItem.setFlightForward(player, forwardVal);  // 瀹㈡埛绔湰绔啓鍏?if (tick % 3 == 0) {
-    ModNetwork.CHANNEL.sendToServer(new C2SFlightInputPacket(forwardVal)); // 鏈嶅姟绔啓鍏?}
+PrototypeItem.setFlightForward(player, forwardVal);  // 客户端本端写入
+if (tick % 3 == 0) {
+    ModNetwork.CHANNEL.sendToServer(new C2SFlightInputPacket(forwardVal)); // 服务端写入
+}
 ```
 
-### 5. cancellable = true 鐨勬敞鎰忎簨椤?
-`ci.cancel()` 浼氳烦杩?`Player.travel()` 鍏ㄩ儴閫昏緫锛屽寘鎷細
-- `checkMovementStatistics()` 鈥?鍙帴鍙楋紙浠呯粺璁℃暟鎹級
-- `super.travel()` 鈥?琚浛浠ｏ紝闇€鎵嬪姩璋?`player.move(MoverType.SELF, motion)`
+### 5. cancellable = true 的注意事项
+
+`ci.cancel()` 会跳过 `Player.travel()` 全部逻辑，包括：
+- `checkMovementStatistics()` — 可接受（仅统计数据）
+- `super.travel()` — 被替代，需手动调 `player.move(MoverType.SELF, motion)`
 
 ```java
 player.setDeltaMovement(motion);
@@ -109,9 +139,12 @@ player.move(MoverType.SELF, motion);
 ci.cancel();
 ```
 
-**cancel 鐨勯€傜敤鏉′欢锛?* 浠呭湪宸茬‘璁ら渶瑕佸畬鍏ㄦ帴绠¤ tick 鐨勮繍鍔ㄦ椂浣跨敤銆傚浜?浠呭湪 elytra + W 鎸変笅"鐨勬潯浠跺垎鏀紝闈炴縺娲绘椂 return 璁╁師鏂规硶姝ｅ父杩愯銆?
-## 鏈€缁堝疄鐜?
-### Mixin锛圥rototypeTravelMixin.java锛?
+**cancel 的适用条件：** 仅在已确认需要完全接管该 tick 的运动时使用。对于"仅在 elytra + W 按下"的条件分支，非激活时 return 让原方法正常运行。
+
+## 最终实现
+
+### Mixin（PrototypeTravelMixin.java）
+
 ```java
 @Mixin(Player.class)
 public abstract class PrototypeTravelMixin {
@@ -140,33 +173,42 @@ FLIGHT_TARGET_SPEED = BUILDER
     .defineInRange("flight_target_speed", 0.5, 0.1, 2.0);
 ```
 
-閲嶅姏琛ュ伩 0.08 纭紪鐮侊紙绛変簬鍘熺増闉樼繀 `motion.y -= 0.08`锛夈€?
-## 瀹炴垬缁忛獙
+重力补偿 0.08 硬编码（等于原版鞘翅 `motion.y -= 0.08`）。
 
-### Mixin 娉ㄥ叆鐐归€夋嫨
+## 实战经验
 
-| 鐩爣 | 鏂规硶 | 缁撴灉 |
+### Mixin 注入点选择
+
+| 目标 | 方法 | 结果 |
 |------|------|------|
-| `LivingEntity.travel()` | `@At("HEAD")` | 鑳借Е鍙戯紝浣?client forward=0 闂鍚屽瓨鍦?|
-| `Player.travel()` | `@At("HEAD")` cancellable | 鏇村彲鎺э紝鍙畬鍏ㄦ帴绠￠琛?|
+| `LivingEntity.travel()` | `@At("HEAD")` | 能触发，但 client forward=0 问题同存在 |
+| `Player.travel()` | `@At("HEAD")` cancellable | 更可控，可完全接管飞行 |
 
-**鎺ㄨ崘锛?* 瀵圭帺瀹朵笓灞炲姛鑳界洿鎺ョ敤 `@Mixin(Player.class)` + `cancellable = true`锛岄伩鍏嶄緷璧?LivingEntity 鍐呴儴閫昏緫鍒嗘敮銆?
-### 瀹㈡埛绔?鏈嶅姟绔悓姝ラ櫡闃?
-- `PlayerTickEvent` 鐨?START/END 鍦ㄥ鎴风鍜屾湇鍔＄閮借Е鍙?- Mixin 缂栬瘧鍒颁袱涓幆澧冿紝浣?`@Inject` 鐨勬潯浠跺垽鏂綋鍦ㄤ袱绔墽琛?- PersistentData锛坄entity.getPersistentData()`锛夊湪瀹㈡埛绔拰鏈嶅姟绔槸**鐙珛瀹炰緥**
-- C2S 鍖?handler 鍙窇鏈嶅姟绔紝涓嶅啓瀹㈡埛绔?- `player.zza` 鍦?`LocalPlayer` 鏈夋晥锛宍ServerPlayer` 鏃犳晥
+**推荐：** 对玩家专属功能直接用 `@Mixin(Player.class)` + `cancellable = true`，避免依赖 LivingEntity 内部逻辑分支。
 
-**榛勯噾娉曞垯锛?* 闇€瑕佸湪涓ょ璇诲悓涓€浠戒腑闂寸姸鎬佹椂鈥斺€旇涔堢敤 `player.zza` 杩欑鏈潵灏卞悓姝ョ殑瀛楁锛岃涔堝湪 C2S 鍙戦€佺鍚屾椂鍐欐湰绔€?
-### 璋冭瘯鏂规硶
+### 客户端-服务端同步陷阱
 
-1. 鍔?`GoetyMechMod.LOGGER.info` 鐪?Mixin 鏄惁瑙﹀彂锛堝尯鍒?`[Server thread]` 鍜?`[Render thread]`锛?2. 鏃ュ織涓湅 `forward=` 鍊兼槸鍚?> 0.01
-3. 濡?Mixin 鍙湪 Server thread 瑙﹀彂 鈫?forward 鍊煎湪瀹㈡埛绔负 0 鈫?C2S 鎴栨湰绔啓鍏ラ棶棰?4. 鐢?`player.isFallFlying()` + `hasAnyPrototype` 缂╁皬鏉′欢鑼冨洿
+- `PlayerTickEvent` 的 START/END 在客户端和服务端都触发
+- Mixin 编译到两个环境，但 `@Inject` 的条件判断体在两端执行
+- PersistentData（`entity.getPersistentData()`）在客户端和服务端是**独立实例**
+- C2S 包 handler 只跑服务端，不写客户端
+- `player.zza` 在 `LocalPlayer` 有效，`ServerPlayer` 无效
 
-### 鐩稿叧鏂囦欢
+**黄金法则：** 需要在两端读同一份中间状态时——要么用 `player.zza` 这种本来就同步的字段，要么在 C2S 发送端同时写本端。
 
-| 璺緞 | 瑙掕壊 |
+### 调试方法
+
+1. 加 `GoetyMechMod.LOGGER.info` 看 Mixin 是否触发（区分 `[Server thread]` 和 `[Render thread]`）
+2. 日志中看 `forward=` 值是否 > 0.01
+3. 如 Mixin 只在 Server thread 触发 → forward 值在客户端为 0 → C2S 或本端写入问题
+4. 用 `player.isFallFlying()` + `hasAnyPrototype` 缩小条件范围
+
+### 相关文件
+
+| 路径 | 角色 |
 |------|------|
-| `mixin/PrototypeTravelMixin.java` | Player.travel() HEAD 娉ㄥ叆 |
-| `client/PrototypeRenderEvents.java` | C2S 鍙戦€?+ 鏈 forward 鍐欏叆 |
+| `mixin/PrototypeTravelMixin.java` | Player.travel() HEAD 注入 |
+| `client/PrototypeRenderEvents.java` | C2S 发送 + 本端 forward 写入 |
 | `common/item/PrototypeItem.java` | getFlightForward / setFlightForward NBT |
 | `config/ModConfig.java` | FLIGHT_TARGET_SPEED |
-| `common/net/c2s/C2SFlightInputPacket.java` | 鏈嶅姟绔?forward 璁剧疆 |
+| `common/net/c2s/C2SFlightInputPacket.java` | 服务端 forward 设置 |

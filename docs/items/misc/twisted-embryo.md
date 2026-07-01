@@ -1,20 +1,20 @@
-﻿# 鎵洸鑳氳儙 鈥?GoetyMech
+﻿# 扭曲胚胎 — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歩tem
-- 娉ㄥ唽绫伙細ModItems.TWISTED_EMBRYO
-- Java 绫伙細TwistedEmbryoItem (extends Item)
-- 棣栨鍒涘缓锛?026-06-14
+- 类型：item
+- 注册类：ModItems.TWISTED_EMBRYO
+- Java 类：TwistedEmbryoItem (extends Item)
+- 首次创建：2026-06-14
 
-## 璁捐鎰忓浘
+## 设计意图
 
-鍩虹鍙敜鐗╁搧锛氭墜鎸佸彸閿湪鐬勫噯浣嶇疆鐢熸垚瀵瑰簲鐨?Goety 浠嗕粠銆備笌鎴愮啛鑳氳儙褰㈡垚"鍩虹/杩涢樁"閰嶅銆?
+基础召唤物品：手持右键在瞄准位置生成对应的 Goety 仆从。与成熟胚胎形成"基础/进阶"配对。
 
-## 婕斿寲璁板綍
+## 演化记录
 
-### 2026-06-16 鈥?鎻愬彇閲嶅灏勭嚎杩借釜閫昏緫
+### 2026-06-16 — 提取重复射线追踪逻辑
 
-- 鏀瑰姩锛氫粠 TwistedEmbryoItem.use() 涓彁鍙栧皠绾胯拷韪畾浣嶉€昏緫鍒?MinionSpawnHelper.findSpawnPosition()
-- 鍘熷洜锛氫笌 MatureEmbryoItem 瀛樺湪瀹屽叏閲嶅鐨勫皠绾胯拷韪唬鐮?
-- 鍏宠仈锛歰penspec codebase-remediation
+- 改动：从 TwistedEmbryoItem.use() 中提取射线追踪定位逻辑到 MinionSpawnHelper.findSpawnPosition()
+- 原因：与 MatureEmbryoItem 存在完全重复的射线追踪代码
+- 关联：openspec codebase-remediation

@@ -6,7 +6,7 @@
 - [ ] 1.4 Implement `getPosition(int entityId)` returning `Vec3` or null
 - [ ] 1.5 Implement `getRotation(int entityId)` returning `Vec2` or null
 - [ ] 1.6 Implement `onEntityAdded(Entity)` for lazy snapshot of new entities
-- [ ] 1.7 Wire `activate()` 鈫?`freezeAll()` and `deactivate()` 鈫?`thawAll()` in `TimeFreezeHandler`
+- [ ] 1.7 Wire `activate()` → `freezeAll()` and `deactivate()` → `thawAll()` in `TimeFreezeHandler`
 
 ## 2. Entity Mixin for Position Freeze
 
@@ -32,8 +32,8 @@
 ## 6. Verification
 
 - [ ] 6.1 Build and run client
-- [ ] 6.2 Test freeze while Creative flying 鈥?no camera jitter
-- [ ] 6.3 Test freeze with CrushingWheel active 鈥?entity positions frozen
-- [ ] 6.4 Test deactivate 鈥?no snap to wrong position
-- [ ] 6.5 Test dimension switch during freeze 鈥?map cleared correctly
-- [ ] 6.6 Test entity spawned during freeze 鈥?gets snapshot on first render
+- [ ] 6.2 Test freeze while Creative flying — no camera jitter
+- [ ] 6.3 Test freeze with CrushingWheel active — entity positions frozen
+- [ ] 6.4 Test deactivate — no snap to wrong position
+- [ ] 6.5 Test dimension switch during freeze — map cleared correctly
+- [ ] 6.6 Test entity spawned during freeze — gets snapshot on first render

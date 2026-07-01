@@ -1,7 +1,7 @@
 ﻿# Crazed Summon (Spell)
 
-鍙敜鐤媯鍞ら瓟鑰呮硶鏈€?
+召唤疯狂唤魔者法术。
 
 ## Timeline
-- **2026-06-24** 鈥?鍒濆瀹炵幇銆?
-- **2026-06-29** 鈥?CrazedSummonFocus + CrazedSummonSpell 娉ㄥ唽瀹屾垚骞跺姞鍏?GoetyMech 鍒涢€犳ā寮忔爣绛鹃〉銆?
+- **2026-06-24** — 初始实现。
+- **2026-06-29** — CrazedSummonFocus + CrazedSummonSpell 注册完成并加入 GoetyMech 创造模式标签页。

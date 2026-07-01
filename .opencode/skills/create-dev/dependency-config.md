@@ -1,4 +1,4 @@
-﻿# 渚濊禆閰嶇疆
+﻿# 依赖配置
 
 ## build.gradle
 
@@ -30,7 +30,7 @@ flywheel_version = 1.0.5
 registrate_version = MC1.20-1.3.3
 ```
 
-## Mixin Refmap 閲嶆槧灏?
+## Mixin Refmap 重映射
 
 ```groovy
 minecraft {

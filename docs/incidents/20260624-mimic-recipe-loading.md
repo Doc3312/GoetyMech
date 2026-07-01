@@ -16,7 +16,7 @@ RecipeManager shows "Loaded 27 recipes", mimic recipes not among them. JSON file
 `ModItems` items not fully initialized when RecipeManager loads recipes from JSON. Recipe JSON calls `ModItems.PROTOTYPE_MIMIC.get()` which returns null because `RegistryObject` not yet resolved.
 
 ## Fix Attempted
-`getResultItem()` changed from `ForgeRegistries.ITEMS.getValue()` to `ModItems.PROTOTYPE_MIMIC.get()` 鈥?moved from `fromJson()` to `getResultItem()`. Same null issue because `RegistryObject` depends on deferred register resolution order.
+`getResultItem()` changed from `ForgeRegistries.ITEMS.getValue()` to `ModItems.PROTOTYPE_MIMIC.get()` — moved from `fromJson()` to `getResultItem()`. Same null issue because `RegistryObject` depends on deferred register resolution order.
 
 ## Resolution
 Root cause still unknown. Workaround needed:

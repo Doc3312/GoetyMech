@@ -1,77 +1,77 @@
-﻿# 琛€鑲夋櫠鍖?浠紡鍗囩骇绯荤粺 鈥?瑙勮寖鏂囨。
+﻿# 血肉晶匣 仪式升级系统 — 规范文档
 
-## 姒傝堪
+## 概述
 
-灏?9 涓鑲夋櫠鍖ｅ彉绉嶏紙A1/A2/A3, B1/B2/B3, C1/C2/C3锛夊悎骞朵负 3 涓嚎鎬у崌绾х墿鍝侊細
+将 9 个血肉晶匣变种（A1/A2/A3, B1/B2/B3, C1/C2/C3）合并为 3 个线性升级物品：
 
-| 鐗╁搧 | 鏃у搴?| 鎻掓Ы | 瑙﹀彂鍣ㄧ被鍨嬫満鍒?|
+| 物品 | 旧对应 | 插槽 | 触发器类型机制 |
 |------|--------|------|---------------|
-| `flesh_casket_1` | A1/B1/C1 | 1 | 鍙垏鎹?A/B/C |
-| `flesh_casket_2` | A2/B2/C2 | 3 | 鍙垏鎹?A/B/C |
-| `flesh_casket_3` | A3/B3/C3 | 5 | 鍙垏鎹?A/B/C |
+| `flesh_casket_1` | A1/B1/C1 | 1 | 可切换 A/B/C |
+| `flesh_casket_2` | A2/B2/C2 | 3 | 可切换 A/B/C |
+| `flesh_casket_3` | A3/B3/C3 | 5 | 可切换 A/B/C |
 
-瑙﹀彂鍣ㄧ被鍨?A锛堟弧鐩堬級/ B锛堝钩琛★級/ C锛堟繏姝伙級浣滀负鐗╁搧 NBT 灞炴€у瓨鍌紝閫氳繃璇呭拻娉ㄥ叆鍣ㄩ厤鏂规棤娑堣€楀惊鐜垏鎹紙A鈫払鈫扖鈫扐锛夛紝淇濈暀鍐呴儴鐗╁搧銆?
+触发器类型 A（满盈）/ B（平衡）/ C（濒死）作为物品 NBT 属性存储，通过诅咒注入器配方无消耗循环切换（A→B→C→A），保留内部物品。
 
-## 浠紡鍗囩骇璺緞
+## 仪式升级路径
 
-绾挎€у崌绾э紝姣忔鍗囩骇淇濈暀鍐呴儴鎵€鏈夎仛鏅?NBT锛?
+线性升级，每次升级保留内部所有聚晶/NBT：
 
 ```
-[鍘熸潗鏂橾 鈹€鈹€鈻?琛€鑲夋櫠鍖?I 鈹€鈹€鈻?琛€鑲夋櫠鍖?II 鈹€鈹€鈻?琛€鑲夋櫠鍖?III
+[原材料] ──► 血肉晶匣 I ──► 血肉晶匣 II ──► 血肉晶匣 III
 ```
 
-## 涓夌骇浠紡鏄庣粏
+## 三级仪式明细
 
-### I 绾э細鏉愭枡 鈫?琛€鑲夋櫠鍖?I
+### I 级：材料 → 血肉晶匣 I
 
-| 椤圭洰 | 鍊?|
+| 项目 | 值 |
 |------|-----|
-| 浠紡绫诲瀷 | `goety:craft` |
+| 仪式类型 | `goety:craft` |
 | craftType | `forge` |
-| 涓績绁潧 | 榛戞殫榄旀潠锛坄goety:dark_wand`锛夆啋 娑堣€?|
-| 鏉愭枡 | 鑻嶇櫧閽㈤敪锛坄goety:pale_steel_ingot`锛壝?, 榛戞殫鍚堥噾閿紙`goety:dark_ingot`锛壝?, 鐏佃川锛坄goety:soul_powder`锛壝?, 浠绘剰鐢熻倝 脳1锛坄#forge:raw_meat`锛?|
-| 鍚姩鏉′欢 | 鐚キ鏉戞皯锛坄#goety:villagers`锛?|
-| 鐏甸瓊娑堣€?| 111/绉掞紙JSON `soulCost: 111`锛?|
-| 鎸佺画鏃堕棿 | 6 绉掞紙JSON `duration: 6`锛?|
-| 浜у嚭 | `GoetyMech:flesh_casket_1` |
+| 中心祭坛 | 黑暗魔杖（`goety:dark_wand`）→ 消耗 |
+| 材料 | 苍白钢锭（`goety:pale_steel_ingot`）×2, 黑暗合金锭（`goety:dark_ingot`）×2, 灵质（`goety:soul_powder`）×1, 任意生肉 ×1（`#forge:raw_meat`） |
+| 启动条件 | 献祭村民（`#goety:villagers`） |
+| 灵魂消耗 | 111/秒（JSON `soulCost: 111`） |
+| 持续时间 | 6 秒（JSON `duration: 6`） |
+| 产出 | `GoetyMech:flesh_casket_1` |
 
-### II 绾э細琛€鑲夋櫠鍖?I 鈫?琛€鑲夋櫠鍖?II
+### II 级：血肉晶匣 I → 血肉晶匣 II
 
-| 椤圭洰 | 鍊?|
+| 项目 | 值 |
 |------|-----|
-| 浠紡绫诲瀷 | `GoetyMech:upgrade_casket`锛堣嚜瀹氫箟锛孨BT 淇濈暀锛墊
+| 仪式类型 | `GoetyMech:upgrade_casket`（自定义，NBT 保留）|
 | craftType | `forge` |
-| 涓績绁潧 | 琛€鑲夋櫠鍖?I 鈫?娑堣€楋紝NBT 澶嶅埗鍒颁骇鍑?|
-| 鏉愭枡 | 涓嶆磥涔嬭锛坄goety:unholy_blood`锛壝?, 鑱氭櫠琚嬶紙`goety:focus_pack`锛壝?, 鏆楀涔嬪績锛坄goety:heart_of_the_night`锛壝?, 涓嶆磥甯冩枡锛坄goety:unholy_fabric`锛壝?, 鐏佃川锛坄goety:soul_powder`锛壝? |
-| 鍚姩鏉′欢 | 鐚キ鏉戞皯锛坄#goety:villagers`锛?|
-| 鐏甸瓊娑堣€?| 111/绉掞紙JSON `soulCost: 111`锛?|
-| 鎸佺画鏃堕棿 | 6 绉掞紙JSON `duration: 6`锛?|
-| 浜у嚭 | `GoetyMech:flesh_casket_2`锛堢户鎵?I 绾х殑鍐呴儴鐗╁搧鍜岃Е鍙戠被鍨嬶級 |
+| 中心祭坛 | 血肉晶匣 I → 消耗，NBT 复制到产出 |
+| 材料 | 不洁之血（`goety:unholy_blood`）×1, 聚晶袋（`goety:focus_pack`）×1, 暗夜之心（`goety:heart_of_the_night`）×1, 不洁布料（`goety:unholy_fabric`）×2, 灵质（`goety:soul_powder`）×2 |
+| 启动条件 | 献祭村民（`#goety:villagers`） |
+| 灵魂消耗 | 111/秒（JSON `soulCost: 111`） |
+| 持续时间 | 6 秒（JSON `duration: 6`） |
+| 产出 | `GoetyMech:flesh_casket_2`（继承 I 级的内部物品和触发类型） |
 
-### III 绾э細琛€鑲夋櫠鍖?II 鈫?琛€鑲夋櫠鍖?III
+### III 级：血肉晶匣 II → 血肉晶匣 III
 
-| 椤圭洰 | 鍊?|
+| 项目 | 值 |
 |------|-----|
-| 浠紡绫诲瀷 | `GoetyMech:upgrade_casket`锛堣嚜瀹氫箟锛孨BT 淇濈暀锛墊
+| 仪式类型 | `GoetyMech:upgrade_casket`（自定义，NBT 保留）|
 | craftType | `forge` |
-| 涓績绁潧 | 琛€鑲夋櫠鍖?II 鈫?娑堣€楋紝NBT 澶嶅埗鍒颁骇鍑?|
-| 鏉愭枡 | 涓嶆磥涔嬭锛坄goety:unholy_blood`锛壝?, 澶氭櫠澶ц锛坄goety:focus_pack`锛壝?, 涓嬬晫鍚堥噾閿?脳2, 涓嶆磥甯冩枡锛坄goety:unholy_fabric`锛壝? |
-| 鍚姩鏉′欢 | 鐚キ鏉戞皯锛坄#goety:villagers`锛?|
-| 鐏甸瓊娑堣€?| 111/绉掞紙JSON `soulCost: 111`锛?|
-| 鎸佺画鏃堕棿 | 6 绉掞紙JSON `duration: 6`锛?|
-| 浜у嚭 | `GoetyMech:flesh_casket_3`锛堢户鎵?II 绾х殑鍐呴儴鐗╁搧鍜岃Е鍙戠被鍨嬶級 |
+| 中心祭坛 | 血肉晶匣 II → 消耗，NBT 复制到产出 |
+| 材料 | 不洁之血（`goety:unholy_blood`）×1, 多晶大袋（`goety:focus_pack`）×1, 下界合金锭 ×2, 不洁布料（`goety:unholy_fabric`）×2 |
+| 启动条件 | 献祭村民（`#goety:villagers`） |
+| 灵魂消耗 | 111/秒（JSON `soulCost: 111`） |
+| 持续时间 | 6 秒（JSON `duration: 6`） |
+| 产出 | `GoetyMech:flesh_casket_3`（继承 II 级的内部物品和触发类型） |
 
-## Goety 浠紡绯荤粺鍏抽敭鏈哄埗
+## Goety 仪式系统关键机制
 
-### JSON 閰嶆柟浣嶇疆
+### JSON 配方位置
 
 ```
 src/main/resources/data/GoetyMech/recipes/<name>.json
 ```
 
-閰嶆柟 type 涓?`goety:ritual`锛堟爣鍑嗕华寮忥級锛屾敞鍐屽湪 `data/GoetyMech/` 涓嬭€岄潪 `data/goety/`锛屼絾 Goety 鑳借法 mod 璇诲彇銆?*娉ㄦ剰**锛歩tem ID 蹇呴』浣跨敤 Goety 鐨勬敞鍐屽悕锛坄goety:pale_steel_ingot` 鑰岄潪 `pale_metal_ingot`锛夛紝閿欒 ID 涓嶄細鎶ラ敊浣?JEI 涓嶆樉绀洪厤鏂广€?
+配方 type 为 `goety:ritual`（标准仪式），注册在 `data/GoetyMech/` 下而非 `data/goety/`，但 Goety 能跨 mod 读取。**注意**：item ID 必须使用 Goety 的注册名（`goety:pale_steel_ingot` 而非 `pale_metal_ingot`），错误 ID 不会报错但 JEI 不显示配方。
 
-### JSON 閫氱敤缁撴瀯锛坈raft 绫诲瀷锛?
+### JSON 通用结构（craft 类型）
 
 ```json
 {
@@ -95,71 +95,71 @@ src/main/resources/data/GoetyMech/recipes/<name>.json
 }
 ```
 
-### 鍏抽敭 JSON 瀛楁璇存槑
+### 关键 JSON 字段说明
 
-| 瀛楁 | 蹇呭～ | 璇存槑 |
+| 字段 | 必填 | 说明 |
 |------|------|------|
-| `type` | 鏄?| 鍥哄畾 `"goety:ritual"` |
-| `ritual_type` | 鏄?| `"goety:craft"`锛堢墿鍝佸埗浣滐級 |
-| `activation_item` | 鏄?| 鏀惧湪鏆楅粦绁潧涓婄殑鐗╁搧銆傛敮鎸?`"item"` 鎴?`"tag"` |
-| `craftType` | 鏄?| 缁撴瀯瑕佹眰鏍囩銆傚彲閫夊€艰涓嬫柟銆宑raftType 鍙€夊€笺€?|
-| `soulCost` | 鏄?| 姣?tick 鐏甸瓊娑堣€楅噺銆?*瀹為檯鏈哄埗锛氭瘡 20 tick (1 绉? 娑堣€椾竴娆?* |
-| `duration` | 鏄?| 浠紡鎸佺画 tick 鏁般€俙duration: 6` = 6 tick 鈮?0.3 绉掞紙浣嗘潗鏂欐秷鑰楁寜绉掑垎閰嶏級 |
-| `entity_to_sacrifice` | 鍚?| 鍚姩鏉′欢锛氬繀椤诲湪杩欎釜鏍囩鍐呯殑瀹炰綋姝讳骸 |
-| `ingredients` | 鍚?| 鏉愭枡鏁扮粍锛屾斁绁搧鍙颁笂銆傛渶澶?9 椤?|
-| `result` | 鍚?| 浜у嚭鐗╁搧銆傚 craft 浠紡蹇呴』 |
+| `type` | 是 | 固定 `"goety:ritual"` |
+| `ritual_type` | 是 | `"goety:craft"`（物品制作） |
+| `activation_item` | 是 | 放在暗黑祭坛上的物品。支持 `"item"` 或 `"tag"` |
+| `craftType` | 是 | 结构要求标签。可选值见下方「craftType 可选值」 |
+| `soulCost` | 是 | 每 tick 灵魂消耗量。**实际机制：每 20 tick (1 秒) 消耗一次** |
+| `duration` | 是 | 仪式持续 tick 数。`duration: 6` = 6 tick ≈ 0.3 秒（但材料消耗按秒分配） |
+| `entity_to_sacrifice` | 否 | 启动条件：必须在这个标签内的实体死亡 |
+| `ingredients` | 否 | 材料数组，放祭品台上。最多 9 项 |
+| `result` | 否 | 产出物品。对 craft 仪式必须 |
 
-### craftType 鍙€夊€?
+### craftType 可选值
 
-鏉ヨ嚜 Goety `RitualTypes.java`锛?
+来自 Goety `RitualTypes.java`：
 
-| 鍊?| 缁撴瀯瑕佹眰 | 閫傜敤鍦烘櫙 |
+| 值 | 结构要求 | 适用场景 |
 |----|---------|---------|
-| `forge` | 閿婚€犵浉鍏虫柟鍧?| 鐗╁搧鍒朵綔銆佸崌绾?|
-| `magic` | 榄旀硶鐩稿叧鏂瑰潡 | 閫氱敤 |
-| `necroturgy` | 浜＄伒鐩稿叧 | 涓嶆鐢熺墿鐩稿叧 |
-| `end` | 鏈湴鏂瑰潡 | 楂樼骇鐗╁搧 |
-| `storm` | 椋庢毚鐩稿叧 | 涓骇鐗╁搧 |
-| `sky` | 澶╃┖鐩稿叧 | 鍙敜 |
-| `sabbath` | 鐚キ鐩稿叧 | 寮哄姏浠紡 |
-| `geoturgy` | 澶у湴鐩稿叧 | 鐭跨煶 |
-| `frost` | 鍐伴湝鐩稿叧 | 鍐扮郴 |
-| `deep` | 娣辨殫鐩稿叧 | 鍙ゅ煄 |
-| `overgrown` | 鑷劧鐩稿叧 | 鑷劧绯?|
-| `divination` | 棰勮█鐩稿叧 | 瀹氫綅 |
-| `adept_nether` | 鍦扮嫳涓骇 | 涓嬬晫 |
-| `expert_nether` | 鍦扮嫳楂樼骇 | 涓嬬晫楂樼骇 |
-| `animation` | 鍔ㄧ敾鐩稿叧 | 鏋勯€?|
+| `forge` | 锻造相关方块 | 物品制作、升级 |
+| `magic` | 魔法相关方块 | 通用 |
+| `necroturgy` | 亡灵相关 | 不死生物相关 |
+| `end` | 末地方块 | 高级物品 |
+| `storm` | 风暴相关 | 中级物品 |
+| `sky` | 天空相关 | 召唤 |
+| `sabbath` | 献祭相关 | 强力仪式 |
+| `geoturgy` | 大地相关 | 矿石 |
+| `frost` | 冰霜相关 | 冰系 |
+| `deep` | 深暗相关 | 古城 |
+| `overgrown` | 自然相关 | 自然系 |
+| `divination` | 预言相关 | 定位 |
+| `adept_nether` | 地狱中级 | 下界 |
+| `expert_nether` | 地狱高级 | 下界高级 |
+| `animation` | 动画相关 | 构造 |
 
-### 鐏甸瓊娑堣€楁満鍒?
+### 灵魂消耗机制
 
-- 姣?20 game tick锛? 绉掞級鎵ｉ櫎涓€娆?`soulCost` 鍊?
-- 鐏甸瓊鏉ヨ嚜鏆楅粦绁潧姝ｄ笅鏂圭殑 `CursedCageBlockEntity`
-- 濡傛灉鐏甸瓊涓嶈冻锛屼华寮忓け璐?
+- 每 20 game tick（1 秒）扣除一次 `soulCost` 值
+- 灵魂来自暗黑祭坛正下方的 `CursedCageBlockEntity`
+- 如果灵魂不足，仪式失败
 
-### 鐗虹壊妫€娴嬫満鍒?
+### 牺牲检测机制
 
-- 閫氳繃鐩戝惉 `GameEvent.ENTITY_DIE` 瑙﹀彂
-- 妫€娴嬭寖鍥村唴姝讳骸鐨勫疄浣撴槸鍚﹀尮閰?`entity_to_sacrifice` 鏍囩
-- 蹇呴』鏄湪浠紡寮€濮?*鍚?*姝讳骸鐨勫疄浣撴墠鏈夋晥
-- **蹇呴』鍦ㄩ厤鏂逛腑閰嶇疆**锛歚"entity_to_sacrifice": { "tag": "goety:villagers", "display_name": "..." }`
+- 通过监听 `GameEvent.ENTITY_DIE` 触发
+- 检测范围内死亡的实体是否匹配 `entity_to_sacrifice` 标签
+- 必须是在仪式开始**后**死亡的实体才有效
+- **必须在配方中配置**：`"entity_to_sacrifice": { "tag": "goety:villagers", "display_name": "..." }`
 
-### 鏉愭枡娑堣€楁満鍒?
+### 材料消耗机制
 
-- 鏉愭枡娑堣€楅€熺巼锛歚durationPerIngredient = duration / (ingredients.size() + 1)`
-- 妗剁被鐗╁搧杩旇繕绌烘《
-- 鏈夊悎鎴愰仐鐣欑墿鐨勭墿鍝佸脊鍑洪仐鐣欑墿
-- 鏉愭枡鏀惧湪绁搧鍙帮紙Pedestal锛変笂锛岃嚜鍔ㄦ壂鎻忚寖鍥村唴
+- 材料消耗速率：`durationPerIngredient = duration / (ingredients.size() + 1)`
+- 桶类物品返还空桶
+- 有合成遗留物的物品弹出遗留物
+- 材料放在祭品台（Pedestal）上，自动扫描范围内
 
-## NBT 淇濈暀鏂规
+## NBT 保留方案
 
-### 鐜版湁闄愬埗
+### 现有限制
 
-`CraftItemRitual.finish()` 榛樿涓嶄繚鐣欐縺娲荤墿鍝佺殑 NBT銆備粎 Wand鈫扺and 鏃跺鍒剁墿鍝佸閲忥紝涓斿彈閰嶇疆鎺у埗銆?
+`CraftItemRitual.finish()` 默认不保留激活物品的 NBT。仅 Wand→Wand 时复制物品容量，且受配置控制。
 
-### 瀹炵幇鏂瑰紡锛堝疄闄呮柟妗堬級
+### 实现方式（实际方案）
 
-鑷畾涔?`Ritual` 瀛愮被 `UpgradeCasketRitual`锛屽叧閿偣锛?*蹇呴』鍏堣皟 `super.finish()` 鍐?shrink**锛堝惁鍒欐縺娲荤墿鍝佹彁鍓嶆秷澶卞鑷?super 鍐?NPE锛夛細
+自定义 `Ritual` 子类 `UpgradeCasketRitual`，关键点：**必须先调 `super.finish()` 再 shrink**（否则激活物品提前消失导致 super 内 NPE）：
 
 ```java
 public class UpgradeCasketRitual extends Ritual {
@@ -183,9 +183,9 @@ public class UpgradeCasketRitual extends Ritual {
 }
 ```
 
-### 娉ㄥ唽鏂?ritual_type锛堝疄闄呮柟妗堬級
+### 注册新 ritual_type（实际方案）
 
-Goety 灏?`ritual_factory` 娉ㄥ唽涓?Forge 鍘熺増娉ㄥ唽琛紝鍙洿鎺ョ敤 `DeferredRegister` 缁戝畾鍒?`goety:ritual_factory`锛?
+Goety 将 `ritual_factory` 注册为 Forge 原版注册表，可直接用 `DeferredRegister` 绑定到 `goety:ritual_factory`：
 
 ```java
 public class ModRituals {
@@ -201,18 +201,18 @@ public class ModRituals {
 }
 ```
 
-鐒跺悗鍦ㄤ富绫绘敞鍐屽埌 mod 浜嬩欢鎬荤嚎锛?
+然后在主类注册到 mod 事件总线：
 ```java
 ModRituals.RITUALS.register(modBus);
 ```
 
-> JSON 涓?`ritual_type` 鍐欎负 `"GoetyMech:upgrade_casket"`锛堝懡鍚嶇┖闂?= 娉ㄥ唽鏃剁敤鐨?mod id锛夈€?
+> JSON 中 `ritual_type` 写为 `"GoetyMech:upgrade_casket"`（命名空间 = 注册时用的 mod id）。
 
-## 瑙﹀彂绫诲瀷鍒囨崲绯荤粺锛堣瘏鍜掓敞鍏ュ櫒寰幆锛?
+## 触发类型切换系统（诅咒注入器循环）
 
-瑙﹀彂绫诲瀷 A锛堟弧鐩堬級/ B锛堝钩琛★級/ C锛堟繏姝伙級浣滀负 NBT key `"GoetyMech.triggerType"` 瀛樺偍锛岄€氳繃璇呭拻娉ㄥ叆鍣ㄩ厤鏂瑰惊鐜垏鎹€備笉娑堣€楁潗鏂欙紝涓嶆崯澶辩墿鍝併€?
+触发类型 A（满盈）/ B（平衡）/ C（濒死）作为 NBT key `"GoetyMech.triggerType"` 存储，通过诅咒注入器配方循环切换。不消耗材料，不损失物品。
 
-### 閰嶆柟 JSON锛坄data/GoetyMech/recipes/flesh_casket_cycle_{1,2,3}.json`锛?
+### 配方 JSON（`data/GoetyMech/recipes/flesh_casket_cycle_{1,2,3}.json`）
 
 ```json
 {
@@ -228,65 +228,65 @@ ModRituals.RITUALS.register(modBus);
 }
 ```
 
-| 瀛楁 | 璇存槑 |
+| 字段 | 说明 |
 |------|------|
-| `type` | `"goety:cursed_infuser"`锛堜娇鐢?Goety 鍐呯疆 recipe type锛?|
-| `ritual_type` | `"GoetyMech:flesh_casket_infuser"`锛堣嚜瀹氫箟 serializer 澶勭悊 NBT锛?|
-| `updateAndCheckNBT` | 閬垮厤 JEI 閰嶆柟鍐茬獊锛宍nbt_match: false` 淇濊瘉鏄剧ず涓斾笉鍖归厤 NBT |
+| `type` | `"goety:cursed_infuser"`（使用 Goety 内置 recipe type） |
+| `ritual_type` | `"GoetyMech:flesh_casket_infuser"`（自定义 serializer 处理 NBT） |
+| `updateAndCheckNBT` | 避免 JEI 配方冲突，`nbt_match: false` 保证显示且不匹配 NBT |
 
-### 鑷畾涔?Serializer
+### 自定义 Serializer
 
-`FleshCasketInfuserRecipeSerializer` 璇诲彇鏍囧噯 cursed infuser 瀛楁骞舵敞鍐屼负 `GoetyMech:flesh_casket_infuser`銆俙assemble()` 璐熻矗澶嶅埗杈撳叆鐗╁搧鐨?Tag 骞惰皟鐢?`FleshCasketItem.cycleTriggerType()`銆?
+`FleshCasketInfuserRecipeSerializer` 读取标准 cursed infuser 字段并注册为 `GoetyMech:flesh_casket_infuser`。`assemble()` 负责复制输入物品的 Tag 并调用 `FleshCasketItem.cycleTriggerType()`。
 
-## 鏂板/淇敼鏂囦欢娓呭崟
+## 新增/修改文件清单
 
-### 鏂板 Java 绫?
+### 新增 Java 类
 
-| 璺緞 | 璇存槑 |
+| 路径 | 说明 |
 |------|------|
-| `common/ritual/UpgradeCasketRitual.java` | 鑷畾涔変华寮忥紝淇濈暀婵€娲荤墿鍝?NBT |
-| `init/ModRituals.java` | 娉ㄥ唽 `upgrade_casket` ritual_type锛坄goety:ritual_factory` 娉ㄥ唽琛級|
-| `common/recipe/FleshCasketInfuserRecipe.java` | 璇呭拻娉ㄥ叆鍣ㄩ厤鏂癸紝NBT 澶嶅埗 + 瑙﹀彂绫诲瀷寰幆 |
-| `common/recipe/FleshCasketInfuserRecipeSerializer.java` | 娉ㄥ叆鍣ㄩ厤鏂瑰簭鍒楀寲鍣?|
+| `common/ritual/UpgradeCasketRitual.java` | 自定义仪式，保留激活物品 NBT |
+| `init/ModRituals.java` | 注册 `upgrade_casket` ritual_type（`goety:ritual_factory` 注册表）|
+| `common/recipe/FleshCasketInfuserRecipe.java` | 诅咒注入器配方，NBT 复制 + 触发类型循环 |
+| `common/recipe/FleshCasketInfuserRecipeSerializer.java` | 注入器配方序列化器 |
 
-### 鏂板 JSON 閰嶆柟
+### 新增 JSON 配方
 
-| 璺緞 | 璇存槑 |
+| 路径 | 说明 |
 |------|------|
-| `data/GoetyMech/recipes/flesh_casket_1.json` | I 绾т华寮忛厤鏂癸紙`goety:craft`锛墊
-| `data/GoetyMech/recipes/flesh_casket_1_to_2.json` | II 绾у崌绾ч厤鏂癸紙`GoetyMech:upgrade_casket`锛墊
-| `data/GoetyMech/recipes/flesh_casket_2_to_3.json` | III 绾у崌绾ч厤鏂癸紙`GoetyMech:upgrade_casket`锛墊
-| `data/GoetyMech/recipes/flesh_casket_cycle_1.json` | 瑙﹀彂绫诲瀷寰幆閰嶆柟锛堣瘏鍜掓敞鍏ュ櫒锛墊
-| `data/GoetyMech/recipes/flesh_casket_cycle_2.json` | 鍚屼笂 |
-| `data/GoetyMech/recipes/flesh_casket_cycle_3.json` | 鍚屼笂 |
+| `data/GoetyMech/recipes/flesh_casket_1.json` | I 级仪式配方（`goety:craft`）|
+| `data/GoetyMech/recipes/flesh_casket_1_to_2.json` | II 级升级配方（`GoetyMech:upgrade_casket`）|
+| `data/GoetyMech/recipes/flesh_casket_2_to_3.json` | III 级升级配方（`GoetyMech:upgrade_casket`）|
+| `data/GoetyMech/recipes/flesh_casket_cycle_1.json` | 触发类型循环配方（诅咒注入器）|
+| `data/GoetyMech/recipes/flesh_casket_cycle_2.json` | 同上 |
+| `data/GoetyMech/recipes/flesh_casket_cycle_3.json` | 同上 |
 
-### 鏂板鐗╁搧娉ㄥ唽
+### 新增物品注册
 
-| 娉ㄥ唽鍚?| 瀵瑰簲 |
+| 注册名 | 对应 |
 |--------|------|
-| `flesh_casket_1` | 绉婚櫎 A1/B1/C1锛屽悎骞朵负 1 |
-| `flesh_casket_2` | 绉婚櫎 A2/B2/C2锛屽悎骞朵负 2 |
-| `flesh_casket_3` | 绉婚櫎 A3/B3/C3锛屽悎骞朵负 3 |
+| `flesh_casket_1` | 移除 A1/B1/C1，合并为 1 |
+| `flesh_casket_2` | 移除 A2/B2/C2，合并为 2 |
+| `flesh_casket_3` | 移除 A3/B3/C3，合并为 3 |
 
-### 鍒犻櫎鏂囦欢
+### 删除文件
 
-| 鏂囦欢 | 鍘熷洜 |
+| 文件 | 原因 |
 |------|------|
-| `flesh_casket_a_1` ~ `flesh_casket_c_3` 鍏?9 涓敞鍐岄」 | 鍚堜负 3 涓?|
-| 9 涓瘏鍜掓敞鍏ュ櫒杞寲閰嶆柟 | 鏀逛负 NBT 鍐呭垏鎹㈣Е鍙戠被鍨?|
-| 瀵瑰簲妯″瀷/绾圭悊锛?2 涓棫妯″瀷 JSON + 9 涓棫閰嶆柟 JSON锛?| 鏇存柊涓烘柊鐨?3 涓?|
+| `flesh_casket_a_1` ~ `flesh_casket_c_3` 共 9 个注册项 | 合为 3 个 |
+| 9 个诅咒注入器转化配方 | 改为 NBT 内切换触发类型 |
+| 对应模型/纹理（12 个旧模型 JSON + 9 个旧配方 JSON） | 更新为新的 3 个 |
 
-### 淇敼鏂囦欢
+### 修改文件
 
-| 鏂囦欢 | 鍐呭 |
+| 文件 | 内容 |
 |------|------|
-| `FleshCasketItem.java` | 瑙﹀彂绫诲瀷鏀逛负 NBT 鍙垏鎹㈠睘鎬э紝绉婚櫎 `TriggerType` import |
-| `TriggerType.java` | 淇濈暀浣嗗彲鑳戒笉鍐嶇洿鎺ュ紩鐢紙NBT key 鏇夸唬锛墊
-| `FleshCasketEvents.java` | 閫傞厤鏂?NBT 瑙﹀彂绫诲瀷璇诲彇 |
-| `ModItems.java` | 9 涓棫娉ㄥ唽 鈫?3 涓柊娉ㄥ唽 |
-| `ModCreativeTab.java` | 鏇存柊涓?3 涓墿鍝?|
-| `ModRecipeSerializers.java` | 娣诲姞 `FLESH_CASKET_INFUSER` |
-| `GoetyMechMod.java` | 娉ㄥ唽 `ModRituals.RITUALS` |
-| 璇█鏂囦欢 `zh_cn.json` / `en_us.json` | 鏇存柊鐗╁搧鍚嶇О鍜屾弿杩?|
-| `back.json` (Curios tag) | 鏇存柊涓烘柊鐨?3 涓墿鍝?|
-| `flesh-casket.md`锛堟枃妗ｏ級 | 鏇存柊婕斿寲璁板綍 |
+| `FleshCasketItem.java` | 触发类型改为 NBT 可切换属性，移除 `TriggerType` import |
+| `TriggerType.java` | 保留但可能不再直接引用（NBT key 替代）|
+| `FleshCasketEvents.java` | 适配新 NBT 触发类型读取 |
+| `ModItems.java` | 9 个旧注册 → 3 个新注册 |
+| `ModCreativeTab.java` | 更新为 3 个物品 |
+| `ModRecipeSerializers.java` | 添加 `FLESH_CASKET_INFUSER` |
+| `GoetyMechMod.java` | 注册 `ModRituals.RITUALS` |
+| 语言文件 `zh_cn.json` / `en_us.json` | 更新物品名称和描述 |
+| `back.json` (Curios tag) | 更新为新的 3 个物品 |
+| `flesh-casket.md`（文档） | 更新演化记录 |

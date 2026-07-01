@@ -1,10 +1,11 @@
 ﻿---
 name: "entity-render-dev"
-description: "瀹炰綋娓叉煋寮€鍙戝弬鑰冦€傛兜鐩?ModModelLayer 妯″紡銆乁V 鍙樻崲 VertexConsumer 鍖呰鍣ㄣ€丳oseStack 鍙樻崲瑙勫垯銆佸姩鐢?setupAnim銆佽皟璇曟鏌ユ竻鍗曘€傚綋闇€瑕佹覆鏌撹嚜瀹氫箟瀹炰綋銆佹柟鍧楀疄浣撴垨妯″瀷鏃惰皟鐢ㄦ湰 skill銆?
+description: "实体渲染开发参考。涵盖 ModModelLayer 模式、UV 变换 VertexConsumer 包装器、PoseStack 变换规则、动画 setupAnim、调试检查清单。当需要渲染自定义实体、方块实体或模型时调用本 skill。"
 ---
 
-# Entity Render 鍙傝€?
-## ModModelLayer 妯″紡
+# Entity Render 参考
+
+## ModModelLayer 模式
 
 ```java
 public class ModModelLayer {
@@ -20,7 +21,8 @@ public class ModModelLayer {
 }
 ```
 
-## UV Transform VertexConsumer 鍖呰鍣?
+## UV Transform VertexConsumer 包装器
+
 ```java
 TextureAtlasSprite sprite = Minecraft.getInstance()
     .getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(MODEL_TEXTURE_ID);
@@ -46,28 +48,29 @@ VertexConsumer vc = new VertexConsumer() {
 };
 ```
 
-## PoseStack 鍙樻崲
+## PoseStack 变换
 
-### 瑙勫垯
+### 规则
 - **Entity position is at FEET** when render starts (`EntityRenderer.render()` translates to entity pos)
 - **BlockBench Y=16 = 1 block in Minecraft** (16 model units = 1 block)
-- **Do NOT** `translate(0, -1, 0)` 鈥?model center already at correct height
+- **Do NOT** `translate(0, -1, 0)` — model center already at correct height
 - **Last rotation = first on vertices** (matrix stack order)
 
-### 甯哥敤鍙樻崲
+### 常用变换
 ```java
-// 杞瓙/鍦嗙洏骞虫斁鈫掔洿绔?poseStack.mulPose(Axis.XP.rotationDegrees(-90));
+// 轮子/圆盘平放→直立
+poseStack.mulPose(Axis.XP.rotationDegrees(-90));
 
-// 闈㈠悜杩愬姩鏂瑰悜
+// 面向运动方向
 Vec3 dir = entity.getDirVec();
 float yaw = (float) Math.atan2(dir.x, dir.z);
 poseStack.mulPose(Axis.YP.rotation(yaw));
 
-// 鍨傜洿鍒嗛噺鐨勪刊浠拌
+// 垂直分量的俯仰角
 float pitch = (float) -Math.asin(dir.y);
 poseStack.mulPose(Axis.XP.rotation(pitch));
 
-// 鎸佺画鏃嬭浆
+// 持续旋转
 float spin = (entity.tickCount + partialTicks) * speed;
 poseStack.mulPose(Axis.ZP.rotation(spin));
 ```
@@ -78,15 +81,17 @@ poseStack.mulPose(Axis.ZP.rotation(spin));
 @Override
 public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
                       float ageInTicks, float netHeadYaw, float headPitch) {
-    body.yRot = ageInTicks * 0.5F;            // 鎸佺画鏃嬭浆
-    part.zRot = Mth.cos(ageInTicks * 0.1F) * 0.2F;  // 鎽嗗姩
+    body.yRot = ageInTicks * 0.5F;            // 持续旋转
+    part.zRot = Mth.cos(ageInTicks * 0.1F) * 0.2F;  // 摆动
 }
 ```
 
-## 璋冭瘯妫€鏌ユ竻鍗?
-1. Model 娉ㄥ唽浜嗗悧锛焋latest.log` 鈫?妫€鏌?renderer log: `model=missing:true/false`
-2. 绾圭悊璺緞姝ｇ‘鍚楋紵`assets/<modid>/textures/entity/<name>.png`
-3. JSON 涓?namespace 姝ｇ‘鍚楋紵`"1": "modid:path"` 涓嶆槸 `"1": "path"`
-4. Render type 姝ｇ‘鍚楋紵`entityCutout` 涓嶆槸 `cutout`
-5. Atlas stitching 閿欒锛熷湪 `latest.log` 涓悳绱㈢汗鐞嗗悕绉?6. 鐢ㄤ簡 `OverlayTexture.NO_OVERLAY` 鍚楋紵
-7. `model.renderToBuffer()` 鍦ㄥ彉鎹箣鍚庤皟鐢ㄤ簡鍚楋紵
+## 调试检查清单
+
+1. Model 注册了吗？`latest.log` → 检查 renderer log: `model=missing:true/false`
+2. 纹理路径正确吗？`assets/<modid>/textures/entity/<name>.png`
+3. JSON 中 namespace 正确吗？`"1": "modid:path"` 不是 `"1": "path"`
+4. Render type 正确吗？`entityCutout` 不是 `cutout`
+5. Atlas stitching 错误？在 `latest.log` 中搜索纹理名称
+6. 用了 `OverlayTexture.NO_OVERLAY` 吗？
+7. `model.renderToBuffer()` 在变换之后调用了吗？

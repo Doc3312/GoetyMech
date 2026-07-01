@@ -1,25 +1,25 @@
-﻿# 浠ｇ爜 API
+﻿# 代码 API
 
 ## IPatchouliAPI
 
 ```java
 IPatchouliAPI api = PatchouliAPI.get();
-if (api.isStub()) { /* Patchouli 鏈畨瑁?*/ return; }
+if (api.isStub()) { /* Patchouli 未安装 */ return; }
 ```
 
-涓昏鏂规硶锛?
+主要方法：
 
-| 鏂规硶 | 璇存槑 |
+| 方法 | 说明 |
 |---|---|
-| `getBook()`, `openBookGUI()` | 鑾峰彇/鎵撳紑鎵嬪唽 |
-| `registerCategory()` | 娉ㄥ唽鍒嗙被 |
-| `registerMultiblock()` | 娉ㄥ唽澶氭柟鍧?|
-| `setConfigFlag()` | 璁剧疆 Config flag |
-| `getConfigFlag()` | 鏌ヨ Config flag |
+| `getBook()`, `openBookGUI()` | 获取/打开手册 |
+| `registerCategory()` | 注册分类 |
+| `registerMultiblock()` | 注册多方块 |
+| `setConfigFlag()` | 设置 Config flag |
+| `getConfigFlag()` | 查询 Config flag |
 
 ## IComponentProcessor
 
-瀹炵幇璇ユ帴鍙ｅ鎺ユā鏉挎暟鎹細
+实现该接口对接模板数据：
 
 ```java
 public class MyProcessor implements IComponentProcessor {
@@ -30,7 +30,7 @@ public class MyProcessor implements IComponentProcessor {
 
     @Override
     public String process(String key) {
-        if ("text".equals(key)) return "澶勭悊鍚庣殑鏂囨湰";
+        if ("text".equals(key)) return "处理后的文本";
         return null;
     }
 }
@@ -38,13 +38,13 @@ public class MyProcessor implements IComponentProcessor {
 
 ## ICustomComponent
 
-鑷畾涔夋覆鏌撶粍浠讹細
+自定义渲染组件：
 
 ```java
 public class MyCustomComponent extends ICustomComponent {
     @Override
     public void build(ComponentBuildContext context, List<IGuiElement> top, List<IGuiElement> bottom) {
-        // 娣诲姞鑷畾涔?GUI 鍏冪礌
+        // 添加自定义 GUI 元素
     }
 }
 ```
@@ -55,7 +55,7 @@ public class MyCustomComponent extends ICustomComponent {
 PatchouliAPI.get().setConfigFlag("GoetyMech:hard_mode", true);
 ```
 
-## 娉ㄥ唽澶氭柟鍧?
+## 注册多方块
 
 ```java
 Multiblock mb = Multiblock.of("S");
@@ -63,9 +63,9 @@ PatchouliAPI.get().registerMultiblock(
     new ResourceLocation("GoetyMech", "flesh_altar"), mb);
 ```
 
-## 缁欎簣鏂版墜鎵嬪唽锛圓dvancement锛?
+## 给予新手手册（Advancement）
 
-**Advancement** (`/data/GoetyMech/advancements/grant_book.json`)锛?
+**Advancement** (`/data/GoetyMech/advancements/grant_book.json`)：
 
 ```json
 {
@@ -78,7 +78,7 @@ PatchouliAPI.get().registerMultiblock(
 }
 ```
 
-**Loot Table** (`/data/GoetyMech/loot_tables/grant_book.json`)锛?
+**Loot Table** (`/data/GoetyMech/loot_tables/grant_book.json`)：
 
 ```json
 {

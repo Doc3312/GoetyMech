@@ -1,6 +1,6 @@
-﻿# GUI 闆嗘垚 + 杩愯鏃朵氦浜?
+﻿# GUI 集成 + 运行时交互
 
-## Ghost 鎷栨嫿
+## Ghost 拖拽
 
 ```java
 @Override
@@ -13,7 +13,7 @@ public void registerGuiHandlers(IGuiHandlerRegistration registration) {
                         MyMachineScreen screen, ITypedIngredient<I> ingredient, boolean doStart) {
                     return List.of(new Target<I>() {
                         @Override public Rect2i getArea() { return new Rect2i(10, 20, 18, 18); }
-                        @Override public void accept(I ingredient) { /* 澶勭悊涓㈠叆 */ }
+                        @Override public void accept(I ingredient) { /* 处理丢入 */ }
                     });
                 }
                 @Override public void onComplete() {}
@@ -31,7 +31,7 @@ public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 
 ---
 
-## 杩愯鏃朵氦浜?
+## 运行时交互
 
 ### onRuntimeAvailable
 
@@ -39,52 +39,52 @@ public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 @Override
 public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
     IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
-    // 闅愯棌 Recipe Category
+    // 隐藏 Recipe Category
     // recipeManager.hideRecipeCategory(VanillaRecipeTypes.CRAFTING);
-    // 闅愯棌鐗瑰畾閰嶆柟
+    // 隐藏特定配方
     // recipeManager.hideRecipes(GoetyMechRecipeTypes.MY_MACHINE, List.of(recipe));
 }
 ```
 
-### IJeiRuntime 涓昏鎺ュ彛
+### IJeiRuntime 主要接口
 
-| 鏂规硶 | 杩斿洖 | 鐢ㄩ€?|
+| 方法 | 返回 | 用途 |
 |---|---|---|
-| `getRecipeManager()` | `IRecipeManager` | 閰嶆柟鏌ヨ/闅愯棌 |
-| `getRecipesGui()` | `IRecipesGui` | 鎵撳紑 JEI GUI |
-| `getIngredientManager()` | `IIngredientManager` | 鐗╁搧绠＄悊 |
-| `getJeiHelpers()` | `IJeiHelpers` | 宸ュ叿绫?|
-| `getRecipeTransferManager()` | `IRecipeTransferManager` | 杞Щ绠＄悊 |
+| `getRecipeManager()` | `IRecipeManager` | 配方查询/隐藏 |
+| `getRecipesGui()` | `IRecipesGui` | 打开 JEI GUI |
+| `getIngredientManager()` | `IIngredientManager` | 物品管理 |
+| `getJeiHelpers()` | `IJeiHelpers` | 工具类 |
+| `getRecipeTransferManager()` | `IRecipeTransferManager` | 转移管理 |
 
-### IRecipeManager 甯哥敤鎿嶄綔
+### IRecipeManager 常用操作
 
 ```java
-recipeManager.createRecipeLookup(recipeType);           // 鏌ユ壘閰嶆柟
-recipeManager.createRecipeCategoryLookup();             // 鏌ユ壘 Category
-recipeManager.createRecipeCatalystLookup(recipeType);   // 鏌ユ壘 Catalyst
-recipeManager.hideRecipes(recipeType, recipes);         // 闅愯棌
-recipeManager.unhideRecipes(recipeType, recipes);       // 鍙栨秷闅愯棌
-recipeManager.hideRecipeCategory(recipeType);           // 闅愯棌 Category
-recipeManager.unhideRecipeCategory(recipeType);         // 鍙栨秷闅愯棌
+recipeManager.createRecipeLookup(recipeType);           // 查找配方
+recipeManager.createRecipeCategoryLookup();             // 查找 Category
+recipeManager.createRecipeCatalystLookup(recipeType);   // 查找 Catalyst
+recipeManager.hideRecipes(recipeType, recipes);         // 隐藏
+recipeManager.unhideRecipes(recipeType, recipes);       // 取消隐藏
+recipeManager.hideRecipeCategory(recipeType);           // 隐藏 Category
+recipeManager.unhideRecipeCategory(recipeType);         // 取消隐藏
 ```
 
-### 鍔ㄦ€侀殣钘?鏄剧ず Ingredient
+### 动态隐藏/显示 Ingredient
 
 ```java
 IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 
-// 闅愯棌
+// 隐藏
 ingredientManager.addIngredientsAtRuntime(
     VanillaTypes.ITEM_STACK, List.of(new ItemStack(Items.BARRIER)));
 
-// 鍙栨秷闅愯棌
+// 取消隐藏
 ingredientManager.removeIngredientsAtRuntime(
     VanillaTypes.ITEM_STACK, List.of(new ItemStack(Items.BARRIER)));
 ```
 
 ---
 
-## IJeiHelpers 甯哥敤宸ュ叿
+## IJeiHelpers 常用工具
 
 ```java
 IGuiHelper guiHelper = registration.getJeiHelpers().getGuiHelper();
@@ -106,7 +106,7 @@ IDrawable outputSlot = guiHelper.getOutputSlot();
 
 ---
 
-## Plugin 瀹屾暣楠ㄦ灦
+## Plugin 完整骨架
 
 ```java
 @JeiPlugin
@@ -151,10 +151,10 @@ public class GoetyMechJeiPlugin implements IModPlugin {
 }
 ```
 
-## 閰嶅 Lang Key
+## 配套 Lang Key
 
 ```properties
 # zh_cn.json
-"GoetyMech.jei.category.my_machine": "鑷畾涔夋満鍣?,
-"GoetyMech.jei.info.sculk_bind_focus": "骞藉尶鏉熺細鑱氭櫠鏄鍚堝瀷娉曟湳鑱氭櫠銆俓n閿佸畾鐩爣浣垮叾鏃犳硶绉诲姩锛岄殢鍚庡彫鍞ゅ惊澹板畧鍗€?
+"GoetyMech.jei.category.my_machine": "自定义机器",
+"GoetyMech.jei.info.sculk_bind_focus": "幽匿束缚聚晶是复合型法术聚晶。\n锁定目标使其无法移动，随后召唤循声守卫。"
 ```

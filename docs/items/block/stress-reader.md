@@ -1,17 +1,17 @@
-﻿# 搴斿姏璇诲彇鍣?鈥?GoetyMech
+﻿# 应力读取器 — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歜lock
-- 娉ㄥ唽绫伙細ModBlocks.STRESS_READER / ModItems.STRESS_READER
-- Java 绫伙細StressReaderBlock (extends DirectionalKineticBlock)
-- 鏂瑰潡瀹炰綋锛歋tressReaderBlockEntity (extends KineticBlockEntity)
-- 棣栨鍒涘缓锛?026-06-14
+- 类型：block
+- 注册类：ModBlocks.STRESS_READER / ModItems.STRESS_READER
+- Java 类：StressReaderBlock (extends DirectionalKineticBlock)
+- 方块实体：StressReaderBlockEntity (extends KineticBlockEntity)
+- 首次创建：2026-06-14
 
-## 璁捐鎰忓浘
+## 设计意图
 
-Create 鍔ㄥ姏鏂瑰潡锛岃鍙栨墍鍦ㄧ綉缁滅殑搴斿姏鏁版嵁锛屼笌搴斿姏鑱氭櫠閰嶅悎瀹炵幇杩滅▼纰惧帇杞敾鍑汇€?
+Create 动力方块，读取所在网络的应力数据，与应力聚晶配合实现远程碾压轮攻击。
 
-## 婕斿寲璁板綍
+## 演化记录
 
-### 2026-06-24 鈥?鍒濆瀹炵幇
+### 2026-06-24 — 初始实现

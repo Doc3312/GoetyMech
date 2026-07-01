@@ -1,21 +1,21 @@
-﻿# 杩界寧鑱氭櫠 鈥?GoetyMech
+﻿# 追猎聚晶 — GoetyMech
 
-## 韬唤
+## 身份
 
-- 绫诲瀷锛歠ocus
-- 娉ㄥ唽绫伙細ModItems.CHASE_FOCUS
-- Java 绫伙細ChaseFocus (extends MagicFocus)
-- 娉ㄥ唽 ID锛歚GoetyMech:chase_focus`
-- 鍓嶈韩锛歚void_blink_focus`锛堣櫄绌洪棯鐜拌仛鏅讹級
-- 搴曞眰娉曟湳锛歏oidBlinkSpell锛堥攣瀹?澶氭闂幇浼犻€侊級
+- 类型：focus
+- 注册类：ModItems.CHASE_FOCUS
+- Java 类：ChaseFocus (extends MagicFocus)
+- 注册 ID：`GoetyMech:chase_focus`
+- 前身：`void_blink_focus`（虚空闪现聚晶）
+- 底层法术：VoidBlinkSpell（锁定+多次闪现传送）
 
-## 璁捐鎰忓浘
+## 设计意图
 
-杩滅▼鎴樻枟鑱氭櫠锛氶攣瀹氱洰鏍囧悗鏂藉姞铏氱┖鍗拌锛岀帺瀹跺彲鍦ㄧ獥鍙ｆ湡鍐呭娆℃寜 Shift 闂幇鍒扮洰鏍囪儗鍚庛€傚師鍚?铏氱┖闂幇鑱氭櫠"锛屽悗鏇村悕涓?杩界寧鑱氭櫠"鍖归厤鏂颁富棰樸€?
+远程战斗聚晶：锁定目标后施加虚空印记，玩家可在窗口期内多次按 Shift 闪现到目标背后。原名"虚空闪现聚晶"，后更名为"追猎聚晶"匹配新主题。
 
-## 婕斿寲璁板綍
+## 演化记录
 
 | Date | Change | Reason | Relates to |
 |------|--------|--------|-----------|
-| 2026-06-24 | 浠?`void_blink_focus` 閲嶅懡鍚嶄负 `chase_focus`锛屾浛鎹㈢汗鐞嗕负 `tracking_eye_orb_pupil.png` | 涓婚鏀逛负杩界寧瑙嗚椋庢牸锛岃嫳鏂囧悕 Chase Focus 濂戝悎 Goety 鍛藉悕鎯緥 | ModItems / ChaseFocus / 璇█鏂囦欢 / ModConfig / ModCreativeTab |
-| 2026-07-02 | 搴曞眰娉曟湳 VoidBlinkSpell 閲嶆瀯涓洪攣瀹?澶氭闂幇璁捐锛氶暱鎸夐攣瀹氣啋GLOWING 楂樹寒鈫扸oidMark 鏁堟灉鈫扴hift 瑙﹀彂浼犻€併€侰haseFocus 鏃犱唬鐮佹敼鍔紝浠嶉€氳繃鏋勯€犱紶鍏?VoidBlinkSpell | 澧炲己鐜╂硶娣卞害锛屼粠绠€鍗曚紶閫佹敼涓哄畬鏁寸殑閿佸畾鈫掓爣璁扳啋闂幇浜や簰閾?| VoidBlinkSpell / VoidMarkEffect / VoidBlinkEvents / C2SVoidBlinkPacket / VoidBlinkFocus |
+| 2026-06-24 | 从 `void_blink_focus` 重命名为 `chase_focus`，替换纹理为 `tracking_eye_orb_pupil.png` | 主题改为追猎视觉风格，英文名 Chase Focus 契合 Goety 命名惯例 | ModItems / ChaseFocus / 语言文件 / ModConfig / ModCreativeTab |
+| 2026-07-02 | 底层法术 VoidBlinkSpell 重构为锁定+多次闪现设计：长按锁定→GLOWING 高亮→VoidMark 效果→Shift 触发传送。ChaseFocus 无代码改动，仍通过构造传入 VoidBlinkSpell | 增强玩法深度，从简单传送改为完整的锁定→标记→闪现交互链 | VoidBlinkSpell / VoidMarkEffect / VoidBlinkEvents / C2SVoidBlinkPacket / VoidBlinkFocus |
