@@ -80,3 +80,13 @@ Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储
   3. `findFirstCurio` → `findAllFleshCaskets` 遍历全部 Curios 槽 → 多个匣子同时生效
 - 原因：玩家反馈三个问题
 - 关联：commit 7a632bf
+
+### 2026-07-02 — Tier 分级真法杖 + Offhand fix + Z 键 GUI
+
+- 改动：
+  1. AutoCastDummyWand 重构：无参构造全类型（VOID, NONE, NECROMANCY, ILL, GEOMANCY, WIND），新增有参构造。注册 AUTO_CAST_DUMMY_WAND_T1（NONE-only）。
+  2. `tryAutoCast()` 按 tier 选法杖：tier 1 用 T1（NONE-only），tier 2/3 用全类型法杖。
+  3. Offhand fix：将聚晶装入真法杖 handler，临时放副手，SpellResult 后恢复。解决 `WandUtil.findFocus()` 找不到聚晶导致 SquadFocus/StressFocus 等 silent return 的问题。
+  4. Z 键绑定（`key.goetypunk.open_flesh_casket`）+ C2SOpenFleshCasketPacket：手持匣子按 Z 打开 GUI。
+- 原因：低阶匣子不应召唤过多暗卫（rightStaff 奖励）；SquadFocus/StressFocus 自动施法被 instanceof 守卫阻断；手持无法快速开 GUI。
+- 关联：commit 56b1c30, 97a5ebe, a1d0b11
