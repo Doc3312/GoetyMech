@@ -1,6 +1,10 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "goetypunk:item/flesh_casket_1"
-  }
+    "layer0": "goetypunk:item/flesh_casket_1_fullness"
+  },
+  "overrides": [
+    { "predicate": { "goetypunk:trigger_type": 0.5 }, "model": "goetypunk:item/flesh_casket_1_balance" },
+    { "predicate": { "goetypunk:trigger_type": 1.0 }, "model": "goetypunk:item/flesh_casket_1_deathbed" }
+  ]
 }
