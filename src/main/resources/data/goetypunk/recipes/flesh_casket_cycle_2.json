@@ -1,8 +1,0 @@
-{
-  "type": "goetypunk:flesh_casket_infuser",
-  "ingredient": {
-    "item": "goetypunk:flesh_casket_2"
-  },
-  "result": "goetypunk:flesh_casket_2",
-  "cookingTime": 60
-}

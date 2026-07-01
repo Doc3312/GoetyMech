@@ -1,0 +1,10 @@
+﻿{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "goetymech:item/flesh_casket_1_fullness"
+  },
+  "overrides": [
+    { "predicate": { "goetymech:trigger_type": 0.5 }, "model": "goetymech:item/flesh_casket_1_balance" },
+    { "predicate": { "goetymech:trigger_type": 1.0 }, "model": "goetymech:item/flesh_casket_1_deathbed" }
+  ]
+}

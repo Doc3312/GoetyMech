@@ -1,0 +1,6 @@
+﻿{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "goetymech:block/flesh_furnace_top"
+  }
+}

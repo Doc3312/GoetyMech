@@ -1,0 +1,8 @@
+﻿{
+  "type": "goetymech:flesh_casket_infuser",
+  "ingredient": {
+    "item": "goetymech:flesh_casket_3"
+  },
+  "result": "goetymech:flesh_casket_3",
+  "cookingTime": 60
+}

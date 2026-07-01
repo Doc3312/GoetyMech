@@ -1,0 +1,10 @@
+﻿{
+  "variants": {
+    "facing=down":  { "model": "goetymech:block/stress_reader", "x": 90 },
+    "facing=up":    { "model": "goetymech:block/stress_reader", "x": 270 },
+    "facing=north": { "model": "goetymech:block/stress_reader" },
+    "facing=south": { "model": "goetymech:block/stress_reader", "y": 180 },
+    "facing=west":  { "model": "goetymech:block/stress_reader", "y": 270 },
+    "facing=east":  { "model": "goetymech:block/stress_reader", "y": 90 }
+  }
+}

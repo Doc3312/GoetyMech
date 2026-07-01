@@ -1,0 +1,6 @@
+﻿{
+  "variants": {
+    "lit=false": { "model": "goetymech:block/flesh_furnace_off" },
+    "lit=true": { "model": "goetymech:block/flesh_furnace_on" }
+  }
+}

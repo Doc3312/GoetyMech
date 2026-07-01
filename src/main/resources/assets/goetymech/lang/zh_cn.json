@@ -1,0 +1,146 @@
+﻿{
+  "item.goetymech.twisted_embryo": "鎵洸鑳氳儙",
+  "item.goetymech.mature_embryo": "鎴愮啛鑳氳儙",
+  "item.goetymech.mature_embryo.named": "鎴愮啛鑳氳儙(%s)",
+  "block.goetymech.flesh_furnace": "琛€鑲夌啍鐐?,
+  "item.goetymech.flesh_furnace": "琛€鑲夌啍鐐?,
+  "block.goetymech.breeding_nest": "鑲插发",
+  "item.goetymech.breeding_nest": "鑲插发",
+  "itemGroup.goetymech": "goetymech",
+
+  "info.goetymech.soul_insufficient": "搂c鐏甸瓊涓嶈冻锛佸彫鍞ょ殑%s 鍙湁涓€鍗婄敓鍛?",
+
+  "info.goetymech.summon.success": "鎴愬姛鍙敜 %s",
+  "info.goetymech.no_entity_type": "鑳氳儙涓湭鎵惧埌瀹炰綋绫诲瀷鏁版嵁锛?,
+  "info.goetymech.invalid_entity_type": "鏃犳晥鐨勫疄浣撶被鍨婭D锛?,
+  "info.goetymech.unknown_entity_type": "鏈煡鐨勫疄浣撶被鍨嬶紒",
+  "info.goetymech.not_mob_entity": "璇ュ疄浣撶被鍨嬩笉鏄敓鐗╋紒",
+
+  "info.goetymech.furnace.no_link": "搂c鏈繛鎺ュ埌涓嶇ゥ鐏偓",
+  "info.goetymech.furnace.no_link_hint": "搂7鍦ㄤ笉绁ョ伀鐐?%d 鏍艰寖鍥村唴鏀剧疆鐔旂倝浠ラ摼鎺?,
+  "info.goetymech.furnace.no_magic_talent": "搂c鎵洸鐨勮儦鑳庢病鏈夐瓟娉曟墠鑳?,
+  "info.goetymech.furnace.no_target": "搂7鏈缃缁冪洰鏍?,
+
+  "info.goetymech.hud.cooking": "琛€鑲夎浆鍖栦腑",
+  "info.goetymech.hud.linked": "宸查摼鎺ワ細",
+  "info.goetymech.hud.nest": "鑲插发鍏呰兘涓?,
+
+  "item.goetymech.sculk_bind_focus": "骞藉尶鏉熺細鑱氭櫠",
+  "info.goetymech.sculk_bind_focus.no_target": "搂c璇风瀯鍑嗕竴涓疄浣擄紒",
+
+  "block.goetymech.tier1_squad_barracks": "涓€闃剁偣灏嗗彴",
+  "block.goetymech.tier2_squad_barracks": "浜岄樁鐐瑰皢鍙?,
+  "block.goetymech.tier3_squad_barracks": "涓夐樁鐐瑰皢鍙?,
+  "item.goetymech.tier1_squad_barracks": "涓€闃剁偣灏嗗彴",
+  "item.goetymech.tier2_squad_barracks": "浜岄樁鐐瑰皢鍙?,
+  "item.goetymech.tier3_squad_barracks": "涓夐樁鐐瑰皢鍙?,
+  "item.goetymech.squad_focus": "鍏靛洟鑱氭櫠",
+  "container.goetymech.squad_barracks": "鐐瑰皢鍙?,
+  "container.goetymech.squad_barracks.reserve": "鍌ㄥ浠撳簱",
+
+  "info.goetymech.squad_focus.not_bound": "搂c鏈粦瀹氱偣灏嗗彴",
+  "info.goetymech.squad_focus.bound": "搂a宸茬粦瀹氱偣灏嗗彴",
+  "info.goetymech.squad_focus.bound_success": "搂a宸茬粦瀹氳嚦鐐瑰皢鍙?,
+  "info.goetymech.squad_focus.squad_info": "搂7缂栭槦锛毬%d 鍗曚綅 路 %d 闃?,
+  "info.goetymech.squad_focus.estimated_cost": "搂b棰勪及娑堣€楋細%d 鐏甸瓊",
+  "info.goetymech.squad_focus.unbound": "搂e宸叉竻闄ょ粦瀹氱偣灏嗗彴",
+  "info.goetymech.squad_focus.shift_bound": "鍙敜涓€鏀簿閿愬皬闃燂紝娼滆鏂芥硶浠ユ秷鐏€?,
+  "info.goetymech.squad_focus.shift_unbound": "鎵嬫寔鑱氭櫠鏃讹紝鍙抽敭鐐瑰皢鍙拌繘琛岀粦瀹氾紝娼滆鍙抽敭瑙ｉ櫎缁戝畾",
+  "info.goetymech.squad_focus.block_missing": "搂c缁戝畾鐨勭偣灏嗗彴宸茶鐮村潖",
+  "info.goetymech.squad_focus.not_owner": "搂c浣犱笉鏄鐐瑰皢鍙扮殑鎷ユ湁鑰?,
+  "info.goetymech.squad_focus.empty_squad": "搂c鐐瑰皢鍙扮紪闃熶负绌猴紝璇峰厛鏀剧疆鑳氳儙",
+  "info.goetymech.squad_focus.insufficient_souls": "搂c鐏甸瓊涓嶈冻锛侀渶瑕?%d 鐏甸瓊",
+  "info.goetymech.squad_focus.no_embryos": "搂c鍙敜澶辫触锛佹病鏈夊彲鐢ㄧ殑鑳氳儙",
+  "info.goetymech.squad_focus.partial_summon": "搂e鑳氳儙涓嶈冻锛?d 鍚嶄粏浠庢湭鍙敜",
+  "info.goetymech.squad_focus.wrong_dimension": "搂c璇ョ偣灏嗗彴涓嶅湪姝ょ淮搴︼紙涓夐樁鍙法缁村害锛?,
+  "info.goetymech.squad_focus.dimension_not_found": "搂c缁戝畾鐨勭淮搴︿笉鍙敤",
+
+  "item.goetymech.stress_focus": "搴斿姏鑱氭櫠",
+  "info.goetymech.stress_focus.bound": "搂a宸茬粦瀹氳嚦搴斿姏璇诲彇鍣?,
+  "info.goetymech.stress_focus.bound_success": "搂a宸茬粦瀹氳嚦搴斿姏璇诲彇鍣?,
+  "info.goetymech.stress_focus.not_bound": "搂c鏈粦瀹?,
+  "info.goetymech.stress_focus.unbound": "搂e宸茶В缁?,
+  "info.goetymech.stress_focus.reader_lost": "搂c搴斿姏璇诲彇鍣ㄤ涪澶憋紝缁戝畾宸叉竻闄?,
+  "info.goetymech.stress_focus.shift_info": "鍙敜绮夌杞啿鍑绘晫浜恒€傛綔琛屾柦娉曡В闄ょ粦瀹氥€?,
+  "info.goetymech.stress_focus.cached_damage": "搂a褰撳墠搴斿姏浼ゅ: 搂f%d",
+
+  "block.goetymech.stress_reader": "搴斿姏璇诲彇鍣?,
+  "item.goetymech.stress_reader": "搴斿姏璇诲彇鍣?,
+
+  "block.goetymech.remote_engine": "杩滅▼寮曟搸",
+  "item.goetymech.remote_engine": "杩滅▼寮曟搸",
+  "info.goetymech.remote_engine.bound": "搂a宸茬粦瀹氳嚦搴斿姏璇诲彇鍣?,
+  "info.goetymech.remote_engine.unbound": "搂e宸茶В缁?,
+  "info.goetymech.remote_engine.bound_to": "搂7宸茶繛鎺? %d, %d, %d",
+  "info.goetymech.remote_engine.not_bound_here": "搂c姝ゅ簲鍔涜鍙栧櫒涓嶆槸缁戝畾鐩爣",
+
+  "item.goetymech.time_focus_pouch": "鏃剁┖鑱氭櫠琚?,
+
+  "info.goetymech.time_frozen": "鈴?鏃堕棿鍐荤粨",
+
+  "item.goetymech.unstable_rift_focus": "瑁傜含鑱氭櫠",
+  "item.goetymech.stable_rift_focus": "鐣屾梾鑱氭櫠",
+  "info.goetymech.rift_walk.invalid_dim": "搂c瑁傞殭鑱氭櫠浠呰兘鍦ㄤ富涓栫晫鍜屼笅鐣屼娇鐢?,
+  "info.goetymech.rift_walk.rift_open": "搂c瑁傞殭灏氭湭闂悎",
+  "info.goetymech.rift_walk.border_blocked": "搂c鐩爣鍧愭爣瓒呭嚭涓栫晫杈圭晫",
+  "info.goetymech.rift_walk.return": "搂7瑁傞殭闂悎锛屼綘琚媺鍥炰簡鍘熺偣",
+
+  "block.goetymech.stress_ark": "搴斿姏鏂硅垷",
+  "item.goetymech.stress_ark": "搴斿姏鏂硅垷",
+
+  "item.goetymech.soul_catcher": "鐏甸瓊鎹曟墜",
+  "info.goetymech.soul_catcher.progress": "搂5鑱氶瓊锛?d/%d",
+
+  "info.goetymech.prototype_mimic.source": "搂7鏉ユ簮锛?s",
+  "info.goetymech.prototype_mimic.inherited": "搂7缁ф壙锛?d 灞炴€э紝%d 闄勯瓟",
+
+  "item.goetymech.prototype": "鍘熷瀷",
+  "item.goetymech.prototype_mimic": "鍘熷瀷路%s路鎷熸€?,
+  "info.goetymech.prototype.desc": "鏃犻檺鑰愪箙鐨勯灅缈咃紝闄勫甫鎺ㄨ繘涓庣寷鐮告妧鑳?,
+  "info.goetymech.prototype.boost": "椋炶涓寜浣?W 鍙姞閫熸帹杩?,
+  "info.goetymech.prototype.slam": "椋炶涓寜涓?Shift 鍙柦灞曢櫒鏄熺寷鐮?,
+  "info.goetymech.prototype.assimilation": "宸插悓鍖栵細%d",
+
+  "item.goetymech.flesh_casket_1.fullness": "琛€鑲夋櫠鍖Ｂ锋弧鐩?,
+  "item.goetymech.flesh_casket_1.balance": "琛€鑲夋櫠鍖Ｂ峰钩琛?,
+  "item.goetymech.flesh_casket_1.deathbed": "琛€鑲夋櫠鍖Ｂ锋繏姝?,
+  "item.goetymech.flesh_casket_2.fullness": "鐧介鏅跺專路婊＄泩",
+  "item.goetymech.flesh_casket_2.balance": "鐧介鏅跺專路骞宠　",
+  "item.goetymech.flesh_casket_2.deathbed": "鐧介鏅跺專路婵掓",
+  "item.goetymech.flesh_casket_3.fullness": "宸鏅跺專路婊＄泩",
+  "item.goetymech.flesh_casket_3.balance": "宸鏅跺專路骞宠　",
+  "item.goetymech.flesh_casket_3.deathbed": "宸鏅跺專路婵掓",
+  "info.goetymech.flesh_casket.no_lich": "搂c鍙湁宸鎵嶈兘椹鹃┉姝ゅ姏閲忥紒",
+  "info.goetymech.flesh_casket.tier": "搂7绛夌骇锛?s",
+  "info.goetymech.flesh_casket.slots": "搂7鎻掓Ы锛?d",
+  "info.goetymech.flesh_casket.type_a": "搂a鍙椾激鏃惰嚜鍔ㄦ柦娉?,
+  "info.goetymech.flesh_casket.type_b": "搂a琛€閲?鈮?50%% 鏃惰嚜鍔ㄦ柦娉?,
+  "info.goetymech.flesh_casket.type_c": "搂a琛€閲?鈮?%d%% 鏃惰嚜鍔ㄦ柦娉?,
+  "container.goetymech.flesh_casket": "琛€鑲夋櫠鍖?,
+
+  "item.goetymech.stress_shield_focus": "搴斿姏鎶ょ浘鑱氭櫠",
+  "info.goetymech.stress_shield.bound": "搂a宸茬粦瀹氳嚦搴斿姏璇诲彇鍣?,
+  "info.goetymech.stress_shield.not_bound": "搂c鏈粦瀹?,
+  "info.goetymech.stress_shield.unbound": "搂e宸茶В缁?,
+  "info.goetymech.stress_shield.shift_info": "灏嗙綉缁滃簲鍔涜浆鍖栦负涓汉鎶ょ浘銆傛綔琛屽彸閿В缁戙€?,
+  "info.goetymech.stress_shield.no_stress": "搂c鏃犲彲鐢ㄧ殑搴斿姏缃戠粶锛?,
+
+  "item.goetymech.chase_focus": "杩界寧鑱氭櫠",
+  "effect.goetymech.void_mark": "铏氱┖鍗拌",
+
+  "item.goetymech.crazed_summon_focus": "澶辫触鍝佽仛鏅?,
+  "entity.goetymech.crazed_illager": "鏀归€犲け璐ョ殑鍒屾皯",
+  "entity.goetymech.crazed_illager_servant": "鏀归€犲け璐ョ殑鍒屾皯",
+  "item.goetymech.crazed_illager_spawn_egg": "鏀归€犲け璐ョ殑鍒屾皯鍒锋€泲",
+
+  "info.goetymech.crazed_summon.limit": "搂c浣犲凡缁忚揪鍒颁簡鏀归€犲け璐ョ殑鍒屾皯鐨勫彫鍞や笂闄愶紒",
+
+  "jei.goetymech.info.prototype_mimic": "鍘熷瀷路鎷熸€佹槸鐢卞師鍨嬩笌浠绘剰鑳哥敳鍦?2脳2 鍚堟垚鏍间腑鍚堟垚鑾峰緱銆俓n\n瀹冧細缁ф壙鑳哥敳鐨勬墍鏈夊睘鎬с€侀檮榄斿拰淇グ绗︺€俓n\n灏嗗師鍨嬄锋嫙鎬佹斁鍥炲悎鎴愭牸鍗冲彲杩樺師鍑哄師鍨嬨€?,
+
+  "jei.goetymech.category.mimic_combination": "鍘熷瀷鎷熸€佺粍鍚?,
+  "jei.goetymech.category.mimic_deconstruction": "鍘熷瀷鎷熸€佽繕鍘?,
+
+  "fluid.goetymech.soul_liquid": "鐏甸瓊娑?,
+  "item.goetymech.soul_liquid_bucket": "鐏甸瓊娑叉《",
+  "block.goetymech.soul_liquid": "鐏甸瓊娑?
+}

@@ -1,0 +1,6 @@
+﻿{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "goetymech:item/flesh_casket_1_deathbed"
+  }
+}
