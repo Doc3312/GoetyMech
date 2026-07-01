@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.mixin;
+package com.goetymech.addon.mixin;
 
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.mojang.blaze3d.vertex.PoseStack;

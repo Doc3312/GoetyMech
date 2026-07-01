@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.init;
+package com.goetymech.addon.init;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.recipe.FleshCasketInfuserRecipeSerializer;
 import com.goetymech.addon.common.recipe.MimicCombinationRecipe;
 import com.goetymech.addon.common.recipe.MimicDeconstructionRecipe;
@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModRecipeSerializers {
 
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
-            DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, GoetyMechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, goetymechMod.MOD_ID);
 
     public static final RegistryObject<RecipeSerializer<?>> MIMIC_COMBINATION =
             RECIPE_SERIALIZERS.register("mimic_combination", () -> MimicCombinationRecipe.Serializer.INSTANCE);

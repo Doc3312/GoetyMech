@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block;
+package com.goetymech.addon.common.block;
 
 import com.goetymech.addon.common.block.entity.StressArkBlockEntity;
 import com.goetymech.addon.init.ModBlocks;

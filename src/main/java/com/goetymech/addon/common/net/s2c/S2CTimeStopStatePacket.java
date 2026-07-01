@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.net.s2c;
+package com.goetymech.addon.common.net.s2c;
 
 import com.goetymech.addon.client.TimeStopUtilsWrapped;
 import net.minecraft.client.Minecraft;

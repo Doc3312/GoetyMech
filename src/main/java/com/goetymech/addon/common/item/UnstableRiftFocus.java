@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item;
+package com.goetymech.addon.common.item;
 
 import com.goetymech.addon.common.magic.spell.UnstableRiftSpell;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;

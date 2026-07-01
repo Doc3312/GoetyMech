@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.time;
+package com.goetymech.addon.common.time;
 
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;

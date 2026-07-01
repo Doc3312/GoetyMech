@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.net.s2c;
+package com.goetymech.addon.common.net.s2c;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -56,8 +56,8 @@ public class S2CSlamImpactPacket {
                     net.minecraft.sounds.SoundSource.PLAYERS,
                     2.0F, 0.8F + level.random.nextFloat() * 0.4F, false);
 
-            // 闆惧寲绮掑瓙锛氬ぇ閲?block 鐮磋绮掑瓙锛屽瘑搴﹂殢鍗婂緞鍔ㄦ€佽皟鏁?
-            int particleCount = Math.max(30, (int)(packet.radius * 8));
+            // 闆惧寲绮掑瓙锛氬ぇ閲?block 鐮磋绮掑瓙锛屽瘑搴﹂殢鍗婂緞鍔ㄦ€佽皟鏁?    
+        int particleCount = Math.max(30, (int)(packet.radius * 8));
             for (int i = 0; i < particleCount; i++) {
                 double ox = (level.random.nextDouble() - 0.5) * packet.radius * 2;
                 double oz = (level.random.nextDouble() - 0.5) * packet.radius * 2;

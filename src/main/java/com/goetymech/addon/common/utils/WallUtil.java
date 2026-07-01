@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.utils;
+package com.goetymech.addon.common.utils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;

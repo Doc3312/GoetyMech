@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.compat.jei;
+package com.goetymech.addon.compat.jei;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.init.ModItems;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -18,7 +18,7 @@ public class MimicCombinationCategory extends AbstractRecipeCategory<MimicCombin
 
     public MimicCombinationCategory(IGuiHelper guiHelper) {
         super(
-                GoetyMechRecipeTypes.MIMIC_COMBINATION,
+                goetymechRecipeTypes.MIMIC_COMBINATION,
                 Component.translatable("jei.goetymech.category.mimic_combination"),
                 guiHelper.createDrawableItemStack(new ItemStack(ModItems.PROTOTYPE.get())),
                 176, 60

@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.recipe;
+package com.goetymech.addon.common.recipe;
 
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.init.ModItems;

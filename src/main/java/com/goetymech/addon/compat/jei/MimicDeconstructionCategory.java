@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.compat.jei;
+package com.goetymech.addon.compat.jei;
 
 import com.goetymech.addon.init.ModItems;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -16,7 +16,7 @@ public class MimicDeconstructionCategory extends AbstractRecipeCategory<MimicDec
 
     public MimicDeconstructionCategory(IGuiHelper guiHelper) {
         super(
-                GoetyMechRecipeTypes.MIMIC_DECONSTRUCTION,
+                goetymechRecipeTypes.MIMIC_DECONSTRUCTION,
                 Component.translatable("jei.goetymech.category.mimic_deconstruction"),
                 guiHelper.createDrawableItemStack(new ItemStack(ModItems.PROTOTYPE_MIMIC.get())),
                 120, 60

@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item.curio;
+package com.goetymech.addon.common.item.curio;
 
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;

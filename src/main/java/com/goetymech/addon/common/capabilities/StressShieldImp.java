@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.capabilities;
+package com.goetymech.addon.common.capabilities;
 
 import net.minecraft.world.level.Level;
 

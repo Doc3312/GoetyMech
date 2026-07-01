@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.client.render;
+package com.goetymech.addon.client.render;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.entity.SculkSpikeEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -15,10 +15,10 @@ import net.minecraft.resources.ResourceLocation;
 
 public class SculkBidingRenderer extends EntityRenderer<SculkSpikeEntity> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
-            new ResourceLocation(GoetyMechMod.MOD_ID, "sculk_biding"), "main");
+            new ResourceLocation(goetymechMod.MOD_ID, "sculk_biding"), "main");
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
-            GoetyMechMod.MOD_ID, "textures/entity/sculk_binding.png");
+            goetymechMod.MOD_ID, "textures/entity/sculk_binding.png");
 
     private final SculkBidingModel<SculkSpikeEntity> model;
 

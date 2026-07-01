@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.mixin;
+package com.goetymech.addon.mixin;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.config.ModConfig;
 import net.minecraft.util.Mth;

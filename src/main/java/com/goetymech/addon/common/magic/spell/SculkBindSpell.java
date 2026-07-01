@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.magic.spell;
+package com.goetymech.addon.common.magic.spell;
 
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModEntities;
@@ -47,8 +47,7 @@ public class SculkBindSpell extends Spell {
     public static final String TAG_LOCK_Z = "goetymech.sculk_lock_z";
     public static final String TAG_LOCK_END = "goetymech.sculk_lock_end";
 
-    // defaultSoulCost() 鍦?MagicFocus 鏋勯€犳椂琚皟鐢紝闇€瑕?loadConfig 宸叉彁鍓嶅姞杞介厤缃?
-    // 鍙傝 GoetyMechMod 鏋勯€犲嚱鏁颁腑 ModConfig.loadConfig() 璋冪敤
+    // defaultSoulCost() 鍦?MagicFocus 鏋勯€犳椂琚皟鐢紝闇€瑕?loadConfig 宸叉彁鍓嶅姞杞介厤缃?    // 鍙傝 goetymechMod 鏋勯€犲嚱鏁颁腑 ModConfig.loadConfig() 璋冪敤
     @Override
     public int defaultSoulCost() {
         return ModConfig.SCULK_BIND_COST.get();
@@ -69,8 +68,7 @@ public class SculkBindSpell extends Spell {
         return true;
     }
 
-    // defaultStats() 浠呭湪杩愯鏃惰璋冪敤锛坓etTarget / WandUtil.getStats锛夛紝鍙畨鍏ㄨ鍙栭厤缃?
-    @Override
+    // defaultStats() 浠呭湪杩愯鏃惰璋冪敤锛坓etTarget / WandUtil.getStats锛夛紝鍙畨鍏ㄨ鍙栭厤缃?    @Override
     public SpellStat defaultStats() {
         return new SpellStat(0, 0, ModConfig.SCULK_BIND_RANGE.get(), 0.0D, 0, 0.0F);
     }
@@ -194,16 +192,12 @@ public class SculkBindSpell extends Spell {
             warden.setPos(spawnX, spawnY, spawnZ);
             warden.setPersistenceRequired();
 
-            // 绂佹閬佸湴锛氳缃?60s 鍐峰嵈锛堝嚭鍦熸湡闂村氨宸茬敓鏁堬紝鍑哄湡瀹屾垚鍚庝笉浼氶€?DIG锛?
-            warden.getBrain().setMemoryWithExpiry(MemoryModuleType.DIG_COOLDOWN, Unit.INSTANCE, 1200);
-            // 瑙﹀彂鍑哄湡鍔ㄧ敾锛欱rain 鐨?Emerging 娲诲姩闇€瑕?IS_EMERGING 璁板繂锛?00 tick 鍚庤嚜鍔ㄨ繃鏈?
-            warden.getBrain().setMemoryWithExpiry(MemoryModuleType.IS_EMERGING, Unit.INSTANCE, 100);
-            // 娉ㄥ叆鎰ゆ€掞細100 瓒呰繃 FIGHT 闃堝€?80锛堝師鐗?AngerLevel.ANGRY.getMinimumAnger() + 20锛?
-            warden.increaseAngerAt(target, 100, false);
+            // 绂佹閬佸湴锛氳缃?60s 鍐峰嵈锛堝嚭鍦熸湡闂村氨宸茬敓鏁堬紝鍑哄湡瀹屾垚鍚庝笉浼氶€?DIG锛?            warden.getBrain().setMemoryWithExpiry(MemoryModuleType.DIG_COOLDOWN, Unit.INSTANCE, 1200);
+            // 瑙﹀彂鍑哄湡鍔ㄧ敾锛欱rain 鐨?Emerging 娲诲姩闇€瑕?IS_EMERGING 璁板繂锛?00 tick 鍚庤嚜鍔ㄨ繃鏈?            warden.getBrain().setMemoryWithExpiry(MemoryModuleType.IS_EMERGING, Unit.INSTANCE, 100);
+            // 娉ㄥ叆鎰ゆ€掞細100 瓒呰繃 FIGHT 闃堝€?80锛堝師鐗?AngerLevel.ANGRY.getMinimumAnger() + 20锛?            warden.increaseAngerAt(target, 100, false);
 
             // 闅愯韩鍓嶅厛璁?EMERGING 濮挎€侊紙spawn packet 鎼哄甫锛夛紝鍐嶈 invisible
-            // 寤惰繜 15 tick 鍚庢仮澶嶅彲瑙?鈫?姝ゆ椂 Brain 宸插惎鍔?Emerging 娲诲姩锛屽姩鐢荤姸鎬佸凡鍒濆鍖?
-            warden.setPose(Pose.EMERGING);
+            // 寤惰繜 15 tick 鍚庢仮澶嶅彲瑙?鈫?姝ゆ椂 Brain 宸插惎鍔?Emerging 娲诲姩锛屽姩鐢荤姸鎬佸凡鍒濆鍖?            warden.setPose(Pose.EMERGING);
             warden.setInvisible(true);
             warden.getPersistentData().putLong("goetymech.visible_at",
                     worldIn.getGameTime() + 15);
@@ -258,7 +252,8 @@ public class SculkBindSpell extends Spell {
 
         // 鍚戜笂鎼滅储锛氭壘闈炲浐浣擄紙鍗崇┖姘旓級涓嬫柟鐨勫浐浣撻《閮?
         while (m.getY() < level.getMaxBuildHeight() - 1) {
-            BlockPos below = m.below();
+    
+        BlockPos below = m.below();
             if (level.getBlockState(below).isSolid()
                     && !level.getBlockState(m).isSolid()) {
                 return m.getY();

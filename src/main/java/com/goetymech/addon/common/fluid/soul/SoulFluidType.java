@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.fluid.soul;
+package com.goetymech.addon.common.fluid.soul;
 
 import com.goetymech.addon.common.fluid.frame.AbstractEphemeralFluidType;
 

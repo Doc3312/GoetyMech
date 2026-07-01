@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.compat.jei;
+package com.goetymech.addon.compat.jei;
 
 import net.minecraft.world.item.ItemStack;
 

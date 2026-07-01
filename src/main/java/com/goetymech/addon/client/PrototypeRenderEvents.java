@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.client;
+package com.goetymech.addon.client;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.net.ModNetwork;
@@ -45,11 +45,11 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class PrototypeRenderEvents {
 
     private static final ResourceLocation PROTOTYPE_TEXTURE =
-            new ResourceLocation(GoetyMechMod.MOD_ID, "textures/entity/prototype.png");
+            new ResourceLocation(goetymechMod.MOD_ID, "textures/entity/prototype.png");
 
     // 鈹€鈹€ Wall-running client state (visual only) 鈹€鈹€
     private static Vec3 clientWallNormal = Vec3.ZERO;
@@ -70,10 +70,8 @@ public class PrototypeRenderEvents {
         clientSlamming = slamming;
     }
 
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?    //  1. Client tick: wall detection + jump charge C2S
     // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-    //  1. Client tick: wall detection + jump charge C2S
-    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
@@ -204,14 +202,12 @@ public class PrototypeRenderEvents {
         }
     }
 
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?    //  2. Camera rotation during wall-running (quaternion SLERP)
     // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-    //  2. Camera rotation during wall-running (quaternion SLERP)
-    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         float rollDeg = quatRollDeg(clientWallQuat);
-        GoetyMechMod.LOGGER.debug("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
+        goetymechMod.LOGGER.debug("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
                 String.format("%.2f", rollDeg),
                 String.format("%.3f", clientWallQuat.x),
                 String.format("%.3f", clientWallQuat.y),
@@ -221,10 +217,8 @@ public class PrototypeRenderEvents {
         event.setRoll(event.getRoll() + rollDeg);
     }
 
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?    //  3. Model rotation during wall-running
     // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-    //  3. Model rotation during wall-running
-    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         float rollDeg = quatRollDeg(clientWallQuat);
@@ -239,10 +233,8 @@ public class PrototypeRenderEvents {
         model.rightLeg.zRot += rollRad;
     }
 
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?    //  4. Render Prototype on player body
     // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-    //  4. Render Prototype on player body
-    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onRenderPlayer(RenderPlayerEvent.Post event) {
         AbstractClientPlayer player = (AbstractClientPlayer) event.getEntity();
@@ -278,8 +270,7 @@ public class PrototypeRenderEvents {
         poseStack.popPose();
     }
 
-    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-    //  5. Item tooltip: assimilation kill count
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?    //  5. Item tooltip: assimilation kill count
     // 
 
     @SubscribeEvent
@@ -306,38 +297,37 @@ public class PrototypeRenderEvents {
             tooltip.add(Component.literal("婊戠繑").withStyle(hasGlide ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
 
             boolean hasSlam = PrototypeItem.hasSlam(kills);
-            tooltip.add(Component.literal("瀛愬脊淇啿").withStyle(hasSlam ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
+            tooltip.add(Component.literal("子弹俯冲").withStyle(hasSlam ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
 
             int nextMilestone = PrototypeItem.getNextImmunityMilestone(kills);
             tooltip.add(kills >= 150
-                    ? Component.literal("鐨笅鎶ょ敳  涓嬫杩涘寲锛? + nextMilestone + "鍑绘潃").withStyle(ChatFormatting.RED)
-                    : Component.literal("鐨笅鎶ょ敳").withStyle(ChatFormatting.DARK_GRAY));
+                    ? Component.literal("皮下护甲  下次进化：" + nextMilestone + "击杀").withStyle(ChatFormatting.RED)
+                    : Component.literal("皮下护甲").withStyle(ChatFormatting.DARK_GRAY));
 
             int multPercent = Math.round((PrototypeItem.getDamageMultiplier(kills) - 1.0f) * 100.0f);
             int bonusDamage = Math.round(PrototypeItem.getBonusMagicDamage(kills));
             int immunityThreshold = PrototypeItem.getDamageImmunityThreshold(kills);
-            String immunitySuffix = kills >= 150 ? "  浼ゅ鍏嶇柅锛? + immunityThreshold : "";
-            tooltip.add(Component.literal("鏀诲嚮鍔涘姞鎴愶細+" + multPercent + "%  鐥呮瘨闄勫姞浼ゅ锛?" + bonusDamage + immunitySuffix)
+            String immunitySuffix = kills >= 150 ? "  伤害免疫：" + immunityThreshold : "";
+            tooltip.add(Component.literal("攻击力加成：+" + multPercent + "%  病毒附加伤害：" + bonusDamage + immunitySuffix)
                     .withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.literal("褰撳墠宸茶В閿佽兘鍔涳細")
+            tooltip.add(Component.literal("当前已解锁能力：")
                     .withStyle(ChatFormatting.GRAY)
-                    .append(Component.literal("鎸変綇 ").withStyle(ChatFormatting.GRAY)
+                    .append(Component.literal("按住 ").withStyle(ChatFormatting.GRAY)
                             .append(Component.literal("Shift").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
-                            .append(Component.literal(" 鏌ョ湅璇︽儏").withStyle(ChatFormatting.GRAY))));
+                            .append(Component.literal(" 查看详情").withStyle(ChatFormatting.GRAY))));
         }
     }
 
     //  Internal helpers (quaternion-based wall rotation)
     // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-
     private static void updateClientWallState(Player player) {
         Minecraft mc = Minecraft.getInstance();
         boolean sprinting = mc.options.keySprint.isDown() || player.isSprinting();
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
-        GoetyMechMod.LOGGER.debug("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
+        goetymechMod.LOGGER.debug("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
                 mc.options.keySprint.isDown(), player.isSprinting(), hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
                 player.isFallFlying());
         boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && !player.isInWater() && wallDir != null;

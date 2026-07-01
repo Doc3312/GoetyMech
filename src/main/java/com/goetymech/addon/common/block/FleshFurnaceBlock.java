@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block;
+package com.goetymech.addon.common.block;
 
 import com.goetymech.addon.common.block.entity.FleshFurnaceBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -35,8 +35,7 @@ import javax.annotation.Nullable;
 /**
  * 琛€鑲夌啍鐐?- 鎵洸鑳氳儙鐨勭児鍒惰浆鍖栧櫒
  * 鏀惧叆鎵洸鑳氳儙 鈫?鐑瑰埗 鈫?鑷姩寮瑰嚭鎴愮啛鑳氳儙
- * 闇€鍏堥€氳繃鎸囪矾鐭崇粦瀹氫笉绁ョ伀鐐‘瀹氬叺绉嶇被鍨?
- */
+ * 闇€鍏堥€氳繃鎸囪矾鐭崇粦瀹氫笉绁ョ伀鐐‘瀹氬叺绉嶇被鍨? */
 public class FleshFurnaceBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
 
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
@@ -168,10 +167,12 @@ public class FleshFurnaceBlock extends BaseEntityBlock implements SimpleWaterlog
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof FleshFurnaceBlockEntity furnace) {
                 furnace.setPlacerName(player.getDisplayName().getString());
-                // 鏀剧疆鏃惰嚜鍔ㄦ壂鎻忛摼鎺ラ檮杩戠殑涓嶇ゥ鐏偓
+       
+         // 鏀剧疆鏃惰嚜鍔ㄦ壂鎻忛摼鎺ラ檮杩戠殑涓嶇ゥ鐏偓
                 if (!level.isClientSide) {
                     boolean found = furnace.scanAndLink();
-                    if (found) {
+            
+        if (found) {
                         level.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 0.3F, 1.2F);
                     }
                 }

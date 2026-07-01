@@ -1,8 +1,8 @@
-﻿package com.goetymech.addon.compat.jei;
+package com.goetymech.addon.compat.jei;
 
 import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
 import com.Polarice3.Goety.compat.jei.JeiRecipeTypes;
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.TriggerType;
 import com.goetymech.addon.init.ModItems;
@@ -25,7 +25,7 @@ import java.util.List;
 public class GoetyMechJeiPlugin implements IModPlugin {
 
     private static final ResourceLocation PLUGIN_UID =
-            new ResourceLocation(GoetyMechMod.MOD_ID, "jei_plugin");
+            new ResourceLocation(goetymechMod.MOD_ID, "jei_plugin");
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -48,10 +48,10 @@ public class GoetyMechJeiPlugin implements IModPlugin {
                 .filter(stack -> LivingEntity.getEquipmentSlotForItem(stack) == EquipmentSlot.CHEST)
                 .toList();
 
-        registration.addRecipes(GoetyMechRecipeTypes.MIMIC_COMBINATION,
+        registration.addRecipes(goetymechRecipeTypes.MIMIC_COMBINATION,
                 List.of(new MimicCombinationRecipe(allChestplates)));
 
-        registration.addRecipes(GoetyMechRecipeTypes.MIMIC_DECONSTRUCTION,
+        registration.addRecipes(goetymechRecipeTypes.MIMIC_DECONSTRUCTION,
                 List.of(new MimicDeconstructionRecipe()));
 
         registration.addIngredientInfo(
@@ -75,7 +75,7 @@ public class GoetyMechJeiPlugin implements IModPlugin {
                 ItemStack output = new ItemStack(item);
                 FleshCasketItem.setTriggerType(output, pair.to);
                 cycleRecipes.add(new CursedInfuserRecipes(
-                        new ResourceLocation(GoetyMechMod.MOD_ID, path + "_" + pair.suffix),
+                        new ResourceLocation(goetymechMod.MOD_ID, path + "_" + pair.suffix),
                         "", Ingredient.of(input), output, 0, 60, false));
             }
         }

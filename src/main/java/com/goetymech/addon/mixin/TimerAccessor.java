@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.mixin;
+package com.goetymech.addon.mixin;
 
 import net.minecraft.client.Timer;
 import org.spongepowered.asm.mixin.Mixin;

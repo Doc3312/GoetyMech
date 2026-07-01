@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.fluid.frame;
+package com.goetymech.addon.common.fluid.frame;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;

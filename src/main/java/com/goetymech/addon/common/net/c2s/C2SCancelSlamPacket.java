@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.net.c2s;
+package com.goetymech.addon.common.net.c2s;
 
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.net.ModNetwork;

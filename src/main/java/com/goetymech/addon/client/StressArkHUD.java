@@ -1,7 +1,7 @@
-﻿package com.goetymech.addon.client;
+package com.goetymech.addon.client;
 
 import com.Polarice3.Goety.Goety;
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -12,7 +12,7 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, value = Dist.CLIENT)
 public class StressArkHUD {
 
     private static final int BAR_WIDTH = 128;

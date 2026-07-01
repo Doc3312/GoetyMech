@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item;
+package com.goetymech.addon.common.item;
 
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.magic.spell.SquadSpell;

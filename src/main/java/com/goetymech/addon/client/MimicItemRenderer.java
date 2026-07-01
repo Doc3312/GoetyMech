@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.client;
+package com.goetymech.addon.client;
 
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.mojang.blaze3d.vertex.PoseStack;

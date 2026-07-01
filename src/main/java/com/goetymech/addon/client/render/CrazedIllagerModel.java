@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.client.render;
+package com.goetymech.addon.client.render;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -13,7 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class CrazedIllagerModel<T extends LivingEntity> extends HierarchicalModel<T> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
-            new ResourceLocation(GoetyMechMod.MOD_ID, "crazed_illager"), "main");
+            new ResourceLocation(goetymechMod.MOD_ID, "crazed_illager"), "main");
 
     private static final float DEG = (float) (Math.PI / 180.0);
 

@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.compat.curios;
+package com.goetymech.addon.compat.curios;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
@@ -9,7 +9,7 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 import top.theillusivec4.curios.api.SlotTypePreset;
 
-@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CuriosIntegration {
 
     @SuppressWarnings("deprecation")

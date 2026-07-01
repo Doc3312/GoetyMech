@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block.entity;
+package com.goetymech.addon.common.block.entity;
 
 import com.goetymech.addon.common.block.FleshFurnaceBlock;
 import com.goetymech.addon.config.ModConfig;
@@ -101,7 +101,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
             }
         }
 
-        // LIT 鐘舵€佹洿鏂帮紙姣?5 tick锛?
+        // LIT 状态更新（每5 tick）
         if (isServer && level.getGameTime() % 5 == 0) {
             boolean shouldBeLit = isCooking();
             BlockState bs = getBlockState();
@@ -113,12 +113,13 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         // === 鐑瑰埗閫昏緫 ===
         if (!cookingStack.isEmpty() && cookingStack.is(ModItems.TWISTED_EMBRYO.get())) {
             if (isServer) {
-                // 妫€鏌ラ摼鎺ユ槸鍚︽湁鏁?
+                // 检查链接是否有效
                 String entityTypeId = getTargetEntityTypeId();
                 if (hasLink && entityTypeId != null) {
 
                     // ===== 鏍囩妫€娴嬶細闇€瀹屾暣璁粌缁撴瀯鐨勯珮绾у叺绉?鈫?鎷掔粷杞寲 =====
-                    if (isEntityRestricted(entityTypeId)) {
+            
+        if (isEntityRestricted(entityTypeId)) {
                         notifyNearbyPlayers(Component.translatable("info.goetymech.furnace.no_magic_talent"));
                         cookingProgress = 0;
                         cookingTotalTime = 0;
@@ -148,7 +149,8 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
                     if (cookingProgress >= cookingTotalTime) {
                         cookingProgress = 0;
 
-                        // 鍒涘缓鎴愮啛鑳氳儙
+                
+        // 鍒涘缓鎴愮啛鑳氳儙
                         ItemStack matureStack = new ItemStack(ModItems.MATURE_EMBRYO.get(), 1);
                         CompoundTag tag = matureStack.getOrCreateTag();
                         tag.putString("EntityTypeId", entityTypeId);
@@ -178,8 +180,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     // ===== 瀹瑰櫒杈撳嚭 =====
 
     /**
-     * 浼樺厛鍚戜笅鏂瑰鍣ㄨ緭鍑猴紝鏃犲鍣ㄦ椂鎵嶅脊鍑虹墿鍝佸疄浣?
-     */
+     * 浼樺厛鍚戜笅鏂瑰鍣ㄨ緭鍑猴紝鏃犲鍣ㄦ椂鎵嶅脊鍑虹墿鍝佸疄浣?     */
     private void tryOutputToContainer(ItemStack stack) {
         if (level == null) return;
         // 妫€鏌ヤ笅鏂规柟鍧楁槸鍚︽湁鐗╁搧澶勭悊鑳藉姏锛堟紡鏂椼€佺瀛愩€佺閬撶瓑锛?
@@ -275,7 +276,8 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
 
         BlockEntity be = level.getBlockEntity(pyrePos);
         if (be instanceof com.Polarice3.Goety.common.blocks.entities.OminousPyreBlockEntity pyre) {
-            String id = pyre.getEntityTrainTo().getString("id");
+    
+        String id = pyre.getEntityTrainTo().getString("id");
             // 鐏偓鏃犺缁冪洰鏍囨椂杩斿洖 null锛岄樆姝㈢┖ ID 鐑瑰埗
             if (id.isEmpty()) return null;
             return id;
@@ -284,10 +286,10 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     }
 
     /**
-     * 鑾峰彇鐩爣鍏电鐨勬樉绀哄悕绉帮紙鐢ㄤ簬 HUD锛?
-     */
+     * 鑾峰彇鐩爣鍏电鐨勬樉绀哄悕绉帮紙鐢ㄤ簬 HUD锛?     */
     public String getTargetEntityName() {
         String id = getTargetEntityTypeId();
+
         if (id == null || id.isEmpty()) return "";
         net.minecraft.resources.ResourceLocation rl = net.minecraft.resources.ResourceLocation.tryParse(id);
         if (rl != null) {
@@ -300,8 +302,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     }
 
     /**
-     * 鑷姩鎵弿闄勮繎 xz 卤8 鏍煎唴鐨勪笉绁ョ伀鐐?
-     */
+     * 鑷姩鎵弿闄勮繎 xz 卤8 鏍煎唴鐨勪笉绁ョ伀鐐?     */
     public boolean scanAndLink() {
         if (level == null) return false;
         BlockPos current = getBlockPos();
@@ -322,12 +323,8 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     private static final Map<EntityType<?>, Boolean> spellcasterCache = new HashMap<>();
 
     /**
-     * 鍔ㄦ€佸垽鏂疄浣撶被鍨嬫槸鍚﹂渶瑕佸畬鏁磋缁冪粨鏋?
-     * 1. 娉曟湳绯诲叺绉嶏紙SpellcasterIllagerServant锛夐渶瑕佽缁?
-     * 2. 鏍囩琛ラ泦澶勭悊闈炴硶鏈絾闇€闄愬埗鐨勭壒渚嬶紙濡?StormCaster锛?
-     * 瀵瑰簲 Neollager.canTrain() 涓殑 instanceof SpellcasterIllagerServant 閫昏緫
-     * 缁撴灉缂撳瓨鍒伴潤鎬?map锛岄伩鍏嶆瘡 tick 瀹炰緥鍖栧疄浣?
-     */
+     * 鍔ㄦ€佸垽鏂疄浣撶被鍨嬫槸鍚﹂渶瑕佸畬鏁磋缁冪粨鏋?     * 1. 娉曟湳绯诲叺绉嶏紙SpellcasterIllagerServant锛夐渶瑕佽缁?     * 2. 鏍囩琛ラ泦澶勭悊闈炴硶鏈絾闇€闄愬埗鐨勭壒渚嬶紙濡?StormCaster锛?     * 瀵瑰簲 Neollager.canTrain() 涓殑 instanceof SpellcasterIllagerServant 閫昏緫
+     * 缁撴灉缂撳瓨鍒伴潤鎬?map锛岄伩鍏嶆瘡 tick 瀹炰緥鍖栧疄浣?     */
     private boolean isEntityRestricted(String entityTypeId) {
         ResourceLocation rl = ResourceLocation.tryParse(entityTypeId);
         if (rl == null) return false;
@@ -347,8 +344,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     }
 
     /**
-     * 閫氱煡闄勮繎 8 鏍煎唴鐨勭帺瀹舵秷鎭紙action bar锛?
-     */
+     * 閫氱煡闄勮繎 8 鏍煎唴鐨勭帺瀹舵秷鎭紙action bar锛?     */
     private void notifyNearbyPlayers(Component message) {
         if (level instanceof ServerLevel serverLevel) {
             double x = worldPosition.getX() + 0.5D;
@@ -378,6 +374,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         super.saveAdditional(tag);
 
         // 鐑瑰埗鏁版嵁
+
         if (!cookingStack.isEmpty()) {
             CompoundTag stackTag = new CompoundTag();
             cookingStack.save(stackTag);
@@ -394,8 +391,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
             tag.putInt("LinkedZ", linkedZ);
         }
 
-        // 鍏冩暟鎹?
-        tag.putString("PlacerName", placerName);
+        // 鍏冩暟鎹?        tag.putString("PlacerName", placerName);
     }
 
     @Override
@@ -403,6 +399,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         super.load(tag);
 
         // 鐑瑰埗鏁版嵁
+
         if (tag.contains("CookingStack")) {
             cookingStack = ItemStack.of(tag.getCompound("CookingStack"));
         } else {
@@ -419,8 +416,7 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
             linkedZ = tag.getInt("LinkedZ");
         }
 
-        // 鍏冩暟鎹?
-        placerName = tag.getString("PlacerName");
+        // 鍏冩暟鎹?        placerName = tag.getString("PlacerName");
     }
 
     // ===== 缃戠粶鍚屾 =====
@@ -587,7 +583,8 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     @Override
     public void invalidateCaps() {
         for (LazyOptional<IItemHandlerModifiable> h : handlers) {
-            if (h != null) h.invalidate();
+    
+        if (h != null) h.invalidate();
         }
         super.invalidateCaps();
     }

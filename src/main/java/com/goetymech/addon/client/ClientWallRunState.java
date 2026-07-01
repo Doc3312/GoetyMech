@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.client;
+package com.goetymech.addon.client;
 
 import net.minecraft.world.phys.Vec3;
 

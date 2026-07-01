@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.magic.spell;
+package com.goetymech.addon.common.magic.spell;
 
 import com.goetymech.addon.common.magic.effect.VoidMarkEffect;
 import com.goetymech.addon.config.ModConfig;

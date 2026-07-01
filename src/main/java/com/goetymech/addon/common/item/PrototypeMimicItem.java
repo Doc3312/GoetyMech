@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item;
+package com.goetymech.addon.common.item;
 
 import com.goetymech.addon.init.ModItems;
 import com.google.common.collect.HashMultimap;

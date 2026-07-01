@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block;
+package com.goetymech.addon.common.block;
 
 public class Tier1SquadBarracksBlock extends SquadBarracksBlock {
     @Override

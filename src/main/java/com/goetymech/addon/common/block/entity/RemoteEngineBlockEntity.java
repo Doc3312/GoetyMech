@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block.entity;
+package com.goetymech.addon.common.block.entity;
 
 import java.util.List;
 

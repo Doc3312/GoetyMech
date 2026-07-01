@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item.curio;
+package com.goetymech.addon.common.item.curio;
 
 public enum TriggerType {
     A, B, C;

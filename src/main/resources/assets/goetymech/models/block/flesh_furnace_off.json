@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "block/block",
   "textures": {
     "particle": "goetymech:block/flesh_furnace_side_off",

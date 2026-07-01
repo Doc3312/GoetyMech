@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "forge:item/bucket_drip",
   "loader": "forge:fluid_container",
   "fluid": "goetymech:soul_liquid"

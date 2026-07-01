@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "builtin/entity",
   "textures": {
     "layer0": "goetymech:item/prototype"

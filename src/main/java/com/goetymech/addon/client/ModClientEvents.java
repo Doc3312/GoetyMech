@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.client;
+package com.goetymech.addon.client;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.client.gui.FleshCasketScreen;
 import com.goetymech.addon.client.gui.SquadBarracksScreen;
 import com.goetymech.addon.client.render.CrazedIllagerModel;
@@ -34,7 +34,7 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents {
     private static final Logger LOGGER = LoggerFactory.getLogger("ModClientEvents");
 
@@ -57,10 +57,10 @@ public class ModClientEvents {
                     ModMenuTypes.FLESH_CASKET.get(), FleshCasketScreen::new);
             net.minecraft.client.renderer.item.ItemProperties.register(
                     ModItems.SQUAD_FOCUS.get(),
-                    new net.minecraft.resources.ResourceLocation(com.goetymech.addon.GoetyMechMod.MOD_ID, "bound"),
+                    new net.minecraft.resources.ResourceLocation(com.goetymech.addon.goetymechMod.MOD_ID, "bound"),
                     (stack, world, entity, seed) -> SquadFocus.isBound(stack) ? 1.0F : 0.0F);
 
-            var triggerProp = new net.minecraft.resources.ResourceLocation(GoetyMechMod.MOD_ID, "trigger_type");
+            var triggerProp = new net.minecraft.resources.ResourceLocation(goetymechMod.MOD_ID, "trigger_type");
             net.minecraft.client.renderer.item.ItemProperties.register(
                     ModItems.FLESH_CASKET_1.get(), triggerProp,
                     (stack, world, entity, seed) -> switch (FleshCasketItem.getTriggerType(stack)) {
@@ -100,7 +100,7 @@ public class ModClientEvents {
 
     @SubscribeEvent
     public static void onModelRegister(ModelEvent.RegisterAdditional event) {
-        event.register(new ResourceLocation(GoetyMechMod.MOD_ID, "entity/crushing_wheel"));
+        event.register(new ResourceLocation(goetymechMod.MOD_ID, "entity/crushing_wheel"));
     }
 
     @SubscribeEvent

@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block.entity;
+package com.goetymech.addon.common.block.entity;
 
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;

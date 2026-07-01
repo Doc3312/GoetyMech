@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item.capability;
+package com.goetymech.addon.common.item.capability;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

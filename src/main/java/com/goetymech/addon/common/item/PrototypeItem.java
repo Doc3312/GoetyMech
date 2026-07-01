@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item;
+package com.goetymech.addon.common.item;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;

@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.client.render;
+package com.goetymech.addon.client.render;
 
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

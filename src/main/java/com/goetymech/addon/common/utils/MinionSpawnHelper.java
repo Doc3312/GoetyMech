@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.utils;
+package com.goetymech.addon.common.utils;
 
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.common.entities.ally.illager.Neollager;
@@ -23,17 +23,13 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 /**
- * 浠嗕粠鐢熸垚杈呭姪绫?
- * 灏?TwistedEmbryoItem 鍜?MatureEmbryoItem 涓噸澶嶇殑鐢熸垚閫昏緫鎻愬彇鍑烘潵锛岄伩鍏嶄唬鐮侀噸澶?
- * 鏀寔鎵€鏈?Goety 鏉冪粦瀹氬拰 Neollager 榄旀硶鐘舵€佸鐞?
- */
+ * 浠嗕粠鐢熸垚杈呭姪绫? * 灏?TwistedEmbryoItem 鍜?MatureEmbryoItem 涓噸澶嶇殑鐢熸垚閫昏緫鎻愬彇鍑烘潵锛岄伩鍏嶄唬鐮侀噸澶? * 鏀寔鎵€鏈?Goety 鏉冪粦瀹氬拰 Neollager 榄旀硶鐘舵€佸鐞? */
 public class MinionSpawnHelper {
 
     public static final double SPAWN_HEIGHT_OFFSET = 0.5D;
 
     /**
-     * 妫€鏌?BlockPos 鏄惁涓哄悎娉曠珯绔嬩綅缃?
-     * 鏉′欢锛氳剼涓嬫槸鍥轰綋鏂瑰潡 && 鑷韩浣嶇疆闈炲浐浣?&& 澶撮《涓€鏍奸潪鍥轰綋锛?鏍煎噣绌猴級
+     * 妫€鏌?BlockPos 鏄惁涓哄悎娉曠珯绔嬩綅缃?     * 鏉′欢锛氳剼涓嬫槸鍥轰綋鏂瑰潡 && 鑷韩浣嶇疆闈炲浐浣?&& 澶撮《涓€鏍奸潪鍥轰綋锛?鏍煎噣绌猴級
      */
     public static boolean isValidStanding(ServerLevel level, BlockPos pos) {
         return level.getBlockState(pos.below()).isSolid()
@@ -42,8 +38,7 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 浠?startPos 寮€濮嬫部 Y 杞村弻鍚戞壂鎻忥紝鎵惧埌绗竴涓悎娉曠珯绔嬩綅缃?
-     * @return 鍚堟硶 BlockPos锛屾垨 null锛堟暣涓瀭鐩寸┖闂撮兘鎵句笉鍒帮級
+     * 浠?startPos 寮€濮嬫部 Y 杞村弻鍚戞壂鎻忥紝鎵惧埌绗竴涓悎娉曠珯绔嬩綅缃?     * @return 鍚堟硶 BlockPos锛屾垨 null锛堟暣涓瀭鐩寸┖闂撮兘鎵句笉鍒帮級
      */
     @Nullable
     public static BlockPos findGroundPos(ServerLevel level, BlockPos startPos) {
@@ -79,14 +74,12 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 鐢熸垚灞炰簬鐜╁鐨勪粏浠?
-     * 鑷姩澶勭悊: MobUtil.summonTame (绉垎淇濇寔銆乸ersistence銆佽窡闅忔ā寮?銆乻pawnUpgraded,
+     * 鐢熸垚灞炰簬鐜╁鐨勪粏浠?     * 鑷姩澶勭悊: MobUtil.summonTame (绉垎淇濇寔銆乸ersistence銆佽窡闅忔ā寮?銆乻pawnUpgraded,
      * 浠ュ強 Neollager finalizeSpawn 鍓嶅悗涓ゆ setMagic(false)
      *
      * @param <T>       Mob 绫诲瀷
      * @param type      瀹炰綋绫诲瀷
-     * @param level     鏈嶅姟鍣ㄤ笘鐣?
-     * @param player    鐜╁
+     * @param level     鏈嶅姟鍣ㄤ笘鐣?     * @param player    鐜╁
      * @param spawnPos  鐢熸垚浣嶇疆
      * @return 鐢熸垚鎴愬姛鐨勫疄浣擄紝澶辫触杩斿洖 null
      */
@@ -128,8 +121,7 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 鎾斁鐢熸垚闊虫晥鍜岀矑瀛?
-     */
+     * 鎾斁鐢熸垚闊虫晥鍜岀矑瀛?     */
     public static void playSpawnEffects(ServerLevel level, Vec3 spawnPos) {
         level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
                 SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.PLAYERS,
@@ -140,8 +132,7 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 鐏甸瓊娑堣€楃粨鏋滄灇涓?
-     */
+     * 鐏甸瓊娑堣€楃粨鏋滄灇涓?     */
     public enum SoulCostResult {
         /** 鐏甸瓊瓒冲锛屽凡鎵ｉ瓊锛屾弧琛€ */
         SUFFICIENT,
@@ -152,9 +143,7 @@ public class MinionSpawnHelper {
     }
 
     /**
-     * 妫€鏌ョ伒榄傛槸鍚﹁冻澶燂紝澶勭悊鍗婅鎯╃綒鍜岀伒榄傛秷鑰?
-     * 璇箟瑙勫垯锛?
-     *   - currentSouls >= effectiveCost 鈫?婊¤锛屾墸 soulCost锛堝唴閮ㄦ墦鎶橈級鈫?SUFFICIENT
+     * 妫€鏌ョ伒榄傛槸鍚﹁冻澶燂紝澶勭悊鍗婅鎯╃綒鍜岀伒榄傛秷鑰?     * 璇箟瑙勫垯锛?     *   - currentSouls >= effectiveCost 鈫?婊¤锛屾墸 soulCost锛堝唴閮ㄦ墦鎶橈級鈫?SUFFICIENT
      *   - 0 < currentSouls < effectiveCost 鈫?鍗婅锛屾墸 soulCost 鈫?INSUFFICIENT
      *   - currentSouls == 0 鈫?鍗婅锛屼笉鎵ｇ伒榄?鈫?DEPLETED
      *

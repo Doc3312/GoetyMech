@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block.entity;
+package com.goetymech.addon.common.block.entity;
 
 import com.Polarice3.Goety.api.entities.IChunkLoader;
 import com.goetymech.addon.common.net.ModNetwork;

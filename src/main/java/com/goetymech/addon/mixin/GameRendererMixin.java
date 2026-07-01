@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.mixin;
+package com.goetymech.addon.mixin;
 
 import com.goetymech.addon.client.ClientContext;
 import com.goetymech.addon.common.time.TimeContext;

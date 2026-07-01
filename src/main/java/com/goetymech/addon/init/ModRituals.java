@@ -1,7 +1,7 @@
-﻿package com.goetymech.addon.init;
+package com.goetymech.addon.init;
 
 import com.Polarice3.Goety.common.ritual.ModRitualFactory;
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.ritual.UpgradeCasketRitual;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
@@ -12,7 +12,7 @@ public class ModRituals {
             new ResourceLocation("goety", "ritual_factory");
 
     public static final DeferredRegister<ModRitualFactory> RITUALS =
-            DeferredRegister.create(RITUAL_FACTORY_REGISTRY, GoetyMechMod.MOD_ID);
+            DeferredRegister.create(RITUAL_FACTORY_REGISTRY, goetymechMod.MOD_ID);
 
     public static final RegistryObject<ModRitualFactory> UPGRADE_CASKET =
             RITUALS.register("upgrade_casket",

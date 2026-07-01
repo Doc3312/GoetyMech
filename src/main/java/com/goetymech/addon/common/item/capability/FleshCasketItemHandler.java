@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item.capability;
+package com.goetymech.addon.common.item.capability;
 
 import com.Polarice3.Goety.api.items.magic.IFocus;
 import net.minecraft.nbt.CompoundTag;

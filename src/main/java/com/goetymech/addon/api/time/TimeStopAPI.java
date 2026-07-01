@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.api.time;
+package com.goetymech.addon.api.time;
 
 import com.goetymech.addon.common.time.TimeStopUtils;
 import net.minecraft.world.entity.Entity;

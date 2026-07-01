@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.recipe;
+package com.goetymech.addon.common.recipe;
 
 import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;

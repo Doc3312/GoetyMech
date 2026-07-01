@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block.entity;
+package com.goetymech.addon.common.block.entity;
 
 import com.goetymech.addon.common.block.SquadBarracksBlock;
 import com.goetymech.addon.common.block.Tier1SquadBarracksBlock;

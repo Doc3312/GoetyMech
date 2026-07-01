@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.common.data;
+package com.goetymech.addon.common.data;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.s2c.S2CAssimilationDataPacket;
@@ -32,7 +32,7 @@ public class AssimilationSaveManager {
             if (cached > current) {
                 PrototypeItem.setAssimilationKills(player, cached);
                 ModNetwork.sendTo(player, new S2CAssimilationDataPacket(cached));
-                GoetyMechMod.LOGGER.info("Assimilation recovered from cache: {} -> {} for {}",
+                goetymechMod.LOGGER.info("Assimilation recovered from cache: {} -> {} for {}",
                         current, cached, player.getName().getString());
             }
             markDirty(player);
@@ -54,7 +54,7 @@ public class AssimilationSaveManager {
                 Files.writeString(tmp, String.valueOf(kills));
                 Files.move(tmp, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                GoetyMechMod.LOGGER.error("Failed to write assimilation cache for {}: {}", uuid, e.getMessage());
+                goetymechMod.LOGGER.error("Failed to write assimilation cache for {}: {}", uuid, e.getMessage());
                 try { Files.deleteIfExists(tmp); } catch (IOException ignored) {}
             }
         }
@@ -69,7 +69,7 @@ public class AssimilationSaveManager {
                 return Integer.parseInt(Files.readString(file).trim());
             }
         } catch (Exception e) {
-            GoetyMechMod.LOGGER.warn("Could not read assimilation cache for {}: {}", player.getStringUUID(), e.getMessage());
+            goetymechMod.LOGGER.warn("Could not read assimilation cache for {}: {}", player.getStringUUID(), e.getMessage());
         }
         return -1;
     }

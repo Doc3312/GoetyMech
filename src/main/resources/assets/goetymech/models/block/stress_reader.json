@@ -1,4 +1,4 @@
-﻿{
+{
 	"parent": "block/block",
 	"textures": {
 		"0": "goetymech:block/stress_reader/main_box",

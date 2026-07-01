@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.menu;
+package com.goetymech.addon.common.menu;
 
 import com.goetymech.addon.common.item.capability.FleshCasketItemHandler;
 import net.minecraft.network.FriendlyByteBuf;

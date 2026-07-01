@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.net;
+package com.goetymech.addon.common.net;
 
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.item.SquadFocus;

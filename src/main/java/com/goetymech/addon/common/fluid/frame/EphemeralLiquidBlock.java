@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.fluid.frame;
+package com.goetymech.addon.common.fluid.frame;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

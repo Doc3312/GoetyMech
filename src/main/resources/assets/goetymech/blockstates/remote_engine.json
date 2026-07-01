@@ -1,4 +1,4 @@
-﻿{
+{
   "variants": {
     "facing=down":  { "model": "goetymech:block/remote_engine", "x": 90 },
     "facing=up":    { "model": "goetymech:block/remote_engine", "x": 270 },

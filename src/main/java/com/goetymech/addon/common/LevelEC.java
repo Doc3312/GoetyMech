@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common;
+package com.goetymech.addon.common;
 
 import com.goetymech.addon.common.time.LevelExpandedContext;
 

@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.magic.spell;
+package com.goetymech.addon.common.magic.spell;
 
 import com.Polarice3.Goety.api.magic.ISummonSpell;
 import com.Polarice3.Goety.api.magic.SpellType;

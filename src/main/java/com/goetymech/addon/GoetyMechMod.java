@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon;
+package com.goetymech.addon;
 
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
@@ -39,7 +39,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 /**
  * goetymech 涓绘ā缁勭被
  */
-@Mod(GoetyMechMod.MOD_ID)
+@Mod(goetymechMod.MOD_ID)
 public class GoetyMechMod {
 
     public static final String MOD_ID = "goetymech";

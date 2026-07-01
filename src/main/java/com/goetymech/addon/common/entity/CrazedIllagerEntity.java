@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.entity;
+package com.goetymech.addon.common.entity;
 
 import com.goetymech.addon.init.ModEntities;
 import net.minecraft.core.BlockPos;

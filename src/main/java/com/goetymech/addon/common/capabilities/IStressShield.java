@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.capabilities;
+package com.goetymech.addon.common.capabilities;
 
 public interface IStressShield {
     float getShield();

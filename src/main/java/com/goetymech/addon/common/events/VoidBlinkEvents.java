@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.common.events;
+package com.goetymech.addon.common.events;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.magic.effect.VoidMarkEffect;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.c2s.C2SVoidBlinkPacket;
@@ -19,7 +19,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class VoidBlinkEvents {
 
     @SubscribeEvent
@@ -65,7 +65,7 @@ public class VoidBlinkEvents {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    @Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ClientEvents {
 
         private static boolean wasShiftDown = false;

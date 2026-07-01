@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item.curio;
+package com.goetymech.addon.common.item.curio;
 
 import com.goetymech.addon.config.ModConfig;
 import net.minecraft.ChatFormatting;

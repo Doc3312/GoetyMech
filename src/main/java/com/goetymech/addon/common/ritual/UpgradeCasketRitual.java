@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.ritual;
+package com.goetymech.addon.common.ritual;
 
 import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
 import com.Polarice3.Goety.common.crafting.RitualRecipe;

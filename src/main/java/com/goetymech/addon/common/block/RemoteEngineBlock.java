@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.block;
+package com.goetymech.addon.common.block;
 
 import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetymech.addon.common.item.RemoteEngineBlockItem;

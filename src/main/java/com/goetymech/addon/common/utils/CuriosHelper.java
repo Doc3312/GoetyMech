@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.utils;
+package com.goetymech.addon.common.utils;
 
 import com.goetymech.addon.common.item.PrototypeItem;
 import net.minecraft.world.entity.player.Player;

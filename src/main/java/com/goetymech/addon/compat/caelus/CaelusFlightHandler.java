@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.compat.caelus;
+package com.goetymech.addon.compat.caelus;
 
 import com.goetymech.addon.common.utils.CuriosHelper;
 import net.minecraft.world.entity.ai.attributes.Attribute;

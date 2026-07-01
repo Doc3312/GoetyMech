@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.net.c2s;
+package com.goetymech.addon.common.net.c2s;
 
 import com.goetymech.addon.common.time.TimeStopUtils;
 import net.minecraft.network.FriendlyByteBuf;

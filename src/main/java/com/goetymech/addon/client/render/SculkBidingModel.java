@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.client.render;
+package com.goetymech.addon.client.render;
 
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;

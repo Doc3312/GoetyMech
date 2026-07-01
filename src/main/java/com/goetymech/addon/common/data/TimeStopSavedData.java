@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.data;
+package com.goetymech.addon.common.data;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.registries.Registries;

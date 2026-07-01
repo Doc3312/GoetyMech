@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item;
+package com.goetymech.addon.common.item;
 
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.goetymech.addon.common.utils.MinionSpawnHelper;
@@ -18,10 +18,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 鎵洸鑳氳儙 - 鍙抽敭鐢熸垚灞炰簬鐜╁鐨勬柊鍒屾皯锛圢eollager锛?
- * 鍙爢鍙?4涓紝鏃犺€愪箙
- * 娑堣€楃伒榄傚彫鍞わ紝鐏甸瓊涓嶈冻鏃跺彫鍞ゅ崐琛€鐗堟湰骞舵彁绀?
- */
+ * 鎵洸鑳氳儙 - 鍙抽敭鐢熸垚灞炰簬鐜╁鐨勬柊鍒屾皯锛圢eollager锛? * 鍙爢鍙?4涓紝鏃犺€愪箙
+ * 娑堣€楃伒榄傚彫鍞わ紝鐏甸瓊涓嶈冻鏃跺彫鍞ゅ崐琛€鐗堟湰骞舵彁绀? */
 public class TwistedEmbryoItem extends Item {
 
     private static final double REACH_DISTANCE = 4.5D;

@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.entity;
+package com.goetymech.addon.common.entity;
 
 import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SRepositionPacket;
@@ -19,9 +19,7 @@ import java.util.UUID;
 
 /**
  * 骞藉尶灏栧埡 + 瀹氳韩閿氱偣瀹炰綋
- * 瑙嗚鏁堟灉锛氫粠鍦伴潰鍗囪捣鍚庢秷澶?
- * 瀹氳韩锛氭瘡 tick 灏嗛攣瀹氱洰鏍囧己鍒跺綊浣嶏紙浠?Goety TangleEntity 鏈哄埗锛?
- */
+ * 瑙嗚鏁堟灉锛氫粠鍦伴潰鍗囪捣鍚庢秷澶? * 瀹氳韩锛氭瘡 tick 灏嗛攣瀹氱洰鏍囧己鍒跺綊浣嶏紙浠?Goety TangleEntity 鏈哄埗锛? */
 public class SculkSpikeEntity extends Entity {
 
     private static final EntityDataAccessor<Float> RISE =
@@ -111,6 +109,7 @@ public class SculkSpikeEntity extends Entity {
             ModNetwork.sentToTrackingEntityAndPlayer(t,
                     new SRepositionPacket(t.getId(), this.position()));
         }
+
         this.bindTick++;
     }
 

@@ -1,6 +1,6 @@
-﻿package com.goetymech.addon.init;
+package com.goetymech.addon.init;
 
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -14,7 +14,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModCreativeTab {
 
     public static final DeferredRegister<CreativeModeTab> TABS =
-            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GoetyMechMod.MOD_ID);
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, goetymechMod.MOD_ID);
 
     public static final RegistryObject<CreativeModeTab> goetymech_TAB = TABS.register("goetymech",
             () -> CreativeModeTab.builder()

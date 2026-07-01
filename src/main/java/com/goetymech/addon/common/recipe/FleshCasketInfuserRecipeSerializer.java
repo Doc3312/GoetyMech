@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.recipe;
+package com.goetymech.addon.common.recipe;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

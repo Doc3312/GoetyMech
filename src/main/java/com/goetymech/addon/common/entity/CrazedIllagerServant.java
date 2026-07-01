@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.entity;
+package com.goetymech.addon.common.entity;
 
 import com.Polarice3.Goety.common.entities.ally.illager.VindicatorServant;
 import com.Polarice3.Goety.common.entities.neutral.Owned;

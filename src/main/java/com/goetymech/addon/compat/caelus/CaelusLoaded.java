@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.compat.caelus;
+package com.goetymech.addon.compat.caelus;
 
 import net.minecraftforge.fml.ModList;
 

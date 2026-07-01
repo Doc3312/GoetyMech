@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.menu;
+package com.goetymech.addon.common.menu;
 
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.init.ModItems;

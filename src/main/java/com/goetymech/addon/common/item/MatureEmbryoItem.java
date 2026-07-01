@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.item;
+package com.goetymech.addon.common.item;
 
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.goetymech.addon.common.utils.MinionSpawnHelper;
@@ -24,9 +24,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 /**
  * 鎴愮啛鑳氳儙 - 澶氭€佸埛鎬泲
  * 鐗╁搧 NBT 涓繚瀛?EntityTypeId 纭畾鍏电绫诲瀷
- * 鍙抽敭鐢熸垚瀵瑰簲鍏电鐨勭帺瀹朵粏浠庯紝娑堣€楃伒榄?
- * 闇€鍏堢粡杩囪鑲夌啍鐐夌児鍒舵壄鏇茶儦鑳庝骇鍑?
- */
+ * 鍙抽敭鐢熸垚瀵瑰簲鍏电鐨勭帺瀹朵粏浠庯紝娑堣€楃伒榄? * 闇€鍏堢粡杩囪鑲夌啍鐐夌児鍒舵壄鏇茶儦鑳庝骇鍑? */
 public class MatureEmbryoItem extends Item {
 
     private static final String TAG_ENTITY_TYPE = "EntityTypeId";

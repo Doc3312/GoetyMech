@@ -1,10 +1,10 @@
-﻿package com.goetymech.addon.client;
+package com.goetymech.addon.client;
 
 import com.Polarice3.Goety.client.gui.screen.inventory.FocusBagScreen;
 import com.Polarice3.Goety.client.gui.screen.inventory.FocusPackScreen;
 import com.Polarice3.Goety.client.gui.screen.inventory.FocusRadialMenuScreen;
 import com.Polarice3.Goety.init.ModKeybindings;
-import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.goetymechMod;
 import com.goetymech.addon.common.item.RemoteEngineBlockItem;
 import com.goetymech.addon.client.TimeStopUtilsWrapped;
 import com.goetymech.addon.common.item.TimeFocusPouch;
@@ -36,7 +36,7 @@ import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.Optional;
 
-@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModClientForgeEvents {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("goetymechTG");

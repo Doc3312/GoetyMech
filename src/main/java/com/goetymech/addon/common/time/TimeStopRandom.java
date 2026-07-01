@@ -1,4 +1,4 @@
-﻿package com.goetymech.addon.common.time;
+package com.goetymech.addon.common.time;
 
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
