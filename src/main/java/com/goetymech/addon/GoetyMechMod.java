@@ -39,7 +39,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 /**
  * goetymech 涓绘ā缁勭被
  */
-@Mod(goetymechMod.MOD_ID)
+@Mod(GoetyMechMod.MOD_ID)
 public class GoetyMechMod {
 
     public static final String MOD_ID = "goetymech";

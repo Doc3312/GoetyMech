@@ -1,6 +1,6 @@
 package com.goetymech.addon.init;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.entity.CrazedIllagerEntity;
 import com.goetymech.addon.common.entity.CrazedIllagerServant;
 import com.goetymech.addon.common.entity.CrushingWheelEntity;
@@ -17,7 +17,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModEntities {
 
     public static final DeferredRegister<EntityType<?>> ENTITIES =
-            DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, GoetyMechMod.MOD_ID);
 
     /** 骞藉尶灏栧埡 鈥?瀹氳韩閿氱偣瀹炰綋锛屽昂瀵镐笌 Goety TangleEntity 涓€鑷?*/
     public static final RegistryObject<EntityType<SculkSpikeEntity>> SCULK_SPIKE =

@@ -1,6 +1,6 @@
 package com.goetymech.addon.client;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.net.ModNetwork;
@@ -45,11 +45,11 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class PrototypeRenderEvents {
 
     private static final ResourceLocation PROTOTYPE_TEXTURE =
-            new ResourceLocation(goetymechMod.MOD_ID, "textures/entity/prototype.png");
+            new ResourceLocation(GoetyMechMod.MOD_ID, "textures/entity/prototype.png");
 
     // 鈹€鈹€ Wall-running client state (visual only) 鈹€鈹€
     private static Vec3 clientWallNormal = Vec3.ZERO;
@@ -207,7 +207,7 @@ public class PrototypeRenderEvents {
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         float rollDeg = quatRollDeg(clientWallQuat);
-        goetymechMod.LOGGER.debug("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
+        GoetyMechMod.LOGGER.debug("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
                 String.format("%.2f", rollDeg),
                 String.format("%.3f", clientWallQuat.x),
                 String.format("%.3f", clientWallQuat.y),
@@ -327,7 +327,7 @@ public class PrototypeRenderEvents {
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
-        goetymechMod.LOGGER.debug("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
+        GoetyMechMod.LOGGER.debug("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
                 mc.options.keySprint.isDown(), player.isSprinting(), hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
                 player.isFallFlying());
         boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && !player.isInWater() && wallDir != null;

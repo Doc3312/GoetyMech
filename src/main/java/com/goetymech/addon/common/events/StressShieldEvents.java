@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.events;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.utils.StressShieldHelper;
 import net.minecraft.server.level.ServerLevel;
@@ -13,7 +13,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class StressShieldEvents {
 
     private static final long NO_HURT_TICKS = 100;

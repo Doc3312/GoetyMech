@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.events;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.magic.spell.SculkBindSpell;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 /**
  * 骞藉尶鏉熺細浜嬩欢澶勭悊鍣? * 瀹氳韩宸茬敱 SculkSpikeEntity 鎺ョ锛堢嫭绔?Entity tick锛屼豢 Goety TangleEntity 鏈哄埗锛? * Warden 鍙鎬?鈥?寤惰繜 15 tick 鍚庢仮澶嶏紝閬垮厤鍑哄湡鍔ㄧ敾棣栧抚闂幇
  */
-@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SculkBindEvents {
 
     @SubscribeEvent

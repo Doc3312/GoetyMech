@@ -1,6 +1,6 @@
 package com.goetymech.addon.init;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -14,5 +14,5 @@ public class ModTags {
     /** 闇€瑕佷笉绁ョ伀鐐畬鏁磋缁冪粨鏋勬墠鑳借浆鍖栫殑鍏电鏍囩 */
     public static final TagKey<EntityType<?>> REQUIRES_TRAINING_STRUCTURE =
             TagKey.create(Registries.ENTITY_TYPE,
-                    new ResourceLocation(goetymechMod.MOD_ID, "requires_training_structure"));
+                    new ResourceLocation(GoetyMechMod.MOD_ID, "requires_training_structure"));
 }

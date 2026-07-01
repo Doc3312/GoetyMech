@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.net;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.net.c2s.C2SOpenFleshCasketPacket;
 import com.goetymech.addon.common.net.c2s.C2SCancelSlamPacket;
 import com.goetymech.addon.common.net.c2s.C2SVoidBlinkPacket;
@@ -27,7 +27,7 @@ public class ModNetwork {
     private static final String PROTOCOL_VERSION = "1";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(goetymechMod.MOD_ID, "network"),
+            new ResourceLocation(GoetyMechMod.MOD_ID, "network"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals

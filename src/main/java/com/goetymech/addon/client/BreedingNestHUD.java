@@ -1,7 +1,7 @@
 package com.goetymech.addon.client;
 
 import com.Polarice3.Goety.Goety;
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.BreedingNestBlockEntity;
 import com.goetymech.addon.init.ModBlocks;
 import net.minecraft.client.Minecraft;
@@ -19,7 +19,7 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
 public class BreedingNestHUD {
 
     private static final int BAR_WIDTH = 64;

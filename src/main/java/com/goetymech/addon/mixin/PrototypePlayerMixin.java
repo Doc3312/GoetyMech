@@ -1,6 +1,6 @@
 package com.goetymech.addon.mixin;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,13 +20,13 @@ public abstract class PrototypePlayerMixin extends LivingEntity {
 
     @Inject(method = "aiStep", at = @At("HEAD"))
     private void gp$logAiStepHead(CallbackInfo ci) {
-        goetymechMod.LOGGER.debug("MIXIN_AISTEP_HEAD: zza={}, jumping={}, onGround={}, sprint={}",
+        GoetyMechMod.LOGGER.debug("MIXIN_AISTEP_HEAD: zza={}, jumping={}, onGround={}, sprint={}",
                 this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
     }
 
     @Inject(method = "aiStep", at = @At("RETURN"))
     private void gp$logAiStepReturn(CallbackInfo ci) {
-        goetymechMod.LOGGER.debug("MIXIN_AISTEP_RETURN: zza={}, jumping={}, onGround={}, sprint={}",
+        GoetyMechMod.LOGGER.debug("MIXIN_AISTEP_RETURN: zza={}, jumping={}, onGround={}, sprint={}",
                 this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
     }
 
@@ -34,13 +34,13 @@ public abstract class PrototypePlayerMixin extends LivingEntity {
     private void gp$cancelJumpWhileCharging(CallbackInfo ci) {
         Player player = (Player) (Object) this;
         if (PrototypeItem.getJumpChargeTick(player) > 0) {
-            goetymechMod.LOGGER.debug("Prototype Mixin: cancelled jump (charge={})",
+            GoetyMechMod.LOGGER.debug("Prototype Mixin: cancelled jump (charge={})",
                     PrototypeItem.getJumpChargeTick(player));
             ci.cancel();
             return;
         }
         if (this.jumping && PrototypeItem.hasAnyPrototype(player)) {
-            goetymechMod.LOGGER.debug("Prototype Mixin: cancelled jump (jumping=true, hasPrototype=true)");
+            GoetyMechMod.LOGGER.debug("Prototype Mixin: cancelled jump (jumping=true, hasPrototype=true)");
             ci.cancel();
         }
     }

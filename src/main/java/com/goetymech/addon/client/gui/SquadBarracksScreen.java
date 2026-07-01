@@ -1,6 +1,6 @@
 package com.goetymech.addon.client.gui;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.Tier1SquadBarracksBlock;
 import com.goetymech.addon.common.block.Tier2SquadBarracksBlock;
 import com.goetymech.addon.common.block.Tier3SquadBarracksBlock;
@@ -27,11 +27,11 @@ import java.util.Map;
 public class SquadBarracksScreen extends AbstractContainerScreen<SquadBarracksMenu> {
 
     private static final ResourceLocation TEXTURE_T1 =
-            new ResourceLocation(goetymechMod.MOD_ID, "textures/gui/squad_barracks_t1.png");
+            new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/squad_barracks_t1.png");
     private static final ResourceLocation TEXTURE_T2 =
-            new ResourceLocation(goetymechMod.MOD_ID, "textures/gui/squad_barracks_t2.png");
+            new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/squad_barracks_t2.png");
     private static final ResourceLocation TEXTURE_T3 =
-            new ResourceLocation(goetymechMod.MOD_ID, "textures/gui/squad_barracks_t3.png");
+            new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/squad_barracks_t3.png");
 
     private final ResourceLocation texture;
     private final int configSlotCount;

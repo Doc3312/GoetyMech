@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.magic.spell;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetymech.addon.common.entity.CrushingWheelEntity;
 import com.goetymech.addon.common.item.StressFocus;
@@ -128,7 +128,7 @@ public class CrushingWheelSpell extends Spell {
         if (useStaffBonus) {
             damage = (int) (damage * 1.5);
         }
-        goetymechMod.LOGGER.debug("StressFocus spell 鈫?capacity={} stress={} divisor={} damage={}",
+        GoetyMechMod.LOGGER.debug("StressFocus spell 鈫?capacity={} stress={} divisor={} damage={}",
                 capacity, totalStress, divisor, damage);
         StressFocus.updateDamageCache(focus, damage);
 

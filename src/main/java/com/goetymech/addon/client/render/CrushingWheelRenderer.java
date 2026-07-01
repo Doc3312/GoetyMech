@@ -1,6 +1,6 @@
 package com.goetymech.addon.client.render;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.entity.CrushingWheelEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -24,10 +24,10 @@ import net.minecraft.world.inventory.InventoryMenu;
 public class CrushingWheelRenderer extends EntityRenderer<CrushingWheelEntity> {
 
     private static final ResourceLocation MODEL_ID =
-            new ResourceLocation(goetymechMod.MOD_ID, "entity/crushing_wheel");
+            new ResourceLocation(GoetyMechMod.MOD_ID, "entity/crushing_wheel");
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(goetymechMod.MOD_ID, "textures/entity/crushing_wheel.png");
+            new ResourceLocation(GoetyMechMod.MOD_ID, "textures/entity/crushing_wheel.png");
 
     public CrushingWheelRenderer(EntityRendererProvider.Context ctx) {
         super(ctx);
@@ -40,7 +40,7 @@ public class CrushingWheelRenderer extends EntityRenderer<CrushingWheelEntity> {
         BakedModel bakedModel = modelManager.getModel(MODEL_ID);
         boolean missing = bakedModel == modelManager.getMissingModel();
 
-        goetymechMod.LOGGER.debug("WheelRenderer: entity={}, model=missing:{}",
+        GoetyMechMod.LOGGER.debug("WheelRenderer: entity={}, model=missing:{}",
                 entity.getId(), missing);
 
         if (missing) return;

@@ -47,7 +47,7 @@ public class SculkBindSpell extends Spell {
     public static final String TAG_LOCK_Z = "goetymech.sculk_lock_z";
     public static final String TAG_LOCK_END = "goetymech.sculk_lock_end";
 
-    // defaultSoulCost() 鍦?MagicFocus 鏋勯€犳椂琚皟鐢紝闇€瑕?loadConfig 宸叉彁鍓嶅姞杞介厤缃?    // 鍙傝 goetymechMod 鏋勯€犲嚱鏁颁腑 ModConfig.loadConfig() 璋冪敤
+    // defaultSoulCost() 鍦?MagicFocus 鏋勯€犳椂琚皟鐢紝闇€瑕?loadConfig 宸叉彁鍓嶅姞杞介厤缃?    // 鍙傝 GoetyMechMod 鏋勯€犲嚱鏁颁腑 ModConfig.loadConfig() 璋冪敤
     @Override
     public int defaultSoulCost() {
         return ModConfig.SCULK_BIND_COST.get();

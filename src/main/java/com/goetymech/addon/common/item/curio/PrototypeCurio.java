@@ -20,7 +20,7 @@ import top.theillusivec4.curios.api.type.capability.ICurio;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Mod.EventBusSubscriber(modid = com.goetymech.addon.goetymechMod.MOD_ID)
+@Mod.EventBusSubscriber(modid = com.goetymech.addon.GoetyMechMod.MOD_ID)
 public class PrototypeCurio {
 
     @SubscribeEvent

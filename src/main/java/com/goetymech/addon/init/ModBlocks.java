@@ -1,6 +1,6 @@
 package com.goetymech.addon.init;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.BreedingNestBlock;
 import com.goetymech.addon.common.block.FleshFurnaceBlock;
 import com.goetymech.addon.common.block.RemoteEngineBlock;
@@ -29,10 +29,10 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModBlocks {
 
     public static final DeferredRegister<Block> BLOCKS =
-            DeferredRegister.create(ForgeRegistries.BLOCKS, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.BLOCKS, GoetyMechMod.MOD_ID);
 
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GoetyMechMod.MOD_ID);
 
     public static final RegistryObject<Block> FLESH_FURNACE =
             BLOCKS.register("flesh_furnace", FleshFurnaceBlock::new);

@@ -2,7 +2,7 @@ package com.goetymech.addon.init;
 
 import java.util.function.Supplier;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.fluid.frame.EphemeralFluidConfig;
 import com.goetymech.addon.common.fluid.frame.EphemeralLiquidBlock;
 import com.goetymech.addon.common.fluid.soul.SoulFluid;
@@ -27,16 +27,16 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModFluids {
 
     public static final DeferredRegister<FluidType> FLUID_TYPES =
-            DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, GoetyMechMod.MOD_ID);
 
     public static final DeferredRegister<Fluid> FLUIDS =
-            DeferredRegister.create(ForgeRegistries.FLUIDS, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.FLUIDS, GoetyMechMod.MOD_ID);
 
     public static final DeferredRegister<Block> BLOCKS =
-            DeferredRegister.create(ForgeRegistries.BLOCKS, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.BLOCKS, GoetyMechMod.MOD_ID);
 
     public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(ForgeRegistries.ITEMS, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.ITEMS, GoetyMechMod.MOD_ID);
 
     // 鈹€鈹€ Soul Liquid FluidType 鈹€鈹€
 

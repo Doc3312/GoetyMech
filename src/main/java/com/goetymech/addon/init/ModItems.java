@@ -1,6 +1,6 @@
 package com.goetymech.addon.init;
 
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.MatureEmbryoItem;
 import com.goetymech.addon.common.item.RemoteEngineBlockItem;
 import com.goetymech.addon.common.item.SculkBindFocus;
@@ -33,7 +33,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModItems {
 
     public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(ForgeRegistries.ITEMS, goetymechMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.ITEMS, GoetyMechMod.MOD_ID);
 
     public static final RegistryObject<Item> TWISTED_EMBRYO =
             ITEMS.register("twisted_embryo", () ->

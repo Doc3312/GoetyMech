@@ -16,7 +16,7 @@ public class MimicDeconstructionCategory extends AbstractRecipeCategory<MimicDec
 
     public MimicDeconstructionCategory(IGuiHelper guiHelper) {
         super(
-                goetymechRecipeTypes.MIMIC_DECONSTRUCTION,
+                GoetyMechRecipeTypes.MIMIC_DECONSTRUCTION,
                 Component.translatable("jei.goetymech.category.mimic_deconstruction"),
                 guiHelper.createDrawableItemStack(new ItemStack(ModItems.PROTOTYPE_MIMIC.get())),
                 120, 60

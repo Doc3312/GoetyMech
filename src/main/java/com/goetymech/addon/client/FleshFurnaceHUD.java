@@ -1,7 +1,7 @@
 package com.goetymech.addon.client;
 
 import com.Polarice3.Goety.Goety;
-import com.goetymech.addon.goetymechMod;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.FleshFurnaceBlockEntity;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.Mod;
 
 /**
  * 琛€鑲夌啍鐐?HUD 瑕嗙洊灞? * 鍙傝€?Goety ClientEvents.renderArcaAmount() 鐨勫疄鐜版ā寮? * 鐜╁鍑嗘槦瀵瑰噯鐔旂倝鏃舵樉绀鸿浆鍖栬繘搴︽潯鍜屽叺绉嶉摼鎺ヤ俊鎭? */
-@Mod.EventBusSubscriber(modid = goetymechMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
 public class FleshFurnaceHUD {
 
     private static final int BAR_WIDTH = 64;
