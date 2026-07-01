@@ -1,6 +1,10 @@
 package com.goetypunk.addon.compat.jei;
 
+import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
+import com.Polarice3.Goety.compat.jei.JeiRecipeTypes;
 import com.goetypunk.addon.GoetyPunkMod;
+import com.goetypunk.addon.common.item.curio.FleshCasketItem;
+import com.goetypunk.addon.common.item.curio.TriggerType;
 import com.goetypunk.addon.init.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -12,7 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JeiPlugin
@@ -52,5 +58,30 @@ public class GoetyPunkJeiPlugin implements IModPlugin {
                 ModItems.PROTOTYPE_MIMIC.get(),
                 Component.translatable("jei.goetypunk.info.prototype_mimic")
         );
+
+        // Flesh casket cycle display recipes (3 transformations per tier)
+        var caskets = List.of(ModItems.FLESH_CASKET_1, ModItems.FLESH_CASKET_2, ModItems.FLESH_CASKET_3);
+        var pairs = List.of(
+                new CyclePair(TriggerType.A, TriggerType.B, "a_to_b"),
+                new CyclePair(TriggerType.B, TriggerType.C, "b_to_c"),
+                new CyclePair(TriggerType.C, TriggerType.A, "c_to_a")
+        );
+        List<CursedInfuserRecipes> cycleRecipes = new ArrayList<>();
+        for (var casketReg : caskets) {
+            var item = casketReg.get();
+            String path = BuiltInRegistries.ITEM.getKey(item).getPath();
+            for (var pair : pairs) {
+                ItemStack input = new ItemStack(item);
+                FleshCasketItem.setTriggerType(input, pair.from);
+                ItemStack output = new ItemStack(item);
+                FleshCasketItem.setTriggerType(output, pair.to);
+                cycleRecipes.add(new CursedInfuserRecipes(
+                        new ResourceLocation(GoetyPunkMod.MOD_ID, path + "_" + pair.suffix),
+                        "", Ingredient.of(input), output, 0, 60, false));
+            }
+        }
+        registration.addRecipes(JeiRecipeTypes.CURSED_INFUSER, cycleRecipes);
     }
+
+    private record CyclePair(TriggerType from, TriggerType to, String suffix) {}
 }
