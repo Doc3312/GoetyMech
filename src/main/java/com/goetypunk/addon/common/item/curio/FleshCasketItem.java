@@ -5,6 +5,7 @@ import com.goetypunk.addon.common.item.capability.FleshCasketItemCapability;
 import com.goetypunk.addon.common.item.capability.FleshCasketItemHandler;
 import com.goetypunk.addon.common.menu.FleshCasketContainer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -33,6 +34,18 @@ public class FleshCasketItem extends Item implements ICurioItem {
     public FleshCasketItem(int tier) {
         super(new Properties().stacksTo(1).setNoRepair());
         this.tier = tier;
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        TriggerType type = getTriggerType(stack);
+        String suffix = switch (type) {
+            case A -> "fullness";
+            case B -> "balance";
+            case C -> "deathbed";
+        };
+        String key = "item.goetypunk.flesh_casket_" + tier + "." + suffix;
+        return Component.translatable(key);
     }
 
     public static int getTier(ItemStack stack) {

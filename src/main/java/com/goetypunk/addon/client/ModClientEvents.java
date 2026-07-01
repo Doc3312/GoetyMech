@@ -16,6 +16,7 @@ import com.goetypunk.addon.init.ModEntities;
 import com.goetypunk.addon.init.ModFluids;
 import com.goetypunk.addon.init.ModItems;
 import com.goetypunk.addon.common.item.SquadFocus;
+import com.goetypunk.addon.common.item.curio.FleshCasketItem;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +59,29 @@ public class ModClientEvents {
                     ModItems.SQUAD_FOCUS.get(),
                     new net.minecraft.resources.ResourceLocation(com.goetypunk.addon.GoetyPunkMod.MOD_ID, "bound"),
                     (stack, world, entity, seed) -> SquadFocus.isBound(stack) ? 1.0F : 0.0F);
+
+            var triggerProp = new net.minecraft.resources.ResourceLocation(GoetyPunkMod.MOD_ID, "trigger_type");
+            net.minecraft.client.renderer.item.ItemProperties.register(
+                    ModItems.FLESH_CASKET_1.get(), triggerProp,
+                    (stack, world, entity, seed) -> switch (FleshCasketItem.getTriggerType(stack)) {
+                        case A -> 0.0F;
+                        case B -> 0.5F;
+                        case C -> 1.0F;
+                    });
+            net.minecraft.client.renderer.item.ItemProperties.register(
+                    ModItems.FLESH_CASKET_2.get(), triggerProp,
+                    (stack, world, entity, seed) -> switch (FleshCasketItem.getTriggerType(stack)) {
+                        case A -> 0.0F;
+                        case B -> 0.5F;
+                        case C -> 1.0F;
+                    });
+            net.minecraft.client.renderer.item.ItemProperties.register(
+                    ModItems.FLESH_CASKET_3.get(), triggerProp,
+                    (stack, world, entity, seed) -> switch (FleshCasketItem.getTriggerType(stack)) {
+                        case A -> 0.0F;
+                        case B -> 0.5F;
+                        case C -> 1.0F;
+                    });
 
             fleshCasketKey = new KeyMapping("key.goetypunk.open_flesh_casket",
                     GLFW.GLFW_KEY_Z, "key.goetypunk.category");
