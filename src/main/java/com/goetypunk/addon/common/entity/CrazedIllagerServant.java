@@ -3,10 +3,12 @@ package com.goetypunk.addon.common.entity;
 import com.Polarice3.Goety.common.entities.ally.illager.VindicatorServant;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
 import com.Polarice3.Goety.utils.MobUtil;
+import com.Polarice3.Goety.utils.ModDamageSource;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -16,6 +18,8 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.difficulty.DifficultyInstance;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
@@ -43,6 +47,10 @@ public class CrazedIllagerServant extends VindicatorServant {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), 2.0);
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE), 1.0);
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), 16.0);
+    }
+
+    @Override
+    protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
     }
 
     @Override
@@ -84,15 +92,21 @@ public class CrazedIllagerServant extends VindicatorServant {
 
             float prevHealth = living.getHealth();
             float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            living.hurt(this.damageSources().mobAttack(this), damage);
+
+            DamageSource source = this.getTrueOwner() != null
+                    ? ModDamageSource.summonAttack(this, this.getTrueOwner())
+                    : this.damageSources().mobAttack(this);
+
+            Vec3 prevMotion = living.getDeltaMovement();
+            living.hurt(source, damage);
+            living.setDeltaMovement(prevMotion);
 
             float dealt = prevHealth - living.getHealth();
-            if (dealt > 0 && dealt < 1.0F && living.isAlive()) {
+            if (dealt < 1.0F && living.isAlive()) {
                 living.invulnerableTime = 0;
                 living.hurt(this.damageSources().magic(), 1.0F - dealt);
             }
 
-            living.invulnerableTime = 0;
             this.hurt(this.damageSources().generic(), 1.0F);
             this.invulnerableTime = 0;
             return true;
