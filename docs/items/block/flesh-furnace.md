@@ -1,25 +1,25 @@
-# 血肉熔炉 — goetypunk
+﻿# 琛€鑲夌啍鐐?鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：block
-- 注册类：ModBlocks.FLESH_FURNACE / ModItems.FLESH_FURNACE
-- Java 类：FleshFurnaceBlock
-- 方块实体：FleshFurnaceBlockEntity
-- 首次创建：2026-06-14
+- 绫诲瀷锛歜lock
+- 娉ㄥ唽绫伙細ModBlocks.FLESH_FURNACE / ModItems.FLESH_FURNACE
+- Java 绫伙細FleshFurnaceBlock
+- 鏂瑰潡瀹炰綋锛欶leshFurnaceBlockEntity
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-血肉主题的特殊熔炉，具有与原版熔炉不同的处理逻辑和视觉效果。
+琛€鑲変富棰樼殑鐗规畩鐔旂倝锛屽叿鏈変笌鍘熺増鐔旂倝涓嶅悓鐨勫鐞嗛€昏緫鍜岃瑙夋晥鏋溿€?
 
-## 演化记录
+## 婕斿寲璁板綍
 
-### 2026-06-29 — 修复：setItem stack.split(1) 导致 Create 漏斗不消耗物品
-- **原因**：`setItem()` 中 `stack.split(1)` 修改了 `SidedInvWrapper` 传入的原始 ItemStack 引用，导致 Create 传送带侧的 `TransportedItemStack.stack` 被设为空栈，漏斗认为未成功传输
-- **修复**：改为 `stack.copyWithCount(1)`，创建独立副本，不修改原引用
-- **关联**：`FleshFurnaceBlockEntity.java:232` + `:559`
+### 2026-06-29 鈥?淇锛歴etItem stack.split(1) 瀵艰嚧 Create 婕忔枟涓嶆秷鑰楃墿鍝?
+- **鍘熷洜**锛歚setItem()` 涓?`stack.split(1)` 淇敼浜?`SidedInvWrapper` 浼犲叆鐨勫師濮?ItemStack 寮曠敤锛屽鑷?Create 浼犻€佸甫渚х殑 `TransportedItemStack.stack` 琚涓虹┖鏍堬紝婕忔枟璁や负鏈垚鍔熶紶杈?
+- **淇**锛氭敼涓?`stack.copyWithCount(1)`锛屽垱寤虹嫭绔嬪壇鏈紝涓嶄慨鏀瑰師寮曠敤
+- **鍏宠仈**锛歚FleshFurnaceBlockEntity.java:232` + `:559`
 
-### 2026-06-29 — 修复：cachedLinkRange 未初始化导致连接距离为 0
-- **原因**：`refreshCache()` 只在 `ModConfigEvent.Reloading` 时调用，缺少 `ModConfigEvent.Loading`，`cachedLinkRange` 保持 `int` 默认值 `0`
-- **修复**：添加 `onConfigLoad(ModConfigEvent.Loading)` handler
-- **关联**：`ModConfig.java:135-138`
+### 2026-06-29 鈥?淇锛歝achedLinkRange 鏈垵濮嬪寲瀵艰嚧杩炴帴璺濈涓?0
+- **鍘熷洜**锛歚refreshCache()` 鍙湪 `ModConfigEvent.Reloading` 鏃惰皟鐢紝缂哄皯 `ModConfigEvent.Loading`锛宍cachedLinkRange` 淇濇寔 `int` 榛樿鍊?`0`
+- **淇**锛氭坊鍔?`onConfigLoad(ModConfigEvent.Loading)` handler
+- **鍏宠仈**锛歚ModConfig.java:135-138`

@@ -1,14 +1,14 @@
-# `shouldSprint()` 守卫导致跑墙断冲刺
+﻿# `shouldSprint()` 瀹堝崼瀵艰嚧璺戝鏂啿鍒?
 
 status: verified
 
-## 症状
+## 鐥囩姸
 
-跑墙 vaule 翻越后，爬墙冲刺自动中断，需要重新按冲刺键。
+璺戝 vaule 缈昏秺鍚庯紝鐖鍐插埡鑷姩涓柇锛岄渶瑕侀噸鏂版寜鍐插埡閿€?
 
-## 根因
+## 鏍瑰洜
 
-`PrototypeRenderEvents.java:81-83` 的守卫逻辑：
+`PrototypeRenderEvents.java:81-83` 鐨勫畧鍗€昏緫锛?
 
 ```java
 if (!ClientWallRunState.shouldSprint()) {
@@ -16,32 +16,32 @@ if (!ClientWallRunState.shouldSprint()) {
 }
 ```
 
-`shouldSprint()` 在 vault 后返回 true（`sprintRetainTicks > 0`，60 tick 窗口），导致 `sprintDown` **不刷新**——卡在 mixin 设的 `true`。
+`shouldSprint()` 鍦?vault 鍚庤繑鍥?true锛坄sprintRetainTicks > 0`锛?0 tick 绐楀彛锛夛紝瀵艰嚧 `sprintDown` **涓嶅埛鏂?*鈥斺€斿崱鍦?mixin 璁剧殑 `true`銆?
 
-60 tick 过期后，`shouldSprint()` 降为 false，`sprintDown` 从物理键刷新：
+60 tick 杩囨湡鍚庯紝`shouldSprint()` 闄嶄负 false锛宍sprintDown` 浠庣墿鐞嗛敭鍒锋柊锛?
 
-- **toggle sprint**: 键已松(false) || isSprinting 已被 vanilla 清掉(false) → **sprintDown = false** → 断冲刺
-- **hold sprint**: 键还按着(true) || isSprinting(false) → sprintDown = true → 正常
+- **toggle sprint**: 閿凡鏉?false) || isSprinting 宸茶 vanilla 娓呮帀(false) 鈫?**sprintDown = false** 鈫?鏂啿鍒?
+- **hold sprint**: 閿繕鎸夌潃(true) || isSprinting(false) 鈫?sprintDown = true 鈫?姝ｅ父
 
-## 历史对照
+## 鍘嗗彶瀵圭収
 
-原始代码 (`f9b9ee8`) 每 tick **直接**从物理键读 sprintDown，没有任何 `shouldSprint()` 守卫，从来不跳 sprint。
+鍘熷浠ｇ爜 (`f9b9ee8`) 姣?tick **鐩存帴**浠庣墿鐞嗛敭璇?sprintDown锛屾病鏈変换浣?`shouldSprint()` 瀹堝崼锛屼粠鏉ヤ笉璺?sprint銆?
 
-## 教训
+## 鏁欒
 
-1. **不要加不必要的守卫。** 原始代码每 tick 直接读物理键，vault 后 sprint 不会断。加 `sprintRetainTicks + shouldSprint()` 破坏了原有的简单直连。
-2. **"保护"式逻辑容易产生隐藏的过期问题。** 60 tick 的保护窗口一过，`sprintDown` 从被保护状态跌入"按键抬起 + vanilla 清空 isSprinting"的双重 false 陷阱。
-3. **恢复方案**：去掉守卫，恢复原始的直接按键轮询：
+1. **涓嶈鍔犱笉蹇呰鐨勫畧鍗€?* 鍘熷浠ｇ爜姣?tick 鐩存帴璇荤墿鐞嗛敭锛寁ault 鍚?sprint 涓嶄細鏂€傚姞 `sprintRetainTicks + shouldSprint()` 鐮村潖浜嗗師鏈夌殑绠€鍗曠洿杩炪€?
+2. **"淇濇姢"寮忛€昏緫瀹规槗浜х敓闅愯棌鐨勮繃鏈熼棶棰樸€?* 60 tick 鐨勪繚鎶ょ獥鍙ｄ竴杩囷紝`sprintDown` 浠庤淇濇姢鐘舵€佽穼鍏?鎸夐敭鎶捣 + vanilla 娓呯┖ isSprinting"鐨勫弻閲?false 闄烽槺銆?
+3. **鎭㈠鏂规**锛氬幓鎺夊畧鍗紝鎭㈠鍘熷鐨勭洿鎺ユ寜閿疆璇細
 
    ```java
    ClientWallRunState.tickSprintRetain();
    ClientWallRunState.sprintDown = mc.options.keySprint.isDown() || player.isSprinting();
    ```
 
-## 影响范围
+## 褰卞搷鑼冨洿
 
-仅 `src/main/java/com/goetypunk/addon/client/PrototypeRenderEvents.java`，删除了 3 行，减为 1 行。
+浠?`src/main/java/com/GoetyMech/addon/client/PrototypeRenderEvents.java`锛屽垹闄や簡 3 琛岋紝鍑忎负 1 琛屻€?
 
-## 关联提交
+## 鍏宠仈鎻愪氦
 
-`0ac0ac8` — `[auto] edit: PrototypeRenderEvents.java | remove shouldSprint() guard, restore direct key polling for sprintDown`
+`0ac0ac8` 鈥?`[auto] edit: PrototypeRenderEvents.java | remove shouldSprint() guard, restore direct key polling for sprintDown`

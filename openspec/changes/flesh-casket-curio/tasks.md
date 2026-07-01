@@ -1,4 +1,4 @@
-## 1. Setup & Registration
+﻿## 1. Setup & Registration
 
 - [x] 1.1 Register Curios BACK slot in CuriosIntegration.java
 - [x] 1.2 Add ModConfig entries: FLESH_CASKET_THRESHOLD, cooldowns, etc.
@@ -39,17 +39,17 @@
 - [x] 6.3 Implement health threshold check for Type B (50%) and Type C (configurable)
 - [x] 6.4 Implement minimum cast interval (5 tick guard)
 - [x] 6.5 Implement lich check for tier 2/3
-- [x] 6.6 Implement auto-cast execution: iterate slots → find available → target → cast
+- [x] 6.6 Implement auto-cast execution: iterate slots 鈫?find available 鈫?target 鈫?cast
 - [x] 6.7 Implement halved soul cost logic
 - [x] 6.8 Pass EMPTY staff for tier 1, dummy wand for tier 2/3
 - [x] 6.9 Skip spells with castDuration > 0 (instant conversion)
 
 ## 7. Cursed Infuser Conversion
 
-- [x] 7.1 Add Cursed Infuser recipes for A→B→C cyclic conversion
-- [ ] 7.2 ⚠️ NBT preservation during conversion — standard cursed infuser does not auto-copy NBT from input to output. Need additional handling (custom recipe serializer or event listener) to preserve tier + foci. Workaround: recipes exist, but tier resets to 1 and foci are lost on conversion.
+- [x] 7.1 Add Cursed Infuser recipes for A鈫払鈫扖 cyclic conversion
+- [ ] 7.2 鈿狅笍 NBT preservation during conversion 鈥?standard cursed infuser does not auto-copy NBT from input to output. Need additional handling (custom recipe serializer or event listener) to preserve tier + foci. Workaround: recipes exist, but tier resets to 1 and foci are lost on conversion.
 
 ## 8. Item Assets
 
 - [x] 8.1 Create item model JSONs for flesh_casket_a/b/c
-- [ ] 8.2 ⚠️ Create item textures (PNG) — model JSONs reference textures that don't exist yet. Create PNG files at `assets/goetypunk/textures/item/flesh_casket_a.png`, `flesh_casket_b.png`, `flesh_casket_c.png`.
+- [ ] 8.2 鈿狅笍 Create item textures (PNG) 鈥?model JSONs reference textures that don't exist yet. Create PNG files at `assets/GoetyMech/textures/item/flesh_casket_a.png`, `flesh_casket_b.png`, `flesh_casket_c.png`.

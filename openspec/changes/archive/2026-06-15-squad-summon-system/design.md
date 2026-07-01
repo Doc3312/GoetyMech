@@ -1,62 +1,49 @@
-## Context
+﻿## Context
 
-GoetyPunk 已有成熟胚胎（MatureEmbryoItem）作为多态刷怪物品，可直接右键生成仆从。但缺乏批量召唤机制。Goety 原生提供 TroopFocus（按类型召唤全部）和 CallFocus（按 UUID 拉取单个），均不满足"配置编队→远程消耗→批量生成"的需求。
-
-当前项目结构：
-- 方块注册：`ModBlocks` (DeferredRegister)
-- 物品注册：`ModItems` (DeferredRegister)
-- 容器注册：需要新增 `ModMenuTypes`
-- 实体注册：`ModEntities`
-- 客户端注册：`ModClientEvents`
-- Goety 聚晶基类：`MagicFocus` → 绑定 `ISpell`
-- Goety 仆从生命周期：`IOwned` 内置 `limitedLifespan`/`limitedLifeTicks`
+GoetyMech 宸叉湁鎴愮啛鑳氳儙锛圡atureEmbryoItem锛変綔涓哄鎬佸埛鎬墿鍝侊紝鍙洿鎺ュ彸閿敓鎴愪粏浠庛€備絾缂轰箯鎵归噺鍙敜鏈哄埗銆侴oety 鍘熺敓鎻愪緵 TroopFocus锛堟寜绫诲瀷鍙敜鍏ㄩ儴锛夊拰 CallFocus锛堟寜 UUID 鎷夊彇鍗曚釜锛夛紝鍧囦笉婊¤冻"閰嶇疆缂栭槦鈫掕繙绋嬫秷鑰椻啋鎵归噺鐢熸垚"鐨勯渶姹傘€?
+褰撳墠椤圭洰缁撴瀯锛?- 鏂瑰潡娉ㄥ唽锛歚ModBlocks` (DeferredRegister)
+- 鐗╁搧娉ㄥ唽锛歚ModItems` (DeferredRegister)
+- 瀹瑰櫒娉ㄥ唽锛氶渶瑕佹柊澧?`ModMenuTypes`
+- 瀹炰綋娉ㄥ唽锛歚ModEntities`
+- 瀹㈡埛绔敞鍐岋細`ModClientEvents`
+- Goety 鑱氭櫠鍩虹被锛歚MagicFocus` 鈫?缁戝畾 `ISpell`
+- Goety 浠嗕粠鐢熷懡鍛ㄦ湡锛歚IOwned` 鍐呯疆 `limitedLifespan`/`limitedLifeTicks`
 
 ## Goals / Non-Goals
 
 **Goals:**
-- 点将台方块：三阶（6/12/18 squad slot），GUI 配置，全方向机械动力输入
-- 兵团聚晶：绑定点将台 → 远程施法 → 消耗胚胎/灵魂 → 限时生成仆从
-- 区块常加载：点将台所在 chunk force-load，三阶跨维度
-- 灵魂折扣：二阶 50%，三阶 10%（一阶全额）
-- 仆从限时 5 分钟
+- 鐐瑰皢鍙版柟鍧楋細涓夐樁锛?/12/18 squad slot锛夛紝GUI 閰嶇疆锛屽叏鏂瑰悜鏈烘鍔ㄥ姏杈撳叆
+- 鍏靛洟鑱氭櫠锛氱粦瀹氱偣灏嗗彴 鈫?杩滅▼鏂芥硶 鈫?娑堣€楄儦鑳?鐏甸瓊 鈫?闄愭椂鐢熸垚浠嗕粠
+- 鍖哄潡甯稿姞杞斤細鐐瑰皢鍙版墍鍦?chunk force-load锛屼笁闃惰法缁村害
+- 鐏甸瓊鎶樻墸锛氫簩闃?50%锛屼笁闃?10%锛堜竴闃跺叏棰濓級
+- 浠嗕粠闄愭椂 5 鍒嗛挓
 
 **Non-Goals:**
-- 不涉及合成配方（后续单独加）
-- 不涉及新实体 AI
-- 不修改 Goety 核心库
-- 不跨维度传送已有实体
-
+- 涓嶆秹鍙婂悎鎴愰厤鏂癸紙鍚庣画鍗曠嫭鍔狅級
+- 涓嶆秹鍙婃柊瀹炰綋 AI
+- 涓嶄慨鏀?Goety 鏍稿績搴?- 涓嶈法缁村害浼犻€佸凡鏈夊疄浣?
 ## Decisions
 
-### 1. Squad Slot 配置方式：胚胎直插
+### 1. Squad Slot 閰嶇疆鏂瑰紡锛氳儦鑳庣洿鎻?
+姣忎釜 squad slot 鍥哄畾鏀?1 涓?MatureEmbryo锛坢axStack=1锛夛紝slot 鏁伴噺闅忛樁閫掑銆傝儦鑳庣殑 `EntityTypeId` NBT 鍐冲畾鍙敜浠€涔堝叺绉嶃€?
+- 鏇夸唬鏂规锛堥璁剧紪杈戝櫒锛夛細UI 澶嶆潅锛孧VP 涓嶉渶瑕?
+### 2. 鑱氭櫠鐏甸瓊娑堣€楀姩鎬佸寲锛歚defaultSoulCost() = 0`
 
-每个 squad slot 固定放 1 个 MatureEmbryo（maxStack=1），slot 数量随阶递增。胚胎的 `EntityTypeId` NBT 决定召唤什么兵种。
+Goety 鐨?`MagicFocus.soulCost` 鍦ㄦ瀯閫犳椂鍥哄畾鍐欏叆锛屼笉鏀寔鍔ㄦ€併€傝涓?0 鍚?DarkWand 涓嶅仛棰勬鍜岄鎵ｏ紝鍏ㄩ儴鍦?`SquadSpell.SpellResult()` 涓墜鍔ㄥ鐞嗐€?
+- tooltip 瑕嗙洊鏄剧ず"姣忓崟浣嶆秷鑰?X 鐏甸瓊"+鎶樻墸璇存槑锛岃€岄潪鏁板瓧
 
-- 替代方案（预设编辑器）：UI 复杂，MVP 不需要
+### 3. 鍖哄潡鍔犺浇锛歍icketType 甯稿姞杞?
+鏂瑰潡鏀剧疆鏃堕€氳繃 `ServerChunkCache.addRegionTicket()` 娉ㄥ唽甯稿姞杞?ticket锛岀牬鍧忔椂绉婚櫎銆備笁闃堕澶栧瓨鍌ㄧ淮搴?ID锛岃法缁村害鏂芥硶鏃朵粠 `MinecraftServer.getLevel(dim)` 璁块棶鐩爣缁村害銆?
+### 4. 浠嗕粠闄愭椂锛氬鐢?IOwned 鐢熷懡鍛ㄦ湡
 
-### 2. 聚晶灵魂消耗动态化：`defaultSoulCost() = 0`
-
-Goety 的 `MagicFocus.soulCost` 在构造时固定写入，不支持动态。设为 0 后 DarkWand 不做预检和预扣，全部在 `SquadSpell.SpellResult()` 中手动处理。
-
-- tooltip 覆盖显示"每单位消耗 X 灵魂"+折扣说明，而非数字
-
-### 3. 区块加载：TicketType 常加载
-
-方块放置时通过 `ServerChunkCache.addRegionTicket()` 注册常加载 ticket，破坏时移除。三阶额外存储维度 ID，跨维度施法时从 `MinecraftServer.getLevel(dim)` 访问目标维度。
-
-### 4. 仆从限时：复用 IOwned 生命周期
-
-`MinionSpawnHelper.spawnMinion()` 末尾增加 `mob.setHasLifespan(true); mob.setLifespan(6000);`。所有继承 `Owned` 的 Goety 仆从在 `ownedTick()` 中自动递减并消亡。
-
-### 5. 灵魂消耗复用现有配置
-
-每个实体消耗 `ModConfig.MATURE_EMBRYO_SOUL_COST`（默认 100）。总消耗 = 非空 slot 数 × baseCost × tierDiscount。使用 `MinionSpawnHelper.handleSoulCost()` 的扣魂逻辑，但按总价一次性校验。
-
+`MinionSpawnHelper.spawnMinion()` 鏈熬澧炲姞 `mob.setHasLifespan(true); mob.setLifespan(6000);`銆傛墍鏈夌户鎵?`Owned` 鐨?Goety 浠嗕粠鍦?`ownedTick()` 涓嚜鍔ㄩ€掑噺骞舵秷浜°€?
+### 5. 鐏甸瓊娑堣€楀鐢ㄧ幇鏈夐厤缃?
+姣忎釜瀹炰綋娑堣€?`ModConfig.MATURE_EMBRYO_SOUL_COST`锛堥粯璁?100锛夈€傛€绘秷鑰?= 闈炵┖ slot 鏁?脳 baseCost 脳 tierDiscount銆備娇鐢?`MinionSpawnHelper.handleSoulCost()` 鐨勬墸榄傞€昏緫锛屼絾鎸夋€讳环涓€娆℃€ф牎楠屻€?
 ## Risks / Trade-offs
 
-| 风险 | 缓解措施 |
+| 椋庨櫓 | 缂撹В鎺柦 |
 |---|---|
-| Chunk 常加载过多个点将台影响性能 | 设计上预期每玩家 1-2 个点将台，量级可控；可在 config 中添加禁用选项 |
-| `defaultSoulCost()=0` 导致 wand tooltip 显示"消耗 0" | 在 `SquadFocus.appendHoverText()` 中覆盖，显示说明文字而非数字 |
-| 跨维度施法时目标维度未加载 | 三阶 ticket 确保目标维度区块常加载；一阶二阶仅同维度使用 |
-| GUI 动态 slot 数（18 slots + 9 储备）尺寸问题 | 储备仓库固定 9 格置于下方，squad slot 按阶显示 1/2/3 行 × 6 列 |
+| Chunk 甯稿姞杞借繃澶氫釜鐐瑰皢鍙板奖鍝嶆€ц兘 | 璁捐涓婇鏈熸瘡鐜╁ 1-2 涓偣灏嗗彴锛岄噺绾у彲鎺э紱鍙湪 config 涓坊鍔犵鐢ㄩ€夐」 |
+| `defaultSoulCost()=0` 瀵艰嚧 wand tooltip 鏄剧ず"娑堣€?0" | 鍦?`SquadFocus.appendHoverText()` 涓鐩栵紝鏄剧ず璇存槑鏂囧瓧鑰岄潪鏁板瓧 |
+| 璺ㄧ淮搴︽柦娉曟椂鐩爣缁村害鏈姞杞?| 涓夐樁 ticket 纭繚鐩爣缁村害鍖哄潡甯稿姞杞斤紱涓€闃朵簩闃朵粎鍚岀淮搴︿娇鐢?|
+| GUI 鍔ㄦ€?slot 鏁帮紙18 slots + 9 鍌ㄥ锛夊昂瀵搁棶棰?| 鍌ㄥ浠撳簱鍥哄畾 9 鏍肩疆浜庝笅鏂癸紝squad slot 鎸夐樁鏄剧ず 1/2/3 琛?脳 6 鍒?|

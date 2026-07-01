@@ -1,32 +1,25 @@
-## 1. 死代码 & 空目录清理
+﻿## 1. 姝讳唬鐮?& 绌虹洰褰曟竻鐞?
+- [x] 1.1 鍒犻櫎 `src/main/java/com/GoetyMech/addon/client/entity/SculkSpikeRenderer.java`
+- [x] 1.2 鍒犻櫎绌虹洰褰?`src/main/java/com/GoetyMech/addon/event/`锛堜互鍙婄┖浜嗙殑 `client/entity/`锛?
+## 2. 鎻愬彇閲嶅灏勭嚎杩借釜閫昏緫
 
-- [x] 1.1 删除 `src/main/java/com/goetypunk/addon/client/entity/SculkSpikeRenderer.java`
-- [x] 1.2 删除空目录 `src/main/java/com/goetypunk/addon/event/`（以及空了的 `client/entity/`）
+- [x] 2.1 鍦?`MinionSpawnHelper.java` 涓柊澧?`findSpawnPosition(Player, double)` 闈欐€佹柟娉?- [x] 2.2 閲嶆瀯 `TwistedEmbryoItem.use()` 璋冪敤鎻愬彇鐨勬柟娉?- [x] 2.3 閲嶆瀯 `MatureEmbryoItem.use()` 璋冪敤鎻愬彇鐨勬柟娉?
+## 3. 绉诲姩 SquadChunkTickets 鍒?common/utils/
 
-## 2. 提取重复射线追踪逻辑
+- [x] 3.1 绉诲姩 `SquadChunkTickets.java` 鍒?`common/utils/` 骞舵洿鏂?package 澹版槑
+- [x] 3.2 鏇存柊 `SquadBarracksBlockEntity.java` 涓殑 import
 
-- [x] 2.1 在 `MinionSpawnHelper.java` 中新增 `findSpawnPosition(Player, double)` 静态方法
-- [x] 2.2 重构 `TwistedEmbryoItem.use()` 调用提取的方法
-- [x] 2.3 重构 `MatureEmbryoItem.use()` 调用提取的方法
+## 4. 鎻愬彇缃戠粶閫氶亾鍒扮嫭绔嬬被
 
-## 3. 移动 SquadChunkTickets 到 common/utils/
+- [x] 4.1 鍦?`common/net/` 涓嬫柊寤?`ModNetwork.java`锛屼粠 `GoetyMechMod.java` 鎻愬彇 `SimpleChannel`
+- [x] 4.2 鏇存柊 `GoetyMechMod.java` 寮曠敤 `ModNetwork.init()`
+- [x] 4.3 鏇存柊 `SquadBarracksScreen.java` 涓殑 `GoetyMechMod.NETWORK` 寮曠敤涓?`ModNetwork.CHANNEL`
 
-- [x] 3.1 移动 `SquadChunkTickets.java` 到 `common/utils/` 并更新 package 声明
-- [x] 3.2 更新 `SquadBarracksBlockEntity.java` 中的 import
+## 5. 鏇存柊鏋舵瀯 skill 鏂囨。
 
-## 4. 提取网络通道到独立类
+- [x] 5.1 鍦?SKILL.md 鍖呯粨鏋勬爲涓柊澧?`common/menu/`, `common/net/`, `client/gui/`, `client/render/`
+- [x] 5.2 鏂板銆岀偣灏嗗彴绯荤粺銆嶈璁″喅绛栫珷鑺傦紙4.5锛?- [x] 5.3 淇 client 娓叉煋鍣ㄨ矾寰勶紝鏇存柊鍒嗗眰绾﹀畾琛?
+## 6. 楠岃瘉
 
-- [x] 4.1 在 `common/net/` 下新建 `ModNetwork.java`，从 `GoetyPunkMod.java` 提取 `SimpleChannel`
-- [x] 4.2 更新 `GoetyPunkMod.java` 引用 `ModNetwork.init()`
-- [x] 4.3 更新 `SquadBarracksScreen.java` 中的 `GoetyPunkMod.NETWORK` 引用为 `ModNetwork.CHANNEL`
-
-## 5. 更新架构 skill 文档
-
-- [x] 5.1 在 SKILL.md 包结构树中新增 `common/menu/`, `common/net/`, `client/gui/`, `client/render/`
-- [x] 5.2 新增「点将台系统」设计决策章节（4.5）
-- [x] 5.3 修复 client 渲染器路径，更新分层约定表
-
-## 6. 验证
-
-- [x] 6.1 运行 `gradlew build` 确认编译通过
-- [x] 6.2 grep 确认 `SculkSpikeRenderer` 无遗留引用
+- [x] 6.1 杩愯 `gradlew build` 纭缂栬瘧閫氳繃
+- [x] 6.2 grep 纭 `SculkSpikeRenderer` 鏃犻仐鐣欏紩鐢?

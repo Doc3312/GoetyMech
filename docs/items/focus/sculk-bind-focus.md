@@ -1,18 +1,18 @@
-# 幽匿束缚聚晶 — goetypunk
+﻿# 骞藉尶鏉熺細鑱氭櫠 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：focus
-- 注册类：ModItems.SCULK_BIND_FOCUS
-- Java 类：SculkBindFocus (extends MagicFocus)
-- 首次创建：2026-06-14
+- 绫诲瀷锛歠ocus
+- 娉ㄥ唽绫伙細ModItems.SCULK_BIND_FOCUS
+- Java 绫伙細SculkBindFocus (extends MagicFocus)
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-复合型法术聚晶：锁定目标 → 召唤尖刺 → 声波特效 → 召唤 Warden。对标 Goety 原生聚晶的高级战斗法术。
+澶嶅悎鍨嬫硶鏈仛鏅讹細閿佸畾鐩爣 鈫?鍙敜灏栧埡 鈫?澹版尝鐗规晥 鈫?鍙敜 Warden銆傚鏍?Goety 鍘熺敓鑱氭櫠鐨勯珮绾ф垬鏂楁硶鏈€?
 
-## 演化记录
+## 婕斿寲璁板綍
 
 | Date | Change | Reason | Relates to |
 |------|--------|--------|-----------|
-| 2026-06-24 | 添加 `rightStaff(staff)` → 法杖匹配时多召唤 1 只 Warden；空聚晶守卫 | 符合 Goety Spells 规范；修复 FleshCasket 自动施法路径下对 AIR 上冷却的 bug | SculkBindSpell SpellResult |
+| 2026-06-24 | 娣诲姞 `rightStaff(staff)` 鈫?娉曟潠鍖归厤鏃跺鍙敜 1 鍙?Warden锛涚┖鑱氭櫠瀹堝崼 | 绗﹀悎 Goety Spells 瑙勮寖锛涗慨澶?FleshCasket 鑷姩鏂芥硶璺緞涓嬪 AIR 涓婂喎鍗寸殑 bug | SculkBindSpell SpellResult |

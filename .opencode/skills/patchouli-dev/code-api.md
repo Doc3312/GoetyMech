@@ -1,25 +1,25 @@
-# 代码 API
+﻿# 浠ｇ爜 API
 
 ## IPatchouliAPI
 
 ```java
 IPatchouliAPI api = PatchouliAPI.get();
-if (api.isStub()) { /* Patchouli 未安装 */ return; }
+if (api.isStub()) { /* Patchouli 鏈畨瑁?*/ return; }
 ```
 
-主要方法：
+涓昏鏂规硶锛?
 
-| 方法 | 说明 |
+| 鏂规硶 | 璇存槑 |
 |---|---|
-| `getBook()`, `openBookGUI()` | 获取/打开手册 |
-| `registerCategory()` | 注册分类 |
-| `registerMultiblock()` | 注册多方块 |
-| `setConfigFlag()` | 设置 Config flag |
-| `getConfigFlag()` | 查询 Config flag |
+| `getBook()`, `openBookGUI()` | 鑾峰彇/鎵撳紑鎵嬪唽 |
+| `registerCategory()` | 娉ㄥ唽鍒嗙被 |
+| `registerMultiblock()` | 娉ㄥ唽澶氭柟鍧?|
+| `setConfigFlag()` | 璁剧疆 Config flag |
+| `getConfigFlag()` | 鏌ヨ Config flag |
 
 ## IComponentProcessor
 
-实现该接口对接模板数据：
+瀹炵幇璇ユ帴鍙ｅ鎺ユā鏉挎暟鎹細
 
 ```java
 public class MyProcessor implements IComponentProcessor {
@@ -30,7 +30,7 @@ public class MyProcessor implements IComponentProcessor {
 
     @Override
     public String process(String key) {
-        if ("text".equals(key)) return "处理后的文本";
+        if ("text".equals(key)) return "澶勭悊鍚庣殑鏂囨湰";
         return null;
     }
 }
@@ -38,13 +38,13 @@ public class MyProcessor implements IComponentProcessor {
 
 ## ICustomComponent
 
-自定义渲染组件：
+鑷畾涔夋覆鏌撶粍浠讹細
 
 ```java
 public class MyCustomComponent extends ICustomComponent {
     @Override
     public void build(ComponentBuildContext context, List<IGuiElement> top, List<IGuiElement> bottom) {
-        // 添加自定义 GUI 元素
+        // 娣诲姞鑷畾涔?GUI 鍏冪礌
     }
 }
 ```
@@ -52,20 +52,20 @@ public class MyCustomComponent extends ICustomComponent {
 ## Config Flag
 
 ```java
-PatchouliAPI.get().setConfigFlag("goetypunk:hard_mode", true);
+PatchouliAPI.get().setConfigFlag("GoetyMech:hard_mode", true);
 ```
 
-## 注册多方块
+## 娉ㄥ唽澶氭柟鍧?
 
 ```java
 Multiblock mb = Multiblock.of("S");
 PatchouliAPI.get().registerMultiblock(
-    new ResourceLocation("goetypunk", "flesh_altar"), mb);
+    new ResourceLocation("GoetyMech", "flesh_altar"), mb);
 ```
 
-## 给予新手手册（Advancement）
+## 缁欎簣鏂版墜鎵嬪唽锛圓dvancement锛?
 
-**Advancement** (`/data/goetypunk/advancements/grant_book.json`)：
+**Advancement** (`/data/GoetyMech/advancements/grant_book.json`)锛?
 
 ```json
 {
@@ -73,12 +73,12 @@ PatchouliAPI.get().registerMultiblock(
     "tick": { "trigger": "minecraft:tick" }
   },
   "rewards": {
-    "loot": [ "goetypunk:grant_book" ]
+    "loot": [ "GoetyMech:grant_book" ]
   }
 }
 ```
 
-**Loot Table** (`/data/goetypunk/loot_tables/grant_book.json`)：
+**Loot Table** (`/data/GoetyMech/loot_tables/grant_book.json`)锛?
 
 ```json
 {
@@ -93,7 +93,7 @@ PatchouliAPI.get().registerMultiblock(
           "functions": [
             {
               "function": "set_nbt",
-              "tag": "{\"patchouli:book\": \"goetypunk:goetypunk_guide\"}"
+              "tag": "{\"patchouli:book\": \"GoetyMech:GoetyMech_guide\"}"
             }
           ]
         }

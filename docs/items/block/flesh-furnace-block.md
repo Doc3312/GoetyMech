@@ -1,17 +1,17 @@
-# FleshFurnaceBlockEntity — goetypunk
+﻿# FleshFurnaceBlockEntity 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：block-entity
-- Java 类：FleshFurnaceBlockEntity
-- 关联方块：FleshFurnaceBlock (`docs/items/block/flesh-furnace.md`)
-- 首次创建：2026-06-14
+- 绫诲瀷锛歜lock-entity
+- Java 绫伙細FleshFurnaceBlockEntity
+- 鍏宠仈鏂瑰潡锛欶leshFurnaceBlock (`docs/items/block/flesh-furnace.md`)
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-血肉熔炉的方块实体，处理熔炉逻辑、Create 动力接口（IItemHandler）。
-支持链接数据、坐标哈希分散 tick、漏斗兼容。
+琛€鑲夌啍鐐夌殑鏂瑰潡瀹炰綋锛屽鐞嗙啍鐐夐€昏緫銆丆reate 鍔ㄥ姏鎺ュ彛锛圛ItemHandler锛夈€?
+鏀寔閾炬帴鏁版嵁銆佸潗鏍囧搱甯屽垎鏁?tick銆佹紡鏂楀吋瀹广€?
 
 ## Timeline
 
-- **2026-06-27** — 修复 C1: handlers 数组顺序与 `get3DDataValue()` 索引对齐，修复 EAST 面崩溃和方向映射错乱。
+- **2026-06-27** 鈥?淇 C1: handlers 鏁扮粍椤哄簭涓?`get3DDataValue()` 绱㈠紩瀵归綈锛屼慨澶?EAST 闈㈠穿婧冨拰鏂瑰悜鏄犲皠閿欎贡銆?

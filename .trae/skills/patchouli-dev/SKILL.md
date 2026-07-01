@@ -1,32 +1,30 @@
----
+﻿---
 name: "patchouli-dev"
-description: "Patchouli 指南书开发指南。涵盖 book.json 配置、Category/Entry JSON、页面类型、模板系统、代码 API、Config Gating。当需要创建或修改模组指南书时调用本 skill。"
+description: "Patchouli 鎸囧崡涔﹀紑鍙戞寚鍗椼€傛兜鐩?book.json 閰嶇疆銆丆ategory/Entry JSON銆侀〉闈㈢被鍨嬨€佹ā鏉跨郴缁熴€佷唬鐮?API銆丆onfig Gating銆傚綋闇€瑕佸垱寤烘垨淇敼妯＄粍鎸囧崡涔︽椂璋冪敤鏈?skill銆?
 ---
 
-# Patchouli 指南书开发指南
-
+# Patchouli 鎸囧崡涔﹀紑鍙戞寚鍗?
 ## book.json
 
 `/data/<modid>/patchouli_books/<book_name>/book.json`
 
-| 字段 | 类型 | 必需 | 说明 |
+| 瀛楁 | 绫诲瀷 | 蹇呴渶 | 璇存槑 |
 |---|---|---|---|
-| `name` | String | ✅ | 手册显示名称 |
-| `landing_text` | String | ✅ | 首页文本 |
-| `use_resource_pack` | Boolean | - | 1.20 必须为 `true` |
-| `book_texture` | String | - | 背景纹理，预设 7 色 |
-| `model` | String | - | 物品模型，预设 7 色 |
-| `version` | String | - | 版本号 |
-| `subtitle` | String | - | 副标题 |
-| `i18n` | Boolean | - | 启用 i18n lang key 查找 |
-| `pause_game` | Boolean | - | 打开时暂停游戏 |
+| `name` | String | 鉁?| 鎵嬪唽鏄剧ず鍚嶇О |
+| `landing_text` | String | 鉁?| 棣栭〉鏂囨湰 |
+| `use_resource_pack` | Boolean | - | 1.20 蹇呴』涓?`true` |
+| `book_texture` | String | - | 鑳屾櫙绾圭悊锛岄璁?7 鑹?|
+| `model` | String | - | 鐗╁搧妯″瀷锛岄璁?7 鑹?|
+| `version` | String | - | 鐗堟湰鍙?|
+| `subtitle` | String | - | 鍓爣棰?|
+| `i18n` | Boolean | - | 鍚敤 i18n lang key 鏌ユ壘 |
+| `pause_game` | Boolean | - | 鎵撳紑鏃舵殏鍋滄父鎴?|
 
-### 本项目示例
-```json
+### 鏈」鐩ず渚?```json
 {
-  "name": "goetypunk.guide_book.name",
-  "landing_text": "goetypunk.guide_book.landing",
-  "subtitle": "goetypunk.guide_book.subtitle",
+  "name": "GoetyMech.guide_book.name",
+  "landing_text": "GoetyMech.guide_book.landing",
+  "subtitle": "GoetyMech.guide_book.subtitle",
   "version": 1,
   "book_texture": "patchouli:textures/gui/book_purple.png",
   "model": "patchouli:book_purple",
@@ -40,21 +38,21 @@ description: "Patchouli 指南书开发指南。涵盖 book.json 配置、Catego
 
 `/assets/<modid>/patchouli_books/<book_name>/en_us/categories/<name>.json`
 
-| 字段 | 类型 | 必需 | 说明 |
+| 瀛楁 | 绫诲瀷 | 蹇呴渶 | 璇存槑 |
 |---|---|---|---|
-| `name` | String | ✅ | 分类名称 |
-| `description` | String | ✅ | 分类描述 |
-| `icon` | String | ✅ | 图标（ItemStack String 或 .png 纹理） |
-| `parent` | String | - | 父分类 ID |
-| `flag` | String | - | Config flag 表达式 |
-| `sortnum` | Integer | - | 排序号 |
-| `secret` | Boolean | - | 隐藏分类 |
+| `name` | String | 鉁?| 鍒嗙被鍚嶇О |
+| `description` | String | 鉁?| 鍒嗙被鎻忚堪 |
+| `icon` | String | 鉁?| 鍥炬爣锛圛temStack String 鎴?.png 绾圭悊锛?|
+| `parent` | String | - | 鐖跺垎绫?ID |
+| `flag` | String | - | Config flag 琛ㄨ揪寮?|
+| `sortnum` | Integer | - | 鎺掑簭鍙?|
+| `secret` | Boolean | - | 闅愯棌鍒嗙被 |
 
 ```json
 {
-  "name": "goetypunk.category.machines",
-  "description": "GoetyPunk 添加的各类机器",
-  "icon": "goetypunk:example_machine",
+  "name": "GoetyMech.category.machines",
+  "description": "GoetyMech 娣诲姞鐨勫悇绫绘満鍣?,
+  "icon": "GoetyMech:example_machine",
   "sortnum": 0
 }
 ```
@@ -65,84 +63,82 @@ description: "Patchouli 指南书开发指南。涵盖 book.json 配置、Catego
 
 `/assets/<modid>/patchouli_books/<book_name>/en_us/entries/<category>/<name>.json`
 
-| 字段 | 类型 | 必需 | 说明 |
+| 瀛楁 | 绫诲瀷 | 蹇呴渶 | 璇存槑 |
 |---|---|---|---|
-| `name` | String | ✅ | 词条名称 |
-| `category` | String | ✅ | 所属分类 |
-| `icon` | String | ✅ | 图标 |
-| `pages` | Array | ✅ | 页面数组 |
-| `priority` | Boolean | - | 置顶 |
-| `secret` | Boolean | - | 隐藏 |
-| `read_by_default` | Boolean | - | 默认已读 |
-| `sortnum` | Integer | - | 排序号 |
-| `advancement` | String | - | 锁定进度 |
+| `name` | String | 鉁?| 璇嶆潯鍚嶇О |
+| `category` | String | 鉁?| 鎵€灞炲垎绫?|
+| `icon` | String | 鉁?| 鍥炬爣 |
+| `pages` | Array | 鉁?| 椤甸潰鏁扮粍 |
+| `priority` | Boolean | - | 缃《 |
+| `secret` | Boolean | - | 闅愯棌 |
+| `read_by_default` | Boolean | - | 榛樿宸茶 |
+| `sortnum` | Integer | - | 鎺掑簭鍙?|
+| `advancement` | String | - | 閿佸畾杩涘害 |
 | `flag` | String | - | Config flag |
 
 ---
 
-## 默认 Page Types
+## 榛樿 Page Types
 
-所有页面通用字段：`type`(必需)、`advancement`、`flag`、`anchor`。
-
+鎵€鏈夐〉闈㈤€氱敤瀛楁锛歚type`(蹇呴渶)銆乣advancement`銆乣flag`銆乣anchor`銆?
 ### text `patchouli:text`
-| 字段 | 必需 | 说明 |
+| 瀛楁 | 蹇呴渶 | 璇存槑 |
 |---|---|---|
-| `text` | ✅ | 正文，支持格式化 |
-| `title` | - | 标题 |
+| `text` | 鉁?| 姝ｆ枃锛屾敮鎸佹牸寮忓寲 |
+| `title` | - | 鏍囬 |
 
-首页必须是 text 页。快捷写法：`"pages": ["这是一段纯文本"]`
+棣栭〉蹇呴』鏄?text 椤点€傚揩鎹峰啓娉曪細`"pages": ["杩欐槸涓€娈电函鏂囨湰"]`
 
 ### image `patchouli:image`
-| 字段 | 必需 | 说明 |
+| 瀛楁 | 蹇呴渶 | 璇存槑 |
 |---|---|---|
-| `images` | ✅ | String 数组 |
-| `title` | - | 标题 |
-| `border` | - | 边框，默认 false |
-| `text` | - | 说明文字 |
+| `images` | 鉁?| String 鏁扮粍 |
+| `title` | - | 鏍囬 |
+| `border` | - | 杈规锛岄粯璁?false |
+| `text` | - | 璇存槑鏂囧瓧 |
 
-建议图片 256x256，内容在左上 200x200 区域。
-
+寤鸿鍥剧墖 256x256锛屽唴瀹瑰湪宸︿笂 200x200 鍖哄煙銆?
 ### crafting `patchouli:crafting`
-| 字段 | 必需 | 说明 |
+| 瀛楁 | 蹇呴渶 | 璇存槑 |
 |---|---|---|
-| `recipe` | ✅ | 配方 ID |
-| `recipe2` | - | 第二个配方 ID |
-| `text` | - | 说明 |
+| `recipe` | 鉁?| 閰嶆柟 ID |
+| `recipe2` | - | 绗簩涓厤鏂?ID |
+| `text` | - | 璇存槑 |
 
 ### smelting `patchouli:smelting`
-| 字段 | 必需 | 说明 |
+| 瀛楁 | 蹇呴渶 | 璇存槑 |
 |---|---|---|
-| `recipe` | ✅ | 配方 ID |
-| `recipe2` | - | 第二个配方 ID |
+| `recipe` | 鉁?| 閰嶆柟 ID |
+| `recipe2` | - | 绗簩涓厤鏂?ID |
 
 ### multiblock `patchouli:multiblock`
-| 字段 | 必需 | 说明 |
+| 瀛楁 | 蹇呴渶 | 璇存槑 |
 |---|---|---|
-| `multiblock` | ✅ | 多方块 ID |
-| `name` | ✅ | 多方块名称 |
-| `text` | - | 说明 |
-| `enable_visualize` | - | 可视化按钮 |
+| `multiblock` | 鉁?| 澶氭柟鍧?ID |
+| `name` | 鉁?| 澶氭柟鍧楀悕绉?|
+| `text` | - | 璇存槑 |
+| `enable_visualize` | - | 鍙鍖栨寜閽?|
 
 ### spotlight `patchouli:spotlight`
-| 字段 | 必需 | 说明 |
+| 瀛楁 | 蹇呴渶 | 璇存槑 |
 |---|---|---|
-| `item` | ✅ | 聚焦物品 |
-| `text` | - | 说明 |
-| `link_recipe` | - | 点击跳转配方 |
+| `item` | 鉁?| 鑱氱劍鐗╁搧 |
+| `text` | - | 璇存槑 |
+| `link_recipe` | - | 鐐瑰嚮璺宠浆閰嶆柟 |
 
 ### entity `patchouli:entity`
-| 字段 | 必需 | 说明 |
+| 瀛楁 | 蹇呴渶 | 璇存槑 |
 |---|---|---|
-| `entity` | ✅ | 实体 ID |
-| `text` | - | 说明 |
-| `scale` | - | 缩放 |
-| `offset` | - | 偏移 |
+| `entity` | 鉁?| 瀹炰綋 ID |
+| `text` | - | 璇存槑 |
+| `scale` | - | 缂╂斁 |
+| `offset` | - | 鍋忕Щ |
 
 ---
 
-## Template 系统
+## Template 绯荤粺
 
-### 模板 JSON
+### 妯℃澘 JSON
 `/assets/<modid>/patchouli_books/<book_name>/en_us/templates/<name>.json`
 
 ```json
@@ -151,41 +147,40 @@ description: "Patchouli 指南书开发指南。涵盖 book.json 配置、Catego
     { "type": "patchouli:text", "text": "#text", "x": 20, "y": 30 },
     { "type": "patchouli:item", "item": "#item", "x": 80, "y": 10, "link_recipe": true }
   ],
-  "processor": "com.goetypunk.addon.jei.MyProcessor"
+  "processor": "com.GoetyMech.addon.jei.MyProcessor"
 }
 ```
 
-前缀 `#` 的为变量，在 entry 中赋值。
-
-### 组件类型
-| 类型 | 标识 | 说明 |
+鍓嶇紑 `#` 鐨勪负鍙橀噺锛屽湪 entry 涓祴鍊笺€?
+### 缁勪欢绫诲瀷
+| 绫诲瀷 | 鏍囪瘑 | 璇存槑 |
 |---|---|---|
-| 文本 | `patchouli:text` | `text`(必需), `color`, `max_width`, `line_height` |
-| 物品 | `patchouli:item` | `item`(必需), `framed`, `link_recipe` |
-| 图片 | `patchouli:image` | `image`(必需), `width`, `height`, `u`, `v`, `scale` |
-| 标题 | `patchouli:header` | `text`(必需), `color`, `centered`, `scale` |
-| 实体 | `patchouli:entity` | `entity`(必需), `render_size`, `rotate` |
-| 分隔线 | `patchouli:separator` | 无额外属性 |
-| 边框 | `patchouli:frame` | 为 200x200 图片绘制边框 |
-| 提示 | `patchouli:tooltip` | `tooltip`(String[]), `width`, `height` |
-| 自定义 | `patchouli:custom` | `class`(实现 `ICustomComponent`) |
+| 鏂囨湰 | `patchouli:text` | `text`(蹇呴渶), `color`, `max_width`, `line_height` |
+| 鐗╁搧 | `patchouli:item` | `item`(蹇呴渶), `framed`, `link_recipe` |
+| 鍥剧墖 | `patchouli:image` | `image`(蹇呴渶), `width`, `height`, `u`, `v`, `scale` |
+| 鏍囬 | `patchouli:header` | `text`(蹇呴渶), `color`, `centered`, `scale` |
+| 瀹炰綋 | `patchouli:entity` | `entity`(蹇呴渶), `render_size`, `rotate` |
+| 鍒嗛殧绾?| `patchouli:separator` | 鏃犻澶栧睘鎬?|
+| 杈规 | `patchouli:frame` | 涓?200x200 鍥剧墖缁樺埗杈规 |
+| 鎻愮ず | `patchouli:tooltip` | `tooltip`(String[]), `width`, `height` |
+| 鑷畾涔?| `patchouli:custom` | `class`(瀹炵幇 `ICustomComponent`) |
 
 ---
 
-## 代码 API
+## 浠ｇ爜 API
 
 ### IPatchouliAPI
 ```java
 IPatchouliAPI api = PatchouliAPI.get();
-if (api.isStub()) { /* Patchouli 未安装 */ return; }
+if (api.isStub()) { /* Patchouli 鏈畨瑁?*/ return; }
 ```
 
-| 方法 | 说明 |
+| 鏂规硶 | 璇存槑 |
 |---|---|
-| `getBook()`, `openBookGUI()` | 获取/打开手册 |
-| `registerMultiblock()` | 注册多方块 |
-| `setConfigFlag()` | 设置 Config flag |
-| `getConfigFlag()` | 查询 Config flag |
+| `getBook()`, `openBookGUI()` | 鑾峰彇/鎵撳紑鎵嬪唽 |
+| `registerMultiblock()` | 娉ㄥ唽澶氭柟鍧?|
+| `setConfigFlag()` | 璁剧疆 Config flag |
+| `getConfigFlag()` | 鏌ヨ Config flag |
 
 ### IComponentProcessor
 ```java
@@ -196,7 +191,7 @@ public class MyProcessor implements IComponentProcessor {
     }
     @Override
     public String process(String key) {
-        if ("text".equals(key)) return "处理后的文本";
+        if ("text".equals(key)) return "澶勭悊鍚庣殑鏂囨湰";
         return null;
     }
 }
@@ -206,17 +201,16 @@ public class MyProcessor implements IComponentProcessor {
 
 ## Config Gating
 
-### 默认 flags
-| Flag | 条件 |
+### 榛樿 flags
+| Flag | 鏉′欢 |
 |---|---|
-| `debug` | IDE 调试模式 |
-| `mod:MODID` | 某模组已加载，如 `mod:create` |
+| `debug` | IDE 璋冭瘯妯″紡 |
+| `mod:MODID` | 鏌愭ā缁勫凡鍔犺浇锛屽 `mod:create` |
 
-### 表达式
-| 表达式 | 含义 |
+### 琛ㄨ揪寮?| 琛ㄨ揪寮?| 鍚箟 |
 |---|---|
-| `!flag` | 否定 |
-| `&flag1,flag2,flag3` | 全部为 true（AND） |
-| `|flag1,flag2,flag3` | 任一为 true（OR） |
+| `!flag` | 鍚﹀畾 |
+| `&flag1,flag2,flag3` | 鍏ㄩ儴涓?true锛圓ND锛?|
+| `|flag1,flag2,flag3` | 浠讳竴涓?true锛圤R锛?|
 
-可用于：Category、Entry、Page、Template Component 的 `flag` 字段。
+鍙敤浜庯細Category銆丒ntry銆丳age銆乀emplate Component 鐨?`flag` 瀛楁銆

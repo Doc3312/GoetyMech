@@ -1,17 +1,17 @@
-# StressReaderBlockEntity — goetypunk
+﻿# StressReaderBlockEntity 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：block-entity
-- Java 类：StressReaderBlockEntity
-- 关联方块：StressReaderBlock (`docs/items/block/stress-reader.md`)
-- 首次创建：2026-06-14
+- 绫诲瀷锛歜lock-entity
+- Java 绫伙細StressReaderBlockEntity
+- 鍏宠仈鏂瑰潡锛歋tressReaderBlock (`docs/items/block/stress-reader.md`)
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-应力读取器的方块实体，读取 Create 动力网络应力数据，
-与应力聚晶配合实现远程碾压轮攻击。
+搴斿姏璇诲彇鍣ㄧ殑鏂瑰潡瀹炰綋锛岃鍙?Create 鍔ㄥ姏缃戠粶搴斿姏鏁版嵁锛?
+涓庡簲鍔涜仛鏅堕厤鍚堝疄鐜拌繙绋嬬⒕鍘嬭疆鏀诲嚮銆?
 
 ## Timeline
 
-- **2026-06-27** — 降级 `[TEST]` 调试日志从 INFO 为 DEBUG。
+- **2026-06-27** 鈥?闄嶇骇 `[TEST]` 璋冭瘯鏃ュ織浠?INFO 涓?DEBUG銆?

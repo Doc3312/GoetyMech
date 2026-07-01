@@ -1,17 +1,17 @@
-# RemoteEngineBlockEntity — goetypunk
+﻿# RemoteEngineBlockEntity 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：block-entity
-- Java 类：RemoteEngineBlockEntity
-- 关联方块：RemoteEngineBlock (`docs/items/block/remote-engine.md`)
-- 首次创建：2026-06-14
+- 绫诲瀷锛歜lock-entity
+- Java 绫伙細RemoteEngineBlockEntity
+- 鍏宠仈鏂瑰潡锛歊emoteEngineBlock (`docs/items/block/remote-engine.md`)
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-遥控引擎的方块实体，实现远程动力传输（GenerateKineticBlockEntity 扩展），
-包含 RPM 管理、应力计算、网络链接逻辑。
+閬ユ帶寮曟搸鐨勬柟鍧楀疄浣擄紝瀹炵幇杩滅▼鍔ㄥ姏浼犺緭锛圙enerateKineticBlockEntity 鎵╁睍锛夛紝
+鍖呭惈 RPM 绠＄悊銆佸簲鍔涜绠椼€佺綉缁滈摼鎺ラ€昏緫銆?
 
 ## Timeline
 
-- **2026-06-27** — 降级 `[TEST]` 调试日志从 INFO/WARN 为 DEBUG。
+- **2026-06-27** 鈥?闄嶇骇 `[TEST]` 璋冭瘯鏃ュ織浠?INFO/WARN 涓?DEBUG銆?

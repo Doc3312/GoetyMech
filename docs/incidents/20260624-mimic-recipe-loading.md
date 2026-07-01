@@ -1,4 +1,4 @@
-# Mimic Recipe Not Loading
+﻿# Mimic Recipe Not Loading
 
 status: disputed
 
@@ -6,9 +6,9 @@ status: disputed
 RecipeManager shows "Loaded 27 recipes", mimic recipes not among them. JSON files exist in build output. No error messages.
 
 ## Investigation
-- Verified JSON at `build/resources/main/data/goetypunk/recipes/mimic_combination.json` exists with correct structure
+- Verified JSON at `build/resources/main/data/GoetyMech/recipes/mimic_combination.json` exists with correct structure
 - `ForgeRegistries.RECIPE_SERIALIZERS` registry populated
-- Serializers registered via `ModRecipeSerializers` + `GoetyPunkMod`
+- Serializers registered via `ModRecipeSerializers` + `GoetyMechMod`
 - `ModItems.PROTOTYPE_MIMIC` is stale (`get()` returns null) at recipe parse time
 - Debug log in `fromJson()` suspected to show `ModItems.PROTOTYPE_MIMIC.get()` returning null (unverified)
 
@@ -16,7 +16,7 @@ RecipeManager shows "Loaded 27 recipes", mimic recipes not among them. JSON file
 `ModItems` items not fully initialized when RecipeManager loads recipes from JSON. Recipe JSON calls `ModItems.PROTOTYPE_MIMIC.get()` which returns null because `RegistryObject` not yet resolved.
 
 ## Fix Attempted
-`getResultItem()` changed from `ForgeRegistries.ITEMS.getValue()` to `ModItems.PROTOTYPE_MIMIC.get()` — moved from `fromJson()` to `getResultItem()`. Same null issue because `RegistryObject` depends on deferred register resolution order.
+`getResultItem()` changed from `ForgeRegistries.ITEMS.getValue()` to `ModItems.PROTOTYPE_MIMIC.get()` 鈥?moved from `fromJson()` to `getResultItem()`. Same null issue because `RegistryObject` depends on deferred register resolution order.
 
 ## Resolution
 Root cause still unknown. Workaround needed:

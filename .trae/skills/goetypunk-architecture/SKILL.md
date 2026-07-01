@@ -1,133 +1,111 @@
----
-name: "goetypunk-architecture"
-description: "GoetyPunk 项目特有架构规范。定义本项目的包结构、分层边界、注册约定和设计决策。当添加新功能、新建类、调整项目结构时调用本 skill。通用 Forge/Goety 开发知识在 goety-addon-dev 中。"
----
-
-# GoetyPunk 项目架构规范
-
-## 适用场景
-
-- 添加新物品/方块/实体/功能 — 确定代码放哪个包
-- 新建 Java 类 — 确定类名、包路径、继承关系
-- 评估设计决策是否符合项目规范
-- 理解当前代码布局
-
+﻿---
+name: "GoetyMech-architecture"
+description: "GoetyMech 椤圭洰鐗规湁鏋舵瀯瑙勮寖銆傚畾涔夋湰椤圭洰鐨勫寘缁撴瀯銆佸垎灞傝竟鐣屻€佹敞鍐岀害瀹氬拰璁捐鍐崇瓥銆傚綋娣诲姞鏂板姛鑳姐€佹柊寤虹被銆佽皟鏁撮」鐩粨鏋勬椂璋冪敤鏈?skill銆傞€氱敤 Forge/Goety 寮€鍙戠煡璇嗗湪 goety-addon-dev 涓€?
 ---
 
-## 一、项目标识
+# GoetyMech 椤圭洰鏋舵瀯瑙勮寖
 
-| 项 | 值 |
+## 閫傜敤鍦烘櫙
+
+- 娣诲姞鏂扮墿鍝?鏂瑰潡/瀹炰綋/鍔熻兘 鈥?纭畾浠ｇ爜鏀惧摢涓寘
+- 鏂板缓 Java 绫?鈥?纭畾绫诲悕銆佸寘璺緞銆佺户鎵垮叧绯?- 璇勪及璁捐鍐崇瓥鏄惁绗﹀悎椤圭洰瑙勮寖
+- 鐞嗚В褰撳墠浠ｇ爜甯冨眬
+
+---
+
+## 涓€銆侀」鐩爣璇?
+| 椤?| 鍊?|
 |----|-----|
-| **模组 ID** | `goetypunk` |
-| **主包** | `com.goetypunk.addon` |
-| **主入口** | `com.goetypunk.addon.GoetyPunkMod` |
-| **MC版本** | 1.20.1 / Forge 47.4.0 / Java 17 |
-| **映射** | Parchment 2023.09.03 |
-| **前置** | Curios 5.3.4, Goety 2.x |
+| **妯＄粍 ID** | `GoetyMech` |
+| **涓诲寘** | `com.GoetyMech.addon` |
+| **涓诲叆鍙?* | `com.GoetyMech.addon.GoetyMechMod` |
+| **MC鐗堟湰** | 1.20.1 / Forge 47.4.0 / Java 17 |
+| **鏄犲皠** | Parchment 2023.09.03 |
+| **鍓嶇疆** | Curios 5.3.4, Goety 2.x |
 
 ---
 
-## 二、包结构（当前项目实际布局）
-
+## 浜屻€佸寘缁撴瀯锛堝綋鍓嶉」鐩疄闄呭竷灞€锛?
 ```
-com.goetypunk.addon/
-├── GoetyPunkMod.java              # 主入口
-├── config/
-│   └── ModConfig.java             # ForgeConfigSpec
-├── init/                          # 注册层
-│   ├── ModBlocks.java             # 方块 + 方块实体
-│   ├── ModItems.java              # 物品 + Focus
-│   ├── ModEntities.java           # 实体类型
-│   ├── ModCreativeTab.java        # 创造标签页
-│   └── ModTags.java               # 自定义标签
-├── common/                        # 逻辑层
-│   ├── item/
-│   │   ├── SculkBindFocus.java
-│   │   ├── TwistedEmbryoItem.java
-│   │   └── MatureEmbryoItem.java
-│   ├── block/
-│   │   ├── FleshFurnaceBlock.java
-│   │   └── entity/FleshFurnaceBlockEntity.java
-│   ├── entity/
-│   │   └── SculkSpikeEntity.java
-│   ├── magic/spell/
-│   │   └── SculkBindSpell.java
-│   ├── events/
-│   │   └── SculkBindEvents.java
-│   └── utils/
-│       └── MinionSpawnHelper.java
-└── client/                        # 客户端专用
-    ├── ModClientEvents.java
-    ├── FleshFurnaceHUD.java
-    └── entity/SculkSpikeRenderer.java
+com.GoetyMech.addon/
+鈹溾攢鈹€ GoetyMechMod.java              # 涓诲叆鍙?鈹溾攢鈹€ config/
+鈹?  鈹斺攢鈹€ ModConfig.java             # ForgeConfigSpec
+鈹溾攢鈹€ init/                          # 娉ㄥ唽灞?鈹?  鈹溾攢鈹€ ModBlocks.java             # 鏂瑰潡 + 鏂瑰潡瀹炰綋
+鈹?  鈹溾攢鈹€ ModItems.java              # 鐗╁搧 + Focus
+鈹?  鈹溾攢鈹€ ModEntities.java           # 瀹炰綋绫诲瀷
+鈹?  鈹溾攢鈹€ ModCreativeTab.java        # 鍒涢€犳爣绛鹃〉
+鈹?  鈹斺攢鈹€ ModTags.java               # 鑷畾涔夋爣绛?鈹溾攢鈹€ common/                        # 閫昏緫灞?鈹?  鈹溾攢鈹€ item/
+鈹?  鈹?  鈹溾攢鈹€ SculkBindFocus.java
+鈹?  鈹?  鈹溾攢鈹€ TwistedEmbryoItem.java
+鈹?  鈹?  鈹斺攢鈹€ MatureEmbryoItem.java
+鈹?  鈹溾攢鈹€ block/
+鈹?  鈹?  鈹溾攢鈹€ FleshFurnaceBlock.java
+鈹?  鈹?  鈹斺攢鈹€ entity/FleshFurnaceBlockEntity.java
+鈹?  鈹溾攢鈹€ entity/
+鈹?  鈹?  鈹斺攢鈹€ SculkSpikeEntity.java
+鈹?  鈹溾攢鈹€ magic/spell/
+鈹?  鈹?  鈹斺攢鈹€ SculkBindSpell.java
+鈹?  鈹溾攢鈹€ events/
+鈹?  鈹?  鈹斺攢鈹€ SculkBindEvents.java
+鈹?  鈹斺攢鈹€ utils/
+鈹?      鈹斺攢鈹€ MinionSpawnHelper.java
+鈹斺攢鈹€ client/                        # 瀹㈡埛绔笓鐢?    鈹溾攢鈹€ ModClientEvents.java
+    鈹溾攢鈹€ FleshFurnaceHUD.java
+    鈹斺攢鈹€ entity/SculkSpikeRenderer.java
 ```
 
 ---
 
-## 三、分层约定
-
-| 包 | 职责 | 禁止 |
+## 涓夈€佸垎灞傜害瀹?
+| 鍖?| 鑱岃矗 | 绂佹 |
 |----|------|------|
-| `init/` | DeferredRegister + RegistryObject | 业务逻辑、匿名内部类 |
-| `common/item/` | 物品交互逻辑（use/useOn） | 注册逻辑 |
-| `common/block/` | 方块行为 + entity/ 方块实体 tick | 客户端代码 |
-| `common/entity/` | 实体 AI、动画状态机 | 渲染代码 |
-| `common/magic/` | Spell → spelle/ 子包 | 物品注册 |
-| `common/events/` | `@Mod.EventBusSubscriber` | 注册逻辑 |
-| `common/utils/` | 纯静态工具方法 | 实例状态 |
-| `client/` | 渲染/HUD/GUI | 服务端逻辑 |
+| `init/` | DeferredRegister + RegistryObject | 涓氬姟閫昏緫銆佸尶鍚嶅唴閮ㄧ被 |
+| `common/item/` | 鐗╁搧浜や簰閫昏緫锛坲se/useOn锛?| 娉ㄥ唽閫昏緫 |
+| `common/block/` | 鏂瑰潡琛屼负 + entity/ 鏂瑰潡瀹炰綋 tick | 瀹㈡埛绔唬鐮?|
+| `common/entity/` | 瀹炰綋 AI銆佸姩鐢荤姸鎬佹満 | 娓叉煋浠ｇ爜 |
+| `common/magic/` | Spell 鈫?spelle/ 瀛愬寘 | 鐗╁搧娉ㄥ唽 |
+| `common/events/` | `@Mod.EventBusSubscriber` | 娉ㄥ唽閫昏緫 |
+| `common/utils/` | 绾潤鎬佸伐鍏锋柟娉?| 瀹炰緥鐘舵€?|
+| `client/` | 娓叉煋/HUD/GUI | 鏈嶅姟绔€昏緫 |
 
-**新功能添加流程：**
-1. 需要新注册项 → `init/` 下新建注册类或扩展现有类
-2. 自定义行为 → `common/` 对应子包下创建类
-3. 公共静态逻辑（3行+）→ `common/utils/` 提取
-4. 客户端渲染/GUI → `client/` 下创建
-5. 可配置数值 → `config/ModConfig.java` 新增配置项
-
+**鏂板姛鑳芥坊鍔犳祦绋嬶細**
+1. 闇€瑕佹柊娉ㄥ唽椤?鈫?`init/` 涓嬫柊寤烘敞鍐岀被鎴栨墿灞曠幇鏈夌被
+2. 鑷畾涔夎涓?鈫?`common/` 瀵瑰簲瀛愬寘涓嬪垱寤虹被
+3. 鍏叡闈欐€侀€昏緫锛?琛?锛夆啋 `common/utils/` 鎻愬彇
+4. 瀹㈡埛绔覆鏌?GUI 鈫?`client/` 涓嬪垱寤?5. 鍙厤缃暟鍊?鈫?`config/ModConfig.java` 鏂板閰嶇疆椤?
 ---
 
-## 四、项目特有设计决策
-
-### 4.1 血肉熔炉（Flesh Furnace）输出策略
-- 扫描 8 格半径内的不祥火炬（Ominous Pyre）来确定兵种
-- 优先输出到下方容器的逻辑（漏斗/管道）
-- 通过 `ModTags.REQUIRES_TRAINING_STRUCTURE` 标签过滤高级兵种
-- 客户端 HUD 进度条同步
-
-### 4.2 扭曲胚胎 → 成熟胚胎 转化链路
+## 鍥涖€侀」鐩壒鏈夎璁″喅绛?
+### 4.1 琛€鑲夌啍鐐夛紙Flesh Furnace锛夎緭鍑虹瓥鐣?- 鎵弿 8 鏍煎崐寰勫唴鐨勪笉绁ョ伀鐐紙Ominous Pyre锛夋潵纭畾鍏电
+- 浼樺厛杈撳嚭鍒颁笅鏂瑰鍣ㄧ殑閫昏緫锛堟紡鏂?绠￠亾锛?- 閫氳繃 `ModTags.REQUIRES_TRAINING_STRUCTURE` 鏍囩杩囨护楂樼骇鍏电
+- 瀹㈡埛绔?HUD 杩涘害鏉″悓姝?
+### 4.2 鎵洸鑳氳儙 鈫?鎴愮啛鑳氳儙 杞寲閾捐矾
 ```
-TwistedEmbryoItem (右键生成随机 Neollager)
-         ↓
-   FleshFurnace (烹制)
-         ↓
-MatureEmbryoItem (NBT 存实体类型, 右键生成指定兵种)
+TwistedEmbryoItem (鍙抽敭鐢熸垚闅忔満 Neollager)
+         鈫?   FleshFurnace (鐑瑰埗)
+         鈫?MatureEmbryoItem (NBT 瀛樺疄浣撶被鍨? 鍙抽敭鐢熸垚鎸囧畾鍏电)
 ```
 
-### 4.3 幽匿束缚法术（SculkBindSpell）流程
-
+### 4.3 骞藉尶鏉熺細娉曟湳锛圫culkBindSpell锛夋祦绋?
 ```
-Phase 1: 锁定目标 → 强制原地（PersistentData 存坐标）
-Phase 2: 召唤 SculkSpike（视觉实体）+ 声波粒子 + 尖啸音效
-Phase 3: 召唤原版 Warden，通过 Brain 记忆操作控制出土动画、禁遁地、注入愤怒值
-```
+Phase 1: 閿佸畾鐩爣 鈫?寮哄埗鍘熷湴锛圥ersistentData 瀛樺潗鏍囷級
+Phase 2: 鍙敜 SculkSpike锛堣瑙夊疄浣擄級+ 澹版尝绮掑瓙 + 灏栧暩闊虫晥
+Phase 3: 鍙敜鍘熺増 Warden锛岄€氳繃 Brain 璁板繂鎿嶄綔鎺у埗鍑哄湡鍔ㄧ敾銆佺閬佸湴銆佹敞鍏ユ劋鎬掑€?```
 
-**架构决策**：使用原版 Warden + Brain 操作，而非自定义 Warden 子类。详情见 `goety-addon-dev` 技能第七部分。
+**鏋舵瀯鍐崇瓥**锛氫娇鐢ㄥ師鐗?Warden + Brain 鎿嶄綔锛岃€岄潪鑷畾涔?Warden 瀛愮被銆傝鎯呰 `goety-addon-dev` 鎶€鑳界涓冮儴鍒嗐€?
+### 4.4 SculkBind 浜嬩欢澶勭悊
 
-### 4.4 SculkBind 事件处理
-
-- **定身**：`SculkBindEvents.handleSnare()` — 每 tick 从 PersistentData 读取锁定坐标，强制 `setPos` 归位
-- **Warden 可见性**：`SculkBindEvents.handleWardenVisibility()` — 延迟 15 tick 恢复可见，防止出土动画首帧闪现
-
+- **瀹氳韩**锛歚SculkBindEvents.handleSnare()` 鈥?姣?tick 浠?PersistentData 璇诲彇閿佸畾鍧愭爣锛屽己鍒?`setPos` 褰掍綅
+- **Warden 鍙鎬?*锛歚SculkBindEvents.handleWardenVisibility()` 鈥?寤惰繜 15 tick 鎭㈠鍙锛岄槻姝㈠嚭鍦熷姩鐢婚甯ч棯鐜?
 ---
 
-## 五、禁止事项
-
-| 禁止 | 正确做法 |
+## 浜斻€佺姝簨椤?
+| 绂佹 | 姝ｇ‘鍋氭硶 |
 |------|----------|
-| 主类中写业务逻辑 | 放入 `common/` 对应包 |
-| 注册类中写匿名内部类业务 | 创建独立业务类，注册类仅引用 |
-| 工具方法放在业务包根目录 | 放入 `common/utils/` |
-| 手动绑仆从主人 | 必须用 `MobUtil.summonTame()` |
-| Goety 已有接口/工具时自行重写 | 优先复用 Goety |
-| 修改 build.gradle 依赖配置 | 保持现有配置 |
-| 创建空预留事件类 | 需要时再创建 |
+| 涓荤被涓啓涓氬姟閫昏緫 | 鏀惧叆 `common/` 瀵瑰簲鍖?|
+| 娉ㄥ唽绫讳腑鍐欏尶鍚嶅唴閮ㄧ被涓氬姟 | 鍒涘缓鐙珛涓氬姟绫伙紝娉ㄥ唽绫讳粎寮曠敤 |
+| 宸ュ叿鏂规硶鏀惧湪涓氬姟鍖呮牴鐩綍 | 鏀惧叆 `common/utils/` |
+| 鎵嬪姩缁戜粏浠庝富浜?| 蹇呴』鐢?`MobUtil.summonTame()` |
+| Goety 宸叉湁鎺ュ彛/宸ュ叿鏃惰嚜琛岄噸鍐?| 浼樺厛澶嶇敤 Goety |
+| 淇敼 build.gradle 渚濊禆閰嶇疆 | 淇濇寔鐜版湁閰嶇疆 |
+| 鍒涘缓绌洪鐣欎簨浠剁被 | 闇€瑕佹椂鍐嶅垱寤?|

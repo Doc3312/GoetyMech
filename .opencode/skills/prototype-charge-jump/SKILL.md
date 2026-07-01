@@ -1,38 +1,33 @@
----
+﻿---
 name: "prototype-charge-jump"
 description: "charge jump / jump height"
 ---
 
-# Prototype 蓄力跳跃 — 开发 & 调参指南
+# Prototype 钃勫姏璺宠穬 鈥?寮€鍙?& 璋冨弬鎸囧崡
 
-> 前置模组源码路径见 `.opencode/skills/_shared/libcode-paths.md`。
-> 快速排除：当前任务如果不涉及蓄力-释放跳跃、跳跃高度公式调参或落地检测，请跳过本 skill。
+> 鍓嶇疆妯＄粍婧愮爜璺緞瑙?`.opencode/skills/_shared/libcode-paths.md`銆?> 蹇€熸帓闄わ細褰撳墠浠诲姟濡傛灉涓嶆秹鍙婅搫鍔?閲婃斁璺宠穬銆佽烦璺冮珮搴﹀叕寮忚皟鍙傛垨钀藉湴妫€娴嬶紝璇疯烦杩囨湰 skill銆?
+## 閫傜敤鍦烘櫙
 
-## 适用场景
+- 瀹炵幇钃勫姏-閲婃斁寮忥紙charge/release锛夎烦璺冩満鍒?- 鍏紡璁＄畻鐨勮烦璺冮珮搴︿笌瀹為檯娓告垙鍐呴珮搴︿笉绗?- 闇€瑕佺簿纭祴閲忓疄浣撹烦璺冮珮搴︼紙钀藉湴妫€娴嬶級
+- 涓鸿烦璺冪郴缁熸坊鍔?Config 鍙皟鍙傛暟
+- 鐞嗚В Minecraft 鍨傜洿杩愬姩鐗╃悊锛坓ravity / drag 鏃跺簭锛?- 璋冭瘯 Curios 妲戒綅妫€娴?+ Mixin 璺宠穬鍘嬪埗
 
-- 实现蓄力-释放式（charge/release）跳跃机制
-- 公式计算的跳跃高度与实际游戏内高度不符
-- 需要精确测量实体跳跃高度（落地检测）
-- 为跳跃系统添加 Config 可调参数
-- 理解 Minecraft 垂直运动物理（gravity / drag 时序）
-- 调试 Curios 槽位检测 + Mixin 跳跃压制
+## 鏂囨。绱㈠紩
 
-## 文档索引
-
-| 文件 | 优先级 | 内容 |
+| 鏂囦欢 | 浼樺厛绾?| 鍐呭 |
 |------|--------|------|
-| [DEBUGGING.md](DEBUGGING.md) | ★ 最高 | 多次 build-run 调试经验、peakY 追踪法、WAS_AIRBORNE 状态机、实测数据（50→50.7, 80→60） |
-| [PHYSICS.md](PHYSICS.md) | ★ 高 | 含 drag 精确速度公式推导、sqrt(2gh) 失效原因、velocityForHeight 二分法实现 |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 中 | 系统架构：release-based 设计、NBT 蓄力 tick、网络包流、START phase 时序、地面起飞覆盖陷阱 |
+| [DEBUGGING.md](DEBUGGING.md) | 鈽?鏈€楂?| 澶氭 build-run 璋冭瘯缁忛獙銆乸eakY 杩借釜娉曘€乄AS_AIRBORNE 鐘舵€佹満銆佸疄娴嬫暟鎹紙50鈫?0.7, 80鈫?0锛?|
+| [PHYSICS.md](PHYSICS.md) | 鈽?楂?| 鍚?drag 绮剧‘閫熷害鍏紡鎺ㄥ銆乻qrt(2gh) 澶辨晥鍘熷洜銆乿elocityForHeight 浜屽垎娉曞疄鐜?|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | 涓?| 绯荤粺鏋舵瀯锛歳elease-based 璁捐銆丯BT 钃勫姏 tick銆佺綉缁滃寘娴併€丼TART phase 鏃跺簭銆佸湴闈㈣捣椋炶鐩栭櫡闃?|
 
-## 关键发现速查
+## 鍏抽敭鍙戠幇閫熸煡
 
-| 问题 | 结论 |
+| 闂 | 缁撹 |
 |------|------|
-| `sqrt(2 * g * h)` 为什么不准 | Minecraft 垂直有 0.98/tick drag，公式假设真空 |
-| 落地高度为什么测得 0 | `onGround()` 在 START phase 是上 tick 状态，且平面起落 Y 相同 |
-| 正确的高度测量方式 | 追踪飞行中最大 Y（peakY），不是起落 Y 差 |
-| 80 理论值为何只跳 ~60 | 当前二分法公式在高速段仍有偏差（待调） |
-| 蓄力跳没生效 | 检查地面起飞代码 (`zza>0 && charge==0` 会覆盖为 2.0） |
-| Curios 原型检测不到 | 必须同时查 chest + Curios 槽（`hasAnyPrototype`） |
-| 改配置没生效 | 需要删除 `run/config/goetypunk-common.toml` 强制再生 |
+| `sqrt(2 * g * h)` 涓轰粈涔堜笉鍑?| Minecraft 鍨傜洿鏈?0.98/tick drag锛屽叕寮忓亣璁剧湡绌?|
+| 钀藉湴楂樺害涓轰粈涔堟祴寰?0 | `onGround()` 鍦?START phase 鏄笂 tick 鐘舵€侊紝涓斿钩闈㈣捣钀?Y 鐩稿悓 |
+| 姝ｇ‘鐨勯珮搴︽祴閲忔柟寮?| 杩借釜椋炶涓渶澶?Y锛坧eakY锛夛紝涓嶆槸璧疯惤 Y 宸?|
+| 80 鐞嗚鍊间负浣曞彧璺?~60 | 褰撳墠浜屽垎娉曞叕寮忓湪楂橀€熸浠嶆湁鍋忓樊锛堝緟璋冿級 |
+| 钃勫姏璺虫病鐢熸晥 | 妫€鏌ュ湴闈㈣捣椋炰唬鐮?(`zza>0 && charge==0` 浼氳鐩栦负 2.0锛?|
+| Curios 鍘熷瀷妫€娴嬩笉鍒?| 蹇呴』鍚屾椂鏌?chest + Curios 妲斤紙`hasAnyPrototype`锛?|
+| 鏀归厤缃病鐢熸晥 | 闇€瑕佸垹闄?`run/config/GoetyMech-common.toml` 寮哄埗鍐嶇敓 |

@@ -1,19 +1,19 @@
-# MimicItemRenderer — goetypunk
+﻿# MimicItemRenderer 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：misc
-- Java 类：MimicItemRenderer
-- 首次创建：2026-06-25
+- 绫诲瀷锛歮isc
+- Java 绫伙細MimicItemRenderer
+- 棣栨鍒涘缓锛?026-06-25
 
-## 设计意图
+## 璁捐鎰忓浘
 
-Mimic 物品的 BER（BlockEntityWithoutLevelRenderer），负责渲染伪装状态下的物品外观。
+Mimic 鐗╁搧鐨?BER锛圔lockEntityWithoutLevelRenderer锛夛紝璐熻矗娓叉煋浼鐘舵€佷笅鐨勭墿鍝佸瑙傘€?
 
-## 演化记录
+## 婕斿寲璁板綍
 
-### 2026-06-25 — 创建
+### 2026-06-25 鈥?鍒涘缓
 
-- 改动：创建 MimicItemRenderer，处理 Mimic 物品的伪装渲染
-- 原因：Mimic 需要根据伪装状态动态切换渲染
-- 关联：openspec mimic-system
+- 鏀瑰姩锛氬垱寤?MimicItemRenderer锛屽鐞?Mimic 鐗╁搧鐨勪吉瑁呮覆鏌?
+- 鍘熷洜锛歁imic 闇€瑕佹牴鎹吉瑁呯姸鎬佸姩鎬佸垏鎹㈡覆鏌?
+- 鍏宠仈锛歰penspec mimic-system

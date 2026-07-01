@@ -1,13 +1,12 @@
----
+﻿---
 name: "goety-addon-dev"
-description: "GoetyPunk 附属模组开发综合指南。涵盖 Forge 1.20.x 基础、Goety API 接入、聚晶/Focus/Spell 开发、实体/仆从实现、配置与网络。所有涉及代码编写、注册、构建、调试的操作都必须调用本 skill。"
+description: "GoetyMech 闄勫睘妯＄粍寮€鍙戠患鍚堟寚鍗椼€傛兜鐩?Forge 1.20.x 鍩虹銆丟oety API 鎺ュ叆銆佽仛鏅?Focus/Spell 寮€鍙戙€佸疄浣?浠嗕粠瀹炵幇銆侀厤缃笌缃戠粶銆傛墍鏈夋秹鍙婁唬鐮佺紪鍐欍€佹敞鍐屻€佹瀯寤恒€佽皟璇曠殑鎿嶄綔閮藉繀椤昏皟鐢ㄦ湰 skill銆?
 ---
 
-# GoetyPunk Addon 开发指南
+# GoetyMech Addon 寮€鍙戞寚鍗?
+> 鍓嶇疆婧愮爜璺緞锛歚D:\Libcode\Goety-2-1.20\Goety-2-1.20\`銆乣D:\Libcode\Create-mc1.20.1-dev\Create-mc1.20.1-dev\`銆乣D:\Libcode\ending_library-1.20.1\`
 
-> 前置源码路径：`D:\Libcode\Goety-2-1.20\Goety-2-1.20\`、`D:\Libcode\Create-mc1.20.1-dev\Create-mc1.20.1-dev\`、`D:\Libcode\ending_library-1.20.1\`
-
-## Forge 1.20.x 基础
+## Forge 1.20.x 鍩虹
 
 ### mods.toml
 ```toml
@@ -18,7 +17,7 @@ modId = "your_mod_id"
 displayName = "Your Mod"
 ```
 
-### 主类
+### 涓荤被
 ```java
 @Mod("your_mod_id")
 public class YourMod {
@@ -29,109 +28,93 @@ public class YourMod {
 }
 ```
 
-### 注册表（DeferredRegister）
-```java
+### 娉ㄥ唽琛紙DeferredRegister锛?```java
 public static final DeferredRegister<Block> BLOCKS =
     DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
 public static final RegistryObject<Block> EXAMPLE_BLOCK =
     BLOCKS.register("example", () -> new Block(BlockBehaviour.Properties.of()));
 ```
-注册顺序（强制）：方块 → 方块实体 → 物品(BlockItem) → 创造标签页
+娉ㄥ唽椤哄簭锛堝己鍒讹級锛氭柟鍧?鈫?鏂瑰潡瀹炰綋 鈫?鐗╁搧(BlockItem) 鈫?鍒涢€犳爣绛鹃〉
 
-### 事件系统
-- **模组事件总线**：生命周期、注册事件
-- **Forge 事件总线**：运行时事件
+### 浜嬩欢绯荤粺
+- **妯＄粍浜嬩欢鎬荤嚎**锛氱敓鍛藉懆鏈熴€佹敞鍐屼簨浠?- **Forge 浜嬩欢鎬荤嚎**锛氳繍琛屾椂浜嬩欢
 
-### 端位隔离
-- 跨逻辑端通信必须用网络数据包
-- 客户端代码隔离在 `client` 包
-- 使用 `DistExecutor.safeRunWhenOn(Dist.CLIENT, ...)`
+### 绔綅闅旂
+- 璺ㄩ€昏緫绔€氫俊蹇呴』鐢ㄧ綉缁滄暟鎹寘
+- 瀹㈡埛绔唬鐮侀殧绂诲湪 `client` 鍖?- 浣跨敤 `DistExecutor.safeRunWhenOn(Dist.CLIENT, ...)`
 
-### 常见陷阱
-- `Entity.level` 在 1.20.x 是 private 字段，必须用 getter `level()`
-- 同样适用于 `Entity.position()` 等方法
-
-### 网络（SimpleImpl）
-```java
+### 甯歌闄烽槺
+- `Entity.level` 鍦?1.20.x 鏄?private 瀛楁锛屽繀椤荤敤 getter `level()`
+- 鍚屾牱閫傜敤浜?`Entity.position()` 绛夋柟娉?
+### 缃戠粶锛圫impleImpl锛?```java
 public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
     new ResourceLocation(MOD_ID, "main"), () -> "1", "1"::equals, "1"::equals);
 ```
 
 ---
 
-## Goety 核心 API
+## Goety 鏍稿績 API
 
-### 法术体系
-- `api/magic/ISpell.java` — 核心契约：灵魂消耗、施法、冷却、SpellResult
-- `api/magic/ISummonSpell.java` — 召唤扩展：SummonDownDuration、commonResult
-- `api/magic/IChargingSpell.java` — 蓄力型
-- `api/magic/IBreathingSpell.java` — 喷吐型
-- `api/magic/IBlockSpell.java` — 方块施法型
-- `api/magic/ITouchSpell.java` — 近战型
-- `api/magic/SpellType.java` — 法术流派（NECROMANCY/FROST/GEOMANCY 等）
+### 娉曟湳浣撶郴
+- `api/magic/ISpell.java` 鈥?鏍稿績濂戠害锛氱伒榄傛秷鑰椼€佹柦娉曘€佸喎鍗淬€丼pellResult
+- `api/magic/ISummonSpell.java` 鈥?鍙敜鎵╁睍锛歋ummonDownDuration銆乧ommonResult
+- `api/magic/IChargingSpell.java` 鈥?钃勫姏鍨?- `api/magic/IBreathingSpell.java` 鈥?鍠峰悙鍨?- `api/magic/IBlockSpell.java` 鈥?鏂瑰潡鏂芥硶鍨?- `api/magic/ITouchSpell.java` 鈥?杩戞垬鍨?- `api/magic/SpellType.java` 鈥?娉曟湳娴佹淳锛圢ECROMANCY/FROST/GEOMANCY 绛夛級
 
-### 物品体系
-- `api/items/magic/IFocus.java` — 聚晶接口：`getSpell()` 将物品映射到法术
-- `api/items/magic/IWand.java` — 法杖接口：getSpellType、getFocus、isOnCooldown
-- `api/items/magic/ITotem.java` — 图腾/灵魂容器
+### 鐗╁搧浣撶郴
+- `api/items/magic/IFocus.java` 鈥?鑱氭櫠鎺ュ彛锛歚getSpell()` 灏嗙墿鍝佹槧灏勫埌娉曟湳
+- `api/items/magic/IWand.java` 鈥?娉曟潠鎺ュ彛锛歡etSpellType銆乬etFocus銆乮sOnCooldown
+- `api/items/magic/ITotem.java` 鈥?鍥捐吘/鐏甸瓊瀹瑰櫒
 
-### 召唤物体系
-- `api/entities/IOwned.java` — 所有者追踪、阵营判定
-- `api/entities/ally/IServant.java` — 仆从命令：跟随/守卫/巡逻/停留
-- `api/entities/ITrainable.java` — 可训练实体
+### 鍙敜鐗╀綋绯?- `api/entities/IOwned.java` 鈥?鎵€鏈夎€呰拷韪€侀樀钀ュ垽瀹?- `api/entities/ally/IServant.java` 鈥?浠嗕粠鍛戒护锛氳窡闅?瀹堝崼/宸￠€?鍋滅暀
+- `api/entities/ITrainable.java` 鈥?鍙缁冨疄浣?
+### 鍗忚鎬ラ€熸煡璇㈣〃
 
-### 协议急速查询表
-
-| 需要 | 依赖接口/类 | 路径 |
+| 闇€瑕?| 渚濊禆鎺ュ彛/绫?| 璺緞 |
 |------|------------|------|
-| 新法术 | `Spell` (继承) 或 `ISpell` (实现) | `common/magic/Spell.java` |
-| 新聚晶 | `IFocus` → `MagicFocus` | `common/items/magic/MagicFocus.java` |
-| 新召唤物 | `Summoned` (继承) | `common/entities/Summoned.java` |
-| 新弹射物 | `SpellHurtingProjectile` (继承) | `common/entities/projectiles/SpellHurtingProjectile.java` |
-| 新仪式 | `IRitualType` → `RitualType.addRitualType()` | `api/ritual/` |
-| 读灵魂能量 | `SoulUtil.getSoulEnergy(player)` | `utils/SoulUtil.java` |
-| 驯服仆从 | `MobUtil.summonTame(mob, player)` | `utils/MobUtil.java` |
+| 鏂版硶鏈?| `Spell` (缁ф壙) 鎴?`ISpell` (瀹炵幇) | `common/magic/Spell.java` |
+| 鏂拌仛鏅?| `IFocus` 鈫?`MagicFocus` | `common/items/magic/MagicFocus.java` |
+| 鏂板彫鍞ょ墿 | `Summoned` (缁ф壙) | `common/entities/Summoned.java` |
+| 鏂板脊灏勭墿 | `SpellHurtingProjectile` (缁ф壙) | `common/entities/projectiles/SpellHurtingProjectile.java` |
+| 鏂颁华寮?| `IRitualType` 鈫?`RitualType.addRitualType()` | `api/ritual/` |
+| 璇荤伒榄傝兘閲?| `SoulUtil.getSoulEnergy(player)` | `utils/SoulUtil.java` |
+| 椹湇浠嗕粠 | `MobUtil.summonTame(mob, player)` | `utils/MobUtil.java` |
 
-### SpellStat 属性
-| 属性 | Getter | 含义 |
+### SpellStat 灞炴€?| 灞炴€?| Getter | 鍚箟 |
 |------|--------|------|
-| potency | `getPotency()` | 威力/强度 |
-| duration | `getDuration()` | 持续时间 |
-| range | `getRange()` | 射程 |
-| radius | `getRadius()` | AOE 半径 |
-| burning | `getBurning()` | 火焰附加 |
-| velocity | `getVelocity()` | 弹射物初速 |
+| potency | `getPotency()` | 濞佸姏/寮哄害 |
+| duration | `getDuration()` | 鎸佺画鏃堕棿 |
+| range | `getRange()` | 灏勭▼ |
+| radius | `getRadius()` | AOE 鍗婂緞 |
+| burning | `getBurning()` | 鐏劙闄勫姞 |
+| velocity | `getVelocity()` | 寮瑰皠鐗╁垵閫?|
 
 ---
 
-## Focus 开发完整指南
-
-### 四层架构
+## Focus 寮€鍙戝畬鏁存寚鍗?
+### 鍥涘眰鏋舵瀯
 ```
-Layer 1: 物品层 (Focus) — IFocus → MagicFocus → 自定义Focus
-Layer 2: 法术逻辑层 (Spell) — ISpell → Spell(基类) / SummonSpell(基类)
-Layer 3: 弹射物实体 (可选) — SpellHurtingProjectile (继承)
-Layer 4: 召唤物实体 (可选) — Summoned (继承)
+Layer 1: 鐗╁搧灞?(Focus) 鈥?IFocus 鈫?MagicFocus 鈫?鑷畾涔塅ocus
+Layer 2: 娉曟湳閫昏緫灞?(Spell) 鈥?ISpell 鈫?Spell(鍩虹被) / SummonSpell(鍩虹被)
+Layer 3: 寮瑰皠鐗╁疄浣?(鍙€? 鈥?SpellHurtingProjectile (缁ф壙)
+Layer 4: 鍙敜鐗╁疄浣?(鍙€? 鈥?Summoned (缁ф壙)
 ```
 
-### Focus 物品注册
+### Focus 鐗╁搧娉ㄥ唽
 ```java
-// 方式一：简单 Focus（直接绑定 Spell）
-public static final RegistryObject<Item> MY_FOCUS = ITEMS.register("my_focus",
+// 鏂瑰紡涓€锛氱畝鍗?Focus锛堢洿鎺ョ粦瀹?Spell锛?public static final RegistryObject<Item> MY_FOCUS = ITEMS.register("my_focus",
     () -> new MagicFocus(new MySpell()));
 
-// 方式二：复杂 Focus（继承 MagicFocus）
-public class MySpecialFocus extends MagicFocus {
+// 鏂瑰紡浜岋細澶嶆潅 Focus锛堢户鎵?MagicFocus锛?public class MySpecialFocus extends MagicFocus {
     public MySpecialFocus() { super(new MySpell()); }
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (player.isShiftKeyDown()) { /* 潜行右键逻辑 */ }
+        if (player.isShiftKeyDown()) { /* 娼滆鍙抽敭閫昏緫 */ }
         return super.use(level, player, hand);
     }
 }
 ```
 
-### 攻击型 Spell 实现
+### 鏀诲嚮鍨?Spell 瀹炵幇
 ```java
 public class MyAttackSpell extends Spell {
     @Override public int defaultSoulCost()       { return SpellConfig.MyCost.get(); }
@@ -145,75 +128,62 @@ public class MyAttackSpell extends Spell {
         int potency = spellStat.getPotency();
         if (WandUtil.enchantedFocus(caster))
             potency += WandUtil.getPotencyLevel(caster);
-        // 发射弹射物或直接伤害...
+        // 鍙戝皠寮瑰皠鐗╂垨鐩存帴浼ゅ...
     }
 }
 ```
 
 ---
 
-## 实用工具方法速查
+## 瀹炵敤宸ュ叿鏂规硶閫熸煡
 
-| 方法 | 类 | 用途 |
+| 鏂规硶 | 绫?| 鐢ㄩ€?|
 |------|----|------|
-| `MobUtil.summonTame(entity, player)` | `MobUtil` | 驯服仆从（必用） |
-| `MobUtil.moveDownToGround(entity)` | `MobUtil` | 实体落地 |
-| `MobUtil.getSummonLifespan(level)` | `MobUtil` | 召唤寿命基数 |
-| `MobUtil.getOwner(entity)` | `MobUtil` | 获取所有者 |
-| `WandUtil.enchantedFocus(caster)` | `WandUtil` | 检查附魔 Focus |
-| `WandUtil.getPotencyLevel(caster)` | `WandUtil` | 获取威力等级 |
-| `BlockFinder.SummonRadius(pos, entity, level)` | `BlockFinder` | 计算出生位置 |
-| `SoulUtil.getSoulEnergy(player)` | `SoulUtil` | 读取灵魂能量 |
-| `CuriosFinder.hasCurio(caster, item)` | `CuriosFinder` | 检查饰品 |
-| `ServerParticleUtil.addParticlesAroundMiddleSelf(...)` | `ServerParticleUtil` | 粒子效果 |
-| `MobUtil.targetedEntities(...)` | `MobUtil` | 获取目标列表 |
+| `MobUtil.summonTame(entity, player)` | `MobUtil` | 椹湇浠嗕粠锛堝繀鐢級 |
+| `MobUtil.moveDownToGround(entity)` | `MobUtil` | 瀹炰綋钀藉湴 |
+| `MobUtil.getSummonLifespan(level)` | `MobUtil` | 鍙敜瀵垮懡鍩烘暟 |
+| `MobUtil.getOwner(entity)` | `MobUtil` | 鑾峰彇鎵€鏈夎€?|
+| `WandUtil.enchantedFocus(caster)` | `WandUtil` | 妫€鏌ラ檮榄?Focus |
+| `WandUtil.getPotencyLevel(caster)` | `WandUtil` | 鑾峰彇濞佸姏绛夌骇 |
+| `BlockFinder.SummonRadius(pos, entity, level)` | `BlockFinder` | 璁＄畻鍑虹敓浣嶇疆 |
+| `SoulUtil.getSoulEnergy(player)` | `SoulUtil` | 璇诲彇鐏甸瓊鑳介噺 |
+| `CuriosFinder.hasCurio(caster, item)` | `CuriosFinder` | 妫€鏌ラグ鍝?|
+| `ServerParticleUtil.addParticlesAroundMiddleSelf(...)` | `ServerParticleUtil` | 绮掑瓙鏁堟灉 |
+| `MobUtil.targetedEntities(...)` | `MobUtil` | 鑾峰彇鐩爣鍒楄〃 |
 
 ---
 
-## Warden（坚守者）开发实战经验
-
-### Warden Brain 活动优先级
-| 优先级 | 活动 | 说明 |
+## Warden锛堝潥瀹堣€咃級寮€鍙戝疄鎴樼粡楠?
+### Warden Brain 娲诲姩浼樺厛绾?| 浼樺厛绾?| 娲诲姩 | 璇存槑 |
 |--------|------|------|
-| 0 | EMERGE | 出土动画 |
-| 0 | DIG | 遁地 |
-| 1 | ROAR | 怒吼 |
-| 2 | FIGHT | 战斗 |
-| 3 | INVESTIGATE | 调查 |
-| 4 | SNIFF | 嗅探 |
-| 6 | IDLE | 空闲 |
+| 0 | EMERGE | 鍑哄湡鍔ㄧ敾 |
+| 0 | DIG | 閬佸湴 |
+| 1 | ROAR | 鎬掑惣 |
+| 2 | FIGHT | 鎴樻枟 |
+| 3 | INVESTIGATE | 璋冩煡 |
+| 4 | SNIFF | 鍡呮帰 |
+| 6 | IDLE | 绌洪棽 |
 
-**核心陷阱**：DIG 和 EMERGE 优先级相同且都高于 FIGHT。即使设置 ATTACK_TARGET，如果 Warden 有遁地条件，Brain 会优先 DIG。
-
-**正确做法**：召唤时设置 DIG_COOLDOWN 禁止遁地：
-```java
+**鏍稿績闄烽槺**锛欴IG 鍜?EMERGE 浼樺厛绾х浉鍚屼笖閮介珮浜?FIGHT銆傚嵆浣胯缃?ATTACK_TARGET锛屽鏋?Warden 鏈夐亖鍦版潯浠讹紝Brain 浼氫紭鍏?DIG銆?
+**姝ｇ‘鍋氭硶**锛氬彫鍞ゆ椂璁剧疆 DIG_COOLDOWN 绂佹閬佸湴锛?```java
 warden.getBrain().setMemoryWithExpiry(
     MemoryModuleType.DIG_COOLDOWN, Unit.INSTANCE, 1200);
 ```
 
-### 激怒 Warden 的方式
-**推荐方案**：使用 3 参数重载直接指定愤怒值（Goety 官方做法）：
+### 婵€鎬?Warden 鐨勬柟寮?**鎺ㄨ崘鏂规**锛氫娇鐢?3 鍙傛暟閲嶈浇鐩存帴鎸囧畾鎰ゆ€掑€硷紙Goety 瀹樻柟鍋氭硶锛夛細
 ```java
 // 100 = AngerLevel.ANGRY.getMinimumAnger() (80) + 20
-// false = 不触发 Sculk Shrieker 连锁召唤
+// false = 涓嶈Е鍙?Sculk Shrieker 杩為攣鍙敜
 warden.increaseAngerAt(target, 100, false);
 ```
 
-3 参数重载签名（vanilla `Warden` 类）：
-```java
+3 鍙傛暟閲嶈浇绛惧悕锛坴anilla `Warden` 绫伙級锛?```java
 public void increaseAngerAt(@Nullable LivingEntity target, int angerIncrease, boolean listen)
 ```
-- `target` — 愤怒目标
-- `angerIncrease` — 直接指定愤怒增加值
-- `listen` — `true` 时触发附近 Sculk Shrieker 振动监听链（可能再召 Warden），`false` 静默注入
+- `target` 鈥?鎰ゆ€掔洰鏍?- `angerIncrease` 鈥?鐩存帴鎸囧畾鎰ゆ€掑鍔犲€?- `listen` 鈥?`true` 鏃惰Е鍙戦檮杩?Sculk Shrieker 鎸姩鐩戝惉閾撅紙鍙兘鍐嶅彫 Warden锛夛紝`false` 闈欓粯娉ㄥ叆
 
-### Warden 目标死后转火（LivingDeathEvent 重定向）
-1. Warden 生成时打标签（PersistentData）
-2. LivingDeathEvent 中转火（仅击杀者自身转火）
-3. 法术执行期目标意外死亡补救（SpellResult 中 fallback）
-
-**规则**：
-- 仅亲手击杀的 Warden 获得转火（各自独立）
-- 避免使用 `setAttackTarget()` 和 Brain 记忆直接操作（不稳定）
-- 仅依赖 `increaseAngerAt()` 三参数重载
-- `false` 禁止 Sculk Shrieker 连锁召唤
+### Warden 鐩爣姝诲悗杞伀锛圠ivingDeathEvent 閲嶅畾鍚戯級
+1. Warden 鐢熸垚鏃舵墦鏍囩锛圥ersistentData锛?2. LivingDeathEvent 涓浆鐏紙浠呭嚮鏉€鑰呰嚜韬浆鐏級
+3. 娉曟湳鎵ц鏈熺洰鏍囨剰澶栨浜¤ˉ鏁戯紙SpellResult 涓?fallback锛?
+**瑙勫垯**锛?- 浠呬翰鎵嬪嚮鏉€鐨?Warden 鑾峰緱杞伀锛堝悇鑷嫭绔嬶級
+- 閬垮厤浣跨敤 `setAttackTarget()` 鍜?Brain 璁板繂鐩存帴鎿嶄綔锛堜笉绋冲畾锛?- 浠呬緷璧?`increaseAngerAt()` 涓夊弬鏁伴噸杞?- `false` 绂佹 Sculk Shrieker 杩為攣鍙敜

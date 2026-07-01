@@ -1,19 +1,19 @@
-# MimicDeconstructionCategory — goetypunk
+﻿# MimicDeconstructionCategory 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：misc
-- Java 类：MimicDeconstructionCategory
-- 首次创建：2026-06-25
+- 绫诲瀷锛歮isc
+- Java 绫伙細MimicDeconstructionCategory
+- 棣栨鍒涘缓锛?026-06-25
 
-## 设计意图
+## 璁捐鎰忓浘
 
-JEI 展示 Mimic 分解配方（从 Mimic 拆回原材料）。
+JEI 灞曠ず Mimic 鍒嗚В閰嶆柟锛堜粠 Mimic 鎷嗗洖鍘熸潗鏂欙級銆?
 
-## 演化记录
+## 婕斿寲璁板綍
 
-### 2026-06-25 — 创建
+### 2026-06-25 鈥?鍒涘缓
 
-- 改动：创建 MimicDeconstructionCategory
-- 原因：需要在 JEI 中可视化显示 Mimic 分解过程
-- 关联：openspec mimic-jei
+- 鏀瑰姩锛氬垱寤?MimicDeconstructionCategory
+- 鍘熷洜锛氶渶瑕佸湪 JEI 涓彲瑙嗗寲鏄剧ず Mimic 鍒嗚В杩囩▼
+- 鍏宠仈锛歰penspec mimic-jei

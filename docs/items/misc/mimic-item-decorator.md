@@ -1,25 +1,25 @@
-# MimicItemDecorator — goetypunk
+﻿# MimicItemDecorator 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：misc
-- Java 类：MimicItemDecorator
-- 首次创建：2026-06-25
+- 绫诲瀷锛歮isc
+- Java 绫伙細MimicItemDecorator
+- 棣栨鍒涘缓锛?026-06-25
 
-## 设计意图
+## 璁捐鎰忓浘
 
-Mimic 物品的装饰器，负责在物品栏/背包中显示伪装的物品外观。
+Mimic 鐗╁搧鐨勮楗板櫒锛岃礋璐ｅ湪鐗╁搧鏍?鑳屽寘涓樉绀轰吉瑁呯殑鐗╁搧澶栬銆?
 
-## 演化记录
+## 婕斿寲璁板綍
 
-### 2026-06-25 — 创建
+### 2026-06-25 鈥?鍒涘缓
 
-- 改动：创建 MimicItemDecorator
-- 原因：Mimic 需要欺骗外观显示为被伪装的物品
-- 关联：openspec mimic-system
+- 鏀瑰姩锛氬垱寤?MimicItemDecorator
+- 鍘熷洜锛歁imic 闇€瑕佹楠楀瑙傛樉绀轰负琚吉瑁呯殑鐗╁搧
+- 鍏宠仈锛歰penspec mimic-system
 
-### 2026-07-01 — 修复 overlay 图层过高问题
+### 2026-07-01 鈥?淇 overlay 鍥惧眰杩囬珮闂
 
-- 改动：`translate(0, 0, 400)` → `translate(0, 0, 0)`
-- 原因：z=400 导致 overlay 遮蔽手持物品预览和鼠标悬停 tooltip。IItemDecorator 已在 `GuiGraphics.flush()` 后执行，draw order 保证在最上层，无需高 z 值
-- 关联：mimic-overlay-z-fix
+- 鏀瑰姩锛歚translate(0, 0, 400)` 鈫?`translate(0, 0, 0)`
+- 鍘熷洜锛歾=400 瀵艰嚧 overlay 閬斀鎵嬫寔鐗╁搧棰勮鍜岄紶鏍囨偓鍋?tooltip銆侷ItemDecorator 宸插湪 `GuiGraphics.flush()` 鍚庢墽琛岋紝draw order 淇濊瘉鍦ㄦ渶涓婂眰锛屾棤闇€楂?z 鍊?
+- 鍏宠仈锛歮imic-overlay-z-fix

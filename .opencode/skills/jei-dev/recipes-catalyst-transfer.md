@@ -1,10 +1,10 @@
-# Recipe Transfer + Catalyst
+﻿# Recipe Transfer + Catalyst
 
 ## Recipe Transfer
 
-让 JEI 的 [+] 按钮将配方材料自动移到 Container 合成格。
+璁?JEI 鐨?[+] 鎸夐挳灏嗛厤鏂规潗鏂欒嚜鍔ㄧЩ鍒?Container 鍚堟垚鏍笺€?
 
-### 基础 Transfer（适合标准 slot 容器）
+### 鍩虹 Transfer锛堥€傚悎鏍囧噯 slot 瀹瑰櫒锛?
 
 ```java
 @Override
@@ -12,7 +12,7 @@ public void registerRecipeTransferHandlers(IRecipeTransferRegistration registrat
     registration.addRecipeTransferHandler(
             MyMachineContainer.class,
             ModMenuTypes.MY_MACHINE.get(),
-            GoetyPunkRecipeTypes.MY_MACHINE,
+            GoetyMechRecipeTypes.MY_MACHINE,
             0,     // recipeSlotStart
             9,     // recipeSlotCount
             9,     // inventorySlotStart
@@ -21,18 +21,18 @@ public void registerRecipeTransferHandlers(IRecipeTransferRegistration registrat
 }
 ```
 
-### 高级 Transfer（完全控制）
+### 楂樼骇 Transfer锛堝畬鍏ㄦ帶鍒讹級
 
 ```java
-// 实现 IRecipeTransferInfo 处理非连续槽位
-// 或实现 IRecipeTransferHandler 完全自定义
+// 瀹炵幇 IRecipeTransferInfo 澶勭悊闈炶繛缁Ы浣?
+// 鎴栧疄鐜?IRecipeTransferHandler 瀹屽叏鑷畾涔?
 registration.addRecipeTransferHandler(
         new MyCustomTransferHandler(),
-        GoetyPunkRecipeTypes.MY_MACHINE
+        GoetyMechRecipeTypes.MY_MACHINE
 );
 ```
 
-### 通用 Transfer（AE2 类自动合成）
+### 閫氱敤 Transfer锛圓E2 绫昏嚜鍔ㄥ悎鎴愶級
 
 ```java
 registration.addUniversalRecipeTransferHandler(new MyUniversalTransferHandler());
@@ -42,22 +42,22 @@ registration.addUniversalRecipeTransferHandler(new MyUniversalTransferHandler())
 
 ## Recipe Catalyst
 
-将机器/方块关联到 Recipe Type，点击方块即可查看相关配方。
+灏嗘満鍣?鏂瑰潡鍏宠仈鍒?Recipe Type锛岀偣鍑绘柟鍧楀嵆鍙煡鐪嬬浉鍏抽厤鏂广€?
 
 ```java
 @Override
 public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-    // 单个关联
+    // 鍗曚釜鍏宠仈
     registration.addRecipeCatalyst(
             new ItemStack(ModBlocks.MY_MACHINE.get()),
-            GoetyPunkRecipeTypes.MY_MACHINE
+            GoetyMechRecipeTypes.MY_MACHINE
     );
 
-    // 一个催化剂关联多个 RecipeType
+    // 涓€涓偓鍖栧墏鍏宠仈澶氫釜 RecipeType
     registration.addRecipeCatalyst(
             ModBlocks.ALLOY_FURNACE.get(),
-            GoetyPunkRecipeTypes.ALLOY_SMELTING,
-            GoetyPunkRecipeTypes.ALLOY_BLASTING
+            GoetyMechRecipeTypes.ALLOY_SMELTING,
+            GoetyMechRecipeTypes.ALLOY_BLASTING
     );
 }
 ```

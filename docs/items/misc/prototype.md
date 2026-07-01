@@ -1,128 +1,128 @@
-# 原型 — goetypunk
+﻿# 鍘熷瀷 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：elytra
-- 注册类：ModItems.PROTOTYPE
-- Java 类：PrototypeItem (extends ElytraItem)
-- 首次创建：2026-06-14
+- 绫诲瀷锛歟lytra
+- 娉ㄥ唽绫伙細ModItems.PROTOTYPE
+- Java 绫伙細PrototypeItem (extends ElytraItem)
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-多功能战斗鞘翅。提供：自定义飞行物理（velocity-set 模型）、墙跑系统、蓄力跳跃、Slam 冲击技能。核心玩法是"飞行机动 + 近战压杀"。
+澶氬姛鑳芥垬鏂楅灅缈呫€傛彁渚涳細鑷畾涔夐琛岀墿鐞嗭紙velocity-set 妯″瀷锛夈€佸璺戠郴缁熴€佽搫鍔涜烦璺冦€丼lam 鍐插嚮鎶€鑳姐€傛牳蹇冪帺娉曟槸"椋炶鏈哄姩 + 杩戞垬鍘嬫潃"銆?
 
-## 演化记录
+## 婕斿寲璁板綍
 
-### 2026-06-23 — 墙跑全量旋转实现 + 物理失败归档
+### 2026-06-23 鈥?澧欒窇鍏ㄩ噺鏃嬭浆瀹炵幇 + 鐗╃悊澶辫触褰掓。
 
-- 改动：实现相机全量旋转（四元数 SLERP 平滑过渡）、转角自动检测（findBestWallDirection）、墙面摩擦检测（slipperiness ≥ 0.8 禁止跑墙）、跑墙激活条件放宽（地面冲刺也可激活）；物理层改用 `player.move() + setDeltaMovement(ZERO)` 模型，但仍无法产生实际位移
-- 原因：相机旋转需要完整的墙壁=地面视觉体验；物理层 `move()` 执行但 Y 坐标不变化，开放问题待后续诊断
-- 关联：wall-run-full-rotation change（已归档）
+- 鏀瑰姩锛氬疄鐜扮浉鏈哄叏閲忔棆杞紙鍥涘厓鏁?SLERP 骞虫粦杩囨浮锛夈€佽浆瑙掕嚜鍔ㄦ娴嬶紙findBestWallDirection锛夈€佸闈㈡懇鎿︽娴嬶紙slipperiness 鈮?0.8 绂佹璺戝锛夈€佽窇澧欐縺娲绘潯浠舵斁瀹斤紙鍦伴潰鍐插埡涔熷彲婵€娲伙級锛涚墿鐞嗗眰鏀圭敤 `player.move() + setDeltaMovement(ZERO)` 妯″瀷锛屼絾浠嶆棤娉曚骇鐢熷疄闄呬綅绉?
+- 鍘熷洜锛氱浉鏈烘棆杞渶瑕佸畬鏁寸殑澧欏=鍦伴潰瑙嗚浣撻獙锛涚墿鐞嗗眰 `move()` 鎵ц浣?Y 鍧愭爣涓嶅彉鍖栵紝寮€鏀鹃棶棰樺緟鍚庣画璇婃柇
+- 鍏宠仈锛歸all-run-full-rotation change锛堝凡褰掓。锛?
 
-### 2026-06-18 — 墙跑物理修复：Y 轴独立控制
+### 2026-06-18 鈥?澧欒窇鐗╃悊淇锛歒 杞寸嫭绔嬫帶鍒?
 
-- 改动：applyWallMovement() 不再继承玩家下落速度，Y 轴设为独立慢滑速度 WALL_SLIDE_SPEED；视线方向保留 Y 分量支持仰头爬墙；退出条件从不冲刺改为落地
-- 原因：原代码继承玩家当前速度的 Y 分量（-0.08/tick），乘摩擦后仍以重力速度坠落
-- 关联：wallrun-physics-fix issue
+- 鏀瑰姩锛歛pplyWallMovement() 涓嶅啀缁ф壙鐜╁涓嬭惤閫熷害锛孻 杞磋涓虹嫭绔嬫參婊戦€熷害 WALL_SLIDE_SPEED锛涜绾挎柟鍚戜繚鐣?Y 鍒嗛噺鏀寔浠板ご鐖锛涢€€鍑烘潯浠朵粠涓嶅啿鍒烘敼涓鸿惤鍦?
+- 鍘熷洜锛氬師浠ｇ爜缁ф壙鐜╁褰撳墠閫熷害鐨?Y 鍒嗛噺锛?0.08/tick锛夛紝涔樻懇鎿﹀悗浠嶄互閲嶅姏閫熷害鍧犺惤
+- 鍏宠仈锛歸allrun-physics-fix issue
 
-### 2026-06-18 — 删除墙跑跳离、飞行加速功能
+### 2026-06-18 鈥?鍒犻櫎澧欒窇璺崇銆侀琛屽姞閫熷姛鑳?
 
-- 放弃方案：handleWallJumpOff + C2SWallJumpOffPacket、STORED_ZZA 字段飞行加速、地面起飞空中强制飞行
-- 放弃原因：墙跑跳离与蓄力跳冲突（共享按键绑定）；飞行加速被 velocity-set 模型替代
-- 关联：wallrun-physics-fix issue
+- 鏀惧純鏂规锛歨andleWallJumpOff + C2SWallJumpOffPacket銆丼TORED_ZZA 瀛楁椋炶鍔犻€熴€佸湴闈㈣捣椋炵┖涓己鍒堕琛?
+- 鏀惧純鍘熷洜锛氬璺戣烦绂讳笌钃勫姏璺冲啿绐侊紙鍏变韩鎸夐敭缁戝畾锛夛紱椋炶鍔犻€熻 velocity-set 妯″瀷鏇夸唬
+- 鍏宠仈锛歸allrun-physics-fix issue
 
-### 2026-06-18 — 飞行物理从加法加速器迁移到 velocity-set 模型
+### 2026-06-18 鈥?椋炶鐗╃悊浠庡姞娉曞姞閫熷櫒杩佺Щ鍒?velocity-set 妯″瀷
 
-- 改动：飞行加速从加法叠加改为每次直接设置合成后的最终速度
-- 原因：加法加速器在客户端-服务端同步中存在 forward 方向不一致问题
-- 关联：prototype-flight-mixin skill
+- 鏀瑰姩锛氶琛屽姞閫熶粠鍔犳硶鍙犲姞鏀逛负姣忔鐩存帴璁剧疆鍚堟垚鍚庣殑鏈€缁堥€熷害
+- 鍘熷洜锛氬姞娉曞姞閫熷櫒鍦ㄥ鎴风-鏈嶅姟绔悓姝ヤ腑瀛樺湪 forward 鏂瑰悜涓嶄竴鑷撮棶棰?
+- 鍏宠仈锛歱rototype-flight-mixin skill
 
-### 2026-06-23 — 蓄力跳冲刺惯性修复 + 速度倍率
+### 2026-06-23 鈥?钃勫姏璺冲啿鍒烘儻鎬т慨澶?+ 閫熷害鍊嶇巼
 
-- 改动：新增 cj_start_speed NBT 保留蓄力开始时客户端速度；CJ 注入不再被 isFallFlying() 阻塞，飞行中持续维持水平速度；在 applyChargedJump 中给 bestSpeed 乘 2.5 倍
-- 原因：长蓄力（80+ tick）后 isSprinting() 丢失导致 attrSpeed 塌缩到 0.1；进入飞行后 CJ 注入被跳过，水平速度仅靠 elytra 物理维持（摩擦大）；用户反馈速度仍需提升
-- 关联：fix-charge-jump-hspeed change
+- 鏀瑰姩锛氭柊澧?cj_start_speed NBT 淇濈暀钃勫姏寮€濮嬫椂瀹㈡埛绔€熷害锛汣J 娉ㄥ叆涓嶅啀琚?isFallFlying() 闃诲锛岄琛屼腑鎸佺画缁存寔姘村钩閫熷害锛涘湪 applyChargedJump 涓粰 bestSpeed 涔?2.5 鍊?
+- 鍘熷洜锛氶暱钃勫姏锛?0+ tick锛夊悗 isSprinting() 涓㈠け瀵艰嚧 attrSpeed 濉岀缉鍒?0.1锛涜繘鍏ラ琛屽悗 CJ 娉ㄥ叆琚烦杩囷紝姘村钩閫熷害浠呴潬 elytra 鐗╃悊缁存寔锛堟懇鎿﹀ぇ锛夛紱鐢ㄦ埛鍙嶉閫熷害浠嶉渶鎻愬崌
+- 鍏宠仈锛歠ix-charge-jump-hspeed change
 
-### 2026-06-23 — 修复 sprint 停止后 groundSpeed 残值导致无输入蓄力跳获得错误水平动量
+### 2026-06-23 鈥?淇 sprint 鍋滄鍚?groundSpeed 娈嬪€煎鑷存棤杈撳叆钃勫姏璺宠幏寰楅敊璇按骞冲姩閲?
 
-- 改动：在 sprint 停止分支（`!player.isSprinting()`）中清空 `groundSpeed(NBT)`
-- 原因：sprint 期间每 tick 追踪的实测速度残留在 NBT 中，停止 sprint 后未被清除，蓄力跳时 `bestSpeed` 取到旧 sprint 速度，在无 W 输入时产生不应有的水平推力
-- 关联：codebase-remediation change
+- 鏀瑰姩锛氬湪 sprint 鍋滄鍒嗘敮锛坄!player.isSprinting()`锛変腑娓呯┖ `groundSpeed(NBT)`
+- 鍘熷洜锛歴print 鏈熼棿姣?tick 杩借釜鐨勫疄娴嬮€熷害娈嬬暀鍦?NBT 涓紝鍋滄 sprint 鍚庢湭琚竻闄わ紝钃勫姏璺虫椂 `bestSpeed` 鍙栧埌鏃?sprint 閫熷害锛屽湪鏃?W 杈撳叆鏃朵骇鐢熶笉搴旀湁鐨勬按骞虫帹鍔?
+- 鍏宠仈锛歝odebase-remediation change
 
-### 2026-06-23 — 墙跑方向计算从视线投影改为水平沿墙方向
+### 2026-06-23 鈥?澧欒窇鏂瑰悜璁＄畻浠庤绾挎姇褰辨敼涓烘按骞虫部澧欐柟鍚?
 
-- 改动：sprint 时用 `down × wallN` 计算水平沿墙方向，替代 `getLookAngle()` 投影；新增 C2SWallInputPacket（客户端 → 服务端同步 forward/strafe 输入）；墙跑时 `forward=1` fallback
-- 原因：视线投影在墙面上产生不可预测的斜向移动，不满足"水平沿墙跑"的预期
-- 关联：wall-run iteration (commits c544224 → 565daa0 → 136150e → 5faa6a5)
+- 鏀瑰姩锛歴print 鏃剁敤 `down 脳 wallN` 璁＄畻姘村钩娌垮鏂瑰悜锛屾浛浠?`getLookAngle()` 鎶曞奖锛涙柊澧?C2SWallInputPacket锛堝鎴风 鈫?鏈嶅姟绔悓姝?forward/strafe 杈撳叆锛夛紱澧欒窇鏃?`forward=1` fallback
+- 鍘熷洜锛氳绾挎姇褰卞湪澧欓潰涓婁骇鐢熶笉鍙娴嬬殑鏂滃悜绉诲姩锛屼笉婊¤冻"姘村钩娌垮璺?鐨勯鏈?
+- 鍏宠仈锛歸all-run iteration (commits c544224 鈫?565daa0 鈫?136150e 鈫?5faa6a5)
 
-### 2026-06-23 — 墙跑物理改为直接 move() 绕过 travel() 摩擦
+### 2026-06-23 鈥?澧欒窇鐗╃悊鏀逛负鐩存帴 move() 缁曡繃 travel() 鎽╂摝
 
-- 改动：取消 setDeltaMovement 被动物理，改为 `player.move(MoverType.SELF, delta)` 直接驱动；delta 清零防止 travel() 覆盖；移除 sprint 检查使墙跑在 sprint 取消后持续
-- 原因：travel() 的摩擦覆盖 + onGround 检测导致墙跑速度被大幅衰减，需要绕过原版移动流水线
-- 关联：wall-run iteration (commits 1f5853d → c755f7e → cd816fd)
+- 鏀瑰姩锛氬彇娑?setDeltaMovement 琚姩鐗╃悊锛屾敼涓?`player.move(MoverType.SELF, delta)` 鐩存帴椹卞姩锛沝elta 娓呴浂闃叉 travel() 瑕嗙洊锛涚Щ闄?sprint 妫€鏌ヤ娇澧欒窇鍦?sprint 鍙栨秷鍚庢寔缁?
+- 鍘熷洜锛歵ravel() 鐨勬懇鎿﹁鐩?+ onGround 妫€娴嬪鑷村璺戦€熷害琚ぇ骞呰“鍑忥紝闇€瑕佺粫杩囧師鐗堢Щ鍔ㄦ祦姘寸嚎
+- 鍏宠仈锛歸all-run iteration (commits 1f5853d 鈫?c755f7e 鈫?cd816fd)
 
-### 2026-06-23 — 墙跑启动时抬升离地 + onGround 守卫
+### 2026-06-23 鈥?澧欒窇鍚姩鏃舵姮鍗囩鍦?+ onGround 瀹堝崼
 
-- 改动：墙跑激活时强制抬升 0.2 格（避免地面摩擦抵消水平速度）；在 applyWallMovement 入口加 `player.onGround()` 守卫
-- 原因：墙跑从地面开始时，travel() 的地面摩擦立即将速度降到零，需要空中启动
-- 关联：commit 9ac4f32
+- 鏀瑰姩锛氬璺戞縺娲绘椂寮哄埗鎶崌 0.2 鏍硷紙閬垮厤鍦伴潰鎽╂摝鎶垫秷姘村钩閫熷害锛夛紱鍦?applyWallMovement 鍏ュ彛鍔?`player.onGround()` 瀹堝崼
+- 鍘熷洜锛氬璺戜粠鍦伴潰寮€濮嬫椂锛宼ravel() 鐨勫湴闈㈡懇鎿︾珛鍗冲皢閫熷害闄嶅埌闆讹紝闇€瑕佺┖涓惎鍔?
+- 鍏宠仈锛歝ommit 9ac4f32
 
-### 2026-06-23 — 墙跑改用视线方向 + 反重力模式
+### 2026-06-23 鈥?澧欒窇鏀圭敤瑙嗙嚎鏂瑰悜 + 鍙嶉噸鍔涙ā寮?
 
-- 改动：墙跑方向改回视线方向（`getLookAngle()`），移除 lift-off-ground；改为持续设置 `setNoGravity(true)` 消除重力影响
-- 原因：lift-off-ground 在复杂地形不可靠；反重力比抬升更稳定
-- 关联：commit 44f9fb3
+- 鏀瑰姩锛氬璺戞柟鍚戞敼鍥炶绾挎柟鍚戯紙`getLookAngle()`锛夛紝绉婚櫎 lift-off-ground锛涙敼涓烘寔缁缃?`setNoGravity(true)` 娑堥櫎閲嶅姏褰卞搷
+- 鍘熷洜锛歭ift-off-ground 鍦ㄥ鏉傚湴褰笉鍙潬锛涘弽閲嶅姏姣旀姮鍗囨洿绋冲畾
+- 鍏宠仈锛歝ommit 44f9fb3
 
-### 2026-06-23 — 垂直墙跑实现：W 爬升 / S 下滑 / A D 水平横移
+### 2026-06-23 鈥?鍨傜洿澧欒窇瀹炵幇锛歐 鐖崌 / S 涓嬫粦 / A D 姘村钩妯Щ
 
-- 改动：墙跑方向从水平沿墙（`forwardOnWall`）改为垂直向上（`wallUp`）：W=爬升、S=下滑、A/D=左右横移；重力从墙面投影改为拉向墙面（`wallN * -WALL_GRAVITY`）；新增 `WALL_PULL_SPEED` 保持贴墙
-- 原因：水平沿墙跑不符合 Titanfall 式垂直墙跑的预期；需要 W/S 控制升降、A/D 控制水平横移
-- 关联：commit 99b7245（PrototypeRenderEvents.java client-side setDeltaMovement）；Config keys: `WALL_RUN_SPEED`, `WALL_GRAVITY`, `WALL_PULL_SPEED`
+- 鏀瑰姩锛氬璺戞柟鍚戜粠姘村钩娌垮锛坄forwardOnWall`锛夋敼涓哄瀭鐩村悜涓婏紙`wallUp`锛夛細W=鐖崌銆丼=涓嬫粦銆丄/D=宸﹀彸妯Щ锛涢噸鍔涗粠澧欓潰鎶曞奖鏀逛负鎷夊悜澧欓潰锛坄wallN * -WALL_GRAVITY`锛夛紱鏂板 `WALL_PULL_SPEED` 淇濇寔璐村
+- 鍘熷洜锛氭按骞虫部澧欒窇涓嶇鍚?Titanfall 寮忓瀭鐩村璺戠殑棰勬湡锛涢渶瑕?W/S 鎺у埗鍗囬檷銆丄/D 鎺у埗姘村钩妯Щ
+- 鍏宠仈锛歝ommit 99b7245锛圥rototypeRenderEvents.java client-side setDeltaMovement锛夛紱Config keys: `WALL_RUN_SPEED`, `WALL_GRAVITY`, `WALL_PULL_SPEED`
 
-### 2026-06-23 — Plan B: Mixin into Player.travel() for wall-run movement
+### 2026-06-23 鈥?Plan B: Mixin into Player.travel() for wall-run movement
 
-- 改动：HEAD injection 取消 travel()，通过 accessor 设置 onGround=true，手动调用 player.move() 传入墙跑速度（W=wallUp, A/D=wallRight，重力拉向墙面 + 贴墙拉力）；通过 ClientWallRunState 重新应用 sprint；临时 onGround 覆盖实现 step-up
-- 原因：travel() 的摩擦模型 + onGround 检测导致取消 sprint 后墙跑速度被大幅衰减；需要完全绕过原版移动流水线以达到 Titanfall 式垂直墙跑效果
-- 关联：commit 7a632bf；文件：MixinWallRunTravel.java、ClientWallRunState.java、EntityOnGroundAccessor.java、PrototypeRenderEvents.java
+- 鏀瑰姩锛欻EAD injection 鍙栨秷 travel()锛岄€氳繃 accessor 璁剧疆 onGround=true锛屾墜鍔ㄨ皟鐢?player.move() 浼犲叆澧欒窇閫熷害锛圵=wallUp, A/D=wallRight锛岄噸鍔涙媺鍚戝闈?+ 璐村鎷夊姏锛夛紱閫氳繃 ClientWallRunState 閲嶆柊搴旂敤 sprint锛涗复鏃?onGround 瑕嗙洊瀹炵幇 step-up
+- 鍘熷洜锛歵ravel() 鐨勬懇鎿︽ā鍨?+ onGround 妫€娴嬪鑷村彇娑?sprint 鍚庡璺戦€熷害琚ぇ骞呰“鍑忥紱闇€瑕佸畬鍏ㄧ粫杩囧師鐗堢Щ鍔ㄦ祦姘寸嚎浠ヨ揪鍒?Titanfall 寮忓瀭鐩村璺戞晥鏋?
+- 鍏宠仈锛歝ommit 7a632bf锛涙枃浠讹細MixinWallRunTravel.java銆丆lientWallRunState.java銆丒ntityOnGroundAccessor.java銆丳rototypeRenderEvents.java
 
-### 2026-06-24 — 墙跑头顶翻越（outward burst + grace period）+ 翻越后 sprint 保持
+### 2026-06-24 鈥?澧欒窇澶撮《缈昏秺锛坥utward burst + grace period锛? 缈昏秺鍚?sprint 淇濇寔
 
-- 改动：墙跑遇到头顶障碍时自动向外爆发（outward burst 0.9/1.2/0.7/0.5）尝试翻越，成功设 3 tick grace 窗口用 pull 重新贴墙；翻越后 sprintRetainTicks=30（1.5秒）保持冲刺状态；Shift 键退出墙跑
-- 原因：原版 travel() 遇天花板碰撞无法继续爬墙；LocalPlayer.aiStep() 在 travel() 后清除 sprint，翻越后 sprint 丢失
-- 关联：MixinWallRunTravel.java, ClientWallRunState.java, PrototypeRenderEvents.java; sprintRetain 由用户手动从 10 改为 30 tick
+- 鏀瑰姩锛氬璺戦亣鍒板ご椤堕殰纰嶆椂鑷姩鍚戝鐖嗗彂锛坥utward burst 0.9/1.2/0.7/0.5锛夊皾璇曠炕瓒婏紝鎴愬姛璁?3 tick grace 绐楀彛鐢?pull 閲嶆柊璐村锛涚炕瓒婂悗 sprintRetainTicks=30锛?.5绉掞級淇濇寔鍐插埡鐘舵€侊紱Shift 閿€€鍑哄璺?
+- 鍘熷洜锛氬師鐗?travel() 閬囧ぉ鑺辨澘纰版挒鏃犳硶缁х画鐖锛汱ocalPlayer.aiStep() 鍦?travel() 鍚庢竻闄?sprint锛岀炕瓒婂悗 sprint 涓㈠け
+- 鍏宠仈锛歁ixinWallRunTravel.java, ClientWallRunState.java, PrototypeRenderEvents.java; sprintRetain 鐢辩敤鎴锋墜鍔ㄤ粠 10 鏀逛负 30 tick
 
-### 2026-06-24 — Sprint cut-off 修复 + 水下墙跑守卫 + 游泳加速重写
+### 2026-06-24 鈥?Sprint cut-off 淇 + 姘翠笅澧欒窇瀹堝崼 + 娓告吵鍔犻€熼噸鍐?
 
-- 改动：移除 shouldSprint() 守卫（恢复直接按键轮询）；水下禁止墙跑（移动+相机）；游泳加速从 attribute modifier 改为 mixin 公式 `m = 1.25 - 0.25/d`，三轴乘法保留俯仰角
-- 原因：sprint 在翻越后断掉（shouldSprint guard 阻止 sprintDown 刷新）；水下墙跑不应触发；MOVEMENT_SPEED 属性在游泳时无 Depths Strider 时不生效，attribute 方法不可行
-- 关联：sprint-cutoff-fix, underwater-wallrun-guard, swim-accel-rework
+- 鏀瑰姩锛氱Щ闄?shouldSprint() 瀹堝崼锛堟仮澶嶇洿鎺ユ寜閿疆璇級锛涙按涓嬬姝㈠璺戯紙绉诲姩+鐩告満锛夛紱娓告吵鍔犻€熶粠 attribute modifier 鏀逛负 mixin 鍏紡 `m = 1.25 - 0.25/d`锛屼笁杞翠箻娉曚繚鐣欎刊浠拌
+- 鍘熷洜锛歴print 鍦ㄧ炕瓒婂悗鏂帀锛坰houldSprint guard 闃绘 sprintDown 鍒锋柊锛夛紱姘翠笅澧欒窇涓嶅簲瑙﹀彂锛汳OVEMENT_SPEED 灞炴€у湪娓告吵鏃舵棤 Depths Strider 鏃朵笉鐢熸晥锛宎ttribute 鏂规硶涓嶅彲琛?
+- 鍏宠仈锛歴print-cutoff-fix, underwater-wallrun-guard, swim-accel-rework
 
-### 2026-06-25 — 同化击杀计数成长系统（滑翔改为初始能力 + 文件缓存防崩溃丢失）
+### 2026-06-25 鈥?鍚屽寲鍑绘潃璁℃暟鎴愰暱绯荤粺锛堟粦缈旀敼涓哄垵濮嬭兘鍔?+ 鏂囦欢缂撳瓨闃插穿婧冧涪澶憋級
 
-- 改动：滑翔改为始终可用（hasFlight 返回 true）；新增 AssimilcationSaveManager 每 60s 写独立缓存文件到 playerdata/，写时先写 .tmp 再原子重命名；登录时 cache > NBT 自动恢复击杀数
-- 原因：用户发现鞘翅无法禁用滑翔；经历 crash 导致击杀数清零的教训，需要独立于 NBT 的备份机制
+- 鏀瑰姩锛氭粦缈旀敼涓哄缁堝彲鐢紙hasFlight 杩斿洖 true锛夛紱鏂板 AssimilcationSaveManager 姣?60s 鍐欑嫭绔嬬紦瀛樻枃浠跺埌 playerdata/锛屽啓鏃跺厛鍐?.tmp 鍐嶅師瀛愰噸鍛藉悕锛涚櫥褰曟椂 cache > NBT 鑷姩鎭㈠鍑绘潃鏁?
+- 鍘熷洜锛氱敤鎴峰彂鐜伴灅缈呮棤娉曠鐢ㄦ粦缈旓紱缁忓巻 crash 瀵艰嚧鍑绘潃鏁版竻闆剁殑鏁欒锛岄渶瑕佺嫭绔嬩簬 NBT 鐨勫浠芥満鍒?
 
-### 2026-06-25 — 同化击杀计数成长系统
+### 2026-06-25 鈥?鍚屽寲鍑绘潃璁℃暟鎴愰暱绯荤粺
 
-- 改动：新增同化击杀计数系统（PersistentData `goetypunk.assimilation_kills`），4 阶能力解锁（<10=基础机动+滑翔 ≥10=二级加速 ≥50=Slam ≥100=终阶），边际收益伤害倍率函数（1-100k+ 无极 cap），病毒附加伤害（indirectMagic per hit），Shift 展开 tooltip 显示能力列表/状态/统计
-- 原因：为 Prototype 提供成长的 RPG 要素，击杀越多能力越强
-- 关联：S2CAssimilationDataPacket.java, PrototypeItem.java (tier/damage utils), PrototypeEvents.java (kill tracking, login sync, damage mult), PrototypeTravelMixin.java (飞行/游泳 tier scaling), MixinWallRunTravel.java (墙跑 tier scaling), PrototypeRenderEvents.java (tooltip), zh_cn.json / en_us.json
+- 鏀瑰姩锛氭柊澧炲悓鍖栧嚮鏉€璁℃暟绯荤粺锛圥ersistentData `GoetyMech.assimilation_kills`锛夛紝4 闃惰兘鍔涜В閿侊紙<10=鍩虹鏈哄姩+婊戠繑 鈮?0=浜岀骇鍔犻€?鈮?0=Slam 鈮?00=缁堥樁锛夛紝杈归檯鏀剁泭浼ゅ鍊嶇巼鍑芥暟锛?-100k+ 鏃犳瀬 cap锛夛紝鐥呮瘨闄勫姞浼ゅ锛坕ndirectMagic per hit锛夛紝Shift 灞曞紑 tooltip 鏄剧ず鑳藉姏鍒楄〃/鐘舵€?缁熻
+- 鍘熷洜锛氫负 Prototype 鎻愪緵鎴愰暱鐨?RPG 瑕佺礌锛屽嚮鏉€瓒婂鑳藉姏瓒婂己
+- 鍏宠仈锛歋2CAssimilationDataPacket.java, PrototypeItem.java (tier/damage utils), PrototypeEvents.java (kill tracking, login sync, damage mult), PrototypeTravelMixin.java (椋炶/娓告吵 tier scaling), MixinWallRunTravel.java (澧欒窇 tier scaling), PrototypeRenderEvents.java (tooltip), zh_cn.json / en_us.json
 
-### 2026-06-25 — Mimic 合成体系 + 不可摧毁守卫 + 统一检测
+### 2026-06-25 鈥?Mimic 鍚堟垚浣撶郴 + 涓嶅彲鎽ф瘉瀹堝崼 + 缁熶竴妫€娴?
 
-- 改动：新增 `isPrototype(ItemStack)` / `isPrototypeItem(Item)` / `hasAnyPrototype()` 统一检测方法；ItemEntityPrototypeMixin 免疫伤害；ItemEntityVoidMixin 虚空拉回 Y=260；PrototypeMimicItem `createFrom()` 合成继承属性；MimicCombinationRecipe + MimicDeconstructionRecipe 注册
-- 原因：prototype 物品需要统一的归属检测接口；mimic 合成系统允许将 prototype+ 胸甲合成为可穿戴 ElytraItem
+- 鏀瑰姩锛氭柊澧?`isPrototype(ItemStack)` / `isPrototypeItem(Item)` / `hasAnyPrototype()` 缁熶竴妫€娴嬫柟娉曪紱ItemEntityPrototypeMixin 鍏嶇柅浼ゅ锛汭temEntityVoidMixin 铏氱┖鎷夊洖 Y=260锛汸rototypeMimicItem `createFrom()` 鍚堟垚缁ф壙灞炴€э紱MimicCombinationRecipe + MimicDeconstructionRecipe 娉ㄥ唽
+- 鍘熷洜锛歱rototype 鐗╁搧闇€瑕佺粺涓€鐨勫綊灞炴娴嬫帴鍙ｏ紱mimic 鍚堟垚绯荤粺鍏佽灏?prototype+ 鑳哥敳鍚堟垚涓哄彲绌挎埓 ElytraItem
 
-### 2026-06-25 — 皮下护甲：击杀成长型免伤系统
+### 2026-06-25 鈥?鐨笅鎶ょ敳锛氬嚮鏉€鎴愰暱鍨嬪厤浼ょ郴缁?
 
-- 改动：新增 `getDamageImmunityThreshold(int kills)` 三段公式计算免伤阈值；`getNextImmunityMilestone(int kills)` 计算下次进化所需击杀；`LivingHurtEvent` 中受害者免伤判定（有来源伤害且 `amount <= threshold` 时 cancel 事件，播放 EXP_ORB 叮声）；tooltip 子弹俯冲后新增"皮下护甲"行（红/深灰），攻击力加成行末尾追加"伤害免疫：X"
-- 公式：`<150=0, 150~1000=kills/100, 1000~10000=10+(kills-1000)/1000, 10000+=19+(kills-10000)/2000`
-- 原因：为 prototype 提供与额外生命/护盾不同的第三类防御机制；低伤害被完全无视，随击杀增长阈值提高
-- 教训：初始 `(kills-150)/200+1` 增速太慢（200 杀才+1），用户认为含金量不足，改为 `kills/100` 后每 100 击杀稳定+1
-- 关联：PrototypeItem.java (formula), PrototypeEvents.java (immunity check), PrototypeRenderEvents.java (tooltip)
+- 鏀瑰姩锛氭柊澧?`getDamageImmunityThreshold(int kills)` 涓夋鍏紡璁＄畻鍏嶄激闃堝€硷紱`getNextImmunityMilestone(int kills)` 璁＄畻涓嬫杩涘寲鎵€闇€鍑绘潃锛沗LivingHurtEvent` 涓彈瀹宠€呭厤浼ゅ垽瀹氾紙鏈夋潵婧愪激瀹充笖 `amount <= threshold` 鏃?cancel 浜嬩欢锛屾挱鏀?EXP_ORB 鍙０锛夛紱tooltip 瀛愬脊淇啿鍚庢柊澧?鐨笅鎶ょ敳"琛岋紙绾?娣辩伆锛夛紝鏀诲嚮鍔涘姞鎴愯鏈熬杩藉姞"浼ゅ鍏嶇柅锛歑"
+- 鍏紡锛歚<150=0, 150~1000=kills/100, 1000~10000=10+(kills-1000)/1000, 10000+=19+(kills-10000)/2000`
+- 鍘熷洜锛氫负 prototype 鎻愪緵涓庨澶栫敓鍛?鎶ょ浘涓嶅悓鐨勭涓夌被闃插尽鏈哄埗锛涗綆浼ゅ琚畬鍏ㄦ棤瑙嗭紝闅忓嚮鏉€澧為暱闃堝€兼彁楂?
+- 鏁欒锛氬垵濮?`(kills-150)/200+1` 澧為€熷お鎱紙200 鏉€鎵?1锛夛紝鐢ㄦ埛璁や负鍚噾閲忎笉瓒筹紝鏀逛负 `kills/100` 鍚庢瘡 100 鍑绘潃绋冲畾+1
+- 鍏宠仈锛歅rototypeItem.java (formula), PrototypeEvents.java (immunity check), PrototypeRenderEvents.java (tooltip)
 
-### 2026-06-23 — 体线粒子系统重构：6 锚点 + 下砸 FLAME 火花
+### 2026-06-23 鈥?浣撶嚎绮掑瓙绯荤粺閲嶆瀯锛? 閿氱偣 + 涓嬬牳 FLAME 鐏姳
 
-- 改动：移除旧冲刺粒子（DustParticleOptions 随机散布）和蓄力跳粒子（CRIT + ENCHANTED_HIT）；新增 6 身体锚点粒子系统（左手/右手外侧、头顶左/右、左脚/右脚外侧）；S2CSlamStatePacket 同步下砸客户端状态；下砸时生成深红体线 + FLAME 火星 + 淡红尾迹三层混合
-- 原因：粒子位置更细致，身体各部位各有尾迹；下砸视觉区分度不足
-- 关联：particle-rework change
+- 鏀瑰姩锛氱Щ闄ゆ棫鍐插埡绮掑瓙锛圖ustParticleOptions 闅忔満鏁ｅ竷锛夊拰钃勫姏璺崇矑瀛愶紙CRIT + ENCHANTED_HIT锛夛紱鏂板 6 韬綋閿氱偣绮掑瓙绯荤粺锛堝乏鎵?鍙虫墜澶栦晶銆佸ご椤跺乏/鍙炽€佸乏鑴?鍙宠剼澶栦晶锛夛紱S2CSlamStatePacket 鍚屾涓嬬牳瀹㈡埛绔姸鎬侊紱涓嬬牳鏃剁敓鎴愭繁绾綋绾?+ FLAME 鐏槦 + 娣＄孩灏捐抗涓夊眰娣峰悎
+- 鍘熷洜锛氱矑瀛愪綅缃洿缁嗚嚧锛岃韩浣撳悇閮ㄤ綅鍚勬湁灏捐抗锛涗笅鐮歌瑙夊尯鍒嗗害涓嶈冻
+- 鍏宠仈锛歱article-rework change

@@ -1,307 +1,307 @@
-# 时间聚晶袋（Time Focus Pouch）架构说明
+﻿# 鏃堕棿鑱氭櫠琚嬶紙Time Focus Pouch锛夋灦鏋勮鏄?
 
-> **本物品的时停代码参考自 [EndLibrary](https://github.com/meglevel/ending_library) 和梦幻终焉。**  
-> 服务器端时停引擎（`TimeStopUtils`、`TimeStopSavedData`、S2C 广播协议）、  
-> 客户端 Mixin 层（`MinecraftMixin` HEAD 注入、`ClientLevelMixin` tick 取消、`Blaze3DMixin` 时间替换）、  
-> 以及 `TimeContext.Client.timer` 独立时钟机制均源自 EndLibrary。  
-> 本项目在此基础上实现了 GUI 冻结流程、`InputEvent.Key` 松键检测、`freezePacketDelay` 动画延迟等原创逻辑。
+> **鏈墿鍝佺殑鏃跺仠浠ｇ爜鍙傝€冭嚜 [EndLibrary](https://github.com/meglevel/ending_library) 鍜屾ⅵ骞荤粓鐒夈€?*  
+> 鏈嶅姟鍣ㄧ鏃跺仠寮曟搸锛坄TimeStopUtils`銆乣TimeStopSavedData`銆丼2C 骞挎挱鍗忚锛夈€? 
+> 瀹㈡埛绔?Mixin 灞傦紙`MinecraftMixin` HEAD 娉ㄥ叆銆乣ClientLevelMixin` tick 鍙栨秷銆乣Blaze3DMixin` 鏃堕棿鏇挎崲锛夈€? 
+> 浠ュ強 `TimeContext.Client.timer` 鐙珛鏃堕挓鏈哄埗鍧囨簮鑷?EndLibrary銆? 
+> 鏈」鐩湪姝ゅ熀纭€涓婂疄鐜颁簡 GUI 鍐荤粨娴佺▼銆乣InputEvent.Key` 鏉鹃敭妫€娴嬨€乣freezePacketDelay` 鍔ㄧ敾寤惰繜绛夊師鍒涢€昏緫銆?
 
-## 概述
+## 姒傝堪
 
-时间聚晶袋是一个特殊的聚晶袋（继承 Goety 的 `FocusPack`），持有它时打开 Goety 的径向菜单/聚晶袋/聚晶包 GUI 会**触发全局时停**，让玩家在静止世界中安全切换聚晶。
+鏃堕棿鑱氭櫠琚嬫槸涓€涓壒娈婄殑鑱氭櫠琚嬶紙缁ф壙 Goety 鐨?`FocusPack`锛夛紝鎸佹湁瀹冩椂鎵撳紑 Goety 鐨勫緞鍚戣彍鍗?鑱氭櫠琚?鑱氭櫠鍖?GUI 浼?*瑙﹀彂鍏ㄥ眬鏃跺仠**锛岃鐜╁鍦ㄩ潤姝笘鐣屼腑瀹夊叏鍒囨崲鑱氭櫠銆?
 
-| 物品 | 类 | 触发方式 |
+| 鐗╁搧 | 绫?| 瑙﹀彂鏂瑰紡 |
 |------|-----|---------|
-| 时间聚晶袋 | `TimeFocusPouch extends FocusPack` | 打开 `FocusRadialMenuScreen`（径向菜单） |
-| 时间聚晶袋 | `TimeFocusPouch extends FocusPack` | 打开 `FocusPackScreen`（聚晶袋） |
-| 时间聚晶袋 | `TimeFocusPouch extends FocusPack` | 打开 `FocusBagScreen`（聚晶包） |
+| 鏃堕棿鑱氭櫠琚?| `TimeFocusPouch extends FocusPack` | 鎵撳紑 `FocusRadialMenuScreen`锛堝緞鍚戣彍鍗曪級 |
+| 鏃堕棿鑱氭櫠琚?| `TimeFocusPouch extends FocusPack` | 鎵撳紑 `FocusPackScreen`锛堣仛鏅惰锛?|
+| 鏃堕棿鑱氭櫠琚?| `TimeFocusPouch extends FocusPack` | 鎵撳紑 `FocusBagScreen`锛堣仛鏅跺寘锛?|
 
-**核心需求**：
-- 打开 GUI 时冻结所有实体/粒子/声音/时间
-- 玩家仍能操作 GUI（选择聚晶）
-- 关闭 GUI 时恢复一切
-- 径向菜单的打开动画（2.5 ticks）要有足够时间完成才冻结
+**鏍稿績闇€姹?*锛?
+- 鎵撳紑 GUI 鏃跺喕缁撴墍鏈夊疄浣?绮掑瓙/澹伴煶/鏃堕棿
+- 鐜╁浠嶈兘鎿嶄綔 GUI锛堥€夋嫨鑱氭櫠锛?
+- 鍏抽棴 GUI 鏃舵仮澶嶄竴鍒?
+- 寰勫悜鑿滃崟鐨勬墦寮€鍔ㄧ敾锛?.5 ticks锛夎鏈夎冻澶熸椂闂村畬鎴愭墠鍐荤粨
 
 ---
 
-## 架构分层
+## 鏋舵瀯鍒嗗眰
 
-### 1. 物品层（Item）
+### 1. 鐗╁搧灞傦紙Item锛?
 
-**`TimeFocusPouch.java`** — 最简单的类，仅继承 `FocusPack` 并重写名字。全部逻辑在事件系统中。
+**`TimeFocusPouch.java`** 鈥?鏈€绠€鍗曠殑绫伙紝浠呯户鎵?`FocusPack` 骞堕噸鍐欏悕瀛椼€傚叏閮ㄩ€昏緫鍦ㄤ簨浠剁郴缁熶腑銆?
 
-### 2. 客户端事件层（Forge Event Bus）
+### 2. 瀹㈡埛绔簨浠跺眰锛團orge Event Bus锛?
 
-**`ModClientForgeEvents.java`** — 核心协调者，处理以下事件：
+**`ModClientForgeEvents.java`** 鈥?鏍稿績鍗忚皟鑰咃紝澶勭悊浠ヤ笅浜嬩欢锛?
 
-#### 2.1 打开 GUI — `onScreenOpen(ScreenEvent.Opening)`
-
-```
-玩家打开 GUI
-  ├─ hasTimeFocusPouch()?    → 检查背包/主手/副手/Curios 腰带槽
-  │   └─ 缓存 20 ticks，避免高频遍历
-  ├─ FocusRadialMenuScreen?  → radMenuOpen=true, freezePacketDelay=3
-  └─ FocusPack/BagScreen?    → anyPouchOpen=true, C2S冻结包立即发送
-```
-
-**径向菜单延迟 3 ticks 的原因**：`FocusRadialMenuScreen` 的打开动画需要 2.5 ticks（`OPEN_ANIMATION_LENGTH`），需要等动画完成后才冻结，否则 `isReady()` 一直返回 false，`processClick()` 无法触发关屏。
-
-#### 2.2 冻结倒计时 — `onClientTick(TickEvent.ClientTickEvent.END)`
+#### 2.1 鎵撳紑 GUI 鈥?`onScreenOpen(ScreenEvent.Opening)`
 
 ```
-每个正常 tick（冻结未激活时）：
+鐜╁鎵撳紑 GUI
+  鈹溾攢 hasTimeFocusPouch()?    鈫?妫€鏌ヨ儗鍖?涓绘墜/鍓墜/Curios 鑵板甫妲?
+  鈹?  鈹斺攢 缂撳瓨 20 ticks锛岄伩鍏嶉珮棰戦亶鍘?
+  鈹溾攢 FocusRadialMenuScreen?  鈫?radMenuOpen=true, freezePacketDelay=3
+  鈹斺攢 FocusPack/BagScreen?    鈫?anyPouchOpen=true, C2S鍐荤粨鍖呯珛鍗冲彂閫?
+```
+
+**寰勫悜鑿滃崟寤惰繜 3 ticks 鐨勫師鍥?*锛歚FocusRadialMenuScreen` 鐨勬墦寮€鍔ㄧ敾闇€瑕?2.5 ticks锛坄OPEN_ANIMATION_LENGTH`锛夛紝闇€瑕佺瓑鍔ㄧ敾瀹屾垚鍚庢墠鍐荤粨锛屽惁鍒?`isReady()` 涓€鐩磋繑鍥?false锛宍processClick()` 鏃犳硶瑙﹀彂鍏冲睆銆?
+
+#### 2.2 鍐荤粨鍊掕鏃?鈥?`onClientTick(TickEvent.ClientTickEvent.END)`
+
+```
+姣忎釜姝ｅ父 tick锛堝喕缁撴湭婵€娲绘椂锛夛細
   freezePacketDelay > 0?
-    ├─ freezePacketDelay-- (3→2→1→0)
-    └─ ==0 → anyPouchOpen=true, C2STimeStopPacket(true) 发送到服务器
+    鈹溾攢 freezePacketDelay-- (3鈫?鈫?鈫?)
+    鈹斺攢 ==0 鈫?anyPouchOpen=true, C2STimeStopPacket(true) 鍙戦€佸埌鏈嶅姟鍣?
 ```
 
-此后 `anyPouchOpen=true` 标记冻结已激活。
+姝ゅ悗 `anyPouchOpen=true` 鏍囪鍐荤粨宸叉縺娲汇€?
 
-#### 2.3 松键检测 — `onKeyInput(InputEvent.Key)`
+#### 2.3 鏉鹃敭妫€娴?鈥?`onKeyInput(InputEvent.Key)`
 
-> **为什么不用 `ClientTickEvent`？** 冻结后 HEAD 注入将 `msPerTick=1.0e32`，游戏循环跑 0 次，`tick()` 不执行，`ClientTickEvent.END` 不会触发。
+> **涓轰粈涔堜笉鐢?`ClientTickEvent`锛?* 鍐荤粨鍚?HEAD 娉ㄥ叆灏?`msPerTick=1.0e32`锛屾父鎴忓惊鐜窇 0 娆★紝`tick()` 涓嶆墽琛岋紝`ClientTickEvent.END` 涓嶄細瑙﹀彂銆?
 
-`InputEvent.Key` 是 GLFW 回调，在 `runTick()` 最开头的 `glfwPollEvents()` 中触发，**完全独立于游戏循环**，冻结期间也能正常工作。
-
-```
-X 键释放
-  ├─ anyPouchOpen=false? (SHORT PRESS)
-  │   ├─ radMenuOpen=false, freezePacketDelay=0   ← 取消冻结倒计时
-  │   └─ mc.setScreen(null)                        ← 直接关屏，不触发冻结
-  │
-  └─ anyPouchOpen=true? (LONG PRESS / 冻结中)
-      └─ TimeStopUtilsWrapped.disable()            ← 解冻客户端，让 processClick() 自然执行
-```
-
-**SHORT PRESS 关屏但不发冻结包** → `onScreenClosed` 中 `!anyPouchOpen && freezePacketDelay==0` → 直接 return，不发送任何 C2S 包。
-
-**LONG PRESS 只做 `disable()`** → 不关屏、不发解冻包 → `screen.tick()` 在自定义循环中执行 `processClick()` → 选中聚晶 + 关屏 → `onScreenClosed` 发 C2S 解冻包 + `disable()`。
-
-#### 2.4 关屏清理 — `onScreenClosed(ScreenEvent.Closing)`
+`InputEvent.Key` 鏄?GLFW 鍥炶皟锛屽湪 `runTick()` 鏈€寮€澶寸殑 `glfwPollEvents()` 涓Е鍙戯紝**瀹屽叏鐙珛浜庢父鎴忓惊鐜?*锛屽喕缁撴湡闂翠篃鑳芥甯稿伐浣溿€?
 
 ```
-屏幕关闭（无论何种方式）
-  ├─ !anyPouchOpen && freezePacketDelay==0? → return (SHORT PRESS 未冻结)
-  ├─ anyPouchOpen=true? → C2STimeStopPacket(false) 发送到服务器
-  ├─ TimeStopUtilsWrapped.disable()                ← 客户端解冻
-  └─ 重置所有状态: anyPouchOpen=false, radMenuOpen=false, freezePacketDelay=0
+X 閿噴鏀?
+  鈹溾攢 anyPouchOpen=false? (SHORT PRESS)
+  鈹?  鈹溾攢 radMenuOpen=false, freezePacketDelay=0   鈫?鍙栨秷鍐荤粨鍊掕鏃?
+  鈹?  鈹斺攢 mc.setScreen(null)                        鈫?鐩存帴鍏冲睆锛屼笉瑙﹀彂鍐荤粨
+  鈹?
+  鈹斺攢 anyPouchOpen=true? (LONG PRESS / 鍐荤粨涓?
+      鈹斺攢 TimeStopUtilsWrapped.disable()            鈫?瑙ｅ喕瀹㈡埛绔紝璁?processClick() 鑷劧鎵ц
 ```
 
-#### 2.5 杂项
+**SHORT PRESS 鍏冲睆浣嗕笉鍙戝喕缁撳寘** 鈫?`onScreenClosed` 涓?`!anyPouchOpen && freezePacketDelay==0` 鈫?鐩存帴 return锛屼笉鍙戦€佷换浣?C2S 鍖呫€?
 
-- **`onScreenRenderPre`** — 在径向菜单打开时渲染半透明遮罩（`0xBB333333`）
-- **`hasTimeFocusPouch()`** — 缓存 20 ticks 的背包检测，遍历背包 + 主副手 + Curios。
+**LONG PRESS 鍙仛 `disable()`** 鈫?涓嶅叧灞忋€佷笉鍙戣В鍐诲寘 鈫?`screen.tick()` 鍦ㄨ嚜瀹氫箟寰幆涓墽琛?`processClick()` 鈫?閫変腑鑱氭櫠 + 鍏冲睆 鈫?`onScreenClosed` 鍙?C2S 瑙ｅ喕鍖?+ `disable()`銆?
 
-### 3. 客户端冻结管理
+#### 2.4 鍏冲睆娓呯悊 鈥?`onScreenClosed(ScreenEvent.Closing)`
 
-**`TimeStopUtilsWrapped.java`** — 客户端侧的冻结/解冻包装器：
+```
+灞忓箷鍏抽棴锛堟棤璁轰綍绉嶆柟寮忥級
+  鈹溾攢 !anyPouchOpen && freezePacketDelay==0? 鈫?return (SHORT PRESS 鏈喕缁?
+  鈹溾攢 anyPouchOpen=true? 鈫?C2STimeStopPacket(false) 鍙戦€佸埌鏈嶅姟鍣?
+  鈹溾攢 TimeStopUtilsWrapped.disable()                鈫?瀹㈡埛绔В鍐?
+  鈹斺攢 閲嶇疆鎵€鏈夌姸鎬? anyPouchOpen=false, radMenuOpen=false, freezePacketDelay=0
+```
+
+#### 2.5 鏉傞」
+
+- **`onScreenRenderPre`** 鈥?鍦ㄥ緞鍚戣彍鍗曟墦寮€鏃舵覆鏌撳崐閫忔槑閬僵锛坄0xBB333333`锛?
+- **`hasTimeFocusPouch()`** 鈥?缂撳瓨 20 ticks 鐨勮儗鍖呮娴嬶紝閬嶅巻鑳屽寘 + 涓诲壇鎵?+ Curios銆?
+
+### 3. 瀹㈡埛绔喕缁撶鐞?
+
+**`TimeStopUtilsWrapped.java`** 鈥?瀹㈡埛绔晶鐨勫喕缁?瑙ｅ喕鍖呰鍣細
 
 ```java
 enable(int id):
-  ├─ mc.getSoundManager().pause()
-  ├─ TimeStopUtils.isTimeStop = true                ← 全局冻结标志
-  ├─ ClientContext.isTimeStop_andSameDimension = true ← HEAD 注入的关键条件
-  ├─ ClientLevelExpandedContext.currentTimeStopDimension = 当前维度
-  └─ TimeContext.Client.timeStopGLFW = glfwGetTime()  ← Blaze3D 时间锚点
+  鈹溾攢 mc.getSoundManager().pause()
+  鈹溾攢 TimeStopUtils.isTimeStop = true                鈫?鍏ㄥ眬鍐荤粨鏍囧織
+  鈹溾攢 ClientContext.isTimeStop_andSameDimension = true 鈫?HEAD 娉ㄥ叆鐨勫叧閿潯浠?
+  鈹溾攢 ClientLevelExpandedContext.currentTimeStopDimension = 褰撳墠缁村害
+  鈹斺攢 TimeContext.Client.timeStopGLFW = glfwGetTime()  鈫?Blaze3D 鏃堕棿閿氱偣
 
 disable():
-  ├─ TimeStopUtils.isTimeStop = false
-  ├─ mc.getSoundManager().resume()
-  ├─ ClientContext.isTimeStop_andSameDimension = false
-  └─ ClientLevelExpandedContext.currentTimeStopDimension = null
+  鈹溾攢 TimeStopUtils.isTimeStop = false
+  鈹溾攢 mc.getSoundManager().resume()
+  鈹溾攢 ClientContext.isTimeStop_andSameDimension = false
+  鈹斺攢 ClientLevelExpandedContext.currentTimeStopDimension = null
 ```
 
-### 4. 网络层
+### 4. 缃戠粶灞?
 
-#### C2S（客户端→服务器）
+#### C2S锛堝鎴风鈫掓湇鍔″櫒锛?
 
-**`C2STimeStopPacket`** — 发送时机：
+**`C2STimeStopPacket`** 鈥?鍙戦€佹椂鏈猴細
 
-| 方向 | 触发 | action |
+| 鏂瑰悜 | 瑙﹀彂 | action |
 |------|------|--------|
-| C2S | `FreezePacketDelay==0` (径向菜单) | `send(true)` |
+| C2S | `FreezePacketDelay==0` (寰勫悜鑿滃崟) | `send(true)` |
 | C2S | `onScreenOpen` (FocusPack/Bag) | `send(true)` |
 | C2S | `onScreenClosed` | `send(false)` |
 
-服务器端处理调用 `TimeStopUtils.use(activate, player, force=true, duration=180, sound=false)`。
+鏈嶅姟鍣ㄧ澶勭悊璋冪敤 `TimeStopUtils.use(activate, player, force=true, duration=180, sound=false)`銆?
 
-#### S2C（服务器→客户端，广播）
+#### S2C锛堟湇鍔″櫒鈫掑鎴风锛屽箍鎾級
 
-| 包 | 作用 |
+| 鍖?| 浣滅敤 |
 |---|------|
-| `S2CTimeStopStatePacket` | 广播冻结/解冻状态 → 调用 `TimeStopUtilsWrapped.enable/disable` |
-| `S2CTimeStopDimensionPacket` | 广播冻结维度变更 → 设置 `currentTimeStopDimension` |
+| `S2CTimeStopStatePacket` | 骞挎挱鍐荤粨/瑙ｅ喕鐘舵€?鈫?璋冪敤 `TimeStopUtilsWrapped.enable/disable` |
+| `S2CTimeStopDimensionPacket` | 骞挎挱鍐荤粨缁村害鍙樻洿 鈫?璁剧疆 `currentTimeStopDimension` |
 
-### 5. 服务端冻结管理
+### 5. 鏈嶅姟绔喕缁撶鐞?
 
-**`TimeStopUtils.java`** — 服务端侧的冻结核心：
+**`TimeStopUtils.java`** 鈥?鏈嶅姟绔晶鐨勫喕缁撴牳蹇冿細
 
 ```java
 use(boolean z, LivingEntity source, boolean force, int time, boolean playSound):
-  ├─ if (z && !ModConfig.TIME_STOP_ENABLED.get()) return
-  ├─ if (source.level().isClientSide) return         ← 拒绝客户端调用
-  ├─ isTimeStop = z                                  ← 全局标志
-  ├─ TimeStopSavedData 记录/清除冻结维度
-  ├─ broadcast S2CTimeStopStatePacket                ← 通知所有客户端冻结状态
-  ├─ broadcast S2CTimeStopDimensionPacket            ← 通知所有客户端冻结维度
-  └─ TimeStopEntityData 管理倒计时（可选）
+  鈹溾攢 if (z && !ModConfig.TIME_STOP_ENABLED.get()) return
+  鈹溾攢 if (source.level().isClientSide) return         鈫?鎷掔粷瀹㈡埛绔皟鐢?
+  鈹溾攢 isTimeStop = z                                  鈫?鍏ㄥ眬鏍囧織
+  鈹溾攢 TimeStopSavedData 璁板綍/娓呴櫎鍐荤粨缁村害
+  鈹溾攢 broadcast S2CTimeStopStatePacket                鈫?閫氱煡鎵€鏈夊鎴风鍐荤粨鐘舵€?
+  鈹溾攢 broadcast S2CTimeStopDimensionPacket            鈫?閫氱煡鎵€鏈夊鎴风鍐荤粨缁村害
+  鈹斺攢 TimeStopEntityData 绠＄悊鍊掕鏃讹紙鍙€夛級
 ```
 
-**`TimeStopSavedData.java`** — 持久化冻结状态（维度集合），存于 `goetypunk_time_stop_data`。
+**`TimeStopSavedData.java`** 鈥?鎸佷箙鍖栧喕缁撶姸鎬侊紙缁村害闆嗗悎锛夛紝瀛樹簬 `GoetyMech_time_stop_data`銆?
 
-### 6. Mixin 层 — 实现冻结效果
+### 6. Mixin 灞?鈥?瀹炵幇鍐荤粨鏁堟灉
 
-#### 6.1 游戏循环控制
+#### 6.1 娓告垙寰幆鎺у埗
 
-**`MinecraftMixin.java` — 两个注入点：**
+**`MinecraftMixin.java` 鈥?涓や釜娉ㄥ叆鐐癸細**
 
-**HEAD 注入**（`runTick` 的最开头）：
+**HEAD 娉ㄥ叆**锛坄runTick` 鐨勬渶寮€澶达級锛?
 
 ```java
 if (isTimeStop AND isTimeStop_andSameDimension)
     Minecraft.timer.msPerTick = 1.0e32
 ```
 
-效果：`timer.advancerCallable()` 返回 false → 游戏循环跑 0 次 → `ClientLevel.tick()`、`ClientPacketListener.tick()` 等全部跳过 → 游戏世界完全冻结。
+鏁堟灉锛歚timer.advancerCallable()` 杩斿洖 false 鈫?娓告垙寰幆璺?0 娆?鈫?`ClientLevel.tick()`銆乣ClientPacketListener.tick()` 绛夊叏閮ㄨ烦杩?鈫?娓告垙涓栫晫瀹屽叏鍐荤粨銆?
 
-**二号注入**（`ForgeEventFactory.onRenderTickStart` 处，使用独立 `TimeContext.Client.timer`）：
+**浜屽彿娉ㄥ叆**锛坄ForgeEventFactory.onRenderTickStart` 澶勶紝浣跨敤鐙珛 `TimeContext.Client.timer`锛夛細
 
 ```java
 long l = TimeContext.Client.timer.advanceTime(Util.getMillis());
 for (int i = 0; i < l; i++) {
-    // keybindings 处理（松开 X 键时的 isKeyDown 检测）
-    // screen.tick() ← 这是径向菜单正常工作的关键！
+    // keybindings 澶勭悊锛堟澗寮€ X 閿椂鐨?isKeyDown 妫€娴嬶級
+    // screen.tick() 鈫?杩欐槸寰勫悜鑿滃崟姝ｅ父宸ヤ綔鐨勫叧閿紒
     // keyboard handler
-    // gameMode tick（如果玩家可以移动）
+    // gameMode tick锛堝鏋滅帺瀹跺彲浠ョЩ鍔級
 }
 ```
 
-这个独立 Timer（`TimeContext.Client.timer`，默认 50ms/tick）**不受 `msPerTick=1.0e32` 影响**，所以游戏循环停转后屏幕仍然能 tick。
+杩欎釜鐙珛 Timer锛坄TimeContext.Client.timer`锛岄粯璁?50ms/tick锛?*涓嶅彈 `msPerTick=1.0e32` 褰卞搷**锛屾墍浠ユ父鎴忓惊鐜仠杞悗灞忓箷浠嶇劧鑳?tick銆?
 
-#### 6.2 时间冻结
+#### 6.2 鏃堕棿鍐荤粨
 
-**`ClientLevelMixin.java`** — `ClientLevel` 的三个方法被取消：
+**`ClientLevelMixin.java`** 鈥?`ClientLevel` 鐨勪笁涓柟娉曡鍙栨秷锛?
 
-| 方法 | 作用 | 取消后果 |
+| 鏂规硶 | 浣滅敤 | 鍙栨秷鍚庢灉 |
 |------|------|---------|
-| `tick()` | 世界 tick | 实体、方块实体不 tick |
-| `tickTime()` | 游戏时间推进 | `gameTime` 冻结 |
-| `animateTick()` | 粒子效果 | 无粒子 |
+| `tick()` | 涓栫晫 tick | 瀹炰綋銆佹柟鍧楀疄浣撲笉 tick |
+| `tickTime()` | 娓告垙鏃堕棿鎺ㄨ繘 | `gameTime` 鍐荤粨 |
+| `animateTick()` | 绮掑瓙鏁堟灉 | 鏃犵矑瀛?|
 
-**`ClientLevelExpandedContext.java`** — `tickHead()` 在 `ClientLevel.tick()` 被执行前设置 `ClientContext.isTimeStop_andSameDimension` 并取消 tick。
+**`ClientLevelExpandedContext.java`** 鈥?`tickHead()` 鍦?`ClientLevel.tick()` 琚墽琛屽墠璁剧疆 `ClientContext.isTimeStop_andSameDimension` 骞跺彇娑?tick銆?
 
-#### 6.3 Blaze3D 时间替换
+#### 6.3 Blaze3D 鏃堕棿鏇挎崲
 
-**`Blaze3DMixin.java`** — 替换 `Blaze3D.getTime()` 返回值为冻结时刻的 GLFW 时间。影响粒子、动画等基于 `Blaze3D.getTime()` 的视觉效果。
+**`Blaze3DMixin.java`** 鈥?鏇挎崲 `Blaze3D.getTime()` 杩斿洖鍊间负鍐荤粨鏃跺埢鐨?GLFW 鏃堕棿銆傚奖鍝嶇矑瀛愩€佸姩鐢荤瓑鍩轰簬 `Blaze3D.getTime()` 鐨勮瑙夋晥鏋溿€?
 
-#### 6.4 Timer 访问器
+#### 6.4 Timer 璁块棶鍣?
 
-**`TimerAccessor.java`** — Mixin Accessor，提供对 `Timer.msPerTick` 私有字段的读写。
+**`TimerAccessor.java`** 鈥?Mixin Accessor锛屾彁渚涘 `Timer.msPerTick` 绉佹湁瀛楁鐨勮鍐欍€?
 
 ---
 
-## 关键设计决策
+## 鍏抽敭璁捐鍐崇瓥
 
-### 1. 双布尔冻结检查
+### 1. 鍙屽竷灏斿喕缁撴鏌?
 
 ```java
-TimeStopUtils.isTimeStop                    // 全局冻结标志（客户端+服务端共享）
-ClientContext.isTimeStop_andSameDimension   // 客户端：当前维度是否在冻结维度列表中
+TimeStopUtils.isTimeStop                    // 鍏ㄥ眬鍐荤粨鏍囧織锛堝鎴风+鏈嶅姟绔叡浜級
+ClientContext.isTimeStop_andSameDimension   // 瀹㈡埛绔細褰撳墠缁村害鏄惁鍦ㄥ喕缁撶淮搴﹀垪琛ㄤ腑
 ```
 
-HEAD 注入要求**两者都为 true** 才设置 `msPerTick=1.0e32`。这使得 `disable()` 可以独立设置 `isTimeStop_andSameDimension=false` 来绕过 HEAD 注入，即使 S2C 冻结包晚于 `disable()` 到达导致 `isTimeStop=true`。
+HEAD 娉ㄥ叆瑕佹眰**涓よ€呴兘涓?true** 鎵嶈缃?`msPerTick=1.0e32`銆傝繖浣垮緱 `disable()` 鍙互鐙珛璁剧疆 `isTimeStop_andSameDimension=false` 鏉ョ粫杩?HEAD 娉ㄥ叆锛屽嵆浣?S2C 鍐荤粨鍖呮櫄浜?`disable()` 鍒拌揪瀵艰嚧 `isTimeStop=true`銆?
 
-### 2. 为什么用 `InputEvent.Key` 而不是 `ClientTickEvent`
+### 2. 涓轰粈涔堢敤 `InputEvent.Key` 鑰屼笉鏄?`ClientTickEvent`
 
-冻结期间 `MinecraftMixin.HEAD` 注入让游戏循环跑 0 次 → `tick()` 不执行 → `ClientTickEvent.Post` 不触发。但 GLFW 回调（`glfwPollEvents`）在 `runTick()` 最开头执行，独立于游戏循环。`InputEvent.Key` 因此是冻结期间唯一可靠的键检测机制。
+鍐荤粨鏈熼棿 `MinecraftMixin.HEAD` 娉ㄥ叆璁╂父鎴忓惊鐜窇 0 娆?鈫?`tick()` 涓嶆墽琛?鈫?`ClientTickEvent.Post` 涓嶈Е鍙戙€備絾 GLFW 鍥炶皟锛坄glfwPollEvents`锛夊湪 `runTick()` 鏈€寮€澶存墽琛岋紝鐙珛浜庢父鎴忓惊鐜€俙InputEvent.Key` 鍥犳鏄喕缁撴湡闂村敮涓€鍙潬鐨勯敭妫€娴嬫満鍒躲€?
 
-### 3. 为什么 `freezePacketDelay=3`
+### 3. 涓轰粈涔?`freezePacketDelay=3`
 
-径向菜单打开动画 `OPEN_ANIMATION_LENGTH=2.5 ticks`。如果立即冻结，`isReady()` 返回 false，`processClick()` 无法触发，屏幕卡死。延迟 3 ticks 确保动画完成。
+寰勫悜鑿滃崟鎵撳紑鍔ㄧ敾 `OPEN_ANIMATION_LENGTH=2.5 ticks`銆傚鏋滅珛鍗冲喕缁擄紝`isReady()` 杩斿洖 false锛宍processClick()` 鏃犳硶瑙﹀彂锛屽睆骞曞崱姝汇€傚欢杩?3 ticks 纭繚鍔ㄧ敾瀹屾垚銆?
 
-### 4. 关闭流程中 `disable()` 的时机
+### 4. 鍏抽棴娴佺▼涓?`disable()` 鐨勬椂鏈?
 
-LONG PRESS 时在 `InputEvent.Key` 中先调 `disable()` 再等 `screen.tick()` 执行 `processClick()`。如果不先 `disable()`，`processClick()` 中的 `menu.clickItem()` 可能因为冻结状态而异常。
+LONG PRESS 鏃跺湪 `InputEvent.Key` 涓厛璋?`disable()` 鍐嶇瓑 `screen.tick()` 鎵ц `processClick()`銆傚鏋滀笉鍏?`disable()`锛宍processClick()` 涓殑 `menu.clickItem()` 鍙兘鍥犱负鍐荤粨鐘舵€佽€屽紓甯搞€?
 
-### 5. `onScreenClosed` 的二次清理
+### 5. `onScreenClosed` 鐨勪簩娆℃竻鐞?
 
-`InputEvent.Key`（LONG PRESS）只调 `disable()` 不调 `mc.setScreen(null)`。`processClick()` 关屏 → `onScreenClosed` 发 C2S 解冻包 + 再次 `disable()`（幂等）。SHORT PRESS 时 `onScreenClosed` 直接 return（`!anyPouchOpen && freezePacketDelay==0`）。
+`InputEvent.Key`锛圠ONG PRESS锛夊彧璋?`disable()` 涓嶈皟 `mc.setScreen(null)`銆俙processClick()` 鍏冲睆 鈫?`onScreenClosed` 鍙?C2S 瑙ｅ喕鍖?+ 鍐嶆 `disable()`锛堝箓绛夛級銆係HORT PRESS 鏃?`onScreenClosed` 鐩存帴 return锛坄!anyPouchOpen && freezePacketDelay==0`锛夈€?
 
 ---
 
-## 完整时序图
+## 瀹屾暣鏃跺簭鍥?
 
-### SHORT PRESS（松键时冻结未激活）
-
-```
-时间线
-│
-├─ runTick N: 玩家按 X 打开径向菜单
-│   ├─ onScreenOpen: radMenuOpen=true, freezePacketDelay=3
-│   └─ 动画开始（OPENING）
-│
-├─ runTick N+1:
-│   ├─ onKeyInput(InputEvent.Key): X 已松开
-│   │   └─ anyPouchOpen=false → SHORT PRESS
-│   │       ├─ radMenuOpen=false
-│   │       ├─ freezePacketDelay=0  ← 取消冻结倒计时
-│   │       └─ mc.setScreen(null)
-│   ├─ onScreenClosed: !anyPouchOpen && freezePacketDelay==0 → return（不发送任何包）
-│   └─ 正常游戏，冻结从未激活 ✓
-```
-
-### LONG PRESS（按住 X 直到冻结激活后松开）
+### SHORT PRESS锛堟澗閿椂鍐荤粨鏈縺娲伙級
 
 ```
-时间线
-│
-├─ runTick N: 按 X 打开径向菜单
-│   ├─ onScreenOpen: radMenuOpen=true, freezePacketDelay=3
-│   └─ 动画开始（OPENING）
-│
-├─ runTick N+1: onClientTick → freezePacketDelay=2
-├─ runTick N+2: onClientTick → freezePacketDelay=1
-│
-├─ runTick N+3: freezePacketDelay→0
-│   ├─ onClientTick: anyPouchOpen=true, C2S冻结包→服务器
-│   │   ├─ 服务端: isTimeStop=true, 广播 S2C 冻结
-│   │   └─ 客户端: enable(0) → isTimeStop=true, isTimeStop_andSameDimension=true
-│   └─ HEAD 注入生效 → 此后游戏循环跑 0 次
-│
-├─ runTick N+4..M: 玩家还按着 X，游戏冻结，自定义循环中 screen.tick() 继续执行
-│
-├─ runTick M: 玩家松开 X
-│   ├─ onKeyInput(InputEvent.Key): anyPouchOpen=true → LONG PRESS
-│   │   └─ disable() → isTimeStop=false, isTimeStop_andSameDimension=false
-│   ├─ 自定义循环: screen.tick() → processClick()
-│   │   ├─ menu.clickItem() ← 选中聚晶！
-│   │   ├─ mc.setScreen(null)
-│   │   └─ onScreenClosed: C2S解冻包 + disable()（幂等）
-│   ├─ 服务端 tick: 处理 C2S解冻包 → isTimeStop=false → 广播 S2C解冻
-│   └─ 正常游戏恢复 ✓
+鏃堕棿绾?
+鈹?
+鈹溾攢 runTick N: 鐜╁鎸?X 鎵撳紑寰勫悜鑿滃崟
+鈹?  鈹溾攢 onScreenOpen: radMenuOpen=true, freezePacketDelay=3
+鈹?  鈹斺攢 鍔ㄧ敾寮€濮嬶紙OPENING锛?
+鈹?
+鈹溾攢 runTick N+1:
+鈹?  鈹溾攢 onKeyInput(InputEvent.Key): X 宸叉澗寮€
+鈹?  鈹?  鈹斺攢 anyPouchOpen=false 鈫?SHORT PRESS
+鈹?  鈹?      鈹溾攢 radMenuOpen=false
+鈹?  鈹?      鈹溾攢 freezePacketDelay=0  鈫?鍙栨秷鍐荤粨鍊掕鏃?
+鈹?  鈹?      鈹斺攢 mc.setScreen(null)
+鈹?  鈹溾攢 onScreenClosed: !anyPouchOpen && freezePacketDelay==0 鈫?return锛堜笉鍙戦€佷换浣曞寘锛?
+鈹?  鈹斺攢 姝ｅ父娓告垙锛屽喕缁撲粠鏈縺娲?鉁?
+```
+
+### LONG PRESS锛堟寜浣?X 鐩村埌鍐荤粨婵€娲诲悗鏉惧紑锛?
+
+```
+鏃堕棿绾?
+鈹?
+鈹溾攢 runTick N: 鎸?X 鎵撳紑寰勫悜鑿滃崟
+鈹?  鈹溾攢 onScreenOpen: radMenuOpen=true, freezePacketDelay=3
+鈹?  鈹斺攢 鍔ㄧ敾寮€濮嬶紙OPENING锛?
+鈹?
+鈹溾攢 runTick N+1: onClientTick 鈫?freezePacketDelay=2
+鈹溾攢 runTick N+2: onClientTick 鈫?freezePacketDelay=1
+鈹?
+鈹溾攢 runTick N+3: freezePacketDelay鈫?
+鈹?  鈹溾攢 onClientTick: anyPouchOpen=true, C2S鍐荤粨鍖呪啋鏈嶅姟鍣?
+鈹?  鈹?  鈹溾攢 鏈嶅姟绔? isTimeStop=true, 骞挎挱 S2C 鍐荤粨
+鈹?  鈹?  鈹斺攢 瀹㈡埛绔? enable(0) 鈫?isTimeStop=true, isTimeStop_andSameDimension=true
+鈹?  鈹斺攢 HEAD 娉ㄥ叆鐢熸晥 鈫?姝ゅ悗娓告垙寰幆璺?0 娆?
+鈹?
+鈹溾攢 runTick N+4..M: 鐜╁杩樻寜鐫€ X锛屾父鎴忓喕缁擄紝鑷畾涔夊惊鐜腑 screen.tick() 缁х画鎵ц
+鈹?
+鈹溾攢 runTick M: 鐜╁鏉惧紑 X
+鈹?  鈹溾攢 onKeyInput(InputEvent.Key): anyPouchOpen=true 鈫?LONG PRESS
+鈹?  鈹?  鈹斺攢 disable() 鈫?isTimeStop=false, isTimeStop_andSameDimension=false
+鈹?  鈹溾攢 鑷畾涔夊惊鐜? screen.tick() 鈫?processClick()
+鈹?  鈹?  鈹溾攢 menu.clickItem() 鈫?閫変腑鑱氭櫠锛?
+鈹?  鈹?  鈹溾攢 mc.setScreen(null)
+鈹?  鈹?  鈹斺攢 onScreenClosed: C2S瑙ｅ喕鍖?+ disable()锛堝箓绛夛級
+鈹?  鈹溾攢 鏈嶅姟绔?tick: 澶勭悊 C2S瑙ｅ喕鍖?鈫?isTimeStop=false 鈫?骞挎挱 S2C瑙ｅ喕
+鈹?  鈹斺攢 姝ｅ父娓告垙鎭㈠ 鉁?
 ```
 
 ---
 
-## 涉及的源文件清单
+## 娑夊強鐨勬簮鏂囦欢娓呭崟
 
-| 路径 | 作用 |
+| 璺緞 | 浣滅敤 |
 |------|------|
-| `common/item/TimeFocusPouch.java` | 物品定义（继承 FocusPack） |
-| `client/ModClientForgeEvents.java` | 客户端事件协调器 |
-| `client/TimeStopUtilsWrapped.java` | 客户端冻结/解冻 |
+| `common/item/TimeFocusPouch.java` | 鐗╁搧瀹氫箟锛堢户鎵?FocusPack锛?|
+| `client/ModClientForgeEvents.java` | 瀹㈡埛绔簨浠跺崗璋冨櫒 |
+| `client/TimeStopUtilsWrapped.java` | 瀹㈡埛绔喕缁?瑙ｅ喕 |
 | `client/ClientContext.java` | `isTimeStop_andSameDimension` |
-| `client/ClientLevelExpandedContext.java` | 当前冻结维度管理 |
-| `common/time/TimeStopUtils.java` | 服务端冻结/解冻核心 |
-| `common/time/TimeContext.java` | 独立 Timer + GLFW 时间锚点 |
-| `common/time/LevelExpandedContext.java` | 服务端 tick 取消 |
-| `common/data/TimeStopSavedData.java` | 冻结维度持久化 |
-| `common/net/c2s/C2STimeStopPacket.java` | C2S 冻结包 |
-| `common/net/s2c/S2CTimeStopStatePacket.java` | S2C 状态同步 |
-| `common/net/s2c/S2CTimeStopDimensionPacket.java` | S2C 维度同步 |
-| `config/ModConfig.java` | 时停开关、倒计时等配置 |
-| `mixin/MinecraftMixin.java` | 游戏循环控制 + 自定义循环 |
-| `mixin/ClientLevelMixin.java` | 客户端世界 tick 取消 |
-| `mixin/Blaze3DMixin.java` | Blaze3D 时间替换 |
-| `mixin/TimerAccessor.java` | Timer.msPerTick 访问器 |
-| `mixin/ServerLevelMixin.java` | 服务端 tick 取消 |
+| `client/ClientLevelExpandedContext.java` | 褰撳墠鍐荤粨缁村害绠＄悊 |
+| `common/time/TimeStopUtils.java` | 鏈嶅姟绔喕缁?瑙ｅ喕鏍稿績 |
+| `common/time/TimeContext.java` | 鐙珛 Timer + GLFW 鏃堕棿閿氱偣 |
+| `common/time/LevelExpandedContext.java` | 鏈嶅姟绔?tick 鍙栨秷 |
+| `common/data/TimeStopSavedData.java` | 鍐荤粨缁村害鎸佷箙鍖?|
+| `common/net/c2s/C2STimeStopPacket.java` | C2S 鍐荤粨鍖?|
+| `common/net/s2c/S2CTimeStopStatePacket.java` | S2C 鐘舵€佸悓姝?|
+| `common/net/s2c/S2CTimeStopDimensionPacket.java` | S2C 缁村害鍚屾 |
+| `config/ModConfig.java` | 鏃跺仠寮€鍏炽€佸€掕鏃剁瓑閰嶇疆 |
+| `mixin/MinecraftMixin.java` | 娓告垙寰幆鎺у埗 + 鑷畾涔夊惊鐜?|
+| `mixin/ClientLevelMixin.java` | 瀹㈡埛绔笘鐣?tick 鍙栨秷 |
+| `mixin/Blaze3DMixin.java` | Blaze3D 鏃堕棿鏇挎崲 |
+| `mixin/TimerAccessor.java` | Timer.msPerTick 璁块棶鍣?|
+| `mixin/ServerLevelMixin.java` | 鏈嶅姟绔?tick 鍙栨秷 |

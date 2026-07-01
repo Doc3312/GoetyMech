@@ -1,7 +1,7 @@
-## ADDED Requirements
+﻿## ADDED Requirements
 
 ### Requirement: Document Squad Barracks subsystem in architecture skill
-The `goetypunk-architecture` skill SHALL include the point-and-click barracks (点将台) subsystem in its documented package structure, including:
+The `GoetyMech-architecture` skill SHALL include the point-and-click barracks (鐐瑰皢鍙? subsystem in its documented package structure, including:
 - Three tiered block types (`Tier1SquadBarracksBlock`, `Tier2SquadBarracksBlock`, `Tier3SquadBarracksBlock`)
 - `SquadBarracksBlockEntity` and `SquadChunkTickets`
 - `SquadBarracksMenu` and `ModMenuTypes`

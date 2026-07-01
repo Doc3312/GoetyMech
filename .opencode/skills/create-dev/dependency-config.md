@@ -1,4 +1,4 @@
-# 依赖配置
+﻿# 渚濊禆閰嶇疆
 
 ## build.gradle
 
@@ -30,7 +30,7 @@ flywheel_version = 1.0.5
 registrate_version = MC1.20-1.3.3
 ```
 
-## Mixin Refmap 重映射
+## Mixin Refmap 閲嶆槧灏?
 
 ```groovy
 minecraft {
@@ -50,7 +50,7 @@ minecraft {
 ## mods.toml
 
 ```toml
-[[dependencies.goetypunk]]
+[[dependencies.GoetyMech]]
 modId="create"
 mandatory=true
 versionRange="[6.0.8,6.1.0)"

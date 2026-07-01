@@ -1,7 +1,7 @@
-# Mod Effects
+﻿# Mod Effects
 
-DeferredRegister 注册所有 MobEffect。在 GoetyPunkMod 构造函数中通过 `ModEffects.EFFECTS.register(modEventBus)` 注册。
+DeferredRegister 娉ㄥ唽鎵€鏈?MobEffect銆傚湪 GoetyMechMod 鏋勯€犲嚱鏁颁腑閫氳繃 `ModEffects.EFFECTS.register(modEventBus)` 娉ㄥ唽銆?
 
 ## Timeline
-- **2026-06-24** — 初始实现。注册 Void Mark 等效果。
-- **2026-07-02** — 注册流程不变，VoidMarkEffect 注册方式未改动。
+- **2026-06-24** 鈥?鍒濆瀹炵幇銆傛敞鍐?Void Mark 绛夋晥鏋溿€?
+- **2026-07-02** 鈥?娉ㄥ唽娴佺▼涓嶅彉锛孷oidMarkEffect 娉ㄥ唽鏂瑰紡鏈敼鍔ㄣ€?

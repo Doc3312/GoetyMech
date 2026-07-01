@@ -1,38 +1,38 @@
-# 时停聚晶袋 — goetypunk
+﻿# 鏃跺仠鑱氭櫠琚?鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：pouch
-- 注册类：ModItems.TIME_FOCUS_POUCH
-- Java 类：TimeFocusPouch (extends FocusPack)
-- 首次创建：2026-06-14
+- 绫诲瀷锛歱ouch
+- 娉ㄥ唽绫伙細ModItems.TIME_FOCUS_POUCH
+- Java 绫伙細TimeFocusPouch (extends FocusPack)
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-打开 GUI 时触发时空冻结。客户端 entity 位置/动画/粒子冻结，渲染 partialTick 归零消除 jitter，服务端维度 tick 暂停。
+鎵撳紑 GUI 鏃惰Е鍙戞椂绌哄喕缁撱€傚鎴风 entity 浣嶇疆/鍔ㄧ敾/绮掑瓙鍐荤粨锛屾覆鏌?partialTick 褰掗浂娑堥櫎 jitter锛屾湇鍔＄缁村害 tick 鏆傚仠銆?
 
-## 演化记录
+## 婕斿寲璁板綍
 
-### 2026-06-18 — Iteration 1：取消 tickEntities() 而非整条 tick()
+### 2026-06-18 鈥?Iteration 1锛氬彇娑?tickEntities() 鑰岄潪鏁存潯 tick()
 
-- 改动：ClientLevelMixin 注入目标从 tick() 改为 tickEntities()
-- 原因：取消 tick() 导致 Goety 径向菜单卡死（依赖 level 上下文）
-- 关联：openspec time-freeze-jitter-fix
+- 鏀瑰姩锛欳lientLevelMixin 娉ㄥ叆鐩爣浠?tick() 鏀逛负 tickEntities()
+- 鍘熷洜锛氬彇娑?tick() 瀵艰嚧 Goety 寰勫悜鑿滃崟鍗℃锛堜緷璧?level 涓婁笅鏂囷級
+- 鍏宠仈锛歰penspec time-freeze-jitter-fix
 
-### 2026-06-18 — 新增 MinecraftMixin 冻结 partialTick
+### 2026-06-18 鈥?鏂板 MinecraftMixin 鍐荤粨 partialTick
 
-- 改动：getPartialTick() 在时停中返回 0.0F
-- 原因：entity 位置冻结后，partialTick 继续递增导致渲染插值漂移（jitter）
-- 关联：openspec time-freeze-jitter-fix
+- 鏀瑰姩锛歡etPartialTick() 鍦ㄦ椂鍋滀腑杩斿洖 0.0F
+- 鍘熷洜锛歟ntity 浣嶇疆鍐荤粨鍚庯紝partialTick 缁х画閫掑瀵艰嚧娓叉煋鎻掑€兼紓绉伙紙jitter锛?
+- 鍏宠仈锛歰penspec time-freeze-jitter-fix
 
-### 2026-06-19 — Iteration 3：Entity.getPosition(float) 快照覆盖
+### 2026-06-19 鈥?Iteration 3锛欵ntity.getPosition(float) 蹇収瑕嗙洊
 
-- 改动：创建 EntityMixin 快照系统，冻结 activate 时捕获所有 entity 位置/旋转
-- 原因：服务端持续发送位置包 → setPos() 更新 xo/x → getPosition(0)=xo → camera 每包跳跃
-- 关联：openspec fix-freeze-jitter
+- 鏀瑰姩锛氬垱寤?EntityMixin 蹇収绯荤粺锛屽喕缁?activate 鏃舵崟鑾锋墍鏈?entity 浣嶇疆/鏃嬭浆
+- 鍘熷洜锛氭湇鍔＄鎸佺画鍙戦€佷綅缃寘 鈫?setPos() 鏇存柊 xo/x 鈫?getPosition(0)=xo 鈫?camera 姣忓寘璺宠穬
+- 鍏宠仈锛歰penspec fix-freeze-jitter
 
-### 2026-06-19 — 快照生命周期完善
+### 2026-06-19 鈥?蹇収鐢熷懡鍛ㄦ湡瀹屽杽
 
-- 改动：支持新 entity 生成时懒加载、移除 entity 时清理、deactivate 清空 map
-- 原因：冻结期间新增/卸载的 entity 需要正确的快照行为
-- 关联：openspec fix-freeze-jitter
+- 鏀瑰姩锛氭敮鎸佹柊 entity 鐢熸垚鏃舵噿鍔犺浇銆佺Щ闄?entity 鏃舵竻鐞嗐€乨eactivate 娓呯┖ map
+- 鍘熷洜锛氬喕缁撴湡闂存柊澧?鍗歌浇鐨?entity 闇€瑕佹纭殑蹇収琛屼负
+- 鍏宠仈锛歰penspec fix-freeze-jitter

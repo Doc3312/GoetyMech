@@ -1,14 +1,14 @@
-# 幽匿尖刺 — goetypunk
+﻿# 骞藉尶灏栧埡 鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：entity
-- 注册类：ModEntities.SCULK_SPIKE
-- Java 类：SculkSpikeEntity (MobCategory.MISC, 0.5x0.5)
-- 首次创建：2026-06-14
+- 绫诲瀷锛歟ntity
+- 娉ㄥ唽绫伙細ModEntities.SCULK_SPIKE
+- Java 绫伙細SculkSpikeEntity (MobCategory.MISC, 0.5x0.5)
+- 棣栨鍒涘缓锛?026-06-14
 
-## 设计意图
+## 璁捐鎰忓浘
 
-SculkBindFocus 法术的中间实体：从地面刺出的幽匿尖刺，造成伤害 + 触发声波特效后召唤 Warden。
+SculkBindFocus 娉曟湳鐨勪腑闂村疄浣擄細浠庡湴闈㈠埡鍑虹殑骞藉尶灏栧埡锛岄€犳垚浼ゅ + 瑙﹀彂澹版尝鐗规晥鍚庡彫鍞?Warden銆?
 
-## 演化记录
+## 婕斿寲璁板綍

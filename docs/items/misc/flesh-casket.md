@@ -1,98 +1,98 @@
-# 血肉魔匣 — goetypunk
+﻿# 琛€鑲夐瓟鍖?鈥?GoetyMech
 
-## 身份
+## 韬唤
 
-- 类型：curio
-- 注册类：ModItems.FLESH_CASKET_1 / 2 / 3
-- Java 类：FleshCasketItem (extends Item, implements ICurioItem)
-- 首次创建：2026-06-23
+- 绫诲瀷锛歝urio
+- 娉ㄥ唽绫伙細ModItems.FLESH_CASKET_1 / 2 / 3
+- Java 绫伙細FleshCasketItem (extends Item, implements ICurioItem)
+- 棣栨鍒涘缓锛?026-06-23
 
-## 设计意图
+## 璁捐鎰忓浘
 
-Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储 Focus，周期自动施法。三阶循环升级：A→B→C→A，配方在 `data/goety/recipes/` 下。
+Curios 楗板搧妲戒綅鐨勮嚜鍔ㄦ柦娉曞鍣ㄣ€傚唴缃?1/3/5 鏍硷紙鎸夐樁浣嶏級瀛樺偍 Focus锛屽懆鏈熻嚜鍔ㄦ柦娉曘€備笁闃跺惊鐜崌绾э細A鈫払鈫扖鈫扐锛岄厤鏂瑰湪 `data/goety/recipes/` 涓嬨€?
 
-## 演化记录
+## 婕斿寲璁板綍
 
-### 2026-06-23 — 初始设计与注册
+### 2026-06-23 鈥?鍒濆璁捐涓庢敞鍐?
 
-- 改动：创建 FleshCasketItem + FleshCasketItemCapability + FleshCasketItemHandler + FleshCasketContainer + FleshCasketEvents + AutoCastDummyWand + TargetingRegistry + TriggerType + ModItems 注册 + 三阶模型 + 三阶循环升级配方 + ModConfig
-- 原因：需要一个可以自动施法的 Curios 容器饰品，解放手持槽位
-- 关联：14 new files, 4 modified (commit 0ec1b5d)
+- 鏀瑰姩锛氬垱寤?FleshCasketItem + FleshCasketItemCapability + FleshCasketItemHandler + FleshCasketContainer + FleshCasketEvents + AutoCastDummyWand + TargetingRegistry + TriggerType + ModItems 娉ㄥ唽 + 涓夐樁妯″瀷 + 涓夐樁寰幆鍗囩骇閰嶆柟 + ModConfig
+- 鍘熷洜锛氶渶瑕佷竴涓彲浠ヨ嚜鍔ㄦ柦娉曠殑 Curios 瀹瑰櫒楗板搧锛岃В鏀炬墜鎸佹Ы浣?
+- 鍏宠仈锛?4 new files, 4 modified (commit 0ec1b5d)
 
-### 2026-06-23 — 修复 TargetingRegistry 无效字段引用
+### 2026-06-23 鈥?淇 TargetingRegistry 鏃犳晥瀛楁寮曠敤
 
-- 改动：修复 3 个无效的字段引用
-- 原因：初始代码中引用还未注册的字段
-- 关联：commit 6824236
+- 鏀瑰姩锛氫慨澶?3 涓棤鏁堢殑瀛楁寮曠敤
+- 鍘熷洜锛氬垵濮嬩唬鐮佷腑寮曠敤杩樻湭娉ㄥ唽鐨勫瓧娈?
+- 鍏宠仈锛歝ommit 6824236
 
-### 2026-06-23 — GUI 系统 + 装备交互重做
+### 2026-06-23 鈥?GUI 绯荤粺 + 瑁呭浜や簰閲嶅仛
 
-- 改动：添加 FleshCasketContainer/Screen、ModMenuTypes、ModClientEvents；`use()` 打开 GUI；`canEquipFromUse` 从 `true` 改为 `isCrouching()`
-- 原因：右击打开 GUI（不潜行）/ 潜行+右击装备到 Curios 栏，匹配 Goety FocusBag 交互模式
-- 关联：GUI 纹理复制自 Goety focus_bag.png
+- 鏀瑰姩锛氭坊鍔?FleshCasketContainer/Screen銆丮odMenuTypes銆丮odClientEvents锛沗use()` 鎵撳紑 GUI锛沗canEquipFromUse` 浠?`true` 鏀逛负 `isCrouching()`
+- 鍘熷洜锛氬彸鍑绘墦寮€ GUI锛堜笉娼滆锛? 娼滆+鍙冲嚮瑁呭鍒?Curios 鏍忥紝鍖归厤 Goety FocusBag 浜や簰妯″紡
+- 鍏宠仈锛欸UI 绾圭悊澶嶅埗鑷?Goety focus_bag.png
 
-### 2026-06-23 — Curios back tag 修复 + 中文本地化
+### 2026-06-23 鈥?Curios back tag 淇 + 涓枃鏈湴鍖?
 
-- 改动：`back.json` 补全 flesh_casket_a/b/c 条目（之前只写了 prototype）；重写 zh_cn.json（UTF-8 修复，补全条目）；en_us.json 添加 container title
-- 原因：back tag 缺失导致匣子无法装备到背部 Curios 槽；zh_cn.json 编码损坏
-- 更新中文名：反击→盈蓄、命理守护→平衡、绝望→濒死
+- 鏀瑰姩锛歚back.json` 琛ュ叏 flesh_casket_a/b/c 鏉＄洰锛堜箣鍓嶅彧鍐欎簡 prototype锛夛紱閲嶅啓 zh_cn.json锛圲TF-8 淇锛岃ˉ鍏ㄦ潯鐩級锛沞n_us.json 娣诲姞 container title
+- 鍘熷洜锛歜ack tag 缂哄け瀵艰嚧鍖ｅ瓙鏃犳硶瑁呭鍒拌儗閮?Curios 妲斤紱zh_cn.json 缂栫爜鎹熷潖
+- 鏇存柊涓枃鍚嶏細鍙嶅嚮鈫掔泩钃勩€佸懡鐞嗗畧鎶も啋骞宠　銆佺粷鏈涒啋婵掓
 
-### 2026-06-23 — 自动施法修复：Tier 1 EMPTY 魔杖问题
+### 2026-06-23 鈥?鑷姩鏂芥硶淇锛歍ier 1 EMPTY 榄旀潠闂
 
-- 改动：所有 tier 统一使用 `AutoCastDummyWand`，不再为 tier 1 传 `ItemStack.EMPTY`
-- 原因：`rightStaff()` 要求 staff 实现 IWand 且含法术类型；EMPTY 不符合，所有法术直接中断不执行
-- 关联：commit aade8a1
+- 鏀瑰姩锛氭墍鏈?tier 缁熶竴浣跨敤 `AutoCastDummyWand`锛屼笉鍐嶄负 tier 1 浼?`ItemStack.EMPTY`
+- 鍘熷洜锛歚rightStaff()` 瑕佹眰 staff 瀹炵幇 IWand 涓斿惈娉曟湳绫诲瀷锛汦MPTY 涓嶇鍚堬紝鎵€鏈夋硶鏈洿鎺ヤ腑鏂笉鎵ц
+- 鍏宠仈锛歝ommit aade8a1
 
-### 2026-06-23 — 冷却系统重构 + 自由移除
+### 2026-06-23 鈥?鍐峰嵈绯荤粺閲嶆瀯 + 鑷敱绉婚櫎
 
-- 改动：per-focus 独立冷却 → 单物品全局冷却（以最长法术冷却为准）；添加 damage bar 可视化；`canUnequip` 始终返回 true
-- 原因：玩家反馈无法直观看到冷却、取不下饰品；只有全部聚晶冷却完才能再次触发
-- 关联：commit 0548c30, f48d756
+- 鏀瑰姩锛歱er-focus 鐙珛鍐峰嵈 鈫?鍗曠墿鍝佸叏灞€鍐峰嵈锛堜互鏈€闀挎硶鏈喎鍗翠负鍑嗭級锛涙坊鍔?damage bar 鍙鍖栵紱`canUnequip` 濮嬬粓杩斿洖 true
+- 鍘熷洜锛氱帺瀹跺弽棣堟棤娉曠洿瑙傜湅鍒板喎鍗淬€佸彇涓嶄笅楗板搧锛涘彧鏈夊叏閮ㄨ仛鏅跺喎鍗村畬鎵嶈兘鍐嶆瑙﹀彂
+- 鍏宠仈锛歝ommit 0548c30, f48d756
 
-### 2026-06-29 — 重构为 3 阶线性升级 + NBT 触发类型切换
+### 2026-06-29 鈥?閲嶆瀯涓?3 闃剁嚎鎬у崌绾?+ NBT 瑙﹀彂绫诲瀷鍒囨崲
 
-- 改动：9 个变体（A1~C3）→ 3 个阶位物品（flesh_casket_1/2/3）；触发类型从 enum 类重构为 NBT 字段；添加诅咒注入器循环配方（A→B→C→A，`FleshCasketInfuserRecipe`）；创建自定义仪式 `UpgradeCasketRitual` 复制 NBT；删除 12 个旧模型 JSON + 9 个旧配方 + 2 个旧物品引用
-- 原因：9 个变体太冗余，线性升级 + NBT 切换更简洁；NBT 保留保证升级不掉聚晶
-- 关联：FleshCasketInfuserRecipe.java, FleshCasketInfuserRecipeSerializer.java, UpgradeCasketRitual.java, ModRituals.java, ModItems 去 9→3；新增 6 个配方 JSON；commit b10c2c8
+- 鏀瑰姩锛? 涓彉浣擄紙A1~C3锛夆啋 3 涓樁浣嶇墿鍝侊紙flesh_casket_1/2/3锛夛紱瑙﹀彂绫诲瀷浠?enum 绫婚噸鏋勪负 NBT 瀛楁锛涙坊鍔犺瘏鍜掓敞鍏ュ櫒寰幆閰嶆柟锛圓鈫払鈫扖鈫扐锛宍FleshCasketInfuserRecipe`锛夛紱鍒涘缓鑷畾涔変华寮?`UpgradeCasketRitual` 澶嶅埗 NBT锛涘垹闄?12 涓棫妯″瀷 JSON + 9 涓棫閰嶆柟 + 2 涓棫鐗╁搧寮曠敤
+- 鍘熷洜锛? 涓彉浣撳お鍐椾綑锛岀嚎鎬у崌绾?+ NBT 鍒囨崲鏇寸畝娲侊紱NBT 淇濈暀淇濊瘉鍗囩骇涓嶆帀鑱氭櫠
+- 鍏宠仈锛欶leshCasketInfuserRecipe.java, FleshCasketInfuserRecipeSerializer.java, UpgradeCasketRitual.java, ModRituals.java, ModItems 鍘?9鈫?锛涙柊澧?6 涓厤鏂?JSON锛沜ommit b10c2c8
 
-### 2026-06-29 — 仪式配方修复：Goety 物品 ID 纠正 + 占位纹理
+### 2026-06-29 鈥?浠紡閰嶆柟淇锛欸oety 鐗╁搧 ID 绾犳 + 鍗犱綅绾圭悊
 
-- 改动：修正 3 个 Upgrade 配方 JSON 中 6 个错误 Goety 物品 ID（pale_metal_ingot→pale_steel_ingot, dark_metal_ingot→dark_ingot, night_core→heart_of_the_night, unholy_cloth→unholy_fabric, large_focus_bag→focus_pack, pure_blood→unholy_blood）；创建 3 个占位 PNG 纹理（flesh_casket_1/2/3.png）
-- 原因：配方中 item ID 不存在导致 JEI 不显示；缺失纹理导致物品栏显示紫黑块
-- 关联：commit [current session]
+- 鏀瑰姩锛氫慨姝?3 涓?Upgrade 閰嶆柟 JSON 涓?6 涓敊璇?Goety 鐗╁搧 ID锛坧ale_metal_ingot鈫抪ale_steel_ingot, dark_metal_ingot鈫抎ark_ingot, night_core鈫抙eart_of_the_night, unholy_cloth鈫抲nholy_fabric, large_focus_bag鈫抐ocus_pack, pure_blood鈫抲nholy_blood锛夛紱鍒涘缓 3 涓崰浣?PNG 绾圭悊锛坒lesh_casket_1/2/3.png锛?
+- 鍘熷洜锛氶厤鏂逛腑 item ID 涓嶅瓨鍦ㄥ鑷?JEI 涓嶆樉绀猴紱缂哄け绾圭悊瀵艰嚧鐗╁搧鏍忔樉绀虹传榛戝潡
+- 鍏宠仈锛歝ommit [current session]
 
-### 2026-07-02 — 触发类型视觉变体 + 物品升级保留内容修复
+### 2026-07-02 鈥?瑙﹀彂绫诲瀷瑙嗚鍙樹綋 + 鐗╁搧鍗囩骇淇濈暀鍐呭淇
 
-- 改动：
-  1. 新增 9 个触发类型子模型 JSON + 9 张贴图（flesh_casket_{1/2/3}_{fullness/balance/deathbed}.png），根据 NBT trigger_type 切换物品外观
-  2. FleshCasketItem 覆盖 `getName()` 返回 `item.goetypunk.flesh_casket_{tier}.{suffix}` 翻译键，物品名随触发类型变化
-  3. 添加 ItemProperty 在 client 侧根据 trigger_type 选择子模型
-  4. FleshCasketInfuserRecipe.assemble()：用 ITEM_HANDLER capability 逐槽复制聚晶栈，替代仅复制 NBT tag 的旧逻辑，避免升级时清空内容
-  5. 覆写 getResultItem() 返回已循环触发类型的 output，让 JEI 显示正确的升级产物图标
-- 原因：触发类型仅有 NBT 无视觉反馈；升级仪式会清空已存放的聚晶；JEI 显示未循环的产物（始终显示 A 类型）
-- 关联：commit 3a79aa6, 6b4b32d, d3064d1, 86a72e3
+- 鏀瑰姩锛?
+  1. 鏂板 9 涓Е鍙戠被鍨嬪瓙妯″瀷 JSON + 9 寮犺创鍥撅紙flesh_casket_{1/2/3}_{fullness/balance/deathbed}.png锛夛紝鏍规嵁 NBT trigger_type 鍒囨崲鐗╁搧澶栬
+  2. FleshCasketItem 瑕嗙洊 `getName()` 杩斿洖 `item.GoetyMech.flesh_casket_{tier}.{suffix}` 缈昏瘧閿紝鐗╁搧鍚嶉殢瑙﹀彂绫诲瀷鍙樺寲
+  3. 娣诲姞 ItemProperty 鍦?client 渚ф牴鎹?trigger_type 閫夋嫨瀛愭ā鍨?
+  4. FleshCasketInfuserRecipe.assemble()锛氱敤 ITEM_HANDLER capability 閫愭Ы澶嶅埗鑱氭櫠鏍堬紝鏇夸唬浠呭鍒?NBT tag 鐨勬棫閫昏緫锛岄伩鍏嶅崌绾ф椂娓呯┖鍐呭
+  5. 瑕嗗啓 getResultItem() 杩斿洖宸插惊鐜Е鍙戠被鍨嬬殑 output锛岃 JEI 鏄剧ず姝ｇ‘鐨勫崌绾т骇鐗╁浘鏍?
+- 鍘熷洜锛氳Е鍙戠被鍨嬩粎鏈?NBT 鏃犺瑙夊弽棣堬紱鍗囩骇浠紡浼氭竻绌哄凡瀛樻斁鐨勮仛鏅讹紱JEI 鏄剧ず鏈惊鐜殑浜х墿锛堝缁堟樉绀?A 绫诲瀷锛?
+- 鍏宠仈锛歝ommit 3a79aa6, 6b4b32d, d3064d1, 86a72e3
 
-### 2026-06-23 — 三个 Bug 修复
+### 2026-06-23 鈥?涓変釜 Bug 淇
 
-- 改动：
-  1. AutoCastDummyWand 排除 FROST/STORM/WILD/NETHER/ABYSS → 召唤不再强制变冰系，回退群系判定
-  2. `tryAutoCast` 中 tier >= 2 加 +2 potency，tier >= 3 加 +4 potency + +1 duration → 高级匣子不再全出低级怪
-  3. `findFirstCurio` → `findAllFleshCaskets` 遍历全部 Curios 槽 → 多个匣子同时生效
-- 原因：玩家反馈三个问题
-- 关联：commit 7a632bf
+- 鏀瑰姩锛?
+  1. AutoCastDummyWand 鎺掗櫎 FROST/STORM/WILD/NETHER/ABYSS 鈫?鍙敜涓嶅啀寮哄埗鍙樺啺绯伙紝鍥為€€缇ょ郴鍒ゅ畾
+  2. `tryAutoCast` 涓?tier >= 2 鍔?+2 potency锛宼ier >= 3 鍔?+4 potency + +1 duration 鈫?楂樼骇鍖ｅ瓙涓嶅啀鍏ㄥ嚭浣庣骇鎬?
+  3. `findFirstCurio` 鈫?`findAllFleshCaskets` 閬嶅巻鍏ㄩ儴 Curios 妲?鈫?澶氫釜鍖ｅ瓙鍚屾椂鐢熸晥
+- 鍘熷洜锛氱帺瀹跺弽棣堜笁涓棶棰?
+- 鍏宠仈锛歝ommit 7a632bf
 
-### 2026-07-02 — JEI 三变换显示 + 重复条目修复
+### 2026-07-02 鈥?JEI 涓夊彉鎹㈡樉绀?+ 閲嶅鏉＄洰淇
 
-- 改动：JEI 诅咒注入器分类中注册 6 条显示配方（3 tier × 2 变换：B→C, C→A），配合 Goety 自动注册的 A→B 条目形成完整循环。移除冗余的 A→B 显示配方。
-- 原因：玩家反馈只显示满盈→平衡（A→B）一项，缺少平衡→濒死（B→C）和濒死→满盈（C→A）
-- 关联：commit 14dfb1a, 86a72e3
+- 鏀瑰姩锛欽EI 璇呭拻娉ㄥ叆鍣ㄥ垎绫讳腑娉ㄥ唽 6 鏉℃樉绀洪厤鏂癸紙3 tier 脳 2 鍙樻崲锛欱鈫扖, C鈫扐锛夛紝閰嶅悎 Goety 鑷姩娉ㄥ唽鐨?A鈫払 鏉＄洰褰㈡垚瀹屾暣寰幆銆傜Щ闄ゅ啑浣欑殑 A鈫払 鏄剧ず閰嶆柟銆?
+- 鍘熷洜锛氱帺瀹跺弽棣堝彧鏄剧ず婊＄泩鈫掑钩琛★紙A鈫払锛変竴椤癸紝缂哄皯骞宠　鈫掓繏姝伙紙B鈫扖锛夊拰婵掓鈫掓弧鐩堬紙C鈫扐锛?
+- 鍏宠仈锛歝ommit 14dfb1a, 86a72e3
 
-### 2026-07-02 — Tier 分级真法杖 + Offhand fix + Z 键 GUI
+### 2026-07-02 鈥?Tier 鍒嗙骇鐪熸硶鏉?+ Offhand fix + Z 閿?GUI
 
-- 改动：
-  1. AutoCastDummyWand 重构：无参构造全类型（VOID, NONE, NECROMANCY, ILL, GEOMANCY, WIND），新增有参构造。注册 AUTO_CAST_DUMMY_WAND_T1（NONE-only）。
-  2. `tryAutoCast()` 按 tier 选法杖：tier 1 用 T1（NONE-only），tier 2/3 用全类型法杖。
-  3. Offhand fix：将聚晶装入真法杖 handler，临时放副手，SpellResult 后恢复。解决 `WandUtil.findFocus()` 找不到聚晶导致 SquadFocus/StressFocus 等 silent return 的问题。
-  4. Z 键绑定（`key.goetypunk.open_flesh_casket`）+ C2SOpenFleshCasketPacket：手持匣子按 Z 打开 GUI。
-- 原因：低阶匣子不应召唤过多暗卫（rightStaff 奖励）；SquadFocus/StressFocus 自动施法被 instanceof 守卫阻断；手持无法快速开 GUI。
-- 关联：commit 56b1c30, 97a5ebe, a1d0b11
+- 鏀瑰姩锛?
+  1. AutoCastDummyWand 閲嶆瀯锛氭棤鍙傛瀯閫犲叏绫诲瀷锛圴OID, NONE, NECROMANCY, ILL, GEOMANCY, WIND锛夛紝鏂板鏈夊弬鏋勯€犮€傛敞鍐?AUTO_CAST_DUMMY_WAND_T1锛圢ONE-only锛夈€?
+  2. `tryAutoCast()` 鎸?tier 閫夋硶鏉栵細tier 1 鐢?T1锛圢ONE-only锛夛紝tier 2/3 鐢ㄥ叏绫诲瀷娉曟潠銆?
+  3. Offhand fix锛氬皢鑱氭櫠瑁呭叆鐪熸硶鏉?handler锛屼复鏃舵斁鍓墜锛孲pellResult 鍚庢仮澶嶃€傝В鍐?`WandUtil.findFocus()` 鎵句笉鍒拌仛鏅跺鑷?SquadFocus/StressFocus 绛?silent return 鐨勯棶棰樸€?
+  4. Z 閿粦瀹氾紙`key.GoetyMech.open_flesh_casket`锛? C2SOpenFleshCasketPacket锛氭墜鎸佸專瀛愭寜 Z 鎵撳紑 GUI銆?
+- 鍘熷洜锛氫綆闃跺專瀛愪笉搴斿彫鍞よ繃澶氭殫鍗紙rightStaff 濂栧姳锛夛紱SquadFocus/StressFocus 鑷姩鏂芥硶琚?instanceof 瀹堝崼闃绘柇锛涙墜鎸佹棤娉曞揩閫熷紑 GUI銆?
+- 鍏宠仈锛歝ommit 56b1c30, 97a5ebe, a1d0b11

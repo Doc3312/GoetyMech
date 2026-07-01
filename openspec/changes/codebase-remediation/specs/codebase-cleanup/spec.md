@@ -1,4 +1,4 @@
-## ADDED Requirements
+﻿## ADDED Requirements
 
 ### Requirement: Remove dead renderer class
 The system SHALL delete `client/entity/SculkSpikeRenderer.java` as it is unregistered dead code.
@@ -8,10 +8,10 @@ The system SHALL delete `client/entity/SculkSpikeRenderer.java` as it is unregis
 - **THEN** only the file itself is returned, with no import or usage references
 
 ### Requirement: Remove empty event directory
-The system SHALL delete the empty `com/goetypunk/addon/event/` directory.
+The system SHALL delete the empty `com/GoetyMech/addon/event/` directory.
 
 #### Scenario: Verify directory is empty
-- **WHEN** listing files in `com/goetypunk/addon/event/`
+- **WHEN** listing files in `com/GoetyMech/addon/event/`
 - **THEN** directory contains no `.java` files
 
 ### Requirement: Extract duplicate raytrace logic
@@ -30,11 +30,11 @@ The system SHALL move `SquadChunkTickets` from `common/block/entity/` to `common
 
 #### Scenario: Import updated
 - **WHEN** `SquadBarracksBlockEntity` imports `SquadChunkTickets`
-- **THEN** it imports from `com.goetypunk.addon.common.utils.SquadChunkTickets`
+- **THEN** it imports from `com.GoetyMech.addon.common.utils.SquadChunkTickets`
 
 ### Requirement: Extract network channel to dedicated class
-The system SHALL extract `SimpleChannel` definition from `GoetyPunkMod.java` into a new `ModNetwork.java` in `common/net/`.
+The system SHALL extract `SimpleChannel` definition from `GoetyMechMod.java` into a new `ModNetwork.java` in `common/net/`.
 
-#### Scenario: GoetyPunkMod references ModNetwork
-- **WHEN** `GoetyPunkMod.NETWORK` is accessed
+#### Scenario: GoetyMechMod references ModNetwork
+- **WHEN** `GoetyMechMod.NETWORK` is accessed
 - **THEN** it points to `ModNetwork.CHANNEL`

@@ -1,20 +1,20 @@
-# Goety 仪式配方 JEI 不显示 — 调试记录
+﻿# Goety 浠紡閰嶆柟 JEI 涓嶆樉绀?鈥?璋冭瘯璁板綍
 
 status: verified
 
-## 现象
+## 鐜拌薄
 
-所有 3 个 cycle 配方（诅咒注入器）和 Tier I 仪式配方在 JEI 显示正常，但 Tier II/III 仪式配方不出现。游戏日志无报错（无 ParseException）。
+鎵€鏈?3 涓?cycle 閰嶆柟锛堣瘏鍜掓敞鍏ュ櫒锛夊拰 Tier I 浠紡閰嶆柟鍦?JEI 鏄剧ず姝ｅ父锛屼絾 Tier II/III 浠紡閰嶆柟涓嶅嚭鐜般€傛父鎴忔棩蹇楁棤鎶ラ敊锛堟棤 ParseException锛夈€?
 
-## 根因
+## 鏍瑰洜
 
-两个独立问题：**配方 item ID 错误** + **物品缺纹理**。
+涓や釜鐙珛闂锛?*閰嶆柟 item ID 閿欒** + **鐗╁搧缂虹汗鐞?*銆?
 
-### 问题 1：6 个 Goety 物品 ID 与源码不匹配
+### 闂 1锛? 涓?Goety 鐗╁搧 ID 涓庢簮鐮佷笉鍖归厤
 
-3 个 upgrade 配方 JSON 中以下 ID 写错：
+3 涓?upgrade 閰嶆柟 JSON 涓互涓?ID 鍐欓敊锛?
 
-| 错误 ID | 正确 ID | 来源（ModItems） |
+| 閿欒 ID | 姝ｇ‘ ID | 鏉ユ簮锛圡odItems锛?|
 |---------|---------|-----------------|
 | `pale_metal_ingot` | `pale_steel_ingot` | line 64 |
 | `dark_metal_ingot` | `dark_ingot` | line 65 |
@@ -23,31 +23,31 @@ status: verified
 | `large_focus_bag` | `focus_pack` | line 202 |
 | `pure_blood` | `unholy_blood` | line 124 |
 
-这些错误 ID 对应的物品不存在（Goety 从未用这些名称注册过）。Goety 的配方解析器不报错，但跳过这些配方 → JEI 不枚举。
+杩欎簺閿欒 ID 瀵瑰簲鐨勭墿鍝佷笉瀛樺湪锛圙oety 浠庢湭鐢ㄨ繖浜涘悕绉版敞鍐岃繃锛夈€侴oety 鐨勯厤鏂硅В鏋愬櫒涓嶆姤閿欙紝浣嗚烦杩囪繖浜涢厤鏂?鈫?JEI 涓嶆灇涓俱€?
 
-**教训**：Goety 的 RecipeType 没有 `ingredients` 严格校验，无效 ingredient item ID 静默失败。必须对照 Goety `ModItems.java` 源码逐项确认。
+**鏁欒**锛欸oety 鐨?RecipeType 娌℃湁 `ingredients` 涓ユ牸鏍￠獙锛屾棤鏁?ingredient item ID 闈欓粯澶辫触銆傚繀椤诲鐓?Goety `ModItems.java` 婧愮爜閫愰」纭銆?
 
-### 问题 2：物品缺纹理
+### 闂 2锛氱墿鍝佺己绾圭悊
 
-Tier I 使用 `goety:craft` 仪式类型始终可用，但 `flesh_casket_1/2/3` 没有对应 `textures/item/` 下的 PNG，导致物品栏显示紫黑块。这对于 JEI 显示虽然有影响，但不是根本原因（Tier I 在缺纹理时仍显示）。
+Tier I 浣跨敤 `goety:craft` 浠紡绫诲瀷濮嬬粓鍙敤锛屼絾 `flesh_casket_1/2/3` 娌℃湁瀵瑰簲 `textures/item/` 涓嬬殑 PNG锛屽鑷寸墿鍝佹爮鏄剧ず绱粦鍧椼€傝繖瀵逛簬 JEI 鏄剧ず铏界劧鏈夊奖鍝嶏紝浣嗕笉鏄牴鏈師鍥狅紙Tier I 鍦ㄧ己绾圭悊鏃朵粛鏄剧ず锛夈€?
 
-**教训**：注册新物品后立即创建占位纹理，否则视觉异常会干扰问题定位。
+**鏁欒**锛氭敞鍐屾柊鐗╁搧鍚庣珛鍗冲垱寤哄崰浣嶇汗鐞嗭紝鍚﹀垯瑙嗚寮傚父浼氬共鎵伴棶棰樺畾浣嶃€?
 
-## 修复
+## 淇
 
-1. 修正 3 个 JSON 中的 6 个 item ID
-2. 创建 `assets/goetypunk/textures/item/flesh_casket_{1,2,3}.png` 占位纹理（3×3px 色块，复制自 prototype.png）
-3. 重新打包启动后 3 个升级配方全部显示
+1. 淇 3 涓?JSON 涓殑 6 涓?item ID
+2. 鍒涘缓 `assets/GoetyMech/textures/item/flesh_casket_{1,2,3}.png` 鍗犱綅绾圭悊锛?脳3px 鑹插潡锛屽鍒惰嚜 prototype.png锛?
+3. 閲嶆柊鎵撳寘鍚姩鍚?3 涓崌绾ч厤鏂瑰叏閮ㄦ樉绀?
 
-## 验证
+## 楠岃瘉
 
-- `runClient` 启动到世界
-- JEI 查看所有 6 个配方（3 cycle + 3 ritual）均可见
-- 日志中无 `flesh_casket` 相关异常
+- `runClient` 鍚姩鍒颁笘鐣?
+- JEI 鏌ョ湅鎵€鏈?6 涓厤鏂癸紙3 cycle + 3 ritual锛夊潎鍙
+- 鏃ュ織涓棤 `flesh_casket` 鐩稿叧寮傚父
 
-## 相关文件与路径
+## 鐩稿叧鏂囦欢涓庤矾寰?
 
-- `src/main/resources/data/goetypunk/recipes/flesh_casket_1_to_2.json`
-- `src/main/resources/data/goetypunk/recipes/flesh_casket_2_to_3.json`
-- `src/main/resources/assets/goetypunk/textures/item/flesh_casket_{1,2,3}.png`
-- `D:\Libcode\goety\src\main\java\com\Polarice3\Goety\init\ModItems.java`（验证源）
+- `src/main/resources/data/GoetyMech/recipes/flesh_casket_1_to_2.json`
+- `src/main/resources/data/GoetyMech/recipes/flesh_casket_2_to_3.json`
+- `src/main/resources/assets/GoetyMech/textures/item/flesh_casket_{1,2,3}.png`
+- `D:\Libcode\goety\src\main\java\com\Polarice3\Goety\init\ModItems.java`锛堥獙璇佹簮锛?

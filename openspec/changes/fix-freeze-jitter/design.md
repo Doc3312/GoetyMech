@@ -1,6 +1,6 @@
-## Context
+﻿## Context
 
-GoetyPunk time freeze cancels `ClientLevel.tickEntities()` + forces `getPartialTick() = 0`. But network packets (`ClientboundPlayerPositionPacket`, `ClientboundTeleportEntityPacket`) call `Entity.setPos()` → `setPosRaw()` which overwrites `xo`/`yo`/`zo` alongside `x`/`y`/`z`. Since `getPosition(0) = xo`, every server position correction snaps the render position → camera jitter.
+GoetyMech time freeze cancels `ClientLevel.tickEntities()` + forces `getPartialTick() = 0`. But network packets (`ClientboundPlayerPositionPacket`, `ClientboundTeleportEntityPacket`) call `Entity.setPos()` 鈫?`setPosRaw()` which overwrites `xo`/`yo`/`zo` alongside `x`/`y`/`z`. Since `getPosition(0) = xo`, every server position correction snaps the render position 鈫?camera jitter.
 
 Fix must not touch network layer (risk of desync) or `setPos`/collision system (risk of crash). Pure render-layer intercept is safest.
 
@@ -45,14 +45,14 @@ private void onGetPosition(float pt, CallbackInfoReturnable<Vec3> cir) {
 
 Avoid bloating `TimeFreezeHandler` with map logic.
 
-**Why:** Single responsibility — `TimeFreezeHandler` owns freeze state, `SnapManager` owns position snapshots.
+**Why:** Single responsibility 鈥?`TimeFreezeHandler` owns freeze state, `SnapManager` owns position snapshots.
 
 `SnapManager` API:
-- `freezeAll(ClientLevel)` — iterate entities, snapshot position + rotation
-- `thawAll()` — clear map
-- `getPosition(int entityId)` → `Vec3` or null
-- `getRotation(int entityId)` → `Vec2` or null
-- `onEntityAdded(Entity)` — snapshot new entity
+- `freezeAll(ClientLevel)` 鈥?iterate entities, snapshot position + rotation
+- `thawAll()` 鈥?clear map
+- `getPosition(int entityId)` 鈫?`Vec3` or null
+- `getRotation(int entityId)` 鈫?`Vec2` or null
+- `onEntityAdded(Entity)` 鈥?snapshot new entity
 
 ### Decision 3: Snapshot by entity ID (not UUID)
 
@@ -68,7 +68,7 @@ Capture `entity.yRot` / `entity.xRot` on freeze. Override rotation in the render
 
 **Why:** On deactivate, `getPosition(0) = xo` which has been tracking network updates via `setPos()`. Entity will be at latest server position = where the server thinks it is = correct position. No snap.
 
-**Exception:** If entity was teleported by server during freeze, `xo` = teleport target = abrupt change. Acceptable edge case — teleport during freeze is rare and the snap is the correct gameplay behavior (teleport happened).
+**Exception:** If entity was teleported by server during freeze, `xo` = teleport target = abrupt change. Acceptable edge case 鈥?teleport during freeze is rare and the snap is the correct gameplay behavior (teleport happened).
 
 ## Risks / Trade-offs
 
@@ -83,9 +83,9 @@ Capture `entity.yRot` / `entity.xRot` on freeze. Override rotation in the render
 
 1. Create `SnapManager.java` in client package
 2. Create `EntityMixin.java` targeting `Entity.getPosition(F)` and rotation
-3. Wire `TimeFreezeHandler.activate()` → `SnapManager.freezeAll()`
-4. Wire `TimeFreezeHandler.deactivate()` → `SnapManager.thawAll()`
-5. Register mixin in `goetypunk.mixins.json`
+3. Wire `TimeFreezeHandler.activate()` 鈫?`SnapManager.freezeAll()`
+4. Wire `TimeFreezeHandler.deactivate()` 鈫?`SnapManager.thawAll()`
+5. Register mixin in `GoetyMech.mixins.json`
 6. Test in-game with Creative flying + TimeFocusPouch open
 7. Clean up `FreezeDiagnostics` log noise (optional)
 
