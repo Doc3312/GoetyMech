@@ -62,7 +62,6 @@ public class GoetyPunkJeiPlugin implements IModPlugin {
         // Flesh casket cycle display recipes (3 transformations per tier)
         var caskets = List.of(ModItems.FLESH_CASKET_1, ModItems.FLESH_CASKET_2, ModItems.FLESH_CASKET_3);
         var pairs = List.of(
-                new CyclePair(TriggerType.A, TriggerType.B, "a_to_b"),
                 new CyclePair(TriggerType.B, TriggerType.C, "b_to_c"),
                 new CyclePair(TriggerType.C, TriggerType.A, "c_to_a")
         );
