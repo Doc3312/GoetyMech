@@ -32,10 +32,10 @@ minecraft {
             // DEBUG 日志 — 测试 CrushingWheelEntity 碰撞检测用
             property 'forge.logging.console.level', 'debug'
 
-            arg '-mixin.config=goetypunk.mixins.json'
+            arg '-mixin.config=goetymech.mixins.json'
 
             mods {
-                goetypunk { source sourceSets.main }
+                goetymech { source sourceSets.main }
             }
         }
         server {
@@ -46,17 +46,17 @@ minecraft {
             property 'mixin.env.disableRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
-            arg '-mixin.config=goetypunk.mixins.json'
+            arg '-mixin.config=goetymech.mixins.json'
 
             mods {
-                goetypunk { source sourceSets.main }
+                goetymech { source sourceSets.main }
             }
         }
     }
 }
 
 mixin {
-    add sourceSets.main, "goetypunk.refmap.json"
+    add sourceSets.main, "goetymech.refmap.json"
 }
 
 repositories {
@@ -146,7 +146,7 @@ jar {
                 'Implementation-Title'  : project.name,
                 'Implementation-Version': project.version,
                 'Implementation-Vendor' : mod_authors,
-                'MixinConfigs'          : 'goetypunk.mixins.json'
+                'MixinConfigs'          : 'goetymech.mixins.json'
         ])
     }
 }
