@@ -61,6 +61,17 @@ Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储
 - 原因：配方中 item ID 不存在导致 JEI 不显示；缺失纹理导致物品栏显示紫黑块
 - 关联：commit [current session]
 
+### 2026-07-02 — 触发类型视觉变体 + 物品升级保留内容修复
+
+- 改动：
+  1. 新增 9 个触发类型子模型 JSON + 9 张贴图（flesh_casket_{1/2/3}_{fullness/balance/deathbed}.png），根据 NBT trigger_type 切换物品外观
+  2. FleshCasketItem 覆盖 `getName()` 返回 `item.goetypunk.flesh_casket_{tier}.{suffix}` 翻译键，物品名随触发类型变化
+  3. 添加 ItemProperty 在 client 侧根据 trigger_type 选择子模型
+  4. FleshCasketInfuserRecipe.assemble()：用 ITEM_HANDLER capability 逐槽复制聚晶栈，替代仅复制 NBT tag 的旧逻辑，避免升级时清空内容
+  5. 覆写 getResultItem() 返回已循环触发类型的 output，让 JEI 显示正确的升级产物图标
+- 原因：触发类型仅有 NBT 无视觉反馈；升级仪式会清空已存放的聚晶；JEI 显示未循环的产物（始终显示 A 类型）
+- 关联：commit 3a79aa6, 6b4b32d, d3064d1, 86a72e3
+
 ### 2026-06-23 — 三个 Bug 修复
 
 - 改动：
