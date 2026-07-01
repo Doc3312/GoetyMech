@@ -34,6 +34,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -115,15 +116,17 @@ public class CrazedIllagerEntity extends AbstractIllager {
 
             float prevHealth = living.getHealth();
             float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+
+            Vec3 prevMotion = living.getDeltaMovement();
             living.hurt(this.damageSources().mobAttack(this), damage);
+            living.setDeltaMovement(prevMotion);
 
             float dealt = prevHealth - living.getHealth();
-            if (dealt > 0 && dealt < 1.0F && living.isAlive()) {
+            if (dealt < 1.0F && living.isAlive()) {
                 living.invulnerableTime = 0;
                 living.hurt(this.damageSources().magic(), 1.0F - dealt);
             }
 
-            living.invulnerableTime = 0;
             this.hurt(this.damageSources().generic(), 1.0F);
             this.invulnerableTime = 0;
             return true;
@@ -160,12 +163,6 @@ public class CrazedIllagerEntity extends AbstractIllager {
 
     @Override
     public void applyRaidBuffs(int wave, boolean leader) {
-        ItemStack weapon = new ItemStack(Items.IRON_AXE);
-        int enchantLevel = wave > 3 ? 2 : 1;
-        if (this.random.nextFloat() <= 0.5F) {
-            weapon.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, enchantLevel);
-        }
-        this.setItemSlot(EquipmentSlot.MAINHAND, weapon);
     }
 
     @Override
