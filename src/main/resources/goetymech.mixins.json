@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.goetypunk.addon.mixin",
+  "package": "com.goetymech.addon.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "goetypunk.refmap.json",
+  "refmap": "goetymech.refmap.json",
   "client": [
     "Blaze3DMixin",
     "CameraMixin",
