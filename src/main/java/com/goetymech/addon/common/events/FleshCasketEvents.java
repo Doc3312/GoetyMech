@@ -85,6 +85,8 @@ public class FleshCasketEvents {
             if (spell == null) continue;
 
             int halfCost = spell.soulCost(player, ItemStack.EMPTY) / 2;
+            if (tier == 2) halfCost = (int)(halfCost * 0.5);
+            if (tier == 3) halfCost = (int)(halfCost * 0.1);
             if (!player.isCreative() && SEHelper.getSoulAmountInt(player) < halfCost) continue;
 
             ServerLevel serverLevel = (ServerLevel) player.level();
@@ -111,6 +113,8 @@ public class FleshCasketEvents {
             }
 
             int cd = spell.spellCooldown(player);
+            if (tier == 2) cd = (int)(cd * 0.8);
+            if (tier == 3) cd = (int)(cd * 0.4);
             if (cd > maxCooldown) maxCooldown = cd;
             anyFired = true;
         }
