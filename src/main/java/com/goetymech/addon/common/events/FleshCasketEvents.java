@@ -4,7 +4,6 @@ import com.Polarice3.Goety.api.items.magic.IFocus;
 import com.Polarice3.Goety.api.magic.IChargingSpell;
 import com.Polarice3.Goety.api.magic.ISpell;
 import com.Polarice3.Goety.common.entities.projectiles.AbstractBeam;
-import com.Polarice3.Goety.common.entities.util.CastSpellTrap;
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.common.magic.SpellStat;
 import com.Polarice3.Goety.utils.LichdomHelper;
@@ -208,13 +207,6 @@ public class FleshCasketEvents {
                     spell.stopSpell(serverLevel, player, staffStack,
                             focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
                             60, spellStat);
-                    serverLevel.getEntitiesOfClass(CastSpellTrap.class,
-                                    player.getBoundingBox().inflate(64.0D),
-                                    trap -> trap.getOwner() == player && !trap.isActivated())
-                            .forEach(trap -> {
-                                trap.setActivated(true);
-                                serverLevel.broadcastEntityEvent(trap, (byte) 100);
-                            });
                 }
             } finally {
                 if (!ACTIVE_CHANNELS.containsKey(player.getUUID())) {

@@ -32,14 +32,14 @@ public class PhantomWandManager {
     }
 
     public static void tick() {
-        PENDING_CLEAR.entrySet().removeIf(entry -> {
-            int remaining = entry.getValue() - 1;
+        for (UUID uuid : new java.util.ArrayList<>(PENDING_CLEAR.keySet())) {
+            int remaining = PENDING_CLEAR.get(uuid) - 1;
             if (remaining <= 0) {
-                PHANTOM_WANDS.remove(entry.getKey());
-                return true;
+                PENDING_CLEAR.remove(uuid);
+                PHANTOM_WANDS.remove(uuid);
+            } else {
+                PENDING_CLEAR.put(uuid, remaining);
             }
-            entry.setValue(remaining);
-            return false;
-        });
+        }
     }
 }
