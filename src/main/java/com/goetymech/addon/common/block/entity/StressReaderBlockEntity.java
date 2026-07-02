@@ -12,6 +12,8 @@ import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,7 +28,16 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     public static final Set<StressReaderBlockEntity> ACTIVE_READERS = Collections.synchronizedSet(new HashSet<>());
     public static volatile boolean NETWORK_UPDATED = false;
 
-    private float consumedRemotely;
+    private final Map<BlockPos, ConsumerEntry> remoteConsumers = new HashMap<>();
+
+    private static class ConsumerEntry {
+        float amount;
+        long lastSeenTick;
+        ConsumerEntry(float amount, long lastSeenTick) {
+            this.amount = amount;
+            this.lastSeenTick = lastSeenTick;
+        }
+    }
 
     public StressReaderBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.STRESS_READER_ENTITY.get(), pos, state);
@@ -52,6 +63,14 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         ACTIVE_READERS.remove(this);
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (!level.isClientSide && level.getGameTime() % 100 == 0) {
+            purgeStaleEntries();
+        }
+    }
+
     public float getNetworkCapacity() { return capacity; }
 
     public float getNetworkStress() { return stress; }
@@ -61,19 +80,24 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     @Override
     public float calculateStressApplied() {
         float spd = Math.abs(getSpeed());
-        return spd < 0.001f ? 0 : consumedRemotely / spd;
+        return spd < 0.001f ? 0 : getConsumedRemotely() / spd;
     }
 
-    public void setConsumedRemotely(float amount) {
-        float old = this.consumedRemotely;
-        if (Math.abs(old - amount) <= 0.001f) return;
-        float capBefore = capacity;
-        float stressBefore = stress;
-        this.consumedRemotely = amount;
+    public void setConsumedRemotely(BlockPos enginePos, float amount) {
+        purgeStaleEntries();
+        float oldTotal = getConsumedRemotely();
+        if (Math.abs(amount) < 0.001f) {
+            remoteConsumers.remove(enginePos);
+        } else {
+            remoteConsumers.put(enginePos, new ConsumerEntry(amount,
+                    level != null ? level.getGameTime() : 0));
+        }
+        float newTotal = getConsumedRemotely();
+        if (Math.abs(oldTotal - newTotal) <= 0.001f) return;
         float spd = Math.abs(getSpeed());
-        float stressApplied = spd < 0.001f ? 0 : amount / spd;
-        LOGGER.debug("[TEST] SR{} REMOTE | old={} | new={} | stressApplied={} | speed={} | hasNet={} | capBefore={} | stressBefore={}",
-                fmtPos(worldPosition), old, amount, stressApplied, getSpeed(), hasNetwork(), capBefore, stressBefore);
+        float stressApplied = spd < 0.001f ? 0 : newTotal / spd;
+        LOGGER.debug("[TEST] SR{} REMOTE | engines={} | total={} | stressApplied={} | speed={} | hasNet={}",
+                fmtPos(worldPosition), remoteConsumers.size(), newTotal, stressApplied, getSpeed(), hasNetwork());
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
@@ -81,6 +105,36 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                 getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
             LOGGER.debug("[TEST] SR{} REMOTE_AFTER | cap={} | stress={} | avail={}",
                     fmtPos(worldPosition), capacity, stress, getAvailableStress());
+        }
+    }
+
+    public void removeConsumer(BlockPos enginePos) {
+        float oldTotal = getConsumedRemotely();
+        remoteConsumers.remove(enginePos);
+        float newTotal = getConsumedRemotely();
+        if (Math.abs(oldTotal - newTotal) <= 0.001f) return;
+        if (level != null && !level.isClientSide) {
+            setChanged();
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
+        }
+    }
+
+    public float getConsumedRemotely() {
+        return (float) remoteConsumers.values().stream()
+                .mapToDouble(e -> e.amount).sum();
+    }
+
+    private void purgeStaleEntries() {
+        if (level == null) return;
+        long now = level.getGameTime();
+        boolean removed = remoteConsumers.entrySet().removeIf(e -> now - e.getValue().lastSeenTick > 100);
+        if (removed) {
+            setChanged();
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
         }
     }
 
@@ -107,7 +161,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                 fmtPos(worldPosition),
                 this.capacity, (prevCapacity != this.capacity ? " (was " + prevCapacity + ")" : ""),
                 this.stress, (prevStress != this.stress ? " (was " + prevStress + ")" : ""),
-                consumedRemotely, networkSize);
+                getConsumedRemotely(), networkSize);
         if ((prevCapacity != this.capacity || prevStress != this.stress) && level != null && !level.isClientSide) {
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
             setChanged();
@@ -118,13 +172,33 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     @Override
     public void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
-        compound.putFloat("ConsumedRemotely", consumedRemotely);
+        if (!clientPacket) {
+            ListTag list = new ListTag();
+            for (var entry : remoteConsumers.entrySet()) {
+                CompoundTag tag = new CompoundTag();
+                tag.putLong("Pos", entry.getKey().asLong());
+                tag.putFloat("Amount", entry.getValue().amount);
+                tag.putLong("LastSeen", entry.getValue().lastSeenTick);
+                list.add(tag);
+            }
+            compound.put("RemoteConsumers", list);
+        }
     }
 
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
         super.read(compound, clientPacket);
-        consumedRemotely = compound.getFloat("ConsumedRemotely");
+        remoteConsumers.clear();
+        if (!clientPacket && compound.contains("RemoteConsumers")) {
+            ListTag list = compound.getList("RemoteConsumers", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag tag = list.getCompound(i);
+                BlockPos pos = BlockPos.of(tag.getLong("Pos"));
+                float amount = tag.getFloat("Amount");
+                long lastSeen = tag.getLong("LastSeen");
+                remoteConsumers.put(pos, new ConsumerEntry(amount, lastSeen));
+            }
+        }
     }
 
     @Override

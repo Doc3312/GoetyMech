@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
-import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.foundation.item.TooltipHelper;
@@ -23,6 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 
@@ -37,12 +37,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Nullable private ResourceKey<Level> linkedDim;
     private float cachedNetworkCapacity;
     private float cachedNetworkStress;
-    private float cachedAvailableStress;
-    private float cachedEffectiveAvailable;
     private float cachedRpm;
+    private float cachedConsumed;
     private int tickCounter;
-    private float prevRpm;
-    private int oscillationCount;
 
     public RemoteEngineBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.REMOTE_ENGINE_ENTITY.get(), pos, state);
@@ -51,8 +48,6 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void initialize() {
         super.initialize();
-        if (linkedPos != null && cachedRpm > 0 && getSpeed() == 0)
-            updateGeneratedRotation();
         LOGGER.debug("[TEST] RE{} INIT | linked={} | rpm={} | speed={}",
                 fmtPos(worldPosition), linkedPos != null ? fmtPos(linkedPos) : "null", cachedRpm, getSpeed());
         if (linkedPos != null && !level.isClientSide)
@@ -62,7 +57,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void tick() {
         super.tick();
-        if (level instanceof ServerLevel sl && ++tickCounter >= 20) {
+        if (level instanceof ServerLevel && ++tickCounter >= 20) {
             tickCounter = 0;
             tryRefreshRpm();
         }
@@ -80,60 +75,38 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         BlockEntity be = targetLevel.getBlockEntity(linkedPos);
         if (!(be instanceof StressReaderBlockEntity reader)) return;
 
-        float newCapacity = reader.getNetworkCapacity();
-        float newStress = reader.getNetworkStress();
-        float rawAvailable = newCapacity - newStress;
+        // ① Inherit RPM from source network
+        float networkSpeed = reader.getSpeed();
+        cachedNetworkCapacity = reader.getNetworkCapacity();
+        cachedNetworkStress = reader.getNetworkStress();
 
-        LOGGER.debug("[TEST] RE{} REFRESH | cap={} | stress={} | avail={} | linkedTarget={}",
-                fmtPos(worldPosition), newCapacity, newStress, rawAvailable, fmtPos(linkedPos));
+        // ② Compute true available stress (excluding our own previous consumption)
+        float rawAvailable = cachedNetworkCapacity - cachedNetworkStress;
+        float trueAvailable = Math.max(0, rawAvailable + reader.getConsumedRemotely());
 
-        if (Math.abs(rawAvailable - cachedAvailableStress) <= 0.01f
-                && Math.abs(newCapacity - cachedNetworkCapacity) <= 0.01f)
-            return;
+        // ③ Desired consumption = RPM × ratio, capped by availability
+        float ratio = ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
+        float desired = Math.abs(networkSpeed) * ratio;
+        float actualConsumption = Mth.clamp(desired, 0, trueAvailable);
 
-        cachedNetworkCapacity = newCapacity;
-        cachedNetworkStress = newStress;
-        cachedAvailableStress = rawAvailable;
+        LOGGER.debug("[TEST] RE{} REFRESH | netSpeed={} | rawAvail={} | trueAvail={} | desired={} | actual={} | linkedTarget={}",
+                fmtPos(worldPosition), networkSpeed, rawAvailable, trueAvailable, desired, actualConsumption, fmtPos(linkedPos));
 
-        float maxRpm = AllConfigs.server().kinetics.maxRotationSpeed.get().floatValue();
-        float newRpm = rawAvailable <= 0 ? 0 : Math.min(rawAvailable / ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get(), maxRpm);
+        // ④ Write consumption back to reader (multi-engine safe)
+        cachedConsumed = actualConsumption;
+        reader.setConsumedRemotely(this.worldPosition, actualConsumption);
 
-        if (Math.abs(newRpm - cachedRpm) > 0.01f) {
-            float prv = cachedRpm;
-            cachedRpm = newRpm;
+        // ⑤ Update RPM if changed
+        if (Math.abs(networkSpeed - cachedRpm) > 0.01f) {
+            cachedRpm = networkSpeed;
             updateGeneratedRotation();
-            LOGGER.debug("[TEST] RE{} RPM | new={} | prev={} | speed={} | hasNet={}",
-                    fmtPos(worldPosition), newRpm, prv, getSpeed(), hasNetwork());
+            LOGGER.debug("[TEST] RE{} RPM | new={} | speed={} | hasNet={}",
+                    fmtPos(worldPosition), cachedRpm, getSpeed(), hasNetwork());
             if (!level.isClientSide) sendData();
         }
 
-        // Detect oscillation: if RPM alternates between ~0 and non-0, we're pulsing
-        if (Math.abs(cachedRpm) < 0.5f && Math.abs(prevRpm) > 0.5f
-                || Math.abs(cachedRpm) > 0.5f && Math.abs(prevRpm) < 0.5f) {
-            oscillationCount++;
-            if (oscillationCount >= 3) {
-                LOGGER.debug("[TEST] RE{} OSCILLATION DETECTED! rpm 0/non-0 alternated {} times. "
-                        + "cachedAvailableStress={} | consumedRemotely on reader needs damping.",
-                        fmtPos(worldPosition), oscillationCount, cachedAvailableStress);
-            }
-        } else {
-            oscillationCount = 0;
-        }
-        prevRpm = cachedRpm;
-
-        // Report actual stress drawn from reader's network back to reader
-        float prevEffective = cachedEffectiveAvailable;
-        reader.setConsumedRemotely(cachedAvailableStress);
-        cachedEffectiveAvailable = reader.getAvailableStress();
-
-        LOGGER.debug("[TEST] RE{} STRESS | reported={} | speed={} | effAvail={}",
-                fmtPos(worldPosition), cachedAvailableStress, this.speed, cachedEffectiveAvailable);
-
-        if (Math.abs(cachedEffectiveAvailable - prevEffective) > 0.01f && !level.isClientSide) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
-        }
-
         if (!level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             setChanged();
         }
     }
@@ -147,7 +120,30 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public float calculateAddedStressCapacity() {
         float speed = Math.abs(this.speed);
         if (speed < 0.01f) return 0;
-        return cachedAvailableStress / speed;
+        return cachedConsumed / speed;
+    }
+
+    @Override
+    public void invalidate() {
+        cleanupConsumption();
+        super.invalidate();
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        cleanupConsumption();
+        super.onChunkUnloaded();
+    }
+
+    private void cleanupConsumption() {
+        if (linkedPos == null || level == null || level.isClientSide) return;
+        MinecraftServer server = ((ServerLevel) level).getServer();
+        ServerLevel targetLevel = server.getLevel(linkedDim);
+        if (targetLevel != null && targetLevel.getBlockEntity(linkedPos) instanceof StressReaderBlockEntity reader) {
+            reader.removeConsumer(worldPosition);
+            LOGGER.debug("[TEST] RE{} CLEANUP | removed consumer from reader at {}",
+                    fmtPos(worldPosition), fmtPos(linkedPos));
+        }
     }
 
     public void setLinkedPos(BlockPos pos, ResourceKey<Level> dim) {
@@ -155,7 +151,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         this.linkedPos = pos;
         this.linkedDim = dim;
         setChanged();
-        LOGGER.debug("[TEST] RE{} LINK | target={} | prevTarget={} | prevRpm={}",
+        LOGGER.debug("[TEST] RE{} LINK | target={} | prevTarget={} | rpm={}",
                 fmtPos(worldPosition), fmtPos(pos), prevLinked != null ? fmtPos(prevLinked) : "null", cachedRpm);
         if (level != null && !level.isClientSide)
             tryRefreshRpm();
@@ -182,8 +178,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 .forGoggles(tooltip);
 
         float cap = cachedNetworkCapacity;
-        float effectiveStress = cap - cachedEffectiveAvailable;
-        float fraction = cap == 0 ? 0 : effectiveStress / cap;
+        float fraction = cap == 0 ? 0 : cachedConsumed / cap;
 
         if (getTheoreticalSpeed() == 0) {
             CreateLang.text(TooltipHelper.makeProgressBar(3, 0))
@@ -198,7 +193,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                     .style(ChatFormatting.GRAY)
                     .forGoggles(tooltip);
 
-            float remaining = cachedEffectiveAvailable;
+            float remaining = cap - cachedConsumed;
             LangBuilder su = CreateLang.translate("generic.unit.stress");
             LangBuilder stressTip = CreateLang.number(remaining)
                     .add(su)
@@ -225,11 +220,12 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             compound.putInt("LinkedZ", linkedPos.getZ());
             compound.putString("LinkedDim", linkedDim.location().toString());
         }
-        compound.putFloat("CachedCapacity", cachedNetworkCapacity);
-        compound.putFloat("CachedStressVal", cachedNetworkStress);
-        compound.putFloat("CachedAvailable", cachedAvailableStress);
-        compound.putFloat("CachedEffectiveAvailable", cachedEffectiveAvailable);
-        compound.putFloat("CachedRpm", cachedRpm);
+        if (!clientPacket) {
+            compound.putFloat("CachedCapacity", cachedNetworkCapacity);
+            compound.putFloat("CachedStressVal", cachedNetworkStress);
+            compound.putFloat("CachedRpm", cachedRpm);
+            compound.putFloat("CachedConsumed", cachedConsumed);
+        }
     }
 
     @Override
@@ -242,11 +238,12 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             linkedDim = ResourceKey.create(Registries.DIMENSION,
                     ResourceLocation.tryParse(compound.getString("LinkedDim")));
         }
-        cachedNetworkCapacity = compound.getFloat("CachedCapacity");
-        cachedNetworkStress = compound.getFloat("CachedStressVal");
-        cachedAvailableStress = compound.getFloat("CachedAvailable");
-        cachedEffectiveAvailable = compound.getFloat("CachedEffectiveAvailable");
-        cachedRpm = compound.getFloat("CachedRpm");
+        if (!clientPacket) {
+            cachedNetworkCapacity = compound.getFloat("CachedCapacity");
+            cachedNetworkStress = compound.getFloat("CachedStressVal");
+            cachedRpm = compound.getFloat("CachedRpm");
+            cachedConsumed = compound.getFloat("CachedConsumed");
+        }
     }
 
     private static String fmtPos(BlockPos pos) {

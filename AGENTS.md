@@ -24,6 +24,7 @@ Single-context repo。参见 `docs/agents/domain.md`。
 | GoetyMech-architecture | package / convention / register |
 | jei-dev | JEI / recipe display / ghost drag |
 | patchouli-dev | Patchouli / guide book / page |
+| patchouli-writer | **★Patchouli 条目生成★** 输入物品中文描述→自动生成双语 entry JSON / 只需文本+@分类名 / 自动查注册名 / 问配方 |
 | prototype-charge-jump | charge jump / jump height |
 | prototype-flight-mixin | elytra flight / Mixin / velocity |
 | openspec-propose | explore / design / spec |
