@@ -1,0 +1,7 @@
+{
+  "name": "Focuses",
+  "description": "GoetyMech custom focuses and spells",
+  "icon": "goetymech:sculk_bind_focus",
+  "parent": "goetymech:goetymech",
+  "sortnum": 2
+}

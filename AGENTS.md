@@ -51,6 +51,39 @@ IF 讨论/开发涉及可用技能表中任一 skill 覆盖的领域（如聚晶
 
 禁止跳过 skill 直接读源码。skill 文档是约定层，源码是验证层，两者都要但不允许跳过约定层。
 
+### 编码安全（📛 硬性阻断，不可绕过）
+
+**IF 对含中文/非 ASCII 文件做任何全局文本替换 THEN 必须使用 Node.js 读写，禁止通过 PowerShell 管道/重定向。**
+
+```bash
+# ✅ 正确 — Node.js 二进制安全
+node -e "fs.writeFileSync('f', fs.readFileSync('f','utf8').replace(/x/g,'y'), 'utf8')"
+
+# ❌ 禁止 — PowerShell 隐式转码会破坏 UTF-8
+# git show cb142cd:file | Set-Content file -Encoding UTF8
+# git show cb142cd:file > file
+# (Get-Content file) -replace 'x','y' | Set-Content file
+```
+
+**IF 修改了含中文的文件（`.java` / `.json` / `.properties` / `.toml` / `.cfg`）THEN 提交前必须先执行编码 roundtrip 校验：**
+
+```bash
+node .opencode/scripts/encoding-check.mjs
+```
+
+失败时该命令 exit(1)，**禁止任何提交被创建**，必须修复后再试。
+
+**IF 修改了 lang `.json` 文件 THEN 额外人工确认：**
+1. `§` 颜色码未被错误转码（检查 `搂` / `鈮` 等典型乱码字符计数为 0）
+2. `JSON.parse()` 通过
+3. 所有 key 在 `en_us.json` 中有对应翻译值且非空
+
+**修复损坏文件的标准方法：**
+```bash
+node .opencode/scripts/encoding-check.mjs --fix
+```
+该命令从 `HEAD` 恢复编码损坏的文件。如果 `HEAD` 版本也损坏则跳过，需从更早的稳定 commit 恢复。
+
 ### 运行验证（每次改完代码自动 runClient）
 
 IF auto-commit 包含 `src/` 下的生产代码变更（`.java` 文件） THEN 自动执行 runClient 验证：
@@ -190,6 +223,12 @@ plugin 是最终防线。若 plugin 出错导致操作未被拦截，**AI 仍需
 ### 每次修改自动提交
 
 **每次 `edit` / `write` 操作完成后，必须立即执行 git 提交。**
+
+**提交前必须先执行编码检查（失败则禁止提交）：**
+```bash
+node .opencode/scripts/encoding-check.mjs
+if ($?) { git commit ... }
+```
 
 格式：
 ```bash

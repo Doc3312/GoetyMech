@@ -1,0 +1,7 @@
+{
+  "name": "探索",
+  "description": "发现与世界交互",
+  "icon": "minecraft:map",
+  "parent": "goetymech:goetymech",
+  "sortnum": 3
+}

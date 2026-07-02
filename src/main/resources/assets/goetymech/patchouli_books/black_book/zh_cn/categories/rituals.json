@@ -1,0 +1,7 @@
+{
+  "name": "仪式",
+  "description": "GoetyMech 专属仪式与祭典",
+  "icon": "goety:dark_altar",
+  "parent": "goetymech:goetymech",
+  "sortnum": 0
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Machines",
+  "description": "Flesh-crafted machines and soul-powered devices",
+  "icon": "create:wrench",
+  "parent": "goetymech:goetymech",
+  "sortnum": 1
+}
