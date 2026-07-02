@@ -94,9 +94,9 @@ public class StressReaderBlock extends DirectionalKineticBlock
 
         // Sneak + RemoteEngineBlockItem on bound reader → unbind
         if (player.isShiftKeyDown() && stack.getItem() instanceof RemoteEngineBlockItem) {
-            if (!level.isClientSide && RemoteEngineBlockItem.isBound(stack)) {
-                BlockPos boundPos = RemoteEngineBlockItem.getBoundPos(stack);
-                if (boundPos.equals(pos)) {
+            if (!level.isClientSide) {
+                if (RemoteEngineBlockItem.isBound(stack)
+                        && RemoteEngineBlockItem.getBoundPos(stack).equals(pos)) {
                     RemoteEngineBlockItem.clearBinding(stack);
                     player.displayClientMessage(
                             Component.translatable("info.goetymech.remote_engine.unbound"), true);
@@ -105,7 +105,7 @@ public class StressReaderBlock extends DirectionalKineticBlock
                             Component.translatable("info.goetymech.remote_engine.not_bound_here"), true);
                 }
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS;
         }
 
         if (stack.getItem() instanceof StressFocus && !player.isShiftKeyDown()) {

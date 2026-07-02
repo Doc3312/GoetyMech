@@ -4,6 +4,7 @@ import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
 import com.Polarice3.Goety.common.crafting.RitualRecipe;
 import com.Polarice3.Goety.common.ritual.Ritual;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -20,7 +21,9 @@ public class UpgradeCasketRitual extends Ritual {
         super.finish(world, blockPos, tileEntity, castingPlayer, activationItem);
         ItemStack result = this.recipe.getResultItem(world.registryAccess()).copy();
         if (activationItem.hasTag()) {
-            result.setTag(activationItem.getTag().copy());
+            CompoundTag tag = activationItem.getTag().copy();
+            tag.remove("flesh_casket_cooldown");
+            result.setTag(tag);
         }
         activationItem.shrink(1);
         result.onCraftedBy(world, castingPlayer, 1);

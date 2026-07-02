@@ -86,8 +86,6 @@ public class ModClientForgeEvents {
             ModNetwork.CHANNEL.sendToServer(new C2SOpenFleshCasketPacket());
         }
 
-        if (mc.level.getGameTime() % 5 != 0) return;
-
         Player player = mc.player;
         if (player == null) return;
 

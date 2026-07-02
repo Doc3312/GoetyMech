@@ -11,12 +11,9 @@ import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.TriggerType;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModItems;
-import com.Polarice3.Goety.common.magic.SpellStat;
-import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,16 +26,6 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FleshCasketEvents {
     private static final String TAG_LAST_CAST_TICK = "goetymech.flesh_casket_last_cast";
-
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (event.player.level().isClientSide) return;
-        if (!(event.player instanceof ServerPlayer)) return;
-
-        findAllFleshCaskets((ServerPlayer) event.player)
-                .forEach(FleshCasketItem::tickCooldowns);
-    }
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
@@ -92,7 +79,7 @@ public class FleshCasketEvents {
             ISpell spell = iFocus.getSpell();
             if (spell == null) continue;
 
-            if (FleshCasketItem.isOnCooldown(casketStack)) continue;
+            if (player.getCooldowns().isOnCooldown(casketStack.getItem())) continue;
 
             int halfCost = spell.soulCost(player, ItemStack.EMPTY) / 2;
             if (!player.isCreative() && SEHelper.getSoulAmountInt(player) < halfCost) continue;
@@ -131,6 +118,7 @@ public class FleshCasketEvents {
                     if (cd > maxCooldown) maxCooldown = cd;
                 }
             }
+            player.getCooldowns().addCooldown(casketStack.getItem(), maxCooldown);
             FleshCasketItem.setCooldown(casketStack, maxCooldown);
             return;
         }

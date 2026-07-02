@@ -104,16 +104,6 @@ public class FleshCasketItem extends Item implements ICurioItem {
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public int getMaxDamage(ItemStack stack) {
-        return MAX_COOLDOWN_TICKS;
-    }
-
-    @Override
     @Nullable
     public ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundTag nbt) {
         return new FleshCasketItemCapability(stack, getSlotCount(tier));
@@ -148,17 +138,10 @@ public class FleshCasketItem extends Item implements ICurioItem {
 
     public static void setCooldown(ItemStack casketStack, int ticks) {
         casketStack.getOrCreateTag().putInt(TAG_COOLDOWN, Math.max(0, ticks));
-        casketStack.setDamageValue(Math.min(MAX_COOLDOWN_TICKS, Math.max(0, ticks)));
     }
 
     public static boolean isOnCooldown(ItemStack casketStack) {
         return getCooldown(casketStack) > 0;
-    }
-
-    public static void tickCooldowns(ItemStack casketStack) {
-        int cd = getCooldown(casketStack);
-        if (cd <= 0) return;
-        setCooldown(casketStack, cd - 1);
     }
 
     public static boolean hasAnyFocus(ItemStack casketStack) {

@@ -50,8 +50,11 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         super.initialize();
         LOGGER.debug("[TEST] RE{} INIT | linked={} | rpm={} | speed={}",
                 fmtPos(worldPosition), linkedPos != null ? fmtPos(linkedPos) : "null", cachedRpm, getSpeed());
-        if (linkedPos != null && !level.isClientSide)
+        if (linkedPos != null && !level.isClientSide) {
             tryRefreshRpm();
+            if (cachedRpm > 0 && getSpeed() == 0)
+                updateGeneratedRotation();
+        }
     }
 
     @Override
@@ -76,7 +79,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (!(be instanceof StressReaderBlockEntity reader)) return;
 
         // ① Inherit RPM from source network
-        float networkSpeed = reader.getSpeed();
+        cachedRpm = reader.getSpeed();
         cachedNetworkCapacity = reader.getNetworkCapacity();
         cachedNetworkStress = reader.getNetworkStress();
 
@@ -84,30 +87,23 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         float rawAvailable = cachedNetworkCapacity - cachedNetworkStress;
         float trueAvailable = Math.max(0, rawAvailable + reader.getConsumedRemotely());
 
-        // ③ Desired consumption = RPM × ratio, capped by availability
-        float ratio = ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
-        float desired = Math.abs(networkSpeed) * ratio;
-        float actualConsumption = Mth.clamp(desired, 0, trueAvailable);
+        // ③ Actual consumption = local network load, capped by availability
+        //    (no machines attached → this.stress=0 → consumes 0)
+        cachedConsumed = Mth.clamp(this.stress, 0, trueAvailable);
 
-        LOGGER.debug("[TEST] RE{} REFRESH | netSpeed={} | rawAvail={} | trueAvail={} | desired={} | actual={} | linkedTarget={}",
-                fmtPos(worldPosition), networkSpeed, rawAvailable, trueAvailable, desired, actualConsumption, fmtPos(linkedPos));
+        LOGGER.debug("[TEST] RE{} REFRESH | netSpeed={} | rawAvail={} | trueAvail={} | localStress={} | consumed={} | linkedTarget={}",
+                fmtPos(worldPosition), cachedRpm, rawAvailable, trueAvailable, this.stress, cachedConsumed, fmtPos(linkedPos));
 
         // ④ Write consumption back to reader (multi-engine safe)
-        cachedConsumed = actualConsumption;
-        reader.setConsumedRemotely(this.worldPosition, actualConsumption);
+        reader.setConsumedRemotely(this.worldPosition, cachedConsumed);
 
-        // ⑤ Update RPM if changed
-        if (Math.abs(networkSpeed - cachedRpm) > 0.01f) {
-            cachedRpm = networkSpeed;
-            updateGeneratedRotation();
-            LOGGER.debug("[TEST] RE{} RPM | new={} | speed={} | hasNet={}",
-                    fmtPos(worldPosition), cachedRpm, getSpeed(), hasNetwork());
-            if (!level.isClientSide) sendData();
-        }
+        // ⑤ Always repropagate to keep speed/capacity in sync
+        updateGeneratedRotation();
 
         if (!level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             setChanged();
+            sendData();
         }
     }
 
@@ -120,7 +116,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public float calculateAddedStressCapacity() {
         float speed = Math.abs(this.speed);
         if (speed < 0.01f) return 0;
-        return cachedConsumed / speed;
+        return ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
     }
 
     @Override
