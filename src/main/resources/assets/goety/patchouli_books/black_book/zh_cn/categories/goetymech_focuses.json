@@ -1,7 +1,0 @@
-{
-  "name": "聚晶",
-  "description": "GoetyMech 自定义聚晶与法术",
-  "icon": "goetymech:sculk_bind_focus",
-  "parent": "goety:goetymech",
-  "sortnum": 2
-}

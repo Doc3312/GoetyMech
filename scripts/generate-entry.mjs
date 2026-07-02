@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ASSETS = 'src/main/resources/assets/goety';
+const ASSETS = 'src/main/resources/assets/goetymech';
 const BOOK = 'patchouli_books/black_book';
 
 function readJson(filePath) {
@@ -33,7 +33,7 @@ function buildEntry(name, icon, category, sortnum, pages, recipes) {
   const entry = {
     name,
     icon,
-    category: `goety:goetymech_${category}`,
+    category: `goetymech:${category}`,
     sortnum,
     pages: [...pages],
   };
@@ -56,10 +56,10 @@ function run(input) {
   }
 
   const base = `${ASSETS}/${BOOK}`;
-  const enEntryPath = `${base}/en_us/entries/goetymech_${category}/${slug}.json`;
-  const zhEntryPath = `${base}/zh_cn/entries/goetymech_${category}/${slug}.json`;
-  const enLangPath = `src/main/resources/assets/goetymech/lang/en_us.json`;
-  const zhLangPath = `src/main/resources/assets/goetymech/lang/zh_cn.json`;
+  const enEntryPath = `${base}/en_us/entries/${category}/${slug}.json`;
+  const zhEntryPath = `${base}/zh_cn/entries/${category}/${slug}.json`;
+  const enLangPath = `${ASSETS}/lang/en_us.json`;
+  const zhLangPath = `${ASSETS}/lang/zh_cn.json`;
 
   const enEntry = buildEntry(name_en, icon, category, sortnum, pages_en, recipes);
   const zhEntry = buildEntry(name_zh, icon, category, sortnum, pages_zh, recipes);

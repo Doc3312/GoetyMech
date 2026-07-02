@@ -1,7 +1,0 @@
-{
-  "name": "机械",
-  "description": "血肉机械与魂械装置",
-  "icon": "create:wrench",
-  "parent": "goety:goetymech",
-  "sortnum": 1
-}

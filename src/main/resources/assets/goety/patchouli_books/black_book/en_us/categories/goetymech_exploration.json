@@ -1,7 +1,0 @@
-{
-  "name": "Exploration",
-  "description": "Discoveries and world interaction",
-  "icon": "minecraft:map",
-  "parent": "goety:goetymech",
-  "sortnum": 3
-}

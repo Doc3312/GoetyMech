@@ -1,7 +1,0 @@
-{
-  "name": "Rituals",
-  "description": "GoetyMech-specific rituals and ceremonies",
-  "icon": "goety:dark_altar",
-  "parent": "goety:goetymech",
-  "sortnum": 0
-}

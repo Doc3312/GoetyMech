@@ -7,6 +7,8 @@ import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.KineticNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,6 +39,17 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     private boolean hasEverSynced;
     public long ticketTime;
 
+    private final Map<BlockPos, EngineEntry> boundEngines = new HashMap<>();
+
+    private static class EngineEntry {
+        float consumption;
+        long lastSeenTick;
+        EngineEntry(float consumption, long lastSeenTick) {
+            this.consumption = consumption;
+            this.lastSeenTick = lastSeenTick;
+        }
+    }
+
     public StressArkBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.STRESS_ARK_ENTITY.get(), pos, state);
     }
@@ -56,6 +69,62 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         self.recomputeIfNeeded();
     }
 
+    public void registerEngine(BlockPos enginePos) {
+        boundEngines.putIfAbsent(enginePos, new EngineEntry(0, level != null ? level.getGameTime() : 0));
+        setChanged();
+    }
+
+    public void unregisterEngine(BlockPos enginePos) {
+        boundEngines.remove(enginePos);
+        setChanged();
+    }
+
+    public void reportConsumption(BlockPos enginePos, float consumption) {
+        long now = level != null ? level.getGameTime() : 0;
+        EngineEntry entry = boundEngines.get(enginePos);
+        if (entry != null) {
+            entry.consumption = consumption;
+            entry.lastSeenTick = now;
+        }
+    }
+
+    public float getRepresentativeRPM() {
+        float bestRpm = 0;
+        float bestAvailable = -1;
+        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
+            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
+                if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
+                    float available = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedRemotely());
+                    if (available > bestAvailable) {
+                        bestAvailable = available;
+                        bestRpm = reader.getSpeed();
+                    }
+                }
+            }
+        }
+        return bestRpm;
+    }
+
+    public float getTotalAvailableStress() {
+        float total = 0;
+        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
+            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
+                if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
+                    total += Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedRemotely());
+                }
+            }
+        }
+        return total;
+    }
+
+    public float getTotalConsumedByEngines() {
+        float total = 0;
+        for (EngineEntry entry : boundEngines.values()) {
+            total += entry.consumption;
+        }
+        return total;
+    }
+
     private void recomputeIfNeeded() {
         boolean dirty = StressReaderBlockEntity.NETWORK_UPDATED || forceRefresh;
         if (++tickCounter >= 20) {
@@ -67,6 +136,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         StressReaderBlockEntity.NETWORK_UPDATED = false;
         forceRefresh = false;
 
+        Map<KineticNetwork, StressReaderBlockEntity> networkReaders = new LinkedHashMap<>();
         Set<KineticNetwork> seen = new HashSet<>();
         float totalCap = 0, totalStress = 0;
         int netCount = 0;
@@ -75,6 +145,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
                 if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
                     KineticNetwork net = reader.getOrCreateNetwork();
+                    networkReaders.putIfAbsent(net, reader);
                     if (seen.add(net)) {
                         totalCap += reader.getNetworkCapacity();
                         totalStress += reader.getNetworkStress();
@@ -95,6 +166,49 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             hasEverSynced = true;
             syncToClient();
         }
+
+        distributeConsumption(networkReaders.values());
+        purgeStaleEngines();
+    }
+
+    private void distributeConsumption(Collection<StressReaderBlockEntity> readers) {
+        if (boundEngines.isEmpty() || readers.isEmpty()) return;
+
+        float totalEngineConsumption = 0;
+        for (EngineEntry entry : boundEngines.values()) {
+            totalEngineConsumption += entry.consumption;
+        }
+
+        if (totalEngineConsumption <= 0) {
+            for (StressReaderBlockEntity reader : readers) {
+                reader.removeConsumer(this.worldPosition);
+            }
+            return;
+        }
+
+        int n = readers.size();
+        float[] available = new float[n];
+        float totalAvailable = 0;
+        int idx = 0;
+        for (StressReaderBlockEntity reader : readers) {
+            available[idx] = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedRemotely());
+            totalAvailable += available[idx];
+            idx++;
+        }
+        if (totalAvailable <= 0) return;
+
+        idx = 0;
+        for (StressReaderBlockEntity reader : readers) {
+            float allocated = totalEngineConsumption * (available[idx] / totalAvailable);
+            reader.setConsumedRemotely(this.worldPosition, Math.min(allocated, available[idx]));
+            idx++;
+        }
+    }
+
+    private void purgeStaleEngines() {
+        if (level == null) return;
+        long now = level.getGameTime();
+        boundEngines.entrySet().removeIf(e -> now - e.getValue().lastSeenTick > 100);
     }
 
     private void syncToClient() {
@@ -136,6 +250,14 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     public void onArkRemoved() {
         sendClearPacket();
         PLAYER_ACTIVE_ARK.remove(ownerUUID);
+        // Remove Ark's entries from all readers
+        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
+            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
+                if (reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
+                    reader.removeConsumer(this.worldPosition);
+                }
+            }
+        }
         ownerUUID = null;
     }
 
@@ -165,6 +287,15 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (ownerUUID != null) {
             tag.putUUID("OwnerUUID", ownerUUID);
         }
+        ListTag enginesList = new ListTag();
+        for (var entry : boundEngines.entrySet()) {
+            CompoundTag eTag = new CompoundTag();
+            eTag.putLong("Pos", entry.getKey().asLong());
+            eTag.putFloat("Consumption", entry.getValue().consumption);
+            eTag.putLong("LastSeen", entry.getValue().lastSeenTick);
+            enginesList.add(eTag);
+        }
+        tag.put("BoundEngines", enginesList);
     }
 
     @Override
@@ -174,6 +305,17 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             ownerUUID = tag.getUUID("OwnerUUID");
             if (level != null && !level.isClientSide) {
                 PLAYER_ACTIVE_ARK.putIfAbsent(ownerUUID, worldPosition);
+            }
+        }
+        boundEngines.clear();
+        if (tag.contains("BoundEngines")) {
+            ListTag list = tag.getList("BoundEngines", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag eTag = list.getCompound(i);
+                BlockPos pos = BlockPos.of(eTag.getLong("Pos"));
+                float consumption = eTag.getFloat("Consumption");
+                long lastSeen = eTag.getLong("LastSeen");
+                boundEngines.put(pos, new EngineEntry(consumption, lastSeen));
             }
         }
         forceRefresh = true;
