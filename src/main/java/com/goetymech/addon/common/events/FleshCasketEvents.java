@@ -3,6 +3,7 @@ package com.goetymech.addon.common.events;
 import com.Polarice3.Goety.api.items.magic.IFocus;
 import com.Polarice3.Goety.api.magic.IChargingSpell;
 import com.Polarice3.Goety.api.magic.ISpell;
+import com.Polarice3.Goety.common.entities.projectiles.AbstractBeam;
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.common.magic.SpellStat;
 import com.Polarice3.Goety.utils.LichdomHelper;
@@ -15,7 +16,6 @@ import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModItems;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -34,27 +34,25 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FleshCasketEvents {
     private static final String TAG_LAST_CAST_TICK = "goetymech.flesh_casket_last_cast";
 
-    // --- channel task: holds player in "casting" state for IChargingSpell ---
     private static final Map<UUID, ChannelTask> ACTIVE_CHANNELS = new ConcurrentHashMap<>();
 
     private static class ChannelTask {
         final ServerPlayer player;
         final ISpell spell;
         final ItemStack staffStack;
-        final ItemStack oldOffhand;
         final SpellStat spellStat;
         final int castUp;
         final int maxShots;
         final ItemStack focusStack;
+        final List<AbstractBeam> managedBeams = new ArrayList<>();
         int castTicks = 0;
         int coolAcc = 0;
 
         ChannelTask(ServerPlayer player, ISpell spell, ItemStack staffStack,
-                    ItemStack oldOffhand, SpellStat spellStat, ItemStack focusStack) {
+                    SpellStat spellStat, ItemStack focusStack) {
             this.player = player;
             this.spell = spell;
             this.staffStack = staffStack;
-            this.oldOffhand = oldOffhand;
             this.spellStat = new SpellStat(spellStat.potency, spellStat.duration,
                     spellStat.range, spellStat.radius, spellStat.burning, spellStat.velocity);
             this.focusStack = focusStack;
@@ -71,11 +69,9 @@ public class FleshCasketEvents {
             if (!player.isAlive()) return false;
             castTicks++;
             ServerLevel serverLevel = (ServerLevel) player.level();
-            player.getInventory().offhand.set(0, staffStack);
-            if (castTicks == 1 && !player.isUsingItem()) {
-                player.startUsingItem(InteractionHand.OFF_HAND);
-            }
+
             spell.useSpell(serverLevel, player, staffStack, castTicks, spellStat);
+
             if (spell instanceof IChargingSpell cs) {
                 if (castTicks >= castUp || castUp <= 0) {
                     coolAcc++;
@@ -83,6 +79,13 @@ public class FleshCasketEvents {
                     if (coolAcc >= cd) {
                         coolAcc = 0;
                         spell.SpellResult(serverLevel, player, staffStack, spellStat);
+                        List<AbstractBeam> freshBeams = serverLevel.getEntitiesOfClass(AbstractBeam.class,
+                                player.getBoundingBox().inflate(5.0F),
+                                beam -> beam.getOwner() == player && beam.itemBase && !managedBeams.contains(beam));
+                        for (AbstractBeam beam : freshBeams) {
+                            beam.setItemBase(false);
+                            managedBeams.add(beam);
+                        }
                     }
                 }
             }
@@ -94,8 +97,10 @@ public class FleshCasketEvents {
             spell.stopSpell(serverLevel, player, staffStack,
                     focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
                     castTicks, spellStat);
-            if (player.isUsingItem()) player.stopUsingItem();
-            player.getInventory().offhand.set(0, oldOffhand);
+            for (AbstractBeam beam : managedBeams) {
+                if (beam.isAlive()) beam.discard();
+            }
+            managedBeams.clear();
         }
     }
 
@@ -186,29 +191,17 @@ public class FleshCasketEvents {
                               : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
             SoulUsingItemHandler.get(staffStack).setStackInSlot(0, focusStack);
 
-            ItemStack oldOffhand = player.getOffhandItem();
-            player.getInventory().offhand.set(0, staffStack);
+            spell.startSpell(serverLevel, player, staffStack, spellStat);
+            spell.useSpell(serverLevel, player, staffStack, 60, spellStat);
 
-            boolean channelStarted = false;
-            try {
-                spell.startSpell(serverLevel, player, staffStack, spellStat);
-                spell.useSpell(serverLevel, player, staffStack, 60, spellStat);
-
-                if (spell instanceof IChargingSpell && !ACTIVE_CHANNELS.containsKey(player.getUUID())) {
-                    ACTIVE_CHANNELS.put(player.getUUID(), new ChannelTask(
-                            player, spell, staffStack, oldOffhand, spellStat, focusStack));
-                    channelStarted = true;
-                } else {
-                    spell.SpellResult(serverLevel, player, staffStack, spellStat);
-                    ItemStack currentFocus = WandUtil.findFocus(player);
-                    spell.stopSpell(serverLevel, player, staffStack,
-                            currentFocus.isEmpty() ? ItemStack.EMPTY : currentFocus,
-                            60, spellStat);
-                }
-            } finally {
-                if (!channelStarted) {
-                    player.getInventory().offhand.set(0, oldOffhand);
-                }
+            if (spell instanceof IChargingSpell && !ACTIVE_CHANNELS.containsKey(player.getUUID())) {
+                ACTIVE_CHANNELS.put(player.getUUID(), new ChannelTask(
+                        player, spell, staffStack, spellStat, focusStack));
+            } else {
+                spell.SpellResult(serverLevel, player, staffStack, spellStat);
+                spell.stopSpell(serverLevel, player, staffStack,
+                        focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
+                        60, spellStat);
             }
 
             if (!player.isCreative()) {
