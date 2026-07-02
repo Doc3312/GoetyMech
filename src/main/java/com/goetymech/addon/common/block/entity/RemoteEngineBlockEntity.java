@@ -1,6 +1,7 @@
 package com.goetymech.addon.common.block.entity;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
@@ -32,8 +33,20 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("TEST");
 
+    public enum BindingType {
+        NONE, ARK, READER
+    }
+
+    private BindingType bindingType = BindingType.NONE;
+
+    @Nullable private BlockPos arkPos;
+    @Nullable private ResourceKey<Level> arkDim;
+
     @Nullable private BlockPos linkedPos;
     @Nullable private ResourceKey<Level> linkedDim;
+
+    @Nullable private UUID placerUUID;
+
     private float cachedNetworkCapacity;
     private float cachedNetworkStress;
     private float cachedRpm;
@@ -47,9 +60,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void initialize() {
         super.initialize();
-        LOGGER.debug("[TEST] RE{} INIT | linked={} | rpm={} | speed={}",
-                fmtPos(worldPosition), linkedPos != null ? fmtPos(linkedPos) : "null", cachedRpm, getSpeed());
-        if (linkedPos != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide) {
+            tryAutoBindArk();
             tryRefreshRpm();
             if (cachedRpm > 0 && getSpeed() == 0)
                 updateGeneratedRotation();
@@ -65,9 +77,66 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         }
     }
 
+    private void tryAutoBindArk() {
+        if (bindingType != BindingType.NONE) return;
+        if (placerUUID == null || level == null) return;
+
+        StressArkBlockEntity.ArkLocation arkLoc = StressArkBlockEntity.getActiveArkLocation(placerUUID);
+        if (arkLoc == null) return;
+
+        MinecraftServer server = ((ServerLevel) level).getServer();
+        ServerLevel arkLevel = server.getLevel(arkLoc.dimension());
+        if (arkLevel == null || !arkLevel.isLoaded(arkLoc.pos())) return;
+
+        BlockEntity be = arkLevel.getBlockEntity(arkLoc.pos());
+        if (be instanceof StressArkBlockEntity ark) {
+            this.arkPos = arkLoc.pos();
+            this.arkDim = arkLoc.dimension();
+            this.linkedPos = null;
+            this.linkedDim = null;
+            this.bindingType = BindingType.ARK;
+            ark.registerEngine(this.worldPosition);
+            setChanged();
+        }
+    }
+
     private void tryRefreshRpm() {
-        if (linkedPos == null || linkedDim == null)
-            return;
+        switch (bindingType) {
+            case ARK:
+                refreshFromArk();
+                break;
+            case READER:
+                refreshFromReader();
+                break;
+            case NONE:
+                break;
+        }
+    }
+
+    private void refreshFromArk() {
+        if (arkPos == null || arkDim == null || level == null) return;
+        MinecraftServer server = ((ServerLevel) level).getServer();
+        ServerLevel arkLevel = server.getLevel(arkDim);
+        if (arkLevel == null || !arkLevel.isLoaded(arkPos)) return;
+
+        BlockEntity be = arkLevel.getBlockEntity(arkPos);
+        if (!(be instanceof StressArkBlockEntity ark)) return;
+
+        cachedRpm = ark.getRepresentativeRPM();
+        cachedConsumed = Mth.clamp(this.stress, 0, ark.getTotalAvailableStress());
+        ark.reportConsumption(this.worldPosition, cachedConsumed);
+
+        updateGeneratedRotation();
+
+        if (!level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            setChanged();
+            sendData();
+        }
+    }
+
+    private void refreshFromReader() {
+        if (linkedPos == null || linkedDim == null) return;
 
         MinecraftServer server = ((ServerLevel) level).getServer();
         ServerLevel targetLevel = server.getLevel(linkedDim);
@@ -77,26 +146,17 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         BlockEntity be = targetLevel.getBlockEntity(linkedPos);
         if (!(be instanceof StressReaderBlockEntity reader)) return;
 
-        // ① Inherit RPM from source network
         cachedRpm = reader.getSpeed();
         cachedNetworkCapacity = reader.getNetworkCapacity();
         cachedNetworkStress = reader.getNetworkStress();
 
-        // ② Compute true available stress (excluding our own previous consumption)
         float rawAvailable = cachedNetworkCapacity - cachedNetworkStress;
         float trueAvailable = Math.max(0, rawAvailable + reader.getConsumedRemotely());
 
-        // ③ Actual consumption = local network load, capped by availability
-        //    (no machines attached → this.stress=0 → consumes 0)
         cachedConsumed = Mth.clamp(this.stress, 0, trueAvailable);
 
-        LOGGER.debug("[TEST] RE{} REFRESH | netSpeed={} | rawAvail={} | trueAvail={} | localStress={} | consumed={} | linkedTarget={}",
-                fmtPos(worldPosition), cachedRpm, rawAvailable, trueAvailable, this.stress, cachedConsumed, fmtPos(linkedPos));
-
-        // ④ Write consumption back to reader (multi-engine safe)
         reader.setConsumedRemotely(this.worldPosition, cachedConsumed);
 
-        // ⑤ Always repropagate to keep speed/capacity in sync
         updateGeneratedRotation();
 
         if (!level.isClientSide) {
@@ -108,13 +168,12 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float getGeneratedSpeed() {
-        return linkedPos != null ? cachedRpm : 0;
+        return (bindingType == BindingType.ARK) ? (arkPos != null ? cachedRpm : 0)
+                : (linkedPos != null ? cachedRpm : 0);
     }
 
     @Override
     public float calculateAddedStressCapacity() {
-        float speed = Math.abs(this.speed);
-        if (speed < 0.01f) return 0;
         return ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
     }
 
@@ -131,39 +190,73 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     private void cleanupConsumption() {
-        if (linkedPos == null || level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide) return;
         MinecraftServer server = ((ServerLevel) level).getServer();
-        ServerLevel targetLevel = server.getLevel(linkedDim);
-        if (targetLevel != null && targetLevel.getBlockEntity(linkedPos) instanceof StressReaderBlockEntity reader) {
-            reader.removeConsumer(worldPosition);
-            LOGGER.debug("[TEST] RE{} CLEANUP | removed consumer from reader at {}",
-                    fmtPos(worldPosition), fmtPos(linkedPos));
+
+        if (bindingType == BindingType.ARK && arkPos != null && arkDim != null) {
+            ServerLevel arkLevel = server.getLevel(arkDim);
+            if (arkLevel != null && arkLevel.getBlockEntity(arkPos) instanceof StressArkBlockEntity ark) {
+                ark.unregisterEngine(worldPosition);
+            }
+        } else if (bindingType == BindingType.READER && linkedPos != null && linkedDim != null) {
+            ServerLevel targetLevel = server.getLevel(linkedDim);
+            if (targetLevel != null && targetLevel.getBlockEntity(linkedPos) instanceof StressReaderBlockEntity reader) {
+                reader.removeConsumer(worldPosition);
+            }
         }
     }
 
     public void setLinkedPos(BlockPos pos, ResourceKey<Level> dim) {
-        BlockPos prevLinked = this.linkedPos;
+        this.bindingType = BindingType.READER;
         this.linkedPos = pos;
         this.linkedDim = dim;
+        this.arkPos = null;
         setChanged();
-        LOGGER.debug("[TEST] RE{} LINK | target={} | prevTarget={} | rpm={}",
-                fmtPos(worldPosition), fmtPos(pos), prevLinked != null ? fmtPos(prevLinked) : "null", cachedRpm);
         if (level != null && !level.isClientSide)
             tryRefreshRpm();
     }
 
+    public void setPlacerUUID(UUID uuid) {
+        this.placerUUID = uuid;
+        setChanged();
+    }
+
     @Override
     public void updateGeneratedRotation() {
-        float prevSpeed = this.speed;
         super.updateGeneratedRotation();
-        LOGGER.debug("[TEST] RE{} GEN | speed={} | prevSpeed={} | hasNet={} | rpm={}",
-                fmtPos(worldPosition), this.speed, prevSpeed, hasNetwork(), cachedRpm);
     }
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        if (linkedPos == null) return false;
         if (!StressImpact.isEnabled()) return false;
+
+        if (bindingType == BindingType.ARK) {
+            CreateLang.text("Remote Engine (Ark)")
+                    .style(ChatFormatting.WHITE)
+                    .forGoggles(tooltip);
+
+            LangBuilder su = CreateLang.translate("generic.unit.stress");
+            float rpm = Math.abs(getSpeed());
+
+            CreateLang.text("RPM: ")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+            CreateLang.number(rpm)
+                    .style(ChatFormatting.AQUA)
+                    .forGoggles(tooltip, 1);
+
+            CreateLang.text("Consumed: ")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+            CreateLang.number(cachedConsumed)
+                    .add(su)
+                    .style(ChatFormatting.GREEN)
+                    .forGoggles(tooltip, 1);
+
+            return true;
+        }
+
+        if (linkedPos == null) return false;
 
         CreateLang.text("Remote Engine: ["
                 + linkedPos.getX() + ", "
@@ -200,7 +293,17 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
-        if (linkedPos != null) {
+        compound.putByte("BindingType", (byte) bindingType.ordinal());
+        if (placerUUID != null) {
+            compound.putUUID("PlacerUUID", placerUUID);
+        }
+        if (bindingType == BindingType.ARK && arkPos != null && arkDim != null) {
+            compound.putInt("ArkX", arkPos.getX());
+            compound.putInt("ArkY", arkPos.getY());
+            compound.putInt("ArkZ", arkPos.getZ());
+            compound.putString("ArkDim", arkDim.location().toString());
+        }
+        if (bindingType == BindingType.READER && linkedPos != null) {
             compound.putInt("LinkedX", linkedPos.getX());
             compound.putInt("LinkedY", linkedPos.getY());
             compound.putInt("LinkedZ", linkedPos.getZ());
@@ -217,13 +320,36 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
         super.read(compound, clientPacket);
-        if (compound.contains("LinkedX")) {
+        int bt = compound.getByte("BindingType") & 0xFF;
+        bindingType = bt < BindingType.values().length ? BindingType.values()[bt] : BindingType.NONE;
+
+        if (compound.hasUUID("PlacerUUID")) {
+            placerUUID = compound.getUUID("PlacerUUID");
+        }
+
+        arkPos = null;
+        arkDim = null;
+        linkedPos = null;
+        linkedDim = null;
+
+        if (bindingType == BindingType.ARK && compound.contains("ArkX")) {
+            arkPos = new BlockPos(compound.getInt("ArkX"),
+                    compound.getInt("ArkY"),
+                    compound.getInt("ArkZ"));
+            if (compound.contains("ArkDim")) {
+                arkDim = ResourceKey.create(Registries.DIMENSION,
+                        ResourceLocation.tryParse(compound.getString("ArkDim")));
+            }
+        }
+
+        if (bindingType == BindingType.READER && compound.contains("LinkedX")) {
             linkedPos = new BlockPos(compound.getInt("LinkedX"),
                     compound.getInt("LinkedY"),
                     compound.getInt("LinkedZ"));
             linkedDim = ResourceKey.create(Registries.DIMENSION,
                     ResourceLocation.tryParse(compound.getString("LinkedDim")));
         }
+
         if (!clientPacket) {
             cachedNetworkCapacity = compound.getFloat("CachedCapacity");
             cachedNetworkStress = compound.getFloat("CachedStressVal");
