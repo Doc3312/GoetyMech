@@ -15,3 +15,6 @@ Create 动力方块，读取所在网络的应力数据，与应力聚晶配合�
 ## 演化记录
 
 ### 2026-06-24 — 初始实现
+- 2026-07-03 — 接收 Ark 远程消耗分配
+  - `consumedRemotely` 字段 + setter，接收 Ark `distributeConsumption()` 分配的消耗值
+  - `StressReaderBlock.use()` 增加 RemoteEngine 解绑分支：潜行+持绑定引擎物品 → 读取 NBT → 调 `clearBinding()` → 发消息

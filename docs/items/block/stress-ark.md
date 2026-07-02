@@ -13,3 +13,13 @@
 大容量应力存储/缓冲方块，存储 Create 网络中的过剩应力并可在需要时释放。HUD 显示容量/应力/网络连接数。
 
 ## 演化记录
+
+### 2026-07-03 — Ark 作为应力中枢重构
+- `ArkLocation` record（dimension + BlockPos）替代纯 BlockPos，支持跨维度查找
+- `boundEngines` Map（`BlockPos → RemoteEngineBlockEntity`）跟踪绑定的引擎
+- `register/unregister/reportConsumption()` 接口供 RemoteEngine 调用
+- `distributeConsumption()` 将引擎总消耗按各 Reader 可用应力比例分配
+- `getRepresentativeRPM()` 返回可用应力最高的 Reader 的 RPM
+- `PLAYER_ACTIVE_ARK` 全局 Map（`UUID → ArkLocation`）存玩家最后放置/交互的 Ark
+- `onArkRemoved()` 清理所有绑定的引擎
+- NBT 序列化：ArkLocation（dim/pos）保存/读取
