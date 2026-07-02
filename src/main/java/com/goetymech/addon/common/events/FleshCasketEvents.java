@@ -188,7 +188,7 @@ public class FleshCasketEvents {
 
             var spellStat = WandUtil.getStats(player, spell);
             if (tier >= 2) spellStat.potency += 2;
-            if (tier >= 3) { spellStat.potency += 2; spellStat.duration += 1; }
+            if (tier >= 3) { spellStat.potency += 2; }
             ItemStack staffStack = new ItemStack(
                     tier >= 2 ? ModItems.AUTO_CAST_DUMMY_WAND.get()
                               : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
@@ -210,7 +210,7 @@ public class FleshCasketEvents {
                 }
             } finally {
                 if (!ACTIVE_CHANNELS.containsKey(player.getUUID())) {
-                    PhantomWandManager.scheduleClear(player.getUUID(), 100);
+                    PhantomWandManager.scheduleClear(player.getUUID(), 400);
                 }
             }
 
