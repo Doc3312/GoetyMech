@@ -15,3 +15,4 @@
 ## Timeline
 
 - **2026-06-27** — 降级 `[TEST]` 调试日志从 INFO/WARN 为 DEBUG。
+- **2026-07-03** — 修复消耗计算：`cachedConsumed` 改用 `|cachedRpm| × ratio`（`REMOTE_ENGINE_STRESS_TO_RPM_RATIO`），替代错误的 `Mth.clamp(this.stress, ...)`。`this.stress` 为 Create 网络总应力（独立引擎恒为0），导致引擎始终向 Ark/Reader 报告 0 消耗，引发 Ark 分配循环归零。添加调试日志追踪初始化/ tick / 解绑交互。
