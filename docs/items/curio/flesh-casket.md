@@ -26,3 +26,7 @@
 - **修复**：升级时清除冷却 NBT；冷却显示从 damage bar 改为 vanilla `ItemCooldowns`（灰色覆盖层）；移除 `tickCooldowns` 系统
 - **设计变更**：`tryAutoCast` 移除第一个聚晶施放后的 `return`，改为**一次触发施放所有有效聚晶**
 - **配置**：新增 `flesh_casket.cooldown_override`（默认 60 ticks / 3s），覆盖法术原始冷却
+
+### 2026-07-03 — Tier 差异化：耗魂 + 冷却倍率
+- tier 2：灵魂消耗 ×0.5、冷却 ×0.8
+- tier 3：灵魂消耗 ×0.1、冷却 ×0.4
