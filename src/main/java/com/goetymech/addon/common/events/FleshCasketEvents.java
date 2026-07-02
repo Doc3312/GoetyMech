@@ -12,6 +12,7 @@ import com.Polarice3.Goety.utils.WandUtil;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.TriggerType;
+import com.goetymech.addon.common.utils.PhantomWandManager;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModItems;
 import net.minecraft.server.level.ServerLevel;
@@ -94,6 +95,7 @@ public class FleshCasketEvents {
 
         void stop() {
             ServerLevel serverLevel = (ServerLevel) player.level();
+            PhantomWandManager.clear(player);
             spell.stopSpell(serverLevel, player, staffStack,
                     focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
                     castTicks, spellStat);
@@ -191,17 +193,24 @@ public class FleshCasketEvents {
                               : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
             SoulUsingItemHandler.get(staffStack).setStackInSlot(0, focusStack);
 
-            spell.startSpell(serverLevel, player, staffStack, spellStat);
-            spell.useSpell(serverLevel, player, staffStack, 60, spellStat);
+            PhantomWandManager.set(player, staffStack);
+            try {
+                spell.startSpell(serverLevel, player, staffStack, spellStat);
+                spell.useSpell(serverLevel, player, staffStack, 60, spellStat);
 
-            if (spell instanceof IChargingSpell && !ACTIVE_CHANNELS.containsKey(player.getUUID())) {
-                ACTIVE_CHANNELS.put(player.getUUID(), new ChannelTask(
-                        player, spell, staffStack, spellStat, focusStack));
-            } else {
-                spell.SpellResult(serverLevel, player, staffStack, spellStat);
-                spell.stopSpell(serverLevel, player, staffStack,
-                        focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
-                        60, spellStat);
+                if (spell instanceof IChargingSpell && !ACTIVE_CHANNELS.containsKey(player.getUUID())) {
+                    ACTIVE_CHANNELS.put(player.getUUID(), new ChannelTask(
+                            player, spell, staffStack, spellStat, focusStack));
+                } else {
+                    spell.SpellResult(serverLevel, player, staffStack, spellStat);
+                    spell.stopSpell(serverLevel, player, staffStack,
+                            focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
+                            60, spellStat);
+                }
+            } finally {
+                if (!ACTIVE_CHANNELS.containsKey(player.getUUID())) {
+                    PhantomWandManager.clear(player);
+                }
             }
 
             if (!player.isCreative()) {

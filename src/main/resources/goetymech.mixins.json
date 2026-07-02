@@ -31,7 +31,8 @@
     "PrototypeStepHeightMixin",
     "PrototypeTravelMixin",
     "MixinWallRunTravel",
-    "EntityOnGroundAccessor"
+    "EntityOnGroundAccessor",
+    "WandUtilMixin"
   ],
   "injectors": {
     "defaultRequire": 1
