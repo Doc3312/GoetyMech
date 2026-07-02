@@ -109,13 +109,18 @@ public class FleshCasketEvents {
             }
 
             int maxCooldown = 0;
-            for (int j = 0; j < inv.getSlots(); j++) {
-                ItemStack fs = inv.getStackInSlot(j);
-                if (fs.isEmpty() || !(fs.getItem() instanceof IFocus iF)) continue;
-                ISpell s = iF.getSpell();
-                if (s != null) {
-                    int cd = s.spellCooldown(player);
-                    if (cd > maxCooldown) maxCooldown = cd;
+            int configCd = ModConfig.FLESH_CASKET_COOLDOWN.get();
+            if (configCd > 0) {
+                maxCooldown = configCd;
+            } else {
+                for (int j = 0; j < inv.getSlots(); j++) {
+                    ItemStack fs = inv.getStackInSlot(j);
+                    if (fs.isEmpty() || !(fs.getItem() instanceof IFocus iF)) continue;
+                    ISpell s = iF.getSpell();
+                    if (s != null) {
+                        int cd = s.spellCooldown(player);
+                        if (cd > maxCooldown) maxCooldown = cd;
+                    }
                 }
             }
             player.getCooldowns().addCooldown(casketStack.getItem(), maxCooldown);
