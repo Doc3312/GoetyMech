@@ -66,11 +66,16 @@ public class FleshCasketEvents {
         long lastCast = player.getPersistentData().getLong(TAG_LAST_CAST_TICK);
         if (gameTime - lastCast < 5) return;
 
+        if (player.getCooldowns().isOnCooldown(casketStack.getItem())) return;
+
         var handler = casketStack.getCapability(
                 net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER).resolve();
         if (handler.isEmpty()) return;
 
         IItemHandler inv = handler.get();
+        boolean anyFired = false;
+        int maxCooldown = 0;
+
         for (int i = 0; i < inv.getSlots(); i++) {
             ItemStack focusStack = inv.getStackInSlot(i);
             if (focusStack.isEmpty()) continue;
@@ -78,8 +83,6 @@ public class FleshCasketEvents {
 
             ISpell spell = iFocus.getSpell();
             if (spell == null) continue;
-
-            if (player.getCooldowns().isOnCooldown(casketStack.getItem())) continue;
 
             int halfCost = spell.soulCost(player, ItemStack.EMPTY) / 2;
             if (!player.isCreative() && SEHelper.getSoulAmountInt(player) < halfCost) continue;
@@ -95,7 +98,6 @@ public class FleshCasketEvents {
                               : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
             SoulUsingItemHandler.get(staffStack).setStackInSlot(0, focusStack);
 
-            player.getPersistentData().putLong(TAG_LAST_CAST_TICK, gameTime);
             ItemStack oldOffhand = player.getOffhandItem();
             player.getInventory().offhand.set(0, staffStack);
             try {
@@ -108,24 +110,17 @@ public class FleshCasketEvents {
                 SEHelper.decreaseSouls(player, halfCost);
             }
 
-            int maxCooldown = 0;
+            int cd = spell.spellCooldown(player);
+            if (cd > maxCooldown) maxCooldown = cd;
+            anyFired = true;
+        }
+
+        if (anyFired) {
+            player.getPersistentData().putLong(TAG_LAST_CAST_TICK, gameTime);
             int configCd = ModConfig.FLESH_CASKET_COOLDOWN.get();
-            if (configCd > 0) {
-                maxCooldown = configCd;
-            } else {
-                for (int j = 0; j < inv.getSlots(); j++) {
-                    ItemStack fs = inv.getStackInSlot(j);
-                    if (fs.isEmpty() || !(fs.getItem() instanceof IFocus iF)) continue;
-                    ISpell s = iF.getSpell();
-                    if (s != null) {
-                        int cd = s.spellCooldown(player);
-                        if (cd > maxCooldown) maxCooldown = cd;
-                    }
-                }
-            }
-            player.getCooldowns().addCooldown(casketStack.getItem(), maxCooldown);
-            FleshCasketItem.setCooldown(casketStack, maxCooldown);
-            return;
+            int finalCd = configCd > 0 ? configCd : maxCooldown;
+            player.getCooldowns().addCooldown(casketStack.getItem(), finalCd);
+            FleshCasketItem.setCooldown(casketStack, finalCd);
         }
     }
 
