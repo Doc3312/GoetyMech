@@ -47,3 +47,11 @@
 - `ChannelTask`：移除 `startUsingItem`/`stopUsingItem`；以 `staffStack` 内存引用调用 `SpellResult`
 - `ChannelTask.tick()`：`SpellResult` 后扫描 `AbstractBeam` 实体，`setItemBase(false)` 使其不依赖 `isUsingItem()`
 - `ChannelTask.stop()`：清理所有托管的光束实体
+
+### 2026-07-03 — PhantomWandManager + Mixin 替代副手，保留附魔加成
+- 新建 `PhantomWandManager`：`ConcurrentHashMap<UUID, ItemStack>`，用于在服务端注入虚拟 wand
+- 新建 `WandUtilMixin`：在 `WandUtil.findWand()` RETURN 时注入，检查 PhantomWandManager
+- 完全移除所有 `player.getInventory().offhand` 操作
+- `tryAutoCast` 用 `PhantomWandManager.set/clear` 管理 wand 注入，try-finally 保护清除
+- 通道期间 phantom wand 持续存在，`enchantedFocus()` 在通道 tick 中正常返回
+- 通道结束后 `ChannelTask.stop()` 清除 phantom wand
