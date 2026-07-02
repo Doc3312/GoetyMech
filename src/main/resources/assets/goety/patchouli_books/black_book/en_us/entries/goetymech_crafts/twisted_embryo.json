@@ -1,7 +1,7 @@
 {
   "name": "Twisted Embryo",
   "icon": "goetymech:twisted_embryo",
-  "category": "goetymech:crafts",
+  "category": "goety:goetymech_crafts",
   "sortnum": 0,
   "pages": [
     {
@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Usage",
-      "text": "$(bold)Servant Summoning$()$(br)Using a Squad Focus, consume souls to transform Twisted Embryos into loyal Illager servants. If souls are insufficient, forced summoning is still possible — but the servant will spawn at half health.$(br2)$(bold)Flesh Furnace$()$(br)Cook the Twisted Embryo in a Flesh Furnace to obtain a $(l:goetymech:crafts/mature_embryo)Mature Embryo$(/l), capable of training more formidable troops.$(br2)$(bold)Limitation$()$(br)Servants spawned from Twisted Embryos cannot learn or cast magic."
+      "text": "$(bold)Servant Summoning$()$(br)Using a Squad Focus, consume souls to transform Twisted Embryos into loyal Illager servants. If souls are insufficient, forced summoning is still possible — but the servant will spawn at half health.$(br2)$(bold)Flesh Furnace$()$(br)Cook the Twisted Embryo in a Flesh Furnace to obtain a Mature Embryo, capable of training more formidable troops.$(br2)$(bold)Limitation$()$(br)Servants spawned from Twisted Embryos cannot learn or cast magic."
     }
   ]
 }

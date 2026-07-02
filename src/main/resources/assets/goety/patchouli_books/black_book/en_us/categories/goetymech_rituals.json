@@ -2,6 +2,6 @@
   "name": "Rituals",
   "description": "GoetyMech-specific rituals and ceremonies",
   "icon": "goety:dark_altar",
-  "parent": "goetymech:goetymech",
+  "parent": "goety:goetymech",
   "sortnum": 0
 }

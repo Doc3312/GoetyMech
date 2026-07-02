@@ -2,6 +2,6 @@
   "name": "Crafts",
   "description": "Materials, equipment and accessories",
   "icon": "goety:focus_bag",
-  "parent": "goetymech:goetymech",
+  "parent": "goety:goetymech",
   "sortnum": 4
 }

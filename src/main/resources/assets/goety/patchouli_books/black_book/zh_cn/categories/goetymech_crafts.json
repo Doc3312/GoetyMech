@@ -2,6 +2,6 @@
   "name": "工艺",
   "description": "材料、装备与饰品",
   "icon": "goety:focus_bag",
-  "parent": "goetymech:goetymech",
+  "parent": "goety:goetymech",
   "sortnum": 4
 }
