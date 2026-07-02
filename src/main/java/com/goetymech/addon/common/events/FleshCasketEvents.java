@@ -109,6 +109,7 @@ public class FleshCasketEvents {
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
+        PhantomWandManager.tick();
         ACTIVE_CHANNELS.entrySet().removeIf(entry -> {
             ChannelTask task = entry.getValue();
             if (!task.tick()) {
@@ -209,7 +210,7 @@ public class FleshCasketEvents {
                 }
             } finally {
                 if (!ACTIVE_CHANNELS.containsKey(player.getUUID())) {
-                    PhantomWandManager.clear(player);
+                    PhantomWandManager.scheduleClear(player.getUUID(), 100);
                 }
             }
 
