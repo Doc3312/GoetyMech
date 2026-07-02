@@ -38,6 +38,11 @@ public class AutoCastDummyWand extends Item implements IWand {
     }
 
     @Override
+    public int getUseDuration(ItemStack stack) {
+        return 72000;
+    }
+
+    @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
     }
