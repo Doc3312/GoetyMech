@@ -7,6 +7,7 @@ import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.KineticNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
@@ -23,10 +24,18 @@ import java.util.*;
 
 public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
-    private static final Map<UUID, BlockPos> PLAYER_ACTIVE_ARK = new HashMap<>();
+    public static record ArkLocation(ResourceKey<Level> dimension, BlockPos pos) {}
+
+    private static final Map<UUID, ArkLocation> PLAYER_ACTIVE_ARK = new HashMap<>();
 
     @Nullable
     public static BlockPos getActiveArkPos(UUID playerUUID) {
+        ArkLocation loc = PLAYER_ACTIVE_ARK.get(playerUUID);
+        return loc != null ? loc.pos() : null;
+    }
+
+    @Nullable
+    public static ArkLocation getActiveArkLocation(UUID playerUUID) {
         return PLAYER_ACTIVE_ARK.get(playerUUID);
     }
 
@@ -58,13 +67,11 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (!(level instanceof ServerLevel)) return;
         self.chunkLoadBlock();
         if (self.ownerUUID == null) return;
-        if (!Objects.equals(PLAYER_ACTIVE_ARK.get(self.ownerUUID), pos)) {
-            BlockPos active = PLAYER_ACTIVE_ARK.get(self.ownerUUID);
-            if (active == null) {
-                PLAYER_ACTIVE_ARK.put(self.ownerUUID, pos);
-            } else {
-                return;
-            }
+        ArkLocation active = PLAYER_ACTIVE_ARK.get(self.ownerUUID);
+        if (active == null) {
+            PLAYER_ACTIVE_ARK.put(self.ownerUUID, new ArkLocation(level.dimension(), pos));
+        } else if (!active.pos().equals(pos) || !active.dimension().equals(level.dimension())) {
+            return;
         }
         self.recomputeIfNeeded();
     }
@@ -229,7 +236,9 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
     public void setOwner(LivingEntity entity) {
         this.ownerUUID = entity.getUUID();
-        PLAYER_ACTIVE_ARK.put(this.ownerUUID, worldPosition);
+        if (level != null) {
+            PLAYER_ACTIVE_ARK.put(this.ownerUUID, new ArkLocation(level.dimension(), worldPosition));
+        }
         setChanged();
         forceRefresh = true;
     }
@@ -304,7 +313,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (tag.hasUUID("OwnerUUID")) {
             ownerUUID = tag.getUUID("OwnerUUID");
             if (level != null && !level.isClientSide) {
-                PLAYER_ACTIVE_ARK.putIfAbsent(ownerUUID, worldPosition);
+                PLAYER_ACTIVE_ARK.putIfAbsent(ownerUUID, new ArkLocation(level.dimension(), worldPosition));
             }
         }
         boundEngines.clear();
