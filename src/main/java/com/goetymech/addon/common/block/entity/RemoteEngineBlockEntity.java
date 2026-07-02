@@ -244,6 +244,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         if (!StressImpact.isEnabled()) return false;
+        if (bindingType == BindingType.NONE) return false;
 
         if (bindingType == BindingType.ARK) {
             CreateLang.text("Remote Engine (Ark)")
@@ -332,9 +333,10 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             compound.putFloat("CachedStressVal", cachedNetworkStress);
             compound.putFloat("CachedRpm", cachedRpm);
             compound.putFloat("CachedConsumed", cachedConsumed);
-            compound.putFloat("ArkTotalAvail", cachedArkTotalAvailable);
-            compound.putFloat("ArkEnginesConsumption", cachedArkEnginesConsumption);
         }
+        // Sync Ark data to client for tooltip display
+        compound.putFloat("ArkTotalAvail", cachedArkTotalAvailable);
+        compound.putFloat("ArkEnginesConsumption", cachedArkEnginesConsumption);
     }
 
     @Override
@@ -375,9 +377,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             cachedNetworkStress = compound.getFloat("CachedStressVal");
             cachedRpm = compound.getFloat("CachedRpm");
             cachedConsumed = compound.getFloat("CachedConsumed");
-            cachedArkTotalAvailable = compound.getFloat("ArkTotalAvail");
-            cachedArkEnginesConsumption = compound.getFloat("ArkEnginesConsumption");
         }
+        cachedArkTotalAvailable = compound.getFloat("ArkTotalAvail");
+        cachedArkEnginesConsumption = compound.getFloat("ArkEnginesConsumption");
     }
 
     private static String fmtPos(BlockPos pos) {

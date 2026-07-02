@@ -37,15 +37,26 @@ public class RemoteEngineBlockItem extends BlockItem {
         BlockPos clickedPos = ctx.getClickedPos();
         ItemStack stack = ctx.getItemInHand();
 
-        if (player != null && !player.isShiftKeyDown()
-                && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
-            if (!level.isClientSide) {
-                writeBinding(stack, clickedPos, level.dimension());
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.remote_engine.bound"),
-                        true);
+        if (player != null) {
+            if (player.isShiftKeyDown()) {
+                // Sneak + right-click on bound reader → let StressReaderBlock handle unbind
+                if (isBound(stack) && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
+                    BlockPos boundPos = getBoundPos(stack);
+                    if (boundPos.equals(clickedPos))
+                        return InteractionResult.PASS;
+                }
+                return super.useOn(ctx);
             }
-            return InteractionResult.SUCCESS;
+
+            if (level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
+                if (!level.isClientSide) {
+                    writeBinding(stack, clickedPos, level.dimension());
+                    player.displayClientMessage(
+                            Component.translatable("info.goetymech.remote_engine.bound"),
+                            true);
+                }
+                return InteractionResult.SUCCESS;
+            }
         }
 
         return super.useOn(ctx);
