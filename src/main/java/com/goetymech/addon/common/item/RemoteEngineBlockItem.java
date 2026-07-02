@@ -7,9 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -39,43 +37,18 @@ public class RemoteEngineBlockItem extends BlockItem {
         BlockPos clickedPos = ctx.getClickedPos();
         ItemStack stack = ctx.getItemInHand();
 
-        if (player != null) {
-            if (player.isShiftKeyDown()) {
-                // Sneak + right-click on bound reader → let StressReaderBlock handle unbind
-                if (isBound(stack) && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
-                    BlockPos boundPos = getBoundPos(stack);
-                    if (boundPos.equals(clickedPos))
-                        return InteractionResult.PASS;
-                }
-                return super.useOn(ctx);
+        if (player != null && !player.isShiftKeyDown()
+                && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
+            if (!level.isClientSide) {
+                writeBinding(stack, clickedPos, level.dimension());
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.remote_engine.bound"),
+                        true);
             }
-
-            if (level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
-                if (!level.isClientSide) {
-                    writeBinding(stack, clickedPos, level.dimension());
-                    player.displayClientMessage(
-                            Component.translatable("info.goetymech.remote_engine.bound"),
-                            true);
-                }
-                return InteractionResult.SUCCESS;
-            }
+            return InteractionResult.SUCCESS;
         }
 
         return super.useOn(ctx);
-    }
-
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.isShiftKeyDown() && isBound(stack)) {
-            if (!level.isClientSide) {
-                clearBinding(stack);
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.remote_engine.unbound"), true);
-            }
-            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
-        }
-        return super.use(level, player, hand);
     }
 
     @Override

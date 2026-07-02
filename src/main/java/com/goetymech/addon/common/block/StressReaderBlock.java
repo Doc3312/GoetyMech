@@ -1,7 +1,6 @@
 package com.goetymech.addon.common.block;
 
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
-import com.goetymech.addon.common.item.RemoteEngineBlockItem;
 import com.goetymech.addon.common.item.StressFocus;
 import com.goetymech.addon.common.item.StressShieldFocus;
 import com.goetymech.addon.config.ModConfig;
@@ -91,22 +90,6 @@ public class StressReaderBlock extends DirectionalKineticBlock
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                  InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(hand);
-
-        // Sneak + RemoteEngineBlockItem on bound reader → unbind
-        if (player.isShiftKeyDown() && stack.getItem() instanceof RemoteEngineBlockItem) {
-            if (!level.isClientSide) {
-                if (RemoteEngineBlockItem.isBound(stack)
-                        && RemoteEngineBlockItem.getBoundPos(stack).equals(pos)) {
-                    RemoteEngineBlockItem.clearBinding(stack);
-                    player.displayClientMessage(
-                            Component.translatable("info.goetymech.remote_engine.unbound"), true);
-                } else {
-                    player.displayClientMessage(
-                            Component.translatable("info.goetymech.remote_engine.not_bound_here"), true);
-                }
-            }
-            return InteractionResult.SUCCESS;
-        }
 
         if (stack.getItem() instanceof StressFocus && !player.isShiftKeyDown()) {
             if (!level.isClientSide) {

@@ -78,11 +78,13 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     private void tryAutoBindArk() {
-        if (bindingType != BindingType.NONE) return;
         if (placerUUID == null || level == null) return;
 
         StressArkBlockEntity.ArkLocation arkLoc = StressArkBlockEntity.getActiveArkLocation(placerUUID);
         if (arkLoc == null) return;
+
+        // Already bound to this exact Ark
+        if (bindingType == BindingType.ARK && arkPos != null && arkPos.equals(arkLoc.pos())) return;
 
         MinecraftServer server = ((ServerLevel) level).getServer();
         ServerLevel arkLevel = server.getLevel(arkLoc.dimension());
@@ -90,6 +92,13 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
         BlockEntity be = arkLevel.getBlockEntity(arkLoc.pos());
         if (be instanceof StressArkBlockEntity ark) {
+            // Clean up old reader binding if switching to Ark
+            if (bindingType == BindingType.READER && linkedPos != null && linkedDim != null) {
+                ServerLevel targetLevel = server.getLevel(linkedDim);
+                if (targetLevel != null && targetLevel.getBlockEntity(linkedPos) instanceof StressReaderBlockEntity reader) {
+                    reader.removeConsumer(worldPosition);
+                }
+            }
             this.arkPos = arkLoc.pos();
             this.arkDim = arkLoc.dimension();
             this.linkedPos = null;
