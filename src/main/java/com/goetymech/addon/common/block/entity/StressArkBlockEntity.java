@@ -89,7 +89,9 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     public void reportConsumption(BlockPos enginePos, float consumption) {
         long now = level != null ? level.getGameTime() : 0;
         EngineEntry entry = boundEngines.get(enginePos);
-        if (entry != null) {
+        if (entry == null) {
+            boundEngines.put(enginePos, new EngineEntry(consumption, now));
+        } else {
             entry.consumption = consumption;
             entry.lastSeenTick = now;
         }
@@ -318,13 +320,13 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         }
         boundEngines.clear();
         if (tag.contains("BoundEngines")) {
+            long now = level != null ? level.getGameTime() : 0;
             ListTag list = tag.getList("BoundEngines", Tag.TAG_COMPOUND);
             for (int i = 0; i < list.size(); i++) {
                 CompoundTag eTag = list.getCompound(i);
                 BlockPos pos = BlockPos.of(eTag.getLong("Pos"));
                 float consumption = eTag.getFloat("Consumption");
-                long lastSeen = eTag.getLong("LastSeen");
-                boundEngines.put(pos, new EngineEntry(consumption, lastSeen));
+                boundEngines.put(pos, new EngineEntry(consumption, now));
             }
         }
         forceRefresh = true;

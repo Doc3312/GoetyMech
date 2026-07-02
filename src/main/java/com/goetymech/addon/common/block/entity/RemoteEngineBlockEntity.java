@@ -138,8 +138,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         cachedRpm = ark.getRepresentativeRPM();
         cachedArkTotalAvailable = ark.getTotalAvailableStress();
         cachedArkEnginesConsumption = ark.getTotalConsumedByEngines();
-        float myConsumption = Math.abs(cachedRpm) * ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
-        cachedConsumed = Math.min(myConsumption, cachedArkTotalAvailable);
+        cachedConsumed = Math.max(cachedArkTotalAvailable, 0);
         ark.reportConsumption(this.worldPosition, cachedConsumed);
 
         updateGeneratedRotation();
@@ -169,8 +168,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         float rawAvailable = cachedNetworkCapacity - cachedNetworkStress;
         float trueAvailable = Math.max(0, rawAvailable + reader.getConsumedRemotely());
 
-        float myConsumption = Math.abs(cachedRpm) * ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
-        cachedConsumed = Math.min(myConsumption, trueAvailable);
+        cachedConsumed = Math.max(trueAvailable, 0);
 
         reader.setConsumedRemotely(this.worldPosition, cachedConsumed);
 
