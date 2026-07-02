@@ -3,11 +3,16 @@ package com.goetymech.addon.common.item.curio;
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +59,15 @@ public class AutoCastDummyWand extends Item implements IWand {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new SoulUsingItemHandler(stack);
+        SoulUsingItemHandler handler = new SoulUsingItemHandler(stack);
+        return new ICapabilityProvider() {
+            @Override
+            public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+                if (cap == ForgeCapabilities.ITEM_HANDLER) {
+                    return LazyOptional.of(() -> handler).cast();
+                }
+                return LazyOptional.empty();
+            }
+        };
     }
 }

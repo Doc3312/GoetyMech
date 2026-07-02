@@ -51,6 +51,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     private float cachedNetworkStress;
     private float cachedRpm;
     private float cachedConsumed;
+    private float cachedArkTotalAvailable;
+    private float cachedArkEnginesConsumption;
     private int tickCounter;
 
     public RemoteEngineBlockEntity(BlockPos pos, BlockState state) {
@@ -132,7 +134,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (!(be instanceof StressArkBlockEntity ark)) return;
 
         cachedRpm = ark.getRepresentativeRPM();
-        cachedConsumed = Mth.clamp(this.stress, 0, ark.getTotalAvailableStress());
+        cachedArkTotalAvailable = ark.getTotalAvailableStress();
+        cachedArkEnginesConsumption = ark.getTotalConsumedByEngines();
+        cachedConsumed = Mth.clamp(this.stress, 0, cachedArkTotalAvailable);
         ark.reportConsumption(this.worldPosition, cachedConsumed);
 
         updateGeneratedRotation();
@@ -183,6 +187,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float calculateAddedStressCapacity() {
+        float speed = Math.abs(this.speed);
+        if (speed < 0.01f) return 0;
         return ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
     }
 
@@ -254,12 +260,15 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                     .style(ChatFormatting.AQUA)
                     .forGoggles(tooltip, 1);
 
-            CreateLang.text("Consumed: ")
+            CreateLang.text("Source: ")
                     .style(ChatFormatting.GRAY)
                     .forGoggles(tooltip);
-            CreateLang.number(cachedConsumed)
+            CreateLang.number(cachedArkEnginesConsumption)
                     .add(su)
                     .style(ChatFormatting.GREEN)
+                    .text(ChatFormatting.GRAY, " / ")
+                    .add(CreateLang.number(cachedArkTotalAvailable)
+                            .add(su).style(ChatFormatting.DARK_GRAY))
                     .forGoggles(tooltip, 1);
 
             return true;
@@ -323,6 +332,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             compound.putFloat("CachedStressVal", cachedNetworkStress);
             compound.putFloat("CachedRpm", cachedRpm);
             compound.putFloat("CachedConsumed", cachedConsumed);
+            compound.putFloat("ArkTotalAvail", cachedArkTotalAvailable);
+            compound.putFloat("ArkEnginesConsumption", cachedArkEnginesConsumption);
         }
     }
 
@@ -364,6 +375,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             cachedNetworkStress = compound.getFloat("CachedStressVal");
             cachedRpm = compound.getFloat("CachedRpm");
             cachedConsumed = compound.getFloat("CachedConsumed");
+            cachedArkTotalAvailable = compound.getFloat("ArkTotalAvail");
+            cachedArkEnginesConsumption = compound.getFloat("ArkEnginesConsumption");
         }
     }
 

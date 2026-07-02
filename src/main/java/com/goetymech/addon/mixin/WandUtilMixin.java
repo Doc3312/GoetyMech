@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(WandUtil.class)
 public class WandUtilMixin {
 
-    @Inject(method = "findWand", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "findWand", at = @At("RETURN"), cancellable = true, remap = false)
     private static void gp$checkPhantomWand(LivingEntity livingEntity, CallbackInfoReturnable<ItemStack> cir) {
         if (!cir.getReturnValue().isEmpty()) return;
         if (!(livingEntity instanceof Player player)) return;
