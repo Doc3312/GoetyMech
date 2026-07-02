@@ -22,8 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.util.Mth;
-
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -67,6 +65,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             tryRefreshRpm();
             if (cachedRpm > 0 && getSpeed() == 0)
                 updateGeneratedRotation();
+            LOGGER.debug("[REMOTE_ENGINE] init at {}: bindingType={} cachedRpm={} getSpeed={} hasNetwork={} stress={}",
+                    worldPosition, bindingType, cachedRpm, getSpeed(), hasNetwork(), stress);
         }
     }
 
@@ -76,6 +76,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (level instanceof ServerLevel && ++tickCounter >= 20) {
             tickCounter = 0;
             tryRefreshRpm();
+            LOGGER.debug("[REMOTE_ENGINE] tick at {}: cachedRpm={} cachedConsumed={} speed={} stress={} capacity={}",
+                    worldPosition, cachedRpm, cachedConsumed, this.speed, this.stress, this.capacity);
         }
     }
 
@@ -136,7 +138,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         cachedRpm = ark.getRepresentativeRPM();
         cachedArkTotalAvailable = ark.getTotalAvailableStress();
         cachedArkEnginesConsumption = ark.getTotalConsumedByEngines();
-        cachedConsumed = Mth.clamp(this.stress, 0, cachedArkTotalAvailable);
+        float myConsumption = Math.abs(cachedRpm) * ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
+        cachedConsumed = Math.min(myConsumption, cachedArkTotalAvailable);
         ark.reportConsumption(this.worldPosition, cachedConsumed);
 
         updateGeneratedRotation();
@@ -166,7 +169,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         float rawAvailable = cachedNetworkCapacity - cachedNetworkStress;
         float trueAvailable = Math.max(0, rawAvailable + reader.getConsumedRemotely());
 
-        cachedConsumed = Mth.clamp(this.stress, 0, trueAvailable);
+        float myConsumption = Math.abs(cachedRpm) * ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
+        cachedConsumed = Math.min(myConsumption, trueAvailable);
 
         reader.setConsumedRemotely(this.worldPosition, cachedConsumed);
 

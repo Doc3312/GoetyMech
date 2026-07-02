@@ -18,7 +18,12 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RemoteEngineBlockItem extends BlockItem {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("RemoteEngineItem");
 
     public static final String TAG_BOUND = "goetymech.bound";
     public static final String TAG_X = "goetymech.bound_x";
@@ -39,11 +44,16 @@ public class RemoteEngineBlockItem extends BlockItem {
 
         if (player != null) {
             if (player.isShiftKeyDown()) {
+                LOGGER.debug("[RemoteEngineItem] sneak+right-click at {} | isBound={} isReader={} boundPos={}",
+                        clickedPos, isBound(stack), level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get()),
+                        isBound(stack) ? getBoundPos(stack) : "N/A");
                 // Sneak + right-click on bound reader → let StressReaderBlock handle unbind
                 if (isBound(stack) && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
                     BlockPos boundPos = getBoundPos(stack);
-                    if (boundPos.equals(clickedPos))
+                    if (boundPos.equals(clickedPos)) {
+                        LOGGER.debug("[RemoteEngineItem] returning PASS for unbind at {}", clickedPos);
                         return InteractionResult.PASS;
+                    }
                 }
                 return super.useOn(ctx);
             }
