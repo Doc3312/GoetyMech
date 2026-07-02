@@ -6,7 +6,6 @@ import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.lang.LangBuilder;
@@ -173,36 +172,27 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 .style(ChatFormatting.WHITE)
                 .forGoggles(tooltip);
 
+        LangBuilder su = CreateLang.translate("generic.unit.stress");
+        float rpm = Math.abs(getSpeed());
         float cap = cachedNetworkCapacity;
-        float fraction = cap == 0 ? 0 : cachedConsumed / cap;
+        float consumed = cachedConsumed;
 
-        if (getTheoreticalSpeed() == 0) {
-            CreateLang.text(TooltipHelper.makeProgressBar(3, 0))
-                    .translate("gui.stressometer.no_rotation")
-                    .style(ChatFormatting.DARK_GRAY)
-                    .forGoggles(tooltip);
-        } else {
-            StressImpact.getFormattedStressText(fraction)
-                    .forGoggles(tooltip);
+        CreateLang.text("RPM: ")
+                .style(ChatFormatting.GRAY)
+                .forGoggles(tooltip);
+        CreateLang.number(rpm)
+                .style(ChatFormatting.AQUA)
+                .forGoggles(tooltip, 1);
 
-            CreateLang.translate("gui.stressometer.capacity")
-                    .style(ChatFormatting.GRAY)
-                    .forGoggles(tooltip);
-
-            float remaining = cap - cachedConsumed;
-            LangBuilder su = CreateLang.translate("generic.unit.stress");
-            LangBuilder stressTip = CreateLang.number(remaining)
-                    .add(su)
-                    .style(StressImpact.of(fraction).getRelativeColor());
-
-            if (remaining != cap)
-                stressTip.text(ChatFormatting.GRAY, " / ")
-                        .add(CreateLang.number(cap)
-                                .add(su)
-                                .style(ChatFormatting.DARK_GRAY));
-
-            stressTip.forGoggles(tooltip, 1);
-        }
+        CreateLang.text("Source: ")
+                .style(ChatFormatting.GRAY)
+                .forGoggles(tooltip);
+        CreateLang.number(consumed)
+                .add(su)
+                .style(ChatFormatting.GREEN)
+                .text(ChatFormatting.GRAY, " / ")
+                .add(CreateLang.number(cap).add(su).style(ChatFormatting.DARK_GRAY))
+                .forGoggles(tooltip, 1);
 
         return true;
     }

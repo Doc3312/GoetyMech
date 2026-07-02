@@ -66,6 +66,15 @@ public class RemoteEngineBlockItem extends BlockItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isShiftKeyDown() && isBound(stack)) {
+            if (!level.isClientSide) {
+                clearBinding(stack);
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.remote_engine.unbound"), true);
+            }
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        }
         return super.use(level, player, hand);
     }
 
