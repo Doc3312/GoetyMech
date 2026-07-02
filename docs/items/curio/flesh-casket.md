@@ -39,3 +39,11 @@
 - `IChargingSpell`（腐化光束）→ 注册 `ChannelTask` 定时器，`startUsingItem` 保持 3s 引导，每 tick 调 `useSpell` + 按 `Cooldown()` 间隔调 `SpellResult`
 - 玩家已有活跃通道时新触发跳过，已注册通道的 focus 中断后续循环
 - `AutoCastDummyWand`：新增 `getUseDuration()` 返回 72000 以支持 `startUsingItem`
+
+### 2026-07-03 — 移除副手占用 + 修复壁垒不工作
+- 根因：`AutoCastDummyWand` 缺少 `ForgeCapabilities.ITEM_HANDLER` → `SoulUsingItemHandler.get()` 抛异常被吞
+- `AutoCastDummyWand`：新增 `initCapabilities()` 返回 `SoulUsingItemHandler`
+- `FleshCasketEvents`：完全移除所有副手替换代码（`oldOffhand`、set/restore、try-finally）
+- `ChannelTask`：移除 `startUsingItem`/`stopUsingItem`；以 `staffStack` 内存引用调用 `SpellResult`
+- `ChannelTask.tick()`：`SpellResult` 后扫描 `AbstractBeam` 实体，`setItemBase(false)` 使其不依赖 `isUsingItem()`
+- `ChannelTask.stop()`：清理所有托管的光束实体
