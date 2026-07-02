@@ -30,3 +30,12 @@
 ### 2026-07-03 — Tier 差异化：耗魂 + 冷却倍率
 - tier 2：灵魂消耗 ×0.5、冷却 ×0.8
 - tier 3：灵魂消耗 ×0.1、冷却 ×0.4
+
+### 2026-07-03 — 通用自动施法：调用全部4个生命周期方法 + 定时器
+- 对每个 focus 在一个 tick 内依次调 `startSpell/useSpell/SpellResult/stopSpell`（覆写哪个就执行哪个）
+- 壁垒（`SpellResult`）→ 直接加盾
+- 星辰（`useSpell` + castTime=60）→ 一次性射出一轮 VoidShock
+- 撕裂（`startSpell`）→ 创建 VoidRift 裂隙实体
+- `IChargingSpell`（腐化光束）→ 注册 `ChannelTask` 定时器，`startUsingItem` 保持 3s 引导，每 tick 调 `useSpell` + 按 `Cooldown()` 间隔调 `SpellResult`
+- 玩家已有活跃通道时新触发跳过，已注册通道的 focus 中断后续循环
+- `AutoCastDummyWand`：新增 `getUseDuration()` 返回 72000 以支持 `startUsingItem`
