@@ -1,4 +1,4 @@
-﻿{
+{
   "item.goetymech.twisted_embryo": "Twisted Embryo",
   "item.goetymech.mature_embryo": "Mature Embryo",
   "item.goetymech.mature_embryo.named": "Mature Embryo (%s)",
@@ -7,27 +7,21 @@
   "block.goetymech.breeding_nest": "Breeding Nest",
   "item.goetymech.breeding_nest": "Breeding Nest",
   "itemGroup.goetymech": "goetymech",
-
   "info.goetymech.soul_insufficient": "§cSouls insufficient! %s summoned at half health",
-
   "info.goetymech.summon.success": "Successfully summoned %s",
   "info.goetymech.no_entity_type": "No entity type data found in embryo!",
   "info.goetymech.invalid_entity_type": "Invalid entity type ID!",
   "info.goetymech.unknown_entity_type": "Unknown entity type!",
   "info.goetymech.not_mob_entity": "This entity type is not a mob!",
-
   "info.goetymech.furnace.no_link": "§cNot linked to an Ominous Pyre",
   "info.goetymech.furnace.no_link_hint": "§7Place the furnace within %d blocks of an Ominous Pyre",
   "info.goetymech.furnace.no_magic_talent": "§cThe twisted embryo has no magical talent",
   "info.goetymech.furnace.no_target": "§7No training target set",
-
   "info.goetymech.hud.cooking": "Converting in Flesh Furnace",
   "info.goetymech.hud.linked": "Linked: ",
   "info.goetymech.hud.nest": "Breeding Nest Charging",
-
   "item.goetymech.sculk_bind_focus": "Sculk Bind Focus",
   "info.goetymech.sculk_bind_focus.no_target": "§cNo target in sight!",
-
   "block.goetymech.tier1_squad_barracks": "Tier 1 Squad Barracks",
   "block.goetymech.tier2_squad_barracks": "Tier 2 Squad Barracks",
   "block.goetymech.tier3_squad_barracks": "Tier 3 Squad Barracks",
@@ -37,7 +31,6 @@
   "item.goetymech.squad_focus": "Squad Focus",
   "container.goetymech.squad_barracks": "Squad Barracks",
   "container.goetymech.squad_barracks.reserve": "Reserve Storage",
-
   "info.goetymech.squad_focus.not_bound": "§cNot bound to a Squad Barracks",
   "info.goetymech.squad_focus.bound": "§aBound to Squad Barracks",
   "info.goetymech.squad_focus.bound_success": "§aBound to Squad Barracks",
@@ -54,7 +47,6 @@
   "info.goetymech.squad_focus.partial_summon": "§eInsufficient embryos: %d units not summoned",
   "info.goetymech.squad_focus.wrong_dimension": "§cBarracks is in another dimension (Tier 3 required)",
   "info.goetymech.squad_focus.dimension_not_found": "§cBound dimension is not available",
-
   "item.goetymech.stress_focus": "Stress Focus",
   "info.goetymech.stress_focus.bound": "§aBound to Stress Reader",
   "info.goetymech.stress_focus.bound_success": "§aBound to Stress Reader",
@@ -63,44 +55,34 @@
   "info.goetymech.stress_focus.reader_lost": "§cStress Reader missing, binding cleared",
   "info.goetymech.stress_focus.shift_info": "Summon a crushing wheel. Sneak-cast to unbind.",
   "info.goetymech.stress_focus.cached_damage": "§aCurrent stress damage: §f%d",
-
   "block.goetymech.stress_reader": "Stress Reader",
   "item.goetymech.stress_reader": "Stress Reader",
-
   "block.goetymech.remote_engine": "Remote Engine",
   "item.goetymech.remote_engine": "Remote Engine",
   "info.goetymech.remote_engine.bound": "§aBound to Stress Reader",
   "info.goetymech.remote_engine.unbound": "§eUnbound",
   "info.goetymech.remote_engine.bound_to": "§7Linked: %d, %d, %d",
   "info.goetymech.remote_engine.not_bound_here": "§cNot bound to this Stress Reader",
-
   "item.goetymech.time_focus_pouch": "Temporal Focus Pouch",
-
   "info.goetymech.time_frozen": "⏸ TIME FROZEN",
-
   "item.goetymech.unstable_rift_focus": "Unstable Rift Focus",
   "item.goetymech.stable_rift_focus": "Stable Rift Focus",
   "info.goetymech.rift_walk.invalid_dim": "§cRift focus can only be used in the Overworld and Nether",
   "info.goetymech.rift_walk.rift_open": "§cRift is already open",
   "info.goetymech.rift_walk.border_blocked": "§cTarget coordinates are outside the world border",
   "info.goetymech.rift_walk.return": "§7Rift closes, pulling you back to origin",
-
   "block.goetymech.stress_ark": "Stress Ark",
   "item.goetymech.stress_ark": "Stress Ark",
-
   "item.goetymech.soul_catcher": "Soul Catcher",
   "info.goetymech.soul_catcher.progress": "§5Souls: %d/%d",
-
   "info.goetymech.prototype_mimic.source": "§7Source: %s",
   "info.goetymech.prototype_mimic.inherited": "§7Inherited: %d attributes, %d enchantments",
-
   "item.goetymech.prototype": "Prototype",
   "item.goetymech.prototype_mimic": "Prototype 路 %s 路 Mimic",
   "info.goetymech.prototype.desc": "Infinite Elytra with boost and slam attack",
   "info.goetymech.prototype.boost": "Hold W to accelerate while flying",
   "info.goetymech.prototype.slam": "Press Shift while flying to perform a ground slam",
   "info.goetymech.prototype.assimilation": "Assimilated: %d",
-
   "item.goetymech.flesh_casket_1.fullness": "Flesh Casket (Fullness)",
   "item.goetymech.flesh_casket_1.balance": "Flesh Casket (Balance)",
   "item.goetymech.flesh_casket_1.deathbed": "Flesh Casket (Deathbed)",
@@ -116,32 +98,25 @@
   "info.goetymech.flesh_casket.type_a": "§aAuto-casts on damage taken",
   "info.goetymech.flesh_casket.type_b": "§aAuto-casts when health ≤ 50%%",
   "info.goetymech.flesh_casket.type_c": "§aAuto-casts when health ≤ %d%%",
-
   "container.goetymech.flesh_casket": "Flesh Casket",
-
   "item.goetymech.stress_shield_focus": "Stress Shield Focus",
   "info.goetymech.stress_shield.bound": "§aBound to Stress Reader",
   "info.goetymech.stress_shield.not_bound": "§cNot bound",
   "info.goetymech.stress_shield.unbound": "§eUnbound",
   "info.goetymech.stress_shield.shift_info": "Convert network stress into a personal shield. Sneak-right-click to unbind.",
   "info.goetymech.stress_shield.no_stress": "§cNo stress network available!",
-
   "item.goetymech.chase_focus": "Chase Focus",
   "effect.goetymech.void_mark": "Void Mark",
-
   "item.goetymech.crazed_summon_focus": "Crazed Illager Focus",
   "entity.goetymech.crazed_illager": "Crazed Illager",
   "entity.goetymech.crazed_illager_servant": "Crazed Illager",
   "item.goetymech.crazed_illager_spawn_egg": "Crazed Illager Spawn Egg",
-
   "info.goetymech.crazed_summon.limit": "§cYou have reached the summon limit for Crazed Illagers!",
-
   "jei.goetymech.info.prototype_mimic": "A Prototype Mimic is crafted by combining a Prototype with any chestplate in the 2脳2 crafting grid.\n\nIt inherits all attributes, enchantments, and modifiers from the chestplate.\n\nCombine a Prototype Mimic back into a crafting grid to retrieve the Prototype.",
-
   "jei.goetymech.category.mimic_combination": "Prototype Mimic Combination",
   "jei.goetymech.category.mimic_deconstruction": "Prototype Mimic Deconstruction",
-
   "fluid.goetymech.soul_liquid": "Soul Liquid",
   "item.goetymech.soul_liquid_bucket": "Soul Liquid Bucket",
-  "block.goetymech.soul_liquid": "Soul Liquid"
+  "block.goetymech.soul_liquid": "Soul Liquid",
+  "goetymech.entry.twisted_embryo": "Twisted Embryo"
 }

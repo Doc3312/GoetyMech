@@ -7,27 +7,21 @@
   "block.goetymech.breeding_nest": "育巢",
   "item.goetymech.breeding_nest": "育巢",
   "itemGroup.goetymech": "goetymech",
-
   "info.goetymech.soul_insufficient": "§c灵魂不足！召唤的%s 只有一半生命 ",
-
   "info.goetymech.summon.success": "成功召唤 %s",
   "info.goetymech.no_entity_type": "胚胎中未找到实体类型数据！",
   "info.goetymech.invalid_entity_type": "无效的实体类型ID！",
   "info.goetymech.unknown_entity_type": "未知的实体类型！",
   "info.goetymech.not_mob_entity": "该实体类型不是生物！",
-
   "info.goetymech.furnace.no_link": "§c未连接到不祥火炬",
   "info.goetymech.furnace.no_link_hint": "§7在不祥火炬 %d 格范围内放置熔炉以链接",
   "info.goetymech.furnace.no_magic_talent": "§c扭曲的胚胎没有魔法才能",
   "info.goetymech.furnace.no_target": "§7未设置训练目标",
-
   "info.goetymech.hud.cooking": "血肉转化中",
   "info.goetymech.hud.linked": "已链接：",
   "info.goetymech.hud.nest": "育巢充能中",
-
   "item.goetymech.sculk_bind_focus": "幽匿束缚聚晶",
   "info.goetymech.sculk_bind_focus.no_target": "§c请瞄准一个实体！",
-
   "block.goetymech.tier1_squad_barracks": "一阶点将台",
   "block.goetymech.tier2_squad_barracks": "二阶点将台",
   "block.goetymech.tier3_squad_barracks": "三阶点将台",
@@ -37,7 +31,6 @@
   "item.goetymech.squad_focus": "兵团聚晶",
   "container.goetymech.squad_barracks": "点将台",
   "container.goetymech.squad_barracks.reserve": "储备仓库",
-
   "info.goetymech.squad_focus.not_bound": "§c未绑定点将台",
   "info.goetymech.squad_focus.bound": "§a已绑定点将台",
   "info.goetymech.squad_focus.bound_success": "§a已绑定至点将台",
@@ -54,7 +47,6 @@
   "info.goetymech.squad_focus.partial_summon": "§e胚胎不足：%d 名仆从未召唤",
   "info.goetymech.squad_focus.wrong_dimension": "§c该点将台不在此维度（三阶可跨维度）",
   "info.goetymech.squad_focus.dimension_not_found": "§c绑定的维度不可用",
-
   "item.goetymech.stress_focus": "应力聚晶",
   "info.goetymech.stress_focus.bound": "§a已绑定至应力读取器",
   "info.goetymech.stress_focus.bound_success": "§a已绑定至应力读取器",
@@ -63,44 +55,34 @@
   "info.goetymech.stress_focus.reader_lost": "§c应力读取器丢失，绑定已清除",
   "info.goetymech.stress_focus.shift_info": "召唤粉碎轮冲击敌人。潜行施法解除绑定。",
   "info.goetymech.stress_focus.cached_damage": "§a当前应力伤害: §f%d",
-
   "block.goetymech.stress_reader": "应力读取器",
   "item.goetymech.stress_reader": "应力读取器",
-
   "block.goetymech.remote_engine": "远程引擎",
   "item.goetymech.remote_engine": "远程引擎",
   "info.goetymech.remote_engine.bound": "§a已绑定至应力读取器",
   "info.goetymech.remote_engine.unbound": "§e已解绑",
   "info.goetymech.remote_engine.bound_to": "§7已连接: %d, %d, %d",
   "info.goetymech.remote_engine.not_bound_here": "§c此应力读取器不是绑定目标",
-
   "item.goetymech.time_focus_pouch": "时空聚晶袋",
-
   "info.goetymech.time_frozen": "⏸ 时间冻结",
-
   "item.goetymech.unstable_rift_focus": "裂纬聚晶",
   "item.goetymech.stable_rift_focus": "界旅聚晶",
   "info.goetymech.rift_walk.invalid_dim": "§c裂隙聚晶仅能在主世界和下界使用",
   "info.goetymech.rift_walk.rift_open": "§c裂隙尚未闭合",
   "info.goetymech.rift_walk.border_blocked": "§c目标坐标超出世界边界",
   "info.goetymech.rift_walk.return": "§7裂隙闭合，你被拉回了原点",
-
   "block.goetymech.stress_ark": "应力方舟",
   "item.goetymech.stress_ark": "应力方舟",
-
   "item.goetymech.soul_catcher": "灵魂捕手",
   "info.goetymech.soul_catcher.progress": "§5聚魂：%d/%d",
-
   "info.goetymech.prototype_mimic.source": "§7来源：%s",
   "info.goetymech.prototype_mimic.inherited": "§7继承：%d 属性，%d 附魔",
-
   "item.goetymech.prototype": "原型",
   "item.goetymech.prototype_mimic": "原型·%s·拟态",
   "info.goetymech.prototype.desc": "无限耐久的鞘翅，附带推进与猛砸技能",
   "info.goetymech.prototype.boost": "飞行中按住 W 可加速推进",
   "info.goetymech.prototype.slam": "飞行中按下 Shift 可施展陨星猛砸",
   "info.goetymech.prototype.assimilation": "已同化：%d",
-
   "item.goetymech.flesh_casket_1.fullness": "血肉晶匣·满盈",
   "item.goetymech.flesh_casket_1.balance": "血肉晶匣·平衡",
   "item.goetymech.flesh_casket_1.deathbed": "血肉晶匣·濒死",
@@ -117,30 +99,24 @@
   "info.goetymech.flesh_casket.type_b": "§a血量 ≤ 50%% 时自动施法",
   "info.goetymech.flesh_casket.type_c": "§a血量 ≤ %d%% 时自动施法",
   "container.goetymech.flesh_casket": "血肉晶匣",
-
   "item.goetymech.stress_shield_focus": "应力护盾聚晶",
   "info.goetymech.stress_shield.bound": "§a已绑定至应力读取器",
   "info.goetymech.stress_shield.not_bound": "§c未绑定",
   "info.goetymech.stress_shield.unbound": "§e已解绑",
   "info.goetymech.stress_shield.shift_info": "将网络应力转化为个人护盾。潜行右键解绑。",
   "info.goetymech.stress_shield.no_stress": "§c无可用的应力网络！",
-
   "item.goetymech.chase_focus": "追猎聚晶",
   "effect.goetymech.void_mark": "虚空印记",
-
   "item.goetymech.crazed_summon_focus": "失败品聚晶",
   "entity.goetymech.crazed_illager": "改造失败的刌民",
   "entity.goetymech.crazed_illager_servant": "改造失败的刌民",
   "item.goetymech.crazed_illager_spawn_egg": "改造失败的刌民刷怪蛋",
-
   "info.goetymech.crazed_summon.limit": "§c你已经达到了改造失败的刌民的召唤上限！",
-
   "jei.goetymech.info.prototype_mimic": "原型·拟态是由原型与任意胸甲在 2×2 合成格中合成获得。\n\n它会继承胸甲的所有属性、附魔和修饰符。\n\n将原型·拟态放回合成格即可还原出原型。",
-
   "jei.goetymech.category.mimic_combination": "原型拟态组合",
   "jei.goetymech.category.mimic_deconstruction": "原型拟态还原",
-
   "fluid.goetymech.soul_liquid": "灵魂液",
   "item.goetymech.soul_liquid_bucket": "灵魂液桶",
-  "block.goetymech.soul_liquid": "灵魂液"
+  "block.goetymech.soul_liquid": "灵魂液",
+  "goetymech.entry.twisted_embryo": "扭曲胚胎"
 }
