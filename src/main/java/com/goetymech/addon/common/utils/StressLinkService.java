@@ -78,7 +78,25 @@ public class StressLinkService extends SavedData {
 
     public void onReaderUnload(StressReaderBlockEntity reader) {
         if (reader.getLevel() == null) return;
-        activeReaders.remove(GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos()));
+        GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
+        activeReaders.remove(key);
+    }
+
+    public void onReaderDestroyed(StressReaderBlockEntity reader) {
+        if (reader.getLevel() == null) return;
+        GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
+        activeReaders.remove(key);
+        readerCache.remove(key);
+        readerOwners.remove(key);
+        rebuildOwnerIndex();
+        // Unbind any engine bound to this reader
+        GlobalBlockPos enginePos = readerToEngine.remove(key);
+        if (enginePos != null) {
+            engineToReader.remove(enginePos);
+            RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+            if (engine != null) engine.applyRemoteUpdate(0, 0);
+            setDirty();
+        }
     }
 
     // ── Engine lifecycle ──

@@ -43,7 +43,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (level != null && !level.isClientSide) {
             StressLinkService service = StressLinkService.get(level);
             if (service != null) {
-                service.onReaderUnload(this);
+                service.onReaderDestroyed(this);
             }
         }
     }
