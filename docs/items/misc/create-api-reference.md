@@ -19,6 +19,7 @@
 10. [Stress API](#10-stress-api)
 11. [Foundation 基类](#11-foundation-基类)
 12. [Impl 实现层](#12-impl-实现层)
+13. [Content 层关键基类与接口](#13-content-层关键基类与接口)
 
 ---
 
@@ -1086,6 +1087,280 @@ writeToNBT(CompoundTag)
 CreateRegistrateRegistrationCallback.register(registryKey, id, callback);
 CreateRegistrateRegistrationCallback.provideRegistrate(registrate);
 ```
+
+---
+
+## 13. Content 层关键基类与接口
+
+### 13.1 `BehaviourType<T>` — 行为类型标识
+
+`com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType`
+
+Identity-based 类型键，用于 `Map<BehaviourType<?>, BlockEntityBehaviour>` 查询。
+
+```java
+public class BehaviourType<T extends BlockEntityBehaviour> {
+    public BehaviourType();                // 无参
+    public BehaviourType(String name);     // 调试名称
+    public String getName();
+    // hashCode = super.hashCode() * 31 * 493286711（identity-based，不覆写 equals）
+}
+```
+
+**设计要点：**
+- 不覆写 `equals`，使用引用恒等。每个 `BehaviourType` 实例都是唯一的类型标识。
+- 用 `super.hashCode() * 31 * 493286711` 优化哈希表分布。
+- 声明为 `static final` 字段，作为 public 常量暴露。
+
+---
+
+### 13.2 `SmartBlockEntity` — BE 行为组件基类
+
+`com.simibubi.create.foundation.blockEntity.SmartBlockEntity`
+
+所有 Create BlockEntity 的基类。内部用 `Reference2ObjectArrayMap` 管理 `BehaviourType → BlockEntityBehaviour`。
+
+```java
+public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
+    implements PartialSafeNBT, IInteractionChecker, SpecialBlockEntityItemRequirement, VirtualBlockEntity {
+
+    // 构造时自动调用的钩子：
+    public abstract void addBehaviours(List<BlockEntityBehaviour> behaviours);
+    public void addBehavioursDeferred(List<BlockEntityBehaviour> behaviours);  // 反序列化时延迟添加
+
+    // 生命周期：
+    public void initialize();                // 首次反序列化后触发 BlockEntityBehaviourEvent
+    public void tick();                      // 每 tick 调用 behaviours
+    public void lazyTick();                  // 按 lazyTickRate 调用
+    public void invalidate();                // 块卸载或销毁时
+    public void remove();                    // 块销毁或装置拾取时
+    public void destroy();                   // 块替换时
+
+    // Behaviour 管理：
+    public <T extends BlockEntityBehaviour> T getBehaviour(BehaviourType<T> type);
+    public void attachBehaviourLate(BlockEntityBehaviour behaviour);  // 运行时注入
+    public void removeBehaviour(BehaviourType<?> type);
+    public Collection<BlockEntityBehaviour> getAllBehaviours();
+
+    // 成就：
+    public void registerAwardables(List<BlockEntityBehaviour> behaviours, CreateAdvancement... advancements);
+    public void award(CreateAdvancement advancement);
+    public void awardIfNear(CreateAdvancement advancement, int range);
+}
+```
+
+---
+
+### 13.3 `KineticBlockEntity` — 动力 BE 基类
+
+`com.simibubi.create.content.kinetics.base.KineticBlockEntity`
+
+继承 `SmartBlockEntity`，所有动力方块（齿轮、传动轴、应力发生器/消费者）的 BE 基类。
+
+```java
+public class KineticBlockEntity extends SmartBlockEntity
+    implements IHaveGoggleInformation, IHaveHoveringInformation {
+
+    // === 动力学属性 ===
+    public @Nullable Long network;           // 所属 KineticNetwork ID
+    public @Nullable BlockPos source;        // 旋转来源位置
+    protected float speed;                   // 当前转速 (RPM)
+    protected float capacity;                // 网络应力容量
+    protected float stress;                  // 网络当前应力负荷
+    protected boolean overStressed;          // 是否过载
+
+    // === 转速与过载 ===
+    public float getSpeed();                 // 过载时返回 0
+    public float getTheoreticalSpeed();      // 实际转速（不过滤过载）
+    public void setSpeed(float speed);
+    public float getGeneratedSpeed();        // 自然产生转速（默认 0；发生器覆写）
+    public boolean isSource();               // getGeneratedSpeed() != 0
+    public boolean isOverStressed();
+    public boolean isSpeedRequirementFulfilled();  // 是否达到 IRotate 最低转速要求
+
+    // === 网络管理 ===
+    public boolean hasNetwork();
+    public KineticNetwork getOrCreateNetwork();
+    public void setNetwork(@Nullable Long network);
+    public void attachKinetics();            // → RotationPropagator.handleAdded()
+    public void detachKinetics();            // → RotationPropagator.handleRemoved()
+    public boolean needsSpeedUpdate();
+
+    // === 应力计算覆写点 ===
+    public float calculateStressApplied();       // 消耗多少 stress
+    public float calculateAddedStressCapacity(); // 提供多少 stress capacity
+    public void onSpeedChanged(float previousSpeed);
+
+    // === 网络数据更新 ===
+    public void updateFromNetwork(float maxStress, float currentStress, int networkSize);
+
+    // === 源管理 ===
+    public boolean hasSource();
+    public void setSource(BlockPos source);
+    public void removeSource();
+
+    // === 自定义传播（边界情况！） ===
+    public boolean isCustomConnection(KineticBlockEntity other, BlockState state, BlockState otherState);
+        // 判断此组件是否与其他组件有自定义转速传播关系。
+        // 默认返回 false。返回 true 时 RotationPropagator 会调用 propagateRotationTo() 查询比例。
+        // 已由 shaft/cogwheel 连接逻辑处理的不需覆写。
+        // 双向对称关系，不必两端都覆写。
+
+    public float propagateRotationTo(
+        KineticBlockEntity target, BlockState stateFrom, BlockState stateTo,
+        BlockPos diff, boolean connectedViaAxes, boolean connectedViaCogs);
+        // 返回转速传播比例（0 = 由标准规则处理，other = 乘以该系数传播）。
+
+    public List<BlockPos> addPropagationLocations(IRotate block, BlockState state, List<BlockPos> neighbours);
+        // 添加额外传播位置（默认对角线 cogwheel 传播）。
+
+    // === 事件 ===
+    public void warnOfMovement();            // 标记 wasMoved（下次 deserialize 跳过动力信息）
+    public void clearKineticInformation();
+
+    // === 静态工具 ===
+    public static float convertToDirection(float axisSpeed, Direction d);  // 方向取反
+    public static float convertToLinear(float speed);                      // speed / 512f
+    public static float convertToAngular(float speed);                     // speed * 360 / 60 / 20
+    public static void switchToBlockState(Level world, BlockPos pos, BlockState state);
+}
+```
+
+**关键设计：**
+- `isCustomConnection()` — 默认 `false`。覆写并返回 `true` 后，`RotationPropagator` 会在相邻组件间调用 `propagateRotationTo()` 决定传播比例。
+- `GantryShaftBlockEntity` 是已知的覆写例子。
+- `propagateRotationTo()` 返回 `0` 表示"不由特殊规则处理，交由标准轴/齿轮逻辑"。
+
+---
+
+### 13.4 `GeneratingKineticBlockEntity` — 发生器 BE 基类
+
+`com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity`
+
+继承 `KineticBlockEntity`。所有产生动力的方块 BE 基类（风车、水轮、蒸汽引擎等）。
+
+```java
+public abstract class GeneratingKineticBlockEntity extends KineticBlockEntity {
+    public boolean reActivateSource;         // 重新激活源标记
+
+    public void updateGeneratedRotation();   // 核心：计算转速并同步到网络
+    public Long createNetworkId();           // → worldPosition.asLong()
+}
+```
+
+**流程：** `updateGeneratedRotation()` → `getGeneratedSpeed()` → 调用 `applyNewSpeed()` → 决定是创建新网络还是加入已有网络。
+
+---
+
+### 13.5 `KineticBlock` — 动力方块基类
+
+`com.simibubi.create.content.kinetics.base.KineticBlock`
+
+所有动力方块的 Block 基类。实现 `IRotate`。
+
+```java
+public abstract class KineticBlock extends Block implements IRotate {
+    protected boolean areStatesKineticallyEquivalent(BlockState old, BlockState newState);
+        // 仅当 block 不变且旋转轴不变时返回 true
+
+    public float getParticleTargetRadius();   // 默认 0.65
+    public float getParticleInitialRadius();  // 默认 0.75
+}
+```
+
+`onPlace()` 检查旧方块与新方块是否 kinetically equivalent，若是则设置 `preventSpeedUpdate = 2` 避免不必要重算。
+
+---
+
+### 13.6 `IRotate` — 旋转方块接口
+
+`com.simibubi.create.content.kinetics.base.IRotate`
+
+所有旋转方块需要实现的接口（继承 `IWrenchable`）。
+
+```java
+public interface IRotate extends IWrenchable {
+    boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face);
+    Axis getRotationAxis(BlockState state);
+    default SpeedLevel getMinimumRequiredSpeedLevel();  // 默认 NONE
+    default boolean hideStressImpact();                 // 默认 false
+    default boolean showCapacityWithAnnotation();       // 默认 false
+}
+```
+
+**内部枚举：**
+
+```java
+enum SpeedLevel {
+    NONE(0rpm), SLOW(1rpm), MEDIUM(20rpm), FAST(30rpm);
+    float getSpeedValue();
+    static SpeedLevel of(float speed);
+    static LangBuilder getFormattedSpeedText(float speed, boolean overstressed);
+}
+
+enum StressImpact {
+    LOW, MEDIUM, HIGH, OVERSTRESSED;
+    static StressImpact of(double stressPercent);
+    static boolean isEnabled();
+    static LangBuilder getFormattedStressText(double stressPercent);
+}
+```
+
+---
+
+### 13.7 `ProcessingOutput` — 带几率配方输出
+
+`com.simibubi.create.content.processing.recipe.ProcessingOutput`
+
+```java
+public class ProcessingOutput {
+    public static final ProcessingOutput EMPTY;
+
+    public ProcessingOutput(ItemStack stack, float chance);   // chance 范围 0~1
+    public ItemStack getStack();
+    public float getChance();
+    public ItemStack rollOutput();   // 根据 chance 独立 roll 每 item
+
+    public JsonElement serialize();
+    public static ProcessingOutput deserialize(JsonElement je);
+    public void write(FriendlyByteBuf buf);
+    public static ProcessingOutput read(FriendlyByteBuf buf);
+}
+```
+
+**rollOutput 逻辑：** 每 count 个物品独立按 chance 判定。例如 `stack.getCount()=3, chance=0.5` 时，每个物品 50% 几率产出，最终可能是 0~3 个。
+
+---
+
+### 13.8 `FluidTankBlockEntity` — 流体罐（多块结构示例）
+
+`com.simibubi.create.content.fluids.tank.FluidTankBlockEntity`
+
+继承 `SmartBlockEntity`，实现 `IMultiBlockEntityContainer.Fluid`。展示如何使用 `ConnectivityHandler`。
+
+```java
+public class FluidTankBlockEntity extends SmartBlockEntity
+    implements IHaveGoggleInformation, IMultiBlockEntityContainer.Fluid {
+
+    protected FluidTank tankInventory;     // → SmartFluidTank
+    protected BlockPos controller;         // 多块控制器位置
+    protected int width;                   // 多块宽度/深度（最大 MAX_SIZE=3）
+    protected int height;                  // 多块高度
+    public BoilerData boiler;              // 锅炉数据（蒸汽引擎关联）
+
+    // IMultiBlockEntityContainer.Fluid:
+    boolean hasTank();
+    IFluidTank getTank(int index);
+    void setTankSize(int width, int height);
+    FluidStack getFluid(int index);
+    int getTankSize(int index);
+}
+
+// 自动形成多块：
+ConnectivityHandler.formMulti(be);
+```
+
+**锅炉联动：** `FluidTankBlockEntity` 内部 `BoilerData` 跟踪加热、水量、蒸汽输出，与蒸汽引擎联动。每个控制器罐体负责 `BoilerData.findControllers()` 查找锅炉的热源方块（见 `BoilerHeater` API）。
 
 ---
 

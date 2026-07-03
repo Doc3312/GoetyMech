@@ -6,7 +6,6 @@ import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -20,27 +19,33 @@ public class StressLinkService extends SavedData {
     private static final String DATA_NAME = "goetymech_stresslink";
 
     // === Persisted ===
-    // enginePos → readerPos   (1:1 binding)
+    // enginePos → readerPos
     private final Map<GlobalBlockPos, GlobalBlockPos> engineToReader = new LinkedHashMap<>();
-    // Inverse (optimization, rebuilt on load)
     private transient final Map<GlobalBlockPos, GlobalBlockPos> readerToEngine = new HashMap<>();
-
-    // readerPos → ownerUUID (for Ark discovery, persisted)
+    // readerPos → ownerUUID
     private final Map<GlobalBlockPos, UUID> readerOwners = new HashMap<>();
-    // ownerUUID → Set<readerPos> (inverse, rebuilt on load)
     private transient final Map<UUID, Set<GlobalBlockPos>> ownerReaders = new HashMap<>();
 
     // === Runtime-only (not persisted) ===
     private transient final Map<GlobalBlockPos, StressReaderBlockEntity> activeReaders = new HashMap<>();
     private transient final Map<GlobalBlockPos, RemoteEngineBlockEntity> activeEngines = new HashMap<>();
 
+    // Reader data cache — updated by updateFromNetwork(), read by Ark
+    private transient final Map<GlobalBlockPos, ReaderSnapshot> readerCache = new HashMap<>();
+
+    // Ark registry — rebuilt as Arks load/unload
+    private transient final Map<GlobalBlockPos, UUID> arkRegistry = new HashMap<>();
+    private transient final Map<UUID, GlobalBlockPos> ownerArk = new HashMap<>();
+
+    public record ReaderSnapshot(float capacity, float stress, float speed) {
+        public float getAvailable() { return Math.max(0, capacity - stress); }
+    }
+
     public StressLinkService() {
         super();
     }
 
-    // ──────────────────────────────────────────────
-    //  Static accessor
-    // ──────────────────────────────────────────────
+    // ── Static accessor ──
 
     @Nullable
     public static StressLinkService get(@Nullable Level level) {
@@ -52,18 +57,14 @@ public class StressLinkService extends SavedData {
         ServerLevel overworld = server.getLevel(Level.OVERWORLD);
         if (overworld == null) return null;
         return overworld.getDataStorage().computeIfAbsent(
-                StressLinkService::loadStatic,
-                StressLinkService::new,
-                DATA_NAME);
+                StressLinkService::loadStatic, StressLinkService::new, DATA_NAME);
     }
 
     private static StressLinkService loadStatic(CompoundTag tag) {
         return new StressLinkService().load(tag);
     }
 
-    // ──────────────────────────────────────────────
-    //  Reader lifecycle
-    // ──────────────────────────────────────────────
+    // ── Reader lifecycle ──
 
     public void onReaderLoad(StressReaderBlockEntity reader) {
         if (reader.getLevel() == null) return;
@@ -71,76 +72,56 @@ public class StressLinkService extends SavedData {
         activeReaders.put(key, reader);
         rebuildOwnerIndex();
 
-        // If there's an engine bound to this reader, push initial data
         GlobalBlockPos enginePos = readerToEngine.get(key);
-        if (enginePos != null) {
-            pushToEngine(enginePos);
-        }
+        if (enginePos != null) pushToEngine(enginePos);
     }
 
     public void onReaderUnload(StressReaderBlockEntity reader) {
         if (reader.getLevel() == null) return;
-        GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
-        activeReaders.remove(key);
+        activeReaders.remove(GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos()));
     }
 
-    // ──────────────────────────────────────────────
-    //  Engine lifecycle
-    // ──────────────────────────────────────────────
+    // ── Engine lifecycle ──
 
     public void onEngineLoad(RemoteEngineBlockEntity engine) {
         if (engine.getLevel() == null) return;
         GlobalBlockPos key = GlobalBlockPos.of(engine.getLevel(), engine.getBlockPos());
         activeEngines.put(key, engine);
 
-        // If a binding exists in saved data, push initial data
         GlobalBlockPos readerPos = engineToReader.get(key);
-        if (readerPos != null) {
-            pushToEngine(key);
-        }
+        if (readerPos != null) pushToEngine(key);
     }
 
     public void onEngineUnload(GlobalBlockPos enginePos) {
         activeEngines.remove(enginePos);
     }
 
-    // ──────────────────────────────────────────────
-    //  Binding management
-    // ──────────────────────────────────────────────
+    // ── Binding management ──
 
     public void bind(GlobalBlockPos enginePos, GlobalBlockPos readerPos) {
-        // Remove old binding for this engine, if any
         GlobalBlockPos oldReader = engineToReader.get(enginePos);
-        if (oldReader != null) {
-            readerToEngine.remove(oldReader);
-        }
-        // If this reader is already bound to another engine, disconnect the old one
+        if (oldReader != null) readerToEngine.remove(oldReader);
+
         GlobalBlockPos oldEngine = readerToEngine.get(readerPos);
         if (oldEngine != null && !oldEngine.equals(enginePos)) {
             engineToReader.remove(oldEngine);
             RemoteEngineBlockEntity stale = activeEngines.get(oldEngine);
-            if (stale != null) {
-                stale.applyRemoteUpdate(0, 0);
-            }
+            if (stale != null) stale.applyRemoteUpdate(0, 0);
         }
+
         engineToReader.put(enginePos, readerPos);
         readerToEngine.put(readerPos, enginePos);
         setDirty();
-
         pushToEngine(enginePos);
     }
 
     public void unbind(GlobalBlockPos enginePos) {
         GlobalBlockPos readerPos = engineToReader.remove(enginePos);
-        if (readerPos != null) {
-            readerToEngine.remove(readerPos);
-        }
+        if (readerPos != null) readerToEngine.remove(readerPos);
         setDirty();
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-        if (engine != null) {
-            engine.applyRemoteUpdate(0, 0);
-        }
+        if (engine != null) engine.applyRemoteUpdate(0, 0);
     }
 
     @Nullable
@@ -148,22 +129,24 @@ public class StressLinkService extends SavedData {
         return engineToReader.get(enginePos);
     }
 
-    @Nullable
-    public RemoteEngineBlockEntity getLoadedEngine(GlobalBlockPos enginePos) {
-        return activeEngines.get(enginePos);
-    }
-
-    // ──────────────────────────────────────────────
-    //  Event-driven update (called by Reader)
-    // ──────────────────────────────────────────────
+    // ── Event-driven update + cache ──
 
     public void onReaderNetworkChanged(StressReaderBlockEntity reader) {
         if (reader.getLevel() == null) return;
         GlobalBlockPos readerKey = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
+
+        readerCache.put(readerKey, new ReaderSnapshot(
+                reader.getNetworkCapacity(),
+                reader.getNetworkStress(),
+                reader.getSpeed()));
+
         GlobalBlockPos enginePos = readerToEngine.get(readerKey);
-        if (enginePos != null) {
-            pushToEngine(enginePos);
-        }
+        if (enginePos != null) pushToEngine(enginePos);
+    }
+
+    @Nullable
+    public ReaderSnapshot getCachedReaderData(GlobalBlockPos readerPos) {
+        return readerCache.get(readerPos);
     }
 
     private void pushToEngine(GlobalBlockPos enginePos) {
@@ -179,9 +162,7 @@ public class StressLinkService extends SavedData {
         engine.applyRemoteUpdate(speed, budget);
     }
 
-    // ──────────────────────────────────────────────
-    //  Reader ownership registry (for Ark)
-    // ──────────────────────────────────────────────
+    // ── Reader ownership registry (for Ark) ──
 
     public void registerReaderOwner(GlobalBlockPos readerPos, UUID ownerUUID) {
         readerOwners.put(readerPos, ownerUUID);
@@ -207,32 +188,46 @@ public class StressLinkService extends SavedData {
 
     private void rebuildOwnerIndex() {
         ownerReaders.clear();
-        for (var entry : readerOwners.entrySet()) {
+        for (var entry : readerOwners.entrySet())
             ownerReaders.computeIfAbsent(entry.getValue(), k -> new HashSet<>()).add(entry.getKey());
-        }
     }
 
-    // ──────────────────────────────────────────────
-    //  SavedData serialization
-    // ──────────────────────────────────────────────
+    // ── Ark registry ──
+
+    public void registerArk(GlobalBlockPos arkPos, UUID ownerUUID) {
+        arkRegistry.put(arkPos, ownerUUID);
+        ownerArk.put(ownerUUID, arkPos);
+    }
+
+    public void unregisterArk(GlobalBlockPos arkPos) {
+        UUID owner = arkRegistry.remove(arkPos);
+        if (owner != null) ownerArk.remove(owner, arkPos);
+    }
+
+    @Nullable
+    public GlobalBlockPos getArkForOwner(UUID ownerUUID) {
+        return ownerArk.get(ownerUUID);
+    }
+
+    // ── SavedData ──
 
     @Override
     public CompoundTag save(CompoundTag tag) {
         ListTag bindingsList = new ListTag();
         for (var entry : engineToReader.entrySet()) {
-            CompoundTag entryTag = new CompoundTag();
-            entryTag.put("engine", entry.getKey().save());
-            entryTag.put("reader", entry.getValue().save());
-            bindingsList.add(entryTag);
+            CompoundTag e = new CompoundTag();
+            e.put("engine", entry.getKey().save());
+            e.put("reader", entry.getValue().save());
+            bindingsList.add(e);
         }
         tag.put("bindings", bindingsList);
 
         ListTag ownersList = new ListTag();
         for (var entry : readerOwners.entrySet()) {
-            CompoundTag entryTag = new CompoundTag();
-            entryTag.put("pos", entry.getKey().save());
-            entryTag.putUUID("owner", entry.getValue());
-            ownersList.add(entryTag);
+            CompoundTag e = new CompoundTag();
+            e.put("pos", entry.getKey().save());
+            e.putUUID("owner", entry.getValue());
+            ownersList.add(e);
         }
         tag.put("readerOwners", ownersList);
 
@@ -241,11 +236,12 @@ public class StressLinkService extends SavedData {
 
     public StressLinkService load(CompoundTag tag) {
         engineToReader.clear();
+        readerToEngine.clear();
         ListTag bindingsList = tag.getList("bindings", Tag.TAG_COMPOUND);
         for (int i = 0; i < bindingsList.size(); i++) {
-            CompoundTag entryTag = bindingsList.getCompound(i);
-            GlobalBlockPos enginePos = GlobalBlockPos.load(entryTag.getCompound("engine"));
-            GlobalBlockPos readerPos = GlobalBlockPos.load(entryTag.getCompound("reader"));
+            CompoundTag e = bindingsList.getCompound(i);
+            GlobalBlockPos enginePos = GlobalBlockPos.load(e.getCompound("engine"));
+            GlobalBlockPos readerPos = GlobalBlockPos.load(e.getCompound("reader"));
             engineToReader.put(enginePos, readerPos);
             readerToEngine.put(readerPos, enginePos);
         }
@@ -253,10 +249,8 @@ public class StressLinkService extends SavedData {
         readerOwners.clear();
         ListTag ownersList = tag.getList("readerOwners", Tag.TAG_COMPOUND);
         for (int i = 0; i < ownersList.size(); i++) {
-            CompoundTag entryTag = ownersList.getCompound(i);
-            GlobalBlockPos pos = GlobalBlockPos.load(entryTag.getCompound("pos"));
-            UUID owner = entryTag.getUUID("owner");
-            readerOwners.put(pos, owner);
+            CompoundTag e = ownersList.getCompound(i);
+            readerOwners.put(GlobalBlockPos.load(e.getCompound("pos")), e.getUUID("owner"));
         }
         rebuildOwnerIndex();
 
