@@ -129,10 +129,16 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (arkPos == null || arkDim == null || level == null) return;
         MinecraftServer server = ((ServerLevel) level).getServer();
         ServerLevel arkLevel = server.getLevel(arkDim);
-        if (arkLevel == null || !arkLevel.isLoaded(arkPos)) return;
+        if (arkLevel == null || !arkLevel.isLoaded(arkPos)) {
+            LOGGER.warn("[ARK_BE] ENGINE{} arkLevel={} loaded={}", fmtPos(worldPosition), arkLevel != null, arkLevel != null && arkLevel.isLoaded(arkPos));
+            return;
+        }
 
         BlockEntity be = arkLevel.getBlockEntity(arkPos);
-        if (!(be instanceof StressArkBlockEntity ark)) return;
+        if (!(be instanceof StressArkBlockEntity ark)) {
+            LOGGER.warn("[ARK_BE] ENGINE{} expected StressArkBlockEntity but got {}", fmtPos(worldPosition), be != null ? be.getClass().getSimpleName() : "null");
+            return;
+        }
 
         cachedRpm = ark.getRepresentativeRPM();
         cachedArkTotalAvailable = ark.getTotalAvailableStress();
@@ -230,6 +236,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             ServerLevel arkLevel = server.getLevel(arkDim);
             if (arkLevel != null && arkLevel.getBlockEntity(arkPos) instanceof StressArkBlockEntity ark) {
                 ark.unregisterEngine(worldPosition);
+            } else {
+                LOGGER.warn("[CLEANUP] ENGINE{} arkLevelExists={} arkBE_found={}", fmtPos(worldPosition), arkLevel != null,
+                        arkLevel != null && arkLevel.getBlockEntity(arkPos) instanceof StressArkBlockEntity);
             }
         } else if (bindingType == BindingType.READER && linkedPos != null && linkedDim != null) {
             ServerLevel targetLevel = server.getLevel(linkedDim);

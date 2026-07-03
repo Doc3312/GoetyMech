@@ -87,7 +87,11 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     }
 
     public void unregisterEngine(BlockPos enginePos) {
-        boundEngines.remove(enginePos);
+        EngineEntry removed = boundEngines.remove(enginePos);
+        if (removed != null) {
+            LOGGER.warn("[UNREG] ARK{} engine{} removed (consumption={} remaining={})",
+                    fmtPos(worldPosition), fmtPos(enginePos), (int)removed.consumption, boundEngines.size());
+        }
         setChanged();
     }
 
@@ -167,9 +171,13 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
     private void recomputeIfNeeded() {
         boolean dirty = StressReaderBlockEntity.NETWORK_UPDATED || forceRefresh;
+        String dirtySrc = null;
+        if (StressReaderBlockEntity.NETWORK_UPDATED) dirtySrc = "NET_UPD";
+        else if (forceRefresh) dirtySrc = "FORCE";
         if (++tickCounter >= 20) {
             tickCounter = 0;
             dirty = true;
+            dirtySrc = "PERIODIC";
         }
         if (!dirty) return;
 
@@ -199,8 +207,8 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
                 || Math.abs(totalStress - cachedTotalStress) > 0.01f
                 || netCount != cachedNetworkCount;
 
-        LOGGER.warn("[RECOMPUTE] ARK{} dirty={} totalCap={}{} totalStress={}{} netCount={} engines={}",
-                fmtPos(worldPosition), dirty,
+        LOGGER.warn("[RECOMPUTE] ARK{} src={} totalCap={}{} totalStress={}{} netCount={} engines={}",
+                fmtPos(worldPosition), dirtySrc,
                 (int)totalCap, (changed && totalCap != cachedTotalCapacity ? " (was " + (int)cachedTotalCapacity + ")" : ""),
                 (int)totalStress, (changed && totalStress != cachedTotalStress ? " (was " + (int)cachedTotalStress + ")" : ""),
                 netCount, boundEngines.size());
@@ -274,7 +282,15 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     private void purgeStaleEngines() {
         if (level == null) return;
         long now = level.getGameTime();
-        boundEngines.entrySet().removeIf(e -> now - e.getValue().lastSeenTick > 100);
+        var iter = boundEngines.entrySet().iterator();
+        while (iter.hasNext()) {
+            var e = iter.next();
+            if (now - e.getValue().lastSeenTick > 100) {
+                LOGGER.warn("[PURGE] ARK{} removed engine{} (lastSeen={} diff={} remaining_before={})",
+                        fmtPos(worldPosition), fmtPos(e.getKey()), e.getValue().lastSeenTick, now - e.getValue().lastSeenTick, boundEngines.size());
+                iter.remove();
+            }
+        }
     }
 
     private void syncToClient() {
