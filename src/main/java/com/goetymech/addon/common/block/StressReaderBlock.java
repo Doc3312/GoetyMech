@@ -33,6 +33,7 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import javax.annotation.Nullable;
 
 public class StressReaderBlock extends DirectionalKineticBlock
         implements IBE<StressReaderBlockEntity> {

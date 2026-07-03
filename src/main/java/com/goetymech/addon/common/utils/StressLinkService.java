@@ -52,9 +52,13 @@ public class StressLinkService extends SavedData {
         ServerLevel overworld = server.getLevel(Level.OVERWORLD);
         if (overworld == null) return null;
         return overworld.getDataStorage().computeIfAbsent(
-                StressLinkService::new,
+                StressLinkService::loadStatic,
                 StressLinkService::new,
                 DATA_NAME);
+    }
+
+    private static StressLinkService loadStatic(CompoundTag tag) {
+        return new StressLinkService().load(tag);
     }
 
     // ──────────────────────────────────────────────

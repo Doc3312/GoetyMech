@@ -3,8 +3,9 @@ package com.goetymech.addon.common.block.entity;
 import com.Polarice3.Goety.api.entities.IChunkLoader;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.s2c.S2CStressArkDataPacket;
+import com.goetymech.addon.common.utils.GlobalBlockPos;
+import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
-import com.simibubi.create.content.kinetics.KineticNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -49,20 +50,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     private float cachedTotalStress;
     private int cachedNetworkCount;
     private int tickCounter;
-    private boolean forceRefresh = true;
-    private boolean hasEverSynced;
     public long ticketTime;
-
-    private final Map<BlockPos, EngineEntry> boundEngines = new HashMap<>();
-
-    private static class EngineEntry {
-        float consumption;
-        long lastSeenTick;
-        EngineEntry(float consumption, long lastSeenTick) {
-            this.consumption = consumption;
-            this.lastSeenTick = lastSeenTick;
-        }
-    }
 
     public StressArkBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.STRESS_ARK_ENTITY.get(), pos, state);
@@ -78,45 +66,25 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         } else if (!active.pos().equals(pos) || !active.dimension().equals(level.dimension())) {
             return;
         }
-        self.recomputeIfNeeded();
+        self.refreshStats();
     }
 
-    public void registerEngine(BlockPos enginePos) {
-        boundEngines.putIfAbsent(enginePos, new EngineEntry(0, level != null ? level.getGameTime() : 0));
-        setChanged();
-    }
-
-    public void unregisterEngine(BlockPos enginePos) {
-        EngineEntry removed = boundEngines.remove(enginePos);
-        if (removed != null) {
-            LOGGER.warn("[UNREG] ARK{} engine{} removed (consumption={} remaining={})",
-                    fmtPos(worldPosition), fmtPos(enginePos), (int)removed.consumption, boundEngines.size());
-        }
-        setChanged();
-    }
-
-    public void reportConsumption(BlockPos enginePos, float consumption) {
-        long now = level != null ? level.getGameTime() : 0;
-        EngineEntry entry = boundEngines.get(enginePos);
-        if (entry == null) {
-            boundEngines.put(enginePos, new EngineEntry(consumption, now));
-        } else {
-            entry.consumption = consumption;
-            entry.lastSeenTick = now;
-        }
-    }
+    public int getEngineCount() { return 0; }
 
     public float getRepresentativeRPM() {
+        StressLinkService service = StressLinkService.get(level);
+        if (service == null || ownerUUID == null) return 0;
         float bestRpm = 0;
         float bestAvailable = -1;
-        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
-            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
-                if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    float available = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
-                    if (available > bestAvailable) {
-                        bestAvailable = available;
-                        bestRpm = reader.getSpeed();
-                    }
+        for (GlobalBlockPos readerPos : service.getReadersForOwner(ownerUUID)) {
+            BlockEntity be = level instanceof ServerLevel sl
+                    ? sl.getBlockEntity(readerPos.pos())
+                    : null;
+            if (be instanceof StressReaderBlockEntity reader) {
+                float avail = reader.getAvailableStress();
+                if (avail > bestAvailable) {
+                    bestAvailable = avail;
+                    bestRpm = reader.getSpeed();
                 }
             }
         }
@@ -124,81 +92,46 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     }
 
     public float getTotalAvailableStress() {
+        StressLinkService service = StressLinkService.get(level);
+        if (service == null || ownerUUID == null) return 0;
         float total = 0;
-        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
-            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
-                if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    float avail = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
-                    LOGGER.warn("[TOT_AVAIL] ARK{} reader{} cap={} stress={} avail={}",
-                            fmtPos(worldPosition), fmtPos(reader.getBlockPos()),
-                            (int)reader.getNetworkCapacity(), (int)reader.getNetworkStress(), (int)avail);
-                    total += avail;
-                }
+        for (GlobalBlockPos readerPos : service.getReadersForOwner(ownerUUID)) {
+            BlockEntity be = level instanceof ServerLevel sl
+                    ? sl.getBlockEntity(readerPos.pos())
+                    : null;
+            if (be instanceof StressReaderBlockEntity reader) {
+                total += reader.getAvailableStress();
             }
         }
         return total;
     }
 
-    public int getEngineCount() {
-        return boundEngines.size();
-    }
+    public float getTotalConsumedByEngines() { return 0; }
 
-    public float getTotalConsumedByEngines() {
-        float total = 0;
-        for (EngineEntry entry : boundEngines.values()) {
-            total += entry.consumption;
-        }
-        return total;
-    }
+    public float getRawAvailableStress() { return getTotalAvailableStress(); }
 
-    public float getRawAvailableStress() {
-        float total = 0;
-        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
-            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
-                if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    float selfConsumption = reader.getConsumedFor(this.worldPosition);
-                    float raw = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + selfConsumption);
-                    LOGGER.warn("[RAW_AVAIL] ARK{} reader{} cap={} stress={} selfConsumed={} raw={}",
-                            fmtPos(worldPosition), fmtPos(reader.getBlockPos()),
-                            (int)reader.getNetworkCapacity(), (int)reader.getNetworkStress(),
-                            (int)selfConsumption, (int)raw);
-                    total += raw;
-                }
-            }
-        }
-        return total;
-    }
+    private void refreshStats() {
+        if (++tickCounter < 20) return;
+        tickCounter = 0;
 
-    private void recomputeIfNeeded() {
-        boolean dirty = StressReaderBlockEntity.NETWORK_UPDATED || forceRefresh;
-        String dirtySrc = null;
-        if (StressReaderBlockEntity.NETWORK_UPDATED) dirtySrc = "NET_UPD";
-        else if (forceRefresh) dirtySrc = "FORCE";
-        if (++tickCounter >= 20) {
-            tickCounter = 0;
-            dirty = true;
-            dirtySrc = "PERIODIC";
-        }
-        if (!dirty) return;
+        StressLinkService service = StressLinkService.get(level);
+        if (service == null || ownerUUID == null) return;
 
-        StressReaderBlockEntity.NETWORK_UPDATED = false;
-        forceRefresh = false;
-
-        Map<KineticNetwork, StressReaderBlockEntity> networkReaders = new LinkedHashMap<>();
-        Set<KineticNetwork> seen = new HashSet<>();
         float totalCap = 0, totalStress = 0;
         int netCount = 0;
-
-        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
-            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
-                if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    KineticNetwork net = reader.getOrCreateNetwork();
-                    networkReaders.putIfAbsent(net, reader);
-                    if (seen.add(net)) {
-                        totalCap += reader.getNetworkCapacity();
-                        totalStress += reader.getNetworkStress();
-                        netCount++;
-                    }
+        Set<String> seenNetworks = new HashSet<>();
+        for (GlobalBlockPos readerPos : service.getReadersForOwner(ownerUUID)) {
+            BlockEntity be = level instanceof ServerLevel sl
+                    ? sl.getBlockEntity(readerPos.pos())
+                    : null;
+            if (be instanceof StressReaderBlockEntity reader && reader.hasNetwork()) {
+                float cap = reader.getNetworkCapacity();
+                float stress = reader.getNetworkStress();
+                totalCap += cap;
+                totalStress += stress;
+                if (!seenNetworks.contains(readerPos.dimension().location() + "@" + readerPos.pos())) {
+                    seenNetworks.add(readerPos.dimension().location() + "@" + readerPos.pos());
+                    netCount++;
                 }
             }
         }
@@ -207,89 +140,11 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
                 || Math.abs(totalStress - cachedTotalStress) > 0.01f
                 || netCount != cachedNetworkCount;
 
-        LOGGER.warn("[RECOMPUTE] ARK{} src={} totalCap={}{} totalStress={}{} netCount={} engines={}",
-                fmtPos(worldPosition), dirtySrc,
-                (int)totalCap, (changed && totalCap != cachedTotalCapacity ? " (was " + (int)cachedTotalCapacity + ")" : ""),
-                (int)totalStress, (changed && totalStress != cachedTotalStress ? " (was " + (int)cachedTotalStress + ")" : ""),
-                netCount, boundEngines.size());
-
-        for (var entry : boundEngines.entrySet()) {
-            LOGGER.warn("[RECOMPUTE] ARK{} boundEngine{} consumption={}", fmtPos(worldPosition), fmtPos(entry.getKey()), (int)entry.getValue().consumption);
-        }
-
-        if (changed || !hasEverSynced) {
+        if (changed) {
             cachedTotalCapacity = totalCap;
             cachedTotalStress = totalStress;
             cachedNetworkCount = netCount;
-            hasEverSynced = true;
             syncToClient();
-        }
-
-        distributeConsumption(networkReaders.values());
-        purgeStaleEngines();
-    }
-
-    private void distributeConsumption(Collection<StressReaderBlockEntity> readers) {
-        LOGGER.warn("[DISTRIBUTE] ARK{} readers={}", fmtPos(worldPosition), readers.size());
-
-        if (boundEngines.isEmpty() || readers.isEmpty()) return;
-
-        float totalEngineConsumption = 0;
-        for (EngineEntry entry : boundEngines.values()) {
-            totalEngineConsumption += entry.consumption;
-        }
-
-        LOGGER.warn("[DISTRIBUTE] ARK{} totalEngineConsumption={}", fmtPos(worldPosition), (int)totalEngineConsumption);
-
-        if (totalEngineConsumption <= 0) {
-            LOGGER.warn("[DISTRIBUTE] ARK{} consumption=0 -> remove all", fmtPos(worldPosition));
-            for (StressReaderBlockEntity reader : readers) {
-                reader.removeConsumer(this.worldPosition);
-            }
-            return;
-        }
-
-        int n = readers.size();
-        float[] available = new float[n];
-        float totalAvailable = 0;
-        int idx = 0;
-        for (StressReaderBlockEntity reader : readers) {
-            available[idx] = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedFor(this.worldPosition));
-            LOGGER.warn("[DISTRIBUTE] ARK{} reader{} availCalculated={} (cap={} stress={} selfConsumed={})",
-                    fmtPos(worldPosition), fmtPos(reader.getBlockPos()), (int)available[idx],
-                    (int)reader.getNetworkCapacity(), (int)reader.getNetworkStress(),
-                    (int)reader.getConsumedFor(this.worldPosition));
-            totalAvailable += available[idx];
-            idx++;
-        }
-        LOGGER.warn("[DISTRIBUTE] ARK{} totalAvailable={}", fmtPos(worldPosition), (int)totalAvailable);
-        if (totalAvailable <= 0) {
-            LOGGER.warn("[DISTRIBUTE] ARK{} totalAvailable<=0 -> skip", fmtPos(worldPosition));
-            return;
-        }
-
-        idx = 0;
-        for (StressReaderBlockEntity reader : readers) {
-            float allocated = totalEngineConsumption * (available[idx] / totalAvailable);
-            float actual = Math.min(allocated, available[idx]);
-            LOGGER.warn("[DISTRIBUTE] ARK{} reader{} allocated={} capped={}",
-                    fmtPos(worldPosition), fmtPos(reader.getBlockPos()), (int)allocated, (int)actual);
-            reader.setConsumedRemotely(this.worldPosition, actual);
-            idx++;
-        }
-    }
-
-    private void purgeStaleEngines() {
-        if (level == null) return;
-        long now = level.getGameTime();
-        var iter = boundEngines.entrySet().iterator();
-        while (iter.hasNext()) {
-            var e = iter.next();
-            if (now - e.getValue().lastSeenTick > 100) {
-                LOGGER.warn("[PURGE] ARK{} removed engine{} (lastSeen={} diff={} remaining_before={})",
-                        fmtPos(worldPosition), fmtPos(e.getKey()), e.getValue().lastSeenTick, now - e.getValue().lastSeenTick, boundEngines.size());
-                iter.remove();
-            }
         }
     }
 
@@ -297,7 +152,8 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (level == null || level.isClientSide || ownerUUID == null) return;
         Player player = level.getPlayerByUUID(ownerUUID);
         if (player instanceof ServerPlayer sp) {
-            ModNetwork.sendTo(sp, new S2CStressArkDataPacket(cachedTotalCapacity, cachedTotalStress, cachedNetworkCount, getTotalConsumedByEngines()));
+            ModNetwork.sendTo(sp, new S2CStressArkDataPacket(cachedTotalCapacity, cachedTotalStress,
+                    cachedNetworkCount, 0));
         }
     }
 
@@ -315,7 +171,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             PLAYER_ACTIVE_ARK.put(this.ownerUUID, new ArkLocation(level.dimension(), worldPosition));
         }
         setChanged();
-        forceRefresh = true;
     }
 
     public boolean isOwner(Player player) {
@@ -334,14 +189,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     public void onArkRemoved() {
         sendClearPacket();
         PLAYER_ACTIVE_ARK.remove(ownerUUID);
-        // Remove Ark's entries from all readers
-        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
-            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
-                if (reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    reader.removeConsumer(this.worldPosition);
-                }
-            }
-        }
         ownerUUID = null;
     }
 
@@ -371,15 +218,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (ownerUUID != null) {
             tag.putUUID("OwnerUUID", ownerUUID);
         }
-        ListTag enginesList = new ListTag();
-        for (var entry : boundEngines.entrySet()) {
-            CompoundTag eTag = new CompoundTag();
-            eTag.putLong("Pos", entry.getKey().asLong());
-            eTag.putFloat("Consumption", entry.getValue().consumption);
-            eTag.putLong("LastSeen", entry.getValue().lastSeenTick);
-            enginesList.add(eTag);
-        }
-        tag.put("BoundEngines", enginesList);
     }
 
     @Override
@@ -391,18 +229,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
                 PLAYER_ACTIVE_ARK.putIfAbsent(ownerUUID, new ArkLocation(level.dimension(), worldPosition));
             }
         }
-        boundEngines.clear();
-        if (tag.contains("BoundEngines")) {
-            long now = level != null ? level.getGameTime() : 0;
-            ListTag list = tag.getList("BoundEngines", Tag.TAG_COMPOUND);
-            for (int i = 0; i < list.size(); i++) {
-                CompoundTag eTag = list.getCompound(i);
-                BlockPos pos = BlockPos.of(eTag.getLong("Pos"));
-                float consumption = eTag.getFloat("Consumption");
-                boundEngines.put(pos, new EngineEntry(consumption, now));
-            }
-        }
-        forceRefresh = true;
     }
 
     private static String fmtPos(BlockPos pos) {
