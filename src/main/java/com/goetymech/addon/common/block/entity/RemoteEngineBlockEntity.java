@@ -137,7 +137,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         cachedRpm = ark.getRepresentativeRPM();
         cachedArkTotalAvailable = ark.getTotalAvailableStress();
         cachedArkEnginesConsumption = ark.getTotalConsumedByEngines();
-        cachedConsumed = Math.max(cachedArkTotalAvailable, 0);
+
+        int engineCount = ark.getEngineCount();
+        cachedConsumed = engineCount > 0 ? Math.max(0, cachedArkTotalAvailable) / engineCount : 0;
         ark.reportConsumption(this.worldPosition, cachedConsumed);
 
         updateGeneratedRotation();

@@ -79,7 +79,16 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     @Override
     public float calculateStressApplied() {
-        return 0;
+        float s = Math.abs(getTheoreticalSpeed());
+        if (s < 0.01f) return 0;
+        return getConsumedRemotely() / s;
+    }
+
+    public float getAvailableFor(BlockPos enginePos) {
+        float selfAmount = 0;
+        ConsumerEntry entry = remoteConsumers.get(enginePos);
+        if (entry != null) selfAmount = entry.amount;
+        return Math.max(0, getNetworkCapacity() - getNetworkStress() + selfAmount);
     }
 
     public void setConsumedRemotely(BlockPos enginePos, float amount) {
@@ -201,9 +210,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
         float cap = getNetworkCapacity();
         float netStress = getNetworkStress();
-        float consumedRemotely = getConsumedRemotely();
-        float displayStress = netStress + consumedRemotely;
-        float fraction = cap == 0 ? 0 : displayStress / cap;
+        float fraction = cap == 0 ? 0 : netStress / cap;
 
         if (getTheoreticalSpeed() == 0) {
             CreateLang.text(TooltipHelper.makeProgressBar(3, 0))
@@ -218,16 +225,17 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-            float remaining = Math.max(0, cap - displayStress);
+            float remaining = Math.max(0, cap - netStress);
             LangBuilder su = CreateLang.translate("generic.unit.stress");
             LangBuilder stressTip = CreateLang.number(remaining)
                 .add(su)
                 .style(StressImpact.of(fraction).getRelativeColor());
 
-            stressTip.text(ChatFormatting.GRAY, " / ")
-                .add(CreateLang.number(cap)
-                    .add(su)
-                    .style(ChatFormatting.DARK_GRAY));
+            if (remaining != cap)
+                stressTip.text(ChatFormatting.GRAY, " / ")
+                    .add(CreateLang.number(cap)
+                        .add(su)
+                        .style(ChatFormatting.DARK_GRAY));
 
             stressTip.forGoggles(tooltip, 1);
         }

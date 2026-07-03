@@ -26,12 +26,13 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SlamGroundTiltHandler {
 
-    private static final int HOLD_TICKS = 16;
-    private static final int DISSOLVE_PER_RING = 3;
+    private static final int HOLD_TICKS = 20;
+    private static final int DISSOLVE_PER_RING = 5;
     private static final int TOTAL_DURATION = HOLD_TICKS + 4 * DISSOLVE_PER_RING;
     private static final int SCAN_DOWN = 5;
 
-    private static final float[] RING_ANGLES = { 8f, 18f, 28f, 35f };
+    private static final float[] RING_ANGLES = { 5f, 17f, 29f, 40f };
+    private static final float[] RING_LIFT = { 0.00f, 0.04f, 0.08f, 0.12f };
 
     private static final Map<Integer, GroundTiltEffect> activeEffects = new LinkedHashMap<>();
     private static int nextId = 0;
@@ -81,7 +82,7 @@ public class SlamGroundTiltHandler {
                 if (state.isAir() || state.is(Blocks.BEDROCK)) continue;
 
                 double bx = groundPos.getX() + 0.5;
-                double by = groundPos.getY() + 0.5;
+                double by = groundPos.getY() + 0.65 + RING_LIFT[ringIndex];
                 double bz = groundPos.getZ() + 0.5;
 
                 float angleDeg = RING_ANGLES[ringIndex];
@@ -163,9 +164,10 @@ public class SlamGroundTiltHandler {
                 if (elapsed >= dissolveEnd) continue;
 
                 float yOffset = 0;
+                float sinkAmount = 0.65f + RING_LIFT[block.ringIndex];
                 if (elapsed >= dissolveStart) {
                     float progress = (float) (elapsed - dissolveStart) / DISSOLVE_PER_RING;
-                    yOffset = -0.5f * progress;
+                    yOffset = -sinkAmount * progress;
                 }
 
                 poseStack.pushPose();
@@ -181,7 +183,7 @@ public class SlamGroundTiltHandler {
 
                 poseStack.translate(-0.5, -0.5, -0.5);
 
-                int light = LevelRenderer.getLightColor(level, BlockPos.containing(block.x, block.y, block.z));
+                int light = LevelRenderer.getLightColor(level, BlockPos.containing(block.x, block.y + 1.0, block.z));
                 dispatcher.renderSingleBlock(block.state, poseStack, buffer, light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
 
                 poseStack.popPose();
