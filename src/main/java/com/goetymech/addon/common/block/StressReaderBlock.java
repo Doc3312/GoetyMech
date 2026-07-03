@@ -16,6 +16,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -133,6 +134,17 @@ public class StressReaderBlock extends DirectionalKineticBlock
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
         return InteractionResult.PASS;
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state,
+                            @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (placer instanceof Player player && !level.isClientSide) {
+            if (level.getBlockEntity(pos) instanceof StressReaderBlockEntity reader) {
+                reader.setPlacerUUID(player.getUUID());
+            }
+        }
     }
 
     @Override
