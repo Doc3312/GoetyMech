@@ -84,7 +84,7 @@ public class SlamGroundTiltHandler {
                 double t = Mth.clamp((hDist - 2.0) / 3.0, 0.0, 1.0);
                 double smoothT = t * t * (3.0 - 2.0 * t);
                 float angleDeg = (float) (5.0 + smoothT * 55.0);
-                float lift = (float) (smoothT * 0.15);
+                float lift = (float) (smoothT * 0.25);
                 double by = groundPos.getY() + 0.65 + lift;
 
                 float angleRad = angleDeg * Mth.DEG_TO_RAD;
