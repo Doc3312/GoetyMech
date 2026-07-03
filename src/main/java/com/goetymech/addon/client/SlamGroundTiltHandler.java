@@ -27,12 +27,9 @@ import java.util.*;
 public class SlamGroundTiltHandler {
 
     private static final int HOLD_TICKS = 40;
-    private static final int DISSOLVE_PER_RING = 10;
+    private static final int DISSOLVE_PER_RING = 5;
     private static final int TOTAL_DURATION = HOLD_TICKS + 4 * DISSOLVE_PER_RING;
     private static final int SCAN_DOWN = 5;
-
-    private static final float[] RING_ANGLES = { 5f, 17f, 29f, 40f };
-    private static final float[] RING_LIFT = { 0.00f, 0.04f, 0.08f, 0.12f };
 
     private static final Map<Integer, GroundTiltEffect> activeEffects = new LinkedHashMap<>();
     private static int nextId = 0;
@@ -82,10 +79,14 @@ public class SlamGroundTiltHandler {
                 if (state.isAir() || state.is(Blocks.BEDROCK)) continue;
 
                 double bx = groundPos.getX() + 0.5;
-                double by = groundPos.getY() + 0.65 + RING_LIFT[ringIndex];
                 double bz = groundPos.getZ() + 0.5;
 
-                float angleDeg = RING_ANGLES[ringIndex];
+                double t = Mth.clamp((hDist - 2.0) / 3.0, 0.0, 1.0);
+                double smoothT = t * t * (3.0 - 2.0 * t);
+                float angleDeg = (float) (5.0 + smoothT * 55.0);
+                float lift = (float) (smoothT * 0.15);
+                double by = groundPos.getY() + 0.65 + lift;
+
                 float angleRad = angleDeg * Mth.DEG_TO_RAD;
 
                 double toCx = -dx;
@@ -164,7 +165,7 @@ public class SlamGroundTiltHandler {
                 if (elapsed >= dissolveEnd) continue;
 
                 float yOffset = 0;
-                float sinkAmount = 0.65f + RING_LIFT[block.ringIndex];
+                float sinkAmount = (float) (block.y - BlockPos.containing(block.x, block.y, block.z).getY());
                 if (elapsed >= dissolveStart) {
                     float progress = (float) (elapsed - dissolveStart) / DISSOLVE_PER_RING;
                     yOffset = -sinkAmount * progress;
