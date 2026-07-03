@@ -1,5 +1,7 @@
 package com.goetymech.addon.common.item;
 
+import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
+import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetymech.addon.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -15,6 +17,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 
@@ -30,6 +33,9 @@ public class RemoteEngineBlockItem extends BlockItem {
     public static final String TAG_Y = "goetymech.bound_y";
     public static final String TAG_Z = "goetymech.bound_z";
     public static final String TAG_DIM = "goetymech.bound_dim";
+    public static final String TAG_ENGINE_X = "goetymech.engine_x";
+    public static final String TAG_ENGINE_Y = "goetymech.engine_y";
+    public static final String TAG_ENGINE_Z = "goetymech.engine_z";
 
     public RemoteEngineBlockItem(Block block, Properties props) {
         super(block, props);
@@ -47,12 +53,23 @@ public class RemoteEngineBlockItem extends BlockItem {
                 LOGGER.debug("[RemoteEngineItem] sneak+right-click at {} | isBound={} isReader={} boundPos={}",
                         clickedPos, isBound(stack), level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get()),
                         isBound(stack) ? getBoundPos(stack) : "N/A");
-                // Sneak + right-click on bound reader → let StressReaderBlock handle unbind
                 if (isBound(stack) && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
                     BlockPos boundPos = getBoundPos(stack);
                     if (boundPos.equals(clickedPos)) {
-                        LOGGER.debug("[RemoteEngineItem] returning PASS for unbind at {}", clickedPos);
-                        return InteractionResult.PASS;
+                        if (!level.isClientSide) {
+                            LOGGER.debug("[RemoteEngineItem] UNBIND at {}", clickedPos);
+                            BlockEntity be = level.getBlockEntity(clickedPos);
+                            if (be instanceof StressReaderBlockEntity reader) {
+                                BlockPos enginePos = getEnginePos(stack);
+                                if (enginePos != null && level.getBlockEntity(enginePos) instanceof RemoteEngineBlockEntity engine) {
+                                    engine.clearLinkedPos();
+                                }
+                            }
+                            clearBinding(stack);
+                            player.displayClientMessage(
+                                    Component.translatable("info.goetymech.remote_engine.unbound"), true);
+                        }
+                        return InteractionResult.SUCCESS;
                     }
                 }
                 return super.useOn(ctx);
@@ -94,6 +111,19 @@ public class RemoteEngineBlockItem extends BlockItem {
         tag.putString(TAG_DIM, dim.location().toString());
     }
 
+    public static void writeEnginePos(ItemStack stack, BlockPos pos) {
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putInt(TAG_ENGINE_X, pos.getX());
+        tag.putInt(TAG_ENGINE_Y, pos.getY());
+        tag.putInt(TAG_ENGINE_Z, pos.getZ());
+    }
+
+    public static BlockPos getEnginePos(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.contains(TAG_ENGINE_X)) return null;
+        return new BlockPos(tag.getInt(TAG_ENGINE_X), tag.getInt(TAG_ENGINE_Y), tag.getInt(TAG_ENGINE_Z));
+    }
+
     public static BlockPos getBoundPos(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         return new BlockPos(tag.getInt(TAG_X), tag.getInt(TAG_Y), tag.getInt(TAG_Z));
@@ -112,6 +142,9 @@ public class RemoteEngineBlockItem extends BlockItem {
             tag.remove(TAG_Y);
             tag.remove(TAG_Z);
             tag.remove(TAG_DIM);
+            tag.remove(TAG_ENGINE_X);
+            tag.remove(TAG_ENGINE_Y);
+            tag.remove(TAG_ENGINE_Z);
             if (tag.isEmpty()) stack.setTag(null);
         }
     }

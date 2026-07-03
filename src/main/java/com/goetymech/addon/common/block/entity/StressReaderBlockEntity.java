@@ -79,7 +79,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     @Override
     public float calculateStressApplied() {
-        return 0;
+        float spd = Math.abs(getSpeed());
+        return spd < 0.001f ? 0 : getConsumedRemotely() / spd;
     }
 
     public void setConsumedRemotely(BlockPos enginePos, float amount) {
@@ -100,6 +101,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
             LOGGER.debug("[TEST] SR{} REMOTE_AFTER | cap={} | stress={} | avail={}",
                     fmtPos(worldPosition), capacity, stress, getAvailableStress());
         }
@@ -113,6 +116,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
         }
     }
 
@@ -128,6 +133,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (removed) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
         }
     }
 

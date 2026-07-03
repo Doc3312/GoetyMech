@@ -80,6 +80,7 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
                     engine.setLinkedPos(
                             RemoteEngineBlockItem.getBoundPos(stack),
                             RemoteEngineBlockItem.getBoundDim(stack));
+                    RemoteEngineBlockItem.writeEnginePos(stack, pos);
                 }
             }
         }
