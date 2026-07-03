@@ -1096,21 +1096,80 @@ CreateRegistrateRegistrationCallback.provideRegistrate(registrate);
 
 `com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType`
 
-Identity-based 类型键，用于 `Map<BehaviourType<?>, BlockEntityBehaviour>` 查询。
+Identity-based 类型键，用作 `SmartBlockEntity.behaviours` (`Reference2ObjectArrayMap`) 的查询 key。
 
 ```java
 public class BehaviourType<T extends BlockEntityBehaviour> {
-    public BehaviourType();                // 无参
-    public BehaviourType(String name);     // 调试名称
+    public BehaviourType();
+    public BehaviourType(String name);
     public String getName();
-    // hashCode = super.hashCode() * 31 * 493286711（identity-based，不覆写 equals）
+    // hashCode = super.hashCode() * 31 * 493286711
 }
 ```
 
 **设计要点：**
-- 不覆写 `equals`，使用引用恒等。每个 `BehaviourType` 实例都是唯一的类型标识。
-- 用 `super.hashCode() * 31 * 493286711` 优化哈希表分布。
-- 声明为 `static final` 字段，作为 public 常量暴露。
+- **不覆写 equals** — 使用引用恒等。每个 `static final` 实例都是唯一的单例。
+- `hashCode()` 用 `super.hashCode() * 31 * 493286711` 优化 `Reference2ObjectArrayMap` 哈希分布。
+- `name` 可选（默认 `""`），仅用于调试（`getName()`）。
+
+**所有 `static final BehaviourType` 常量（共 26 个）：**
+
+| 常量名 | 所属类 | 用途 |
+|--------|--------|------|
+| `TYPE` | `AdvancementBehaviour` | 追踪方块放置者，用于成就奖励 |
+| `TYPE` | `AnimatedContainerBehaviour<M>` | 统计 GUI 打开人数（方块开启动画） |
+| `TYPE` | `DeferralBehaviour` | 调度延迟回调执行 |
+| `TYPE` | `EdgeInteractionBehaviour` | 边缘连接交互（如机械臂） |
+| `TYPE` | `FilteringBehaviour` | 通用物品/流体过滤；子类 `SidedFilteringBehaviour` 共享、`FactoryPanelBehaviour` 独立 |
+| `TYPE` | `ScrollValueBehaviour` | 可滚动的整数值交互；子类 `ScrollOptionBehaviour<E>` 共享 |
+| `TYPE`, `INPUT`, `OUTPUT` | `SmartFluidTankBehaviour` | 3 个：主槽、输入槽、输出槽 |
+| `TYPE`, `EXTRACT`, `INSERT` | `InvManipulationBehaviour` | 3 个：通用、抽取专用、插入专用 |
+| `OBSERVE` | `TankManipulationBehaviour` | 读取流体槽（不写入） |
+| `TYPE` | `VersionedInventoryTrackerBehaviour` | 等待库存版本变化（合并操作） |
+| `TYPE` | `BracketedBlockEntityBehaviour` | 支架连接（传动轴/管道等） |
+| `TYPE` | `DoorControlBehaviour` | 滑动门模式控制 |
+| `TYPE` | `BeltProcessingBehaviour` | 传送带/ depot 上物品处理 |
+| `TYPE` | `DirectBeltInputBehaviour` | 允许相邻方块向传输带直接输入（Basin/Saw/Depot） |
+| `TYPE` | `TransportedItemStackHandlerBehaviour` | 传输带上物品处理回调 |
+| `TYPE` | `FluidTransportBehaviour` | 管道流体网络传输与压力 |
+| `TYPE` | `FluidDrainingBehaviour` | 软管滑轮抽取逻辑 |
+| `TYPE` | `FluidFillingBehaviour` | 软管滑轮填充逻辑 |
+| `TYPE` | `LinkBehaviour` | 红石链接收发器 |
+| `TYPE` | `DepotBehaviour` | 单个物品持有（Depot/Ejector） |
+| `TYPE` | `LogisticallyLinkedBehaviour` | Stock ticker / Packager 网络链接 |
+| `TYPE` | `FactoryPanelSupportBehaviour` | Factory gauge → stock ticker 面板链接 |
+| `TOP_LEFT`, `TOP_RIGHT`, `BOTTOM_LEFT`, `BOTTOM_RIGHT` | `FactoryPanelBehaviour` | 4 个：Stock ticker 面板四角过滤槽 |
+| `TYPE` | `TrackTargetingBehaviour<T>` | 轨道信号/车站附着 |
+| `TYPE` | `AbstractComputerBehaviour` | CC:Tweaked 电脑集成；子类 `ComputerBehaviour` 共享 |
+
+**查询方式（共 71+ 处调用）：**
+
+```java
+// BE 内部查询（最常用）：
+getBehaviour(SomeBehaviour.TYPE);
+
+// 外部 BE 查询：
+BlockEntityBehaviour.get(level, pos, SomeBehaviour.TYPE);      // 静态方法
+be.getBehaviour(SomeBehaviour.TYPE);
+
+// Behaviours 注入：
+event.attach(behaviour);    // BlockEntityBehaviourEvent 中
+attachBehaviourLate(behaviour);  // 运行时注入
+```
+
+**典型调用方示例：**
+
+| 调用方 | 行为类型 | 用途 |
+|--------|----------|------|
+| `SmartBlockEntity.java:260` | `AdvancementBehaviour.TYPE` | 成就奖励 |
+| `BasinRecipe.java:142` | `SmartFluidTankBehaviour.INPUT/OUTPUT` | 配方读取流体 |
+| `InvManipulationBehaviour.java:101` | `FilteringBehaviour.TYPE` | 过滤检查 |
+| `Contraption.java:686` | `FilteringBehaviour.TYPE` | 装置内过滤 |
+| `BoilerData.java:348` | `AdvancementBehaviour.TYPE` | 锅炉成就 |
+| `BeltFunnelInteractionHandler.java:66` | `InvManipulationBehaviour.TYPE` | 漏斗与传送带交互 |
+| `ItemCountDisplaySource.java:23` | `InvManipulationBehaviour.TYPE` | 物品计数显示 |
+| `FluidAmountDisplaySource.java:24` | `TankManipulationBehaviour.OBSERVE` | 流体量显示 |
+| `AttachedComputerPacket.java:32` | `AbstractComputerBehaviour.TYPE` | CC 集成 |
 
 ---
 
@@ -1118,36 +1177,96 @@ public class BehaviourType<T extends BlockEntityBehaviour> {
 
 `com.simibubi.create.foundation.blockEntity.SmartBlockEntity`
 
-所有 Create BlockEntity 的基类。内部用 `Reference2ObjectArrayMap` 管理 `BehaviourType → BlockEntityBehaviour`。
+所有 Create BlockEntity 的基类。核心数据结构是 `Reference2ObjectArrayMap<BehaviourType<?>, BlockEntityBehaviour>` —— 一个 identity-based、数组后援的 map，针对小数量场景优化。
+
+**继承链：** `BlockEntity` → `SyncedBlockEntity` → `CachedRenderBBBlockEntity` → `SmartBlockEntity`
+
+**`CachedRenderBBBlockEntity` 作用：**
+
+| 方法 | 作用 |
+|------|------|
+| `getRenderBoundingBox()` | 懒加载缓存 AABB，首次调用后复用 |
+| `invalidateRenderBoundingBox()` | 使缓存失效（子类调用, 如 `StationBlockEntity` 进出站时） |
+| `createRenderBoundingBox()` | 可覆写，默认 `super.getRenderBoundingBox()` |
+
+---
 
 ```java
 public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
     implements PartialSafeNBT, IInteractionChecker, SpecialBlockEntityItemRequirement, VirtualBlockEntity {
 
-    // 构造时自动调用的钩子：
+    // 构造 → addBehaviours → beatours.put -> execute right away (no NBT available yet)
     public abstract void addBehaviours(List<BlockEntityBehaviour> behaviours);
-    public void addBehavioursDeferred(List<BlockEntityBehaviour> behaviours);  // 反序列化时延迟添加
+    // 第一次 NBT 读取时调用 → can access custom NBT
+    public void addBehavioursDeferred(List<BlockEntityBehaviour> behaviours);
 
-    // 生命周期：
-    public void initialize();                // 首次反序列化后触发 BlockEntityBehaviourEvent
-    public void tick();                      // 每 tick 调用 behaviours
-    public void lazyTick();                  // 按 lazyTickRate 调用
-    public void invalidate();                // 块卸载或销毁时
-    public void remove();                    // 块销毁或装置拾取时
-    public void destroy();                   // 块替换时
+    // === 生命周期 ===
+    public void initialize();       // 首次 tick() 时调用:
+                                    //   1. 首次反序列化 → post BlockEntityBehaviourEvent
+                                    //   2. forEachBehaviour(BlockEntityBehaviour::initialize)
+                                    //   3. lazyTick()
+    public void tick();             // 每 tick: initialize首次  → lazyTick 倒计时 → forEachBehaviour(tick)
+    public void lazyTick();         // 按 lazyTickRate 调用（默认 10 tick）
+    public void invalidate();       // chunk 卸载或销毁时 → forEachBehaviour(unload)
+    public void remove();           // 块摧毁或装置拾取时
+    public void destroy();          // 块替换时 → forEachBehaviour(destroy)
 
-    // Behaviour 管理：
+    // === Behaviour 管理 ===
     public <T extends BlockEntityBehaviour> T getBehaviour(BehaviourType<T> type);
-    public void attachBehaviourLate(BlockEntityBehaviour behaviour);  // 运行时注入
+    public void attachBehaviourLate(BlockEntityBehaviour behaviour);
     public void removeBehaviour(BehaviourType<?> type);
     public Collection<BlockEntityBehaviour> getAllBehaviours();
 
-    // 成就：
+    // === 成就 ===
     public void registerAwardables(List<BlockEntityBehaviour> behaviours, CreateAdvancement... advancements);
     public void award(CreateAdvancement advancement);
     public void awardIfNear(CreateAdvancement advancement, int range);
 }
 ```
+
+**Behaviour 注入时序：**
+
+```
+构造:
+  addBehaviours(list)       ← 子类注册 behaviours（此时无 NBT 数据）
+  list → behaviours map
+
+首次 tick():
+  initialize()
+    firstNbtRead == true → post BlockEntityBehaviourEvent ← addon 可注入/替换
+    forEachBehaviour(initialize)
+
+从 NBT 加载 read():
+  firstNbtRead == true:
+    addBehavioursDeferred(list)  ← 子类注册依赖 NBT 的 behaviours
+    list → behaviours map
+    post BlockEntityBehaviourEvent  ← addon 再次注入
+  behaviours.read(tag, clientPacket)
+```
+
+**所有直接继承 `SmartBlockEntity` 的类（约 77 个）：**
+
+| 类 | 文件 | 代表 behaviour |
+|----|------|---------------|
+| `KineticBlockEntity` | `.../kinetics/base/KineticBlockEntity.java` | 无（空 `addBehaviours`） |
+| `FluidTankBlockEntity` | `.../fluids/tank/FluidTankBlockEntity.java` | 无（ConnectivityHandler 管理） |
+| `BasinBlockEntity` | `.../processing/basin/BasinBlockEntity.java` | `DirectBeltInputBehaviour`, `FilteringBehaviour`, `SmartFluidTankBehaviour.INPUT/OUTPUT` |
+| `StationBlockEntity` | `.../trains/station/StationBlockEntity.java` | `TrackTargetingBehaviour`, `DoorControlBehaviour`, `DepotBehaviour` |
+| `SignalBlockEntity` | `.../trains/signal/SignalBlockEntity.java` | `TrackTargetingBehaviour`, `AbstractComputerBehaviour` |
+| `MechanicalPressBlockEntity` | `.../kinetics/press/MechanicalPressBlockEntity.java` | `PressingBehaviour`, 成就 |
+| `MechanicalMixerBlockEntity` | `.../kinetics/mixer/MechanicalMixerBlockEntity.java` | `MixingBehaviour`, 成就 |
+| `SmartObserverBlockEntity` | `.../redstone/smartObserver/SmartObserverBlockEntity.java` | `FilteringBehaviour`, `VersionedInventoryTrackerBehaviour`, `InvManipulationBehaviour`, `TankManipulationBehaviour` |
+| `PackagerBlockEntity` | `.../logistics/packager/PackagerBlockEntity.java` | `InvManipulationBehaviour`, `VersionedInventoryTrackerBehaviour`, 成就 |
+| `RedstoneLinkBlockEntity` | `.../redstone/link/RedstoneLinkBlockEntity.java` | `FactoryPanelSupportBehaviour`, `LinkBehaviour`（deferred） |
+| `MechanicalArmBlockEntity` | `.../kinetics/mechanicalArm/ArmBlockEntity.java` | `ScrollOptionBehaviour`, 成就 |
+| `PortableStorageInterfaceBlockEntity` | `.../contraptions/actors/psi/...` | 仅成就 |
+| `ToolboxBlockEntity` | `.../equipment/toolbox/ToolboxBlockEntity.java` | 仅 `AnimatedContainerBehaviour` |
+| `ChassisBlockEntity` | `.../contraptions/chassis/ChassisBlockEntity.java` | `ScrollValueBehaviour`（范围） |
+| `BrassTunnelBlockEntity` | `.../logistics/tunnel/BrassTunnelBlockEntity.java` | `ScrollOptionBehaviour` + 隧道扩散回调 |
+| `ItemVaultBlockEntity` | `.../logistics/vault/ItemVaultBlockEntity.java` | 空（ConnectivityHandler 管理） |
+| `BlazeBurnerBlockEntity` | `.../processing/burner/BlazeBurnerBlockEntity.java` | 空 |
+| `TrackBlockEntity` | `.../trains/track/TrackBlockEntity.java` | 空 |
+| 及其他约 60 个 | （Schematicannon, Depot, Funnel, Chute, SmartChute, 等） | |
 
 ---
 
@@ -1155,30 +1274,30 @@ public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
 
 `com.simibubi.create.content.kinetics.base.KineticBlockEntity`
 
-继承 `SmartBlockEntity`，所有动力方块（齿轮、传动轴、应力发生器/消费者）的 BE 基类。
+继承 `SmartBlockEntity`。所有动力方块的 BE 基类。管理转速、应力、网络传播。
 
 ```java
 public class KineticBlockEntity extends SmartBlockEntity
     implements IHaveGoggleInformation, IHaveHoveringInformation {
 
-    // === 动力学属性 ===
-    public @Nullable Long network;           // 所属 KineticNetwork ID
+    // === 动力学字段 ===
+    public @Nullable Long network;           // KineticNetwork ID
     public @Nullable BlockPos source;        // 旋转来源位置
     protected float speed;                   // 当前转速 (RPM)
     protected float capacity;                // 网络应力容量
-    protected float stress;                  // 网络当前应力负荷
+    protected float stress;                  // 网络应力负荷
     protected boolean overStressed;          // 是否过载
 
-    // === 转速与过载 ===
-    public float getSpeed();                 // 过载时返回 0
-    public float getTheoreticalSpeed();      // 实际转速（不过滤过载）
+    // === 转速 ===
+    public float getSpeed();                 // overStressed → 0
+    public float getTheoreticalSpeed();      // 原始 speed
     public void setSpeed(float speed);
-    public float getGeneratedSpeed();        // 自然产生转速（默认 0；发生器覆写）
+    public float getGeneratedSpeed();        // 默认 0，发生器覆写
     public boolean isSource();               // getGeneratedSpeed() != 0
     public boolean isOverStressed();
-    public boolean isSpeedRequirementFulfilled();  // 是否达到 IRotate 最低转速要求
+    public boolean isSpeedRequirementFulfilled();
 
-    // === 网络管理 ===
+    // === 网络 ===
     public boolean hasNetwork();
     public KineticNetwork getOrCreateNetwork();
     public void setNetwork(@Nullable Long network);
@@ -1186,12 +1305,12 @@ public class KineticBlockEntity extends SmartBlockEntity
     public void detachKinetics();            // → RotationPropagator.handleRemoved()
     public boolean needsSpeedUpdate();
 
-    // === 应力计算覆写点 ===
-    public float calculateStressApplied();       // 消耗多少 stress
-    public float calculateAddedStressCapacity(); // 提供多少 stress capacity
+    // === 应力覆写点 ===
+    public float calculateStressApplied();         // 消耗 stress (查 BlockStressValues.IMPACTS)
+    public float calculateAddedStressCapacity();   // 提供 stress capacity (查 BlockStressValues.CAPACITIES)
     public void onSpeedChanged(float previousSpeed);
 
-    // === 网络数据更新 ===
+    // === 网络更新 ===
     public void updateFromNetwork(float maxStress, float currentStress, int networkSize);
 
     // === 源管理 ===
@@ -1199,37 +1318,137 @@ public class KineticBlockEntity extends SmartBlockEntity
     public void setSource(BlockPos source);
     public void removeSource();
 
-    // === 自定义传播（边界情况！） ===
+    // === 自定义传播（扩展点） ===
     public boolean isCustomConnection(KineticBlockEntity other, BlockState state, BlockState otherState);
-        // 判断此组件是否与其他组件有自定义转速传播关系。
-        // 默认返回 false。返回 true 时 RotationPropagator 会调用 propagateRotationTo() 查询比例。
-        // 已由 shaft/cogwheel 连接逻辑处理的不需覆写。
-        // 双向对称关系，不必两端都覆写。
-
-    public float propagateRotationTo(
-        KineticBlockEntity target, BlockState stateFrom, BlockState stateTo,
+    public float propagateRotationTo(KineticBlockEntity target, BlockState stateFrom, BlockState stateTo,
         BlockPos diff, boolean connectedViaAxes, boolean connectedViaCogs);
-        // 返回转速传播比例（0 = 由标准规则处理，other = 乘以该系数传播）。
-
     public List<BlockPos> addPropagationLocations(IRotate block, BlockState state, List<BlockPos> neighbours);
-        // 添加额外传播位置（默认对角线 cogwheel 传播）。
 
     // === 事件 ===
-    public void warnOfMovement();            // 标记 wasMoved（下次 deserialize 跳过动力信息）
+    public void warnOfMovement();
     public void clearKineticInformation();
 
-    // === 静态工具 ===
-    public static float convertToDirection(float axisSpeed, Direction d);  // 方向取反
-    public static float convertToLinear(float speed);                      // speed / 512f
-    public static float convertToAngular(float speed);                     // speed * 360 / 60 / 20
+    // === 工具 ===
+    public static float convertToDirection(float axisSpeed, Direction d);
+    public static float convertToLinear(float speed);       // speed / 512f
+    public static float convertToAngular(float speed);      // speed * 360 / 60 / 20
     public static void switchToBlockState(Level world, BlockPos pos, BlockState state);
 }
 ```
 
-**关键设计：**
-- `isCustomConnection()` — 默认 `false`。覆写并返回 `true` 后，`RotationPropagator` 会在相邻组件间调用 `propagateRotationTo()` 决定传播比例。
-- `GantryShaftBlockEntity` 是已知的覆写例子。
-- `propagateRotationTo()` 返回 `0` 表示"不由特殊规则处理，交由标准轴/齿轮逻辑"。
+#### `isCustomConnection()` — 详细
+
+默认返回 `false`。覆写后，`RotationPropagator.isConnected()` 将其作为连接条件之一。
+
+**唯一覆写：`GantryShaftBlockEntity`** (`.../kinetics/gantry/GantryShaftBlockEntity.java:73`)
+
+```java
+public boolean isCustomConnection(KineticBlockEntity other, BlockState state, BlockState otherState) {
+    if (!AllBlocks.GANTRY_CARRIAGE.has(otherState))
+        return false;
+    final BlockPos diff = other.getBlockPos().subtract(worldPosition);
+    Direction direction = Direction.getNearest(diff.getX(), diff.getY(), diff.getZ());
+    return otherState.getValue(GantryCarriageBlock.FACING) == direction;
+}
+```
+
+当相邻方块为 GANTRY_CARRIAGE 且其 FACING 指向本轴时返回 `true`。
+
+**调用处：** `RotationPropagator.isConnected()` (`.../kinetics/RotationPropagator.java:407`)
+
+```java
+public static boolean isConnected(KineticBlockEntity from, KineticBlockEntity to) {
+    return isLargeCogToSpeedController(...) || getRotationSpeedModifier(from, to) != 0
+        || from.isCustomConnection(to, stateFrom, stateTo);
+}
+```
+
+#### `propagateRotationTo()` — 详细
+
+返回非 0 值表示自定义传播比例；返回 0 回退标准轴/齿轮逻辑。
+
+**调用处唯一：** `RotationPropagator.getRotationSpeedModifier()` (`.../kinetics/RotationPropagator.java:71`)
+
+```java
+float custom = from.propagateRotationTo(to, stateFrom, stateTo, diff, connectedByAxis, connectedByGears);
+if (custom != 0) return custom;
+```
+
+**所有覆写：**
+
+| 类 | 文件:行 | 传播系数 | 条件 |
+|----|---------|----------|------|
+| `GantryShaftBlockEntity` | `.../gantry/GantryShaftBlockEntity.java:53` | `+1 / -1` (pinion modifier) | 轴通电 + 相邻 GantryCarriage FACING 对准 |
+| `GantryCarriageBlockEntity` | `.../gantry/GantryCarriageBlockEntity.java:144` | `+1 / -1` (pinion modifier) | 此 carriage FACING 反向指向通电 GantryShaft |
+| `BeltBlockEntity` | `.../belt/BeltBlockEntity.java:546` | `1` | 同一 BeltController 的两个 Belt |
+| `ChainConveyorBlockEntity` | `.../chainConveyor/ChainConveyorBlockEntity.java:656` | `1` | 目标在此 chain conveyor 的 connections 列表中 |
+
+#### `addPropagationLocations()` — 详细
+
+默认传入 6 方向邻位列表，子类可追加额外位置。
+
+**调用处唯一：** `RotationPropagator.getPotentialNeighbourLocations()` (`.../kinetics/RotationPropagator.java:439`)
+
+```java
+return be.addPropagationLocations(block, blockState, neighbours);
+```
+
+**所有覆写：**
+
+| 类 | 文件:行 | 追加位置 |
+|----|---------|----------|
+| `KineticBlockEntity` | `.../base/KineticBlockEntity.java:554` | 小齿轮：曼哈顿距离 2 的对角线（`(1,1,0)` 等） |
+| `SimpleKineticBlockEntity` | `.../simpleRelays/SimpleKineticBlockEntity.java:25` | 大齿轮：所有 `distSqr==2` 位置（12 个方向） |
+| `ChainConveyorBlockEntity` | `.../chainConveyor/ChainConveyorBlockEntity.java:650` | 自定义链条连接列表 + 基类对角线 |
+
+#### 所有 `KineticBlockEntity` 子类（约 40 个）
+
+直接继承：
+
+| 类 | 文件 |
+|----|------|
+| `GeneratingKineticBlockEntity` (abstract) | `.../kinetics/base/GeneratingKineticBlockEntity.java` |
+| `LinearActuatorBlockEntity` (abstract) | `.../contraptions/piston/LinearActuatorBlockEntity.java` |
+| `GantryCarriageBlockEntity` | `.../contraptions/gantry/GantryCarriageBlockEntity.java` |
+| `ClockworkBearingBlockEntity` | `.../contraptions/bearing/ClockworkBearingBlockEntity.java` |
+| `MechanicalCrafterBlockEntity` | `.../kinetics/crafter/MechanicalCrafterBlockEntity.java` |
+| `TurntableBlockEntity` | `.../kinetics/turntable/TurntableBlockEntity.java` |
+| `CuckooClockBlockEntity` | `.../kinetics/clock/CuckooClockBlockEntity.java` |
+| `FlapDisplayBlockEntity` | `.../trains/display/FlapDisplayBlockEntity.java` |
+| `ChainGearshiftBlockEntity` | `.../kinetics/chainDrive/ChainGearshiftBlockEntity.java` |
+| `ChainConveyorBlockEntity` | `.../kinetics/chainConveyor/ChainConveyorBlockEntity.java` |
+| `SpeedControllerBlockEntity` | `.../kinetics/speedController/SpeedControllerBlockEntity.java` |
+| `SimpleKineticBlockEntity` | `.../kinetics/simpleRelays/SimpleKineticBlockEntity.java` |
+| `BeltBlockEntity` | `.../kinetics/belt/BeltBlockEntity.java` |
+| `DirectionalShaftHalvesBlockEntity` | `.../kinetics/base/DirectionalShaftHalvesBlockEntity.java` |
+| `GaugeBlockEntity` (abstract) | `.../kinetics/gauge/GaugeBlockEntity.java` |
+| `BlockBreakingKineticBlockEntity` (abstract) | `.../kinetics/base/BlockBreakingKineticBlockEntity.java` |
+| `GantryShaftBlockEntity` | `.../kinetics/gantry/GantryShaftBlockEntity.java` |
+| `EncasedFanBlockEntity` | `.../kinetics/fan/EncasedFanBlockEntity.java` |
+| `FlywheelBlockEntity` | `.../kinetics/flywheel/FlywheelBlockEntity.java` |
+| `MillstoneBlockEntity` | `.../kinetics/millstone/MillstoneBlockEntity.java` |
+| `FluidValveBlockEntity` | `.../fluids/pipes/valve/FluidValveBlockEntity.java` |
+| `HosePulleyBlockEntity` | `.../fluids/hosePulley/HosePulleyBlockEntity.java` |
+| `PumpBlockEntity` | `.../fluids/pump/PumpBlockEntity.java` |
+| `DeployerBlockEntity` | `.../kinetics/deployer/DeployerBlockEntity.java` |
+| `ArmBlockEntity` | `.../kinetics/mechanicalArm/ArmBlockEntity.java` |
+| `CrushingWheelBlockEntity` | `.../kinetics/crusher/CrushingWheelBlockEntity.java` |
+| `BacktankBlockEntity` | `.../equipment/armor/BacktankBlockEntity.java` |
+| `BasinOperatingBlockEntity` (abstract) | `.../processing/basin/BasinOperatingBlockEntity.java` |
+| `EjectorBlockEntity` | `.../logistics/depot/EjectorBlockEntity.java` |
+
+间接继承层次：
+
+```
+KineticBlockEntity
+  ├─ GeneratingKineticBlockEntity         → WaterWheelBE, PoweredShaftBE, MechanicalBearingBE, CreativeMotorBE, HandCrankBE
+  ├─ LinearActuatorBlockEntity            → MechanicalPistonBE, PulleyBE
+  ├─ DirectionalShaftHalvesBlockEntity    → GearboxBE, SplitShaftBE → SequencedGearshiftBE, GearshiftBE, ClutchBE
+  ├─ GaugeBlockEntity                     → StressGaugeBE, SpeedGaugeBE
+  ├─ BlockBreakingKineticBlockEntity      → SawBE, DrillBE
+  ├─ SimpleKineticBlockEntity             → BracketedKineticBE
+  └─ BasinOperatingBlockEntity            → MechanicalPressBE, MechanicalMixerBE
+```
 
 ---
 
@@ -1237,18 +1456,39 @@ public class KineticBlockEntity extends SmartBlockEntity
 
 `com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity`
 
-继承 `KineticBlockEntity`。所有产生动力的方块 BE 基类（风车、水轮、蒸汽引擎等）。
+继承 `KineticBlockEntity`。所有主动产生动力的 BE 基类（水轮、引擎、手摇曲柄等）。
+
+**所有子类（5 个）：**
+
+| 类 | 文件 | 备注 |
+|----|------|------|
+| `WaterWheelBlockEntity` | `.../kinetics/waterwheel/WaterWheelBlockEntity.java` | 水轮/大水轮，基于水流计算转速 |
+| `PoweredShaftBlockEntity` | `.../kinetics/steamEngine/PoweredShaftBlockEntity.java` | 蒸汽引擎动力输出轴 |
+| `MechanicalBearingBlockEntity` | `.../contraptions/bearing/MechanicalBearingBlockEntity.java` | 机械轴承旋转结构 |
+| `CreativeMotorBlockEntity` | `.../kinetics/motor/CreativeMotorBlockEntity.java` | 创造马达，固定转速 |
+| `HandCrankBlockEntity` | `.../kinetics/crank/HandCrankBlockEntity.java` | 手摇曲柄，玩家操作产生短时转速 |
+
+**核心方法：**
 
 ```java
-public abstract class GeneratingKineticBlockEntity extends KineticBlockEntity {
-    public boolean reActivateSource;         // 重新激活源标记
-
-    public void updateGeneratedRotation();   // 核心：计算转速并同步到网络
-    public Long createNetworkId();           // → worldPosition.asLong()
+public void updateGeneratedRotation() {
+    float speed = getGeneratedSpeed();         // 子类提供
+    float prevSpeed = this.speed;
+    // ... 速度变化检查，通知网络
+    applyNewSpeed(prevSpeed, speed);
+    // 同步网络应力
+    notifyStressCapacityChange(calculateAddedStressCapacity());
+    getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
+    onSpeedChanged(prevSpeed);
+    sendData();
 }
 ```
 
-**流程：** `updateGeneratedRotation()` → `getGeneratedSpeed()` → 调用 `applyNewSpeed()` → 决定是创建新网络还是加入已有网络。
+`applyNewSpeed()` 决定行为：
+- `speed=0` → `detachKinetics()` + `setNetwork(null)`
+- `prevSpeed=0` → 创建新网络 + `attachKinetics()`
+- 有 source 且被超越 → `detachKinetics()` + 自建网络成为新 source
+- 默认 → 更新 speed
 
 ---
 
@@ -1256,19 +1496,67 @@ public abstract class GeneratingKineticBlockEntity extends KineticBlockEntity {
 
 `com.simibubi.create.content.kinetics.base.KineticBlock`
 
-所有动力方块的 Block 基类。实现 `IRotate`。
+所有动力方块的 Block 基类。唯一直接 `implements IRotate` 的类。
 
 ```java
 public abstract class KineticBlock extends Block implements IRotate {
     protected boolean areStatesKineticallyEquivalent(BlockState old, BlockState newState);
-        // 仅当 block 不变且旋转轴不变时返回 true
-
-    public float getParticleTargetRadius();   // 默认 0.65
-    public float getParticleInitialRadius();  // 默认 0.75
+    public float getParticleTargetRadius();    // 默认 0.65
+    public float getParticleInitialRadius();   // 默认 0.75
 }
 ```
 
-`onPlace()` 检查旧方块与新方块是否 kinetically equivalent，若是则设置 `preventSpeedUpdate = 2` 避免不必要重算。
+**关键行为：**
+- `onPlace()` 检查新旧状态 `areStatesKineticallyEquivalent()` → 是则设置 `preventSpeedUpdate = 2`，避免不必要的网络重算。
+- `updateIndirectNeighbourShapes()` 触发 `clearKineticInformation()` + 标记 `updateSpeed = true`。
+- `setPlacedBy()` → 成就追踪 + `queueRotationIndicators()`。
+
+**`areStatesKineticallyEquivalent()` 判断：** `oldState.getBlock() == newState.getBlock() && getRotationAxis(newState) == getRotationAxis(oldState)`。
+
+**所有 `extends KineticBlock` 的层级（约 34+ 类）：**
+
+```
+KineticBlock (abstract)
+  ├─ RotatedPillarKineticBlock (abstract)         ← AXIS property
+  │    ├─ AbstractShaftBlock (abstract)
+  │    │    ├─ AbstractSimpleShaftBlock → ShaftBlock, CogWheelBlock
+  │    │    └─ PoweredShaftBlock
+  │    ├─ AbstractEncasedShaftBlock → EncasedShaftBlock, GearshiftBlock
+  │    ├─ ChainDriveBlock
+  │    ├─ CrushingWheelBlock
+  │    ├─ FlywheelBlock
+  │    ├─ GearboxBlock
+  │    ├─ LargeWaterWheelBlock
+  │    └─ EncasedCogwheelBlock
+  │
+  ├─ HorizontalKineticBlock (abstract)            ← HORIZONTAL_FACING property
+  │    ├─ BeltBlock, CuckooClockBlock, BacktankBlock
+  │    ├─ MechanicalPressBlock, MechanicalCrafterBlock
+  │    ├─ FlapDisplayBlock, HosePulleyBlock
+  │    ├─ EjectorBlock, ElevatorPulleyBlock
+  │
+  ├─ HorizontalAxisKineticBlock (abstract)         ← HORIZONTAL_AXIS property
+  │    ├─ SequencedGearshiftBlock, SpeedControllerBlock
+  │    ├─ PulleyBlock, GirderEncasedShaftBlock
+  │
+  ├─ DirectionalKineticBlock (abstract)            ← FACING property
+  │    ├─ BearingBlock (abstract)
+  │    │    ├─ WindmillBearingBlock, MechanicalBearingBlock
+  │    │    └─ ClockworkBearingBlock
+  │    ├─ DirectionalAxisKineticBlock (abstract)   ← + AXIS_ALONG_FIRST_COORDINATE
+  │    │    ├─ SawBlock, DeployerBlock
+  │    │    ├─ GaugeBlock (abstract)
+  │    │    ├─ FluidValveBlock, GantryCarriageBlock
+  │    │    ├─ MechanicalPistonBlock
+  │    ├─ DrillBlock, EncasedFanBlock
+  │    ├─ HandCrankBlock, CreativeMotorBlock
+  │    ├─ PumpBlock, WaterWheelBlock
+  │    ├─ GantryShaftBlock
+  │
+  ├─ TurntableBlock, MillstoneBlock
+  ├─ MechanicalMixerBlock
+  ├─ ArmBlock, ChainConveyorBlock
+```
 
 ---
 
@@ -1276,15 +1564,20 @@ public abstract class KineticBlock extends Block implements IRotate {
 
 `com.simibubi.create.content.kinetics.base.IRotate`
 
-所有旋转方块需要实现的接口（继承 `IWrenchable`）。
+所有旋转方块必须实现的接口。继承 `IWrenchable`（扳手交互）。
 
 ```java
 public interface IRotate extends IWrenchable {
+    // 此面是否有轴（用于连接传播）：
     boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face);
+    // 旋转轴：
     Axis getRotationAxis(BlockState state);
-    default SpeedLevel getMinimumRequiredSpeedLevel();  // 默认 NONE
-    default boolean hideStressImpact();                 // 默认 false
-    default boolean showCapacityWithAnnotation();       // 默认 false
+    // 最低转速要求（护目镜提示）：
+    default SpeedLevel getMinimumRequiredSpeedLevel() { return SpeedLevel.NONE; }
+    // 是否在护目镜界面隐藏应力消耗显示：
+    default boolean hideStressImpact() { return false; }
+    // 是否显示 "generate" 前缀（生成器标注）：
+    default boolean showCapacityWithAnnotation() { return false; }
 }
 ```
 
@@ -1292,19 +1585,45 @@ public interface IRotate extends IWrenchable {
 
 ```java
 enum SpeedLevel {
-    NONE(0rpm), SLOW(1rpm), MEDIUM(20rpm), FAST(30rpm);
-    float getSpeedValue();
-    static SpeedLevel of(float speed);
+    NONE (0 RPM,  Dark Gray),
+    SLOW (1 RPM,  Green),
+    MEDIUM(20 RPM, Aqua),
+    FAST (30 RPM, Light Purple);
+    static SpeedLevel of(float speed);         // 根据速度返回等级
+    float getSpeedValue();                     // 速度阈值
     static LangBuilder getFormattedSpeedText(float speed, boolean overstressed);
 }
 
 enum StressImpact {
-    LOW, MEDIUM, HIGH, OVERSTRESSED;
+    LOW (<50%), MEDIUM (50-75%), HIGH (75-100%), OVERSTRESSED (>100%);
     static StressImpact of(double stressPercent);
-    static boolean isEnabled();
+    static boolean isEnabled();                // disableStress 配置
     static LangBuilder getFormattedStressText(double stressPercent);
 }
 ```
+
+**`hasShaftTowards` 实现模式（30+ 类）：**
+
+| 模式 | 代表类 | 逻辑 |
+|------|--------|------|
+| `return face.getAxis() == state.getValue(AXIS)` | `AbstractShaftBlock`, `AbstractEncasedShaftBlock`, `ChainDriveBlock`, `CrushingWheelBlock`, `FlywheelBlock`, `GearboxBlock`, `LargeWaterWheelBlock` | 基于 `AXIS` property |
+| `return face.getAxis() == state.getValue(HORIZONTAL_AXIS)` | `HorizontalAxisKineticBlock`, `SequencedGearshiftBlock`, `SpeedControllerBlock`, `PulleyBlock` | 基于 `HORIZONTAL_AXIS` property |
+| `return face.getAxis() == getRotationAxis(state)` | `DirectionalAxisKineticBlock`, `SawBlock`, `DeployerBlock`, `GaugeBlock`, `FluidValveBlock`, `GantryCarriageBlock`, `MechanicalPistonBlock`, `DrillBlock`, `EncasedFanBlock`, `HandCrankBlock`, `CreativeMotorBlock`, `PumpBlock`, `WaterWheelBlock`, `GantryShaftBlock`, `BearingBlock` | 转为 axis |
+| `return face.getAxis() == state.getValue(HORIZONTAL_FACING).getClockWise().getAxis()` | `BeltBlock`, `EjectorBlock` | 水平 facing 的垂直轴 |
+| `return true` for specific face | `TurntableBlock` (UP), `MillstoneBlock` (DOWN), `MechanicalMixerBlock` (DOWN), `DrillBlock` (facing opposite) | 固定面 |
+| `return false` | `KineticBlock` 基类默认 | 无轴连接 |
+
+**`getMinimumRequiredSpeedLevel` 覆写：**
+
+| 类 | 返回 | 含义 |
+|----|------|------|
+| 默认 | `NONE` | 无要求 |
+| `MechanicalMixerBlock` | `MEDIUM` (20 RPM) | 搅拌器需中速 |
+| `FlapDisplayBlock` | `FAST` (30 RPM) | 翻牌显示需高速 |
+
+**`hideStressImpact` 覆写：** `WaterWheelBlock`, `CreativeMotorBlock` — 返回 `true`（不显示应力消耗，因为是纯发生器）
+
+**`showCapacityWithAnnotation` 覆写：** `BearingBlock` — 返回 `true`（显示 "generate" 前缀标注）
 
 ---
 
@@ -1314,13 +1633,17 @@ enum StressImpact {
 
 ```java
 public class ProcessingOutput {
-    public static final ProcessingOutput EMPTY;
+    public static final ProcessingOutput EMPTY;         // ItemStack.EMPTY, chance=1
 
-    public ProcessingOutput(ItemStack stack, float chance);   // chance 范围 0~1
+    public ProcessingOutput(ItemStack stack, float chance);
+    // Datagen 兼容：
+    public ProcessingOutput(Pair<ResourceLocation, Integer> item, float chance);
+
     public ItemStack getStack();
-    public float getChance();
-    public ItemStack rollOutput();   // 根据 chance 独立 roll 每 item
+    public float getChance();                           // 0~1
+    public ItemStack rollOutput();                      // 按 chance 独立 roll
 
+    // 序列化：
     public JsonElement serialize();
     public static ProcessingOutput deserialize(JsonElement je);
     public void write(FriendlyByteBuf buf);
@@ -1328,7 +1651,16 @@ public class ProcessingOutput {
 }
 ```
 
-**rollOutput 逻辑：** 每 count 个物品独立按 chance 判定。例如 `stack.getCount()=3, chance=0.5` 时，每个物品 50% 几率产出，最终可能是 0~3 个。
+**`rollOutput()` 算法：**
+
+```java
+for (int roll = 0; roll < stack.getCount(); roll++)
+    if (r.nextFloat() > chance) outputAmount--;
+```
+
+每个物品独立判断。例：`stack=钻石x3, chance=0.5` → 最终产出可能是 `0/1/2/3` 个钻石，期望值 `1.5`。
+
+**使用场景：** 所有 `ProcessingRecipe` 子类的 `getRollableResults()` 返回 `List<ProcessingOutput>`，在配方完成时调用 `rollResults()` 遍历并 roll。
 
 ---
 
@@ -1336,31 +1668,127 @@ public class ProcessingOutput {
 
 `com.simibubi.create.content.fluids.tank.FluidTankBlockEntity`
 
-继承 `SmartBlockEntity`，实现 `IMultiBlockEntityContainer.Fluid`。展示如何使用 `ConnectivityHandler`。
+继承 `SmartBlockEntity`，实现 `IMultiBlockEntityContainer.Fluid`。展示如何使用 `ConnectivityHandler` 管理多块结构。
+
+**`IMultiBlockEntityContainer` 接口层次：**
+
+```java
+public interface IMultiBlockEntityContainer {
+    BlockPos getController();  BlockEntity getControllerBE();
+    boolean isController();    void setController(BlockPos pos);
+    void removeController(boolean keepContents);
+    int getWidth();   void setWidth(int width);
+    int getHeight();  void setHeight(int height);
+    int getMaxWidth();
+    int getMaxLength(Direction.Axis axis, int width);
+    Direction.Axis getMainConnectionAxis();
+    Object getExtraData();  void setExtraData(Object data);
+    void preventConnectivityUpdate();  void notifyMultiUpdated();
+
+    interface Inventory extends IMultiBlockEntityContainer {
+        default boolean hasInventory() { return false; }
+    }
+    interface Fluid extends IMultiBlockEntityContainer {
+        default boolean hasTank() { return false; }
+        IFluidTank getTank(int index);
+        void setTankSize(int index, int blocks);
+        FluidStack getFluid(int index);
+        int getTankSize(int index);
+    }
+}
+```
+
+**仅有的 2 个实现：**
+
+| 类 | 接口 | 轴 | 存储 | 最大尺寸 |
+|----|------|-----|------|----------|
+| `FluidTankBlockEntity` | `.Fluid` | Y (垂直) | `SmartFluidTank` | 3×3×任意 |
+| `ItemVaultBlockEntity` | `.Inventory` | X/Z (水平) | `ItemStackHandler` | 3×3×配置 |
+
+**`FluidTankBlockEntity` 核心：**
 
 ```java
 public class FluidTankBlockEntity extends SmartBlockEntity
     implements IHaveGoggleInformation, IMultiBlockEntityContainer.Fluid {
 
-    protected FluidTank tankInventory;     // → SmartFluidTank
-    protected BlockPos controller;         // 多块控制器位置
-    protected int width;                   // 多块宽度/深度（最大 MAX_SIZE=3）
-    protected int height;                  // 多块高度
-    public BoilerData boiler;              // 锅炉数据（蒸汽引擎关联）
+    protected FluidTank tankInventory;          // 实际存储
+    protected BlockPos controller;              // 控制器位置
+    protected int width;                        // 宽度/深度（max 3）
+    protected int height;                       // 高度
+    public BoilerData boiler;                   // 锅炉数据
 
-    // IMultiBlockEntityContainer.Fluid:
-    boolean hasTank();
-    IFluidTank getTank(int index);
-    void setTankSize(int width, int height);
-    FluidStack getFluid(int index);
-    int getTankSize(int index);
+    // 自动连接：
+    public void updateConnectivity() {
+        ConnectivityHandler.formMulti(this);
+    }
 }
-
-// 自动形成多块：
-ConnectivityHandler.formMulti(be);
 ```
 
-**锅炉联动：** `FluidTankBlockEntity` 内部 `BoilerData` 跟踪加热、水量、蒸汽输出，与蒸汽引擎联动。每个控制器罐体负责 `BoilerData.findControllers()` 查找锅炉的热源方块（见 `BoilerHeater` API）。
+#### `ConnectivityHandler` 多块验证流程
+
+`formMulti(be)` → `tryToFormNewMultiOfWidth(be, axis, origin, width)`:
+
+1. **扫描候选体积：** 沿连接轴逐层遍历
+2. **类型匹配：** 每个位置必须存在匹配的 `BlockEntityType`
+3. **宽度判断：** 现有控制器宽度 ≤ 候选宽度才可合并
+4. **满容判断：** 同宽度满高度控制器不可再合并
+5. **轴一致性：** 所有部件连接轴必须相同
+6. **边界检查：** 垂直（Y 轴）与水平（X/Z 轴）边界规则不同
+7. **流体兼容：** 不同流体类型不可合并
+8. **实际形成：** 设置控制器、合并流体、`splitMultiAndInvalidate` 使各部件失效
+
+**`splitMultiAndInvalidate` 分割流程：**
+1. 1×1 提前返回
+2. 流体分布到分割后各部件
+3. `partAt.removeController(true)` 移除所有连接
+4. capability 组合失效
+5. 可选 `tryReconnect` 尝试形成更小子组
+
+#### 锅炉联动
+
+`FluidTankBlockEntity.boiler` 是 `BoilerData` 实例，管理：
+
+| 字段/方法 | 作用 |
+|-----------|------|
+| `attachedEngines` | 连接蒸汽引擎数量 |
+| `attachedWhistles` | 笛子数量 |
+| `activeHeat` | 主动热源总值（`BoilerHeater.findHeat`） |
+| `passiveHeat` | 是否有被动热源 |
+| `waterSupply` | 水量供应速率 |
+| `tick(FluidTankBlockEntity controller)` | 每 tick 测量水量、音频/粒子 |
+| `updateTemperature(FluidTankBlockEntity controller)` | 扫描控制器下方方块的热量 |
+| `evaluate(FluidTankBlockEntity controller)` | 遍历多块每个面，检测引擎/笛子数量 |
+| `getEngineEfficiency(int boilerSize)` | 计算引擎效率（受热量/水/尺寸限制） |
+
+**蒸汽引擎连接流程：**
+
+```
+SteamEngineBlock.onPlace() / onRemove()
+  → FluidTankBlock.updateBoilerState()
+    → FluidTankBlockEntity controller.updateBoilerState()
+      → boiler.evaluate(controller)      // 扫描引擎/笛子
+      → boiler.updateTemperature(controller)  // 扫描热量
+
+SteamEngineBlockEntity.tick()
+  → tank = getTank()                     // WeakReference<FluidTankBlockEntity>
+  → tank.boiler.getEngineEfficiency(tank.getTotalTankSize())
+  → 效率 0~1，影响动力输出
+```
+
+**引用 `FluidTankBlockEntity` 的文件：**
+
+| 文件 | 引用原因 |
+|------|----------|
+| `SteamEngineBlockEntity.java` | `WeakReference<FluidTankBlockEntity>` 作为引擎附着对象 |
+| `SteamEngineBlock.java` | `canAttach` 检查是否为 `FluidTankBlock` |
+| `WhistleBlockEntity.java` | `WeakReference<FluidTankBlockEntity>` 获取锅炉数据 |
+| `BoilerDisplaySource.java` | 展板显示锅炉状态 |
+| `FluidTankItem.java` | 放置时检查容量、调用 `ConnectivityHandler.partAt` |
+| `FluidTankCTBehaviour.java` | 连接纹理（`ConnectivityHandler.isConnected`） |
+| `FluidTankModel.java` | 模型面剔除（`ConnectivityHandler.isConnected`） |
+| `FluidTankMovementBehavior.java` | 装置移动时流体罐行为 |
+| `FluidTankMountedStorage.java` | 挂载存储实现 |
+| `CreativeFluidTankBlockEntity.java` | 继承 `FluidTankBlockEntity` |
 
 ---
 
