@@ -55,3 +55,9 @@
 - `tryAutoCast` 用 `PhantomWandManager.set/clear` 管理 wand 注入，try-finally 保护清除
 - 通道期间 phantom wand 持续存在，`enchantedFocus()` 在通道 tick 中正常返回
 - 通道结束后 `ChannelTask.stop()` 清除 phantom wand
+
+### 2026-07-04 — tick() 崩溃修复 + 清除实体打补丁代码 + 日志清理
+- `PhantomWandManager.tick()` 修复：`removeIf` 内 `entry.setValue()` 对 `SimpleImmutableEntry` 抛 `UnsupportedOperationException`，改为 snapshot 迭代 + `PENDING_CLEAR.put()`
+- 移除 `CastSpellTrapMixin` 和 `tryAutoCast` 中的调试日志
+- 移除 `FleshCasketEvents` 中旧的实体打补丁代码（`CastSpellTrap.setActivated(true)` + `broadcastEntityEvent`）及其 import
+- 日志确认 Mixin 在崩溃前正常工作了 4 tick，证明 Mixin 方案有效
