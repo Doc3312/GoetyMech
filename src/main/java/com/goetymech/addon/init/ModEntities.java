@@ -5,6 +5,7 @@ import com.goetymech.addon.common.entity.CrazedIllagerEntity;
 import com.goetymech.addon.common.entity.CrazedIllagerServant;
 import com.goetymech.addon.common.entity.CrushingWheelEntity;
 import com.goetymech.addon.common.entity.SculkSpikeEntity;
+import com.goetymech.addon.common.entity.StructureHighlightMarker;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -52,4 +53,13 @@ public class ModEntities {
                             .sized(0.6F, 1.95F)
                             .clientTrackingRange(10)
                             .build("crazed_illager_servant"));
+
+    /** 结构高亮标记 — 客户端渲染结构线框的容器实体 */
+    public static final RegistryObject<EntityType<StructureHighlightMarker>> STRUCTURE_HIGHLIGHT_MARKER =
+            ENTITIES.register("structure_highlight_marker",
+                    () -> EntityType.Builder.<StructureHighlightMarker>of(StructureHighlightMarker::new, MobCategory.MISC)
+                            .sized(0.01F, 0.01F)
+                            .clientTrackingRange(128)
+                            .updateInterval(10)
+                            .build("structure_highlight_marker"));
 }

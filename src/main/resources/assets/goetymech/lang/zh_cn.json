@@ -118,5 +118,10 @@
   "fluid.goetymech.soul_liquid": "灵魂液",
   "item.goetymech.soul_liquid_bucket": "灵魂液桶",
   "block.goetymech.soul_liquid": "灵魂液",
-  "goetymech.entry.twisted_embryo": "扭曲胚胎"
+  "goetymech.entry.twisted_embryo": "扭曲胚胎",
+  "item.goetymech.gateway_focus": "定点聚晶",
+  "item.goetymech.gateway_focus_advanced": "神行聚晶",
+  "info.goetymech.gateway.no_eye": "§c请将结构之眼放入副手",
+  "info.goetymech.gateway.no_structure": "§c搜索范围内未发现结构",
+  "info.goetymech.gateway.danger_area": "§e目标区域危险，再次施法将强制传送"
 }

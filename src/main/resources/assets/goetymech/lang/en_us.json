@@ -118,5 +118,10 @@
   "fluid.goetymech.soul_liquid": "Soul Liquid",
   "item.goetymech.soul_liquid_bucket": "Soul Liquid Bucket",
   "block.goetymech.soul_liquid": "Soul Liquid",
-  "goetymech.entry.twisted_embryo": "Twisted Embryo"
+  "goetymech.entry.twisted_embryo": "Twisted Embryo",
+  "item.goetymech.gateway_focus": "Gateway Focus",
+  "item.goetymech.gateway_focus_advanced": "Advanced Gateway Focus",
+  "info.goetymech.gateway.no_eye": "§cPlace a structure eye in your offhand",
+  "info.goetymech.gateway.no_structure": "§cNo structure found within range",
+  "info.goetymech.gateway.danger_area": "§eTarget area is dangerous, cast again to force teleport"
 }

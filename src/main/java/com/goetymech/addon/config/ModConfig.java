@@ -222,6 +222,20 @@ public class ModConfig {
     /** 基础效果窗口（秒） */
     public static final ForgeConfigSpec.IntValue VOID_BLINK_WINDOW_SECONDS;
 
+    // ====== Gateway Focus 配置 ======
+
+    /** 定点聚晶（基础）灵魂消耗 */
+    public static final ForgeConfigSpec.IntValue GATEWAY_COST;
+
+    /** 定点聚晶冷却时间（tick） */
+    public static final ForgeConfigSpec.IntValue GATEWAY_COOLDOWN;
+
+    /** 神行聚晶（高级）灵魂消耗 */
+    public static final ForgeConfigSpec.IntValue GATEWAY_ADV_COST;
+
+    /** 神行聚晶冷却时间（tick） */
+    public static final ForgeConfigSpec.IntValue GATEWAY_ADV_COOLDOWN;
+
     // ====== Time Freeze 配置 ======
 
     /** 时停总开关 */
@@ -613,6 +627,27 @@ public class ModConfig {
         VOID_BLINK_WINDOW_SECONDS = BUILDER
                 .comment("基础效果窗口（秒）", "范围: 1-60，默认 10")
                 .defineInRange("window_seconds", 10, 1, 60);
+
+        BUILDER.pop();
+
+        // ====== Gateway Focus 配置 ======
+        BUILDER.push("gateway_focus");
+
+        GATEWAY_COST = BUILDER
+                .comment("定点聚晶（基础）的灵魂消耗", "范围: 1-10000，默认 1000")
+                .defineInRange("soul_cost", 1000, 1, 10000);
+
+        GATEWAY_COOLDOWN = BUILDER
+                .comment("定点聚晶冷却时间（tick）", "范围: 100-72000，默认 6000（5分钟）")
+                .defineInRange("cooldown", 6000, 100, 72000);
+
+        GATEWAY_ADV_COST = BUILDER
+                .comment("神行聚晶（高级）的灵魂消耗", "范围: 1-10000，默认 2000")
+                .defineInRange("advanced_soul_cost", 2000, 1, 10000);
+
+        GATEWAY_ADV_COOLDOWN = BUILDER
+                .comment("神行聚晶冷却时间（tick）", "范围: 100-72000，默认 9600（8分钟）")
+                .defineInRange("advanced_cooldown", 9600, 100, 72000);
 
         BUILDER.pop();
     }

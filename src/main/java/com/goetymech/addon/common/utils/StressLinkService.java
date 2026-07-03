@@ -70,10 +70,17 @@ public class StressLinkService extends SavedData {
         if (reader.getLevel() == null) return;
         GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
         activeReaders.put(key, reader);
+        readerCache.put(key, new ReaderSnapshot(
+                reader.getNetworkCapacity(),
+                reader.getNetworkStress(),
+                reader.getSpeed()));
         rebuildOwnerIndex();
 
         GlobalBlockPos enginePos = readerToEngine.get(key);
         if (enginePos != null) pushToEngine(enginePos);
+
+        UUID owner = readerOwners.get(key);
+        if (owner != null) pushToPlayerEngines(owner);
     }
 
     public void onReaderUnload(GlobalBlockPos readerPos) {
@@ -235,7 +242,7 @@ public class StressLinkService extends SavedData {
         }
         if (activeUnbound.isEmpty()) return;
 
-        // Sum all readers' available stress
+        // Sum all readers' available stress (cache → fallback to live BE)
         float totalAvailable = 0;
         float totalCapacity = 0;
         for (GlobalBlockPos rp : getReadersForOwner(ownerUUID)) {
@@ -243,6 +250,15 @@ public class StressLinkService extends SavedData {
             if (snap != null) {
                 totalCapacity += snap.capacity();
                 totalAvailable += snap.getAvailable();
+            } else {
+                StressReaderBlockEntity reader = activeReaders.get(rp);
+                if (reader != null) {
+                    float cap = reader.getNetworkCapacity();
+                    float str = reader.getNetworkStress();
+                    totalCapacity += cap;
+                    totalAvailable += Math.max(0, cap - str);
+                    readerCache.put(rp, new ReaderSnapshot(cap, str, reader.getSpeed()));
+                }
             }
         }
 

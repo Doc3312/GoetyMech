@@ -13,6 +13,8 @@ import com.goetymech.addon.common.item.ChaseFocus;
 import com.goetymech.addon.common.item.CrazedSummonFocus;
 import com.goetymech.addon.common.item.TwistedEmbryoItem;
 import com.goetymech.addon.common.item.UnstableRiftFocus;
+import com.goetymech.addon.common.item.GatewayFocus;
+import com.goetymech.addon.common.item.GatewayAdvancedFocus;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.item.curio.AutoCastDummyWand;
@@ -170,4 +172,12 @@ public class ModItems {
     public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND_T1 =
             ITEMS.register("auto_cast_dummy_wand_t1",
                     () -> new AutoCastDummyWand(SpellType.NONE));
+
+    /** 定点聚晶 — 基础版：同维度传送至结构附近 */
+    public static final RegistryObject<Item> GATEWAY_FOCUS =
+            ITEMS.register("gateway_focus", GatewayFocus::new);
+
+    /** 神行聚晶 — 高级版：跨维度传送至结构附近 */
+    public static final RegistryObject<Item> GATEWAY_FOCUS_ADVANCED =
+            ITEMS.register("gateway_focus_advanced", GatewayAdvancedFocus::new);
 }
