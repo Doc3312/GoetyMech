@@ -138,8 +138,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         cachedArkTotalAvailable = ark.getTotalAvailableStress();
         cachedArkEnginesConsumption = ark.getTotalConsumedByEngines();
 
+        float rawTotal = ark.getRawAvailableStress();
         int engineCount = ark.getEngineCount();
-        cachedConsumed = engineCount > 0 ? Math.max(0, cachedArkTotalAvailable) / engineCount : 0;
+        cachedConsumed = engineCount > 0 ? Math.max(0, rawTotal) / engineCount : 0;
         ark.reportConsumption(this.worldPosition, cachedConsumed);
 
         updateGeneratedRotation();
@@ -166,10 +167,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         cachedNetworkCapacity = reader.getNetworkCapacity();
         cachedNetworkStress = reader.getNetworkStress();
 
-        float rawAvailable = cachedNetworkCapacity - cachedNetworkStress;
-        float trueAvailable = Math.max(0, rawAvailable);
-
-        cachedConsumed = Math.max(trueAvailable, 0);
+        float rawAvailable = reader.getAvailableFor(this.worldPosition);
+        cachedConsumed = Math.max(rawAvailable, 0);
 
         reader.setConsumedRemotely(this.worldPosition, cachedConsumed);
 
@@ -295,9 +294,10 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                     .style(ChatFormatting.GRAY)
                     .forGoggles(tooltip);
 
-            CreateLang.number(remaining)
+            float displayUsed = Math.max(used, 0);
+            CreateLang.number(displayUsed)
                     .add(su)
-                    .style(ChatFormatting.GREEN)
+                    .style(used > total ? ChatFormatting.RED : ChatFormatting.GREEN)
                     .text(ChatFormatting.GRAY, " / ")
                     .add(CreateLang.number(total)
                             .add(su).style(ChatFormatting.DARK_GRAY))
@@ -308,17 +308,19 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
         if (linkedPos == null) return false;
 
-        float total = Math.max(0, cachedNetworkCapacity - cachedNetworkStress);
+        float rawAvailable = cachedNetworkCapacity;
+        float rawStress = cachedNetworkStress;
+        float total = Math.max(0, rawAvailable - rawStress + cachedConsumed);
         float consumed = cachedConsumed;
-        float remaining = Math.max(0, total - consumed);
+        float remaining = Math.max(0, rawAvailable - rawStress);
 
         CreateLang.translate("gui.stressometer.capacity")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-        CreateLang.number(remaining)
+        CreateLang.number(consumed)
                 .add(su)
-                .style(ChatFormatting.GREEN)
+                .style(consumed > remaining + consumed ? ChatFormatting.RED : ChatFormatting.GREEN)
                 .text(ChatFormatting.GRAY, " / ")
                 .add(CreateLang.number(total)
                         .add(su).style(ChatFormatting.DARK_GRAY))

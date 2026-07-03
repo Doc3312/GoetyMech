@@ -128,6 +128,11 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                 .mapToDouble(e -> e.amount).sum();
     }
 
+    public float getConsumedFor(BlockPos sourcePos) {
+        ConsumerEntry entry = remoteConsumers.get(sourcePos);
+        return entry != null ? entry.amount : 0;
+    }
+
     private void purgeStaleEntries() {
         if (level == null) return;
         long now = level.getGameTime();

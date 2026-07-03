@@ -126,10 +126,27 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         return total;
     }
 
+    public int getEngineCount() {
+        return boundEngines.size();
+    }
+
     public float getTotalConsumedByEngines() {
         float total = 0;
         for (EngineEntry entry : boundEngines.values()) {
             total += entry.consumption;
+        }
+        return total;
+    }
+
+    public float getRawAvailableStress() {
+        float total = 0;
+        synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
+            for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
+                if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
+                    float selfConsumption = reader.getConsumedFor(this.worldPosition);
+                    total += Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + selfConsumption);
+                }
+            }
         }
         return total;
     }
@@ -200,7 +217,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         float totalAvailable = 0;
         int idx = 0;
         for (StressReaderBlockEntity reader : readers) {
-            available[idx] = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
+            available[idx] = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedFor(this.worldPosition));
             totalAvailable += available[idx];
             idx++;
         }
