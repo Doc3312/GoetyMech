@@ -3,6 +3,7 @@ package com.goetymech.addon.client;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.client.gui.FleshCasketScreen;
 import com.goetymech.addon.client.gui.SquadBarracksScreen;
+import com.goetymech.addon.client.render.CraterBlockRenderer;
 import com.goetymech.addon.client.render.CrazedIllagerModel;
 import com.goetymech.addon.client.render.CrazedIllagerRenderer;
 import com.goetymech.addon.client.render.CrushingWheelRenderer;
@@ -113,6 +114,8 @@ public class ModClientEvents {
                 StressReaderRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.REMOTE_ENGINE_ENTITY.get(),
                 RemoteEngineRenderer::new);
+        event.registerBlockEntityRenderer(ModBlocks.CRATER_ENTITY.get(),
+                CraterBlockRenderer::new);
     }
 
     @SubscribeEvent

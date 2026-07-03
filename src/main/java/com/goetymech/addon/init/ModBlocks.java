@@ -13,6 +13,8 @@ import com.goetymech.addon.common.block.entity.BreedingNestBlockEntity;
 import com.goetymech.addon.common.block.entity.FleshFurnaceBlockEntity;
 import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
+import com.goetymech.addon.common.block.CraterBlock;
+import com.goetymech.addon.common.block.entity.CraterBlockEntity;
 import com.goetymech.addon.common.block.entity.StressArkBlockEntity;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.simibubi.create.api.stress.BlockStressValues;
@@ -100,6 +102,17 @@ public class ModBlocks {
                     () -> BlockEntityType.Builder.of(
                             StressArkBlockEntity::new,
                             STRESS_ARK.get()).build(null));
+
+    // ── 冲击坑 ──
+
+    public static final RegistryObject<Block> CRATER =
+            BLOCKS.register("crater", CraterBlock::new);
+
+    public static final RegistryObject<BlockEntityType<CraterBlockEntity>> CRATER_ENTITY =
+            BLOCK_ENTITIES.register("crater",
+                    () -> BlockEntityType.Builder.of(
+                            CraterBlockEntity::new,
+                            CRATER.get()).build(null));
 
     public static void registerStressValues(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {

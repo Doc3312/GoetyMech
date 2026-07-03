@@ -1,12 +1,9 @@
 package com.goetymech.addon.client;
 
-import com.goetymech.addon.GoetyMechMod;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.goetymech.addon.common.block.CraterBlock;
+import com.goetymech.addon.common.block.entity.CraterBlockEntity;
+import com.goetymech.addon.init.ModBlocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -14,46 +11,20 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Quaternionf;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = com.goetymech.addon.GoetyMechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SlamGroundTiltHandler {
 
-    private static final int HOLD_TICKS = 40;
-    private static final int DISSOLVE_PER_RING = 5;
-    private static final int TOTAL_DURATION = HOLD_TICKS + 4 * DISSOLVE_PER_RING;
+    private static final int MAX_LIFETIME = 60;
     private static final int SCAN_DOWN = 5;
 
-    private static final Map<Integer, GroundTiltEffect> activeEffects = new LinkedHashMap<>();
-    private static int nextId = 0;
-
-    private record TiltBlock(
-            double x, double y, double z,
-            BlockState state,
-            Quaternionf rotation,
-            int ringIndex
-    ) {}
-
-    private static class GroundTiltEffect {
-        final List<TiltBlock> blocks;
-        final long startTick;
-
-        GroundTiltEffect(List<TiltBlock> blocks, long startTick) {
-            this.blocks = blocks;
-            this.startTick = startTick;
-        }
-
-        long elapsedTicks(long currentTick) {
-            return currentTick - startTick;
-        }
-    }
+    private static final int EFFECT_ID_LIMIT = 100;
+    private static int effectCounter = 0;
 
     public static void startEffect(Vec3 center) {
         Minecraft mc = Minecraft.getInstance();
@@ -63,56 +34,57 @@ public class SlamGroundTiltHandler {
         BlockPos centerPos = BlockPos.containing(center);
         int baseY = centerPos.getY();
 
-        List<TiltBlock> blocks = new ArrayList<>();
+        Map<BlockPos, BlockData> targets = new LinkedHashMap<>();
 
         for (int dx = -5; dx <= 5; dx++) {
             for (int dz = -5; dz <= 5; dz++) {
                 double hDist = Math.sqrt(dx * dx + dz * dz);
                 if (hDist < 1.5 || hDist > 5.5) continue;
 
-                int ringIndex = hDist < 2.5 ? 0 : hDist < 3.5 ? 1 : hDist < 4.5 ? 2 : 3;
-
                 BlockPos groundPos = findGroundPos(level, centerPos.getX() + dx, baseY, centerPos.getZ() + dz);
                 if (groundPos == null) continue;
 
-                BlockState state = level.getBlockState(groundPos);
-                if (state.isAir() || state.is(Blocks.BEDROCK)) continue;
+                if (!targets.containsKey(groundPos)) {
+                    BlockState state = level.getBlockState(groundPos);
+                    if (state.isAir() || state.is(Blocks.BEDROCK) || state.getBlock() instanceof CraterBlock) continue;
 
-                double bx = groundPos.getX() + 0.5;
-                double bz = groundPos.getZ() + 0.5;
+                    double t = Mth.clamp((hDist - 2.0) / 3.0, 0.0, 1.0);
+                    double smoothT = t * t * (3.0 - 2.0 * t);
+                    float angleDeg = (float) (5.0 + smoothT * 55.0);
+                    float lift = (float) (smoothT * 0.35);
+                    double by = groundPos.getY() + 0.5 + lift;
 
-                double t = Mth.clamp((hDist - 2.0) / 3.0, 0.0, 1.0);
-                double smoothT = t * t * (3.0 - 2.0 * t);
-                float angleDeg = (float) (5.0 + smoothT * 55.0);
-                float lift = (float) (smoothT * 0.25);
-                double by = groundPos.getY() + 0.65 + lift;
+                    float angleRad = angleDeg * Mth.DEG_TO_RAD;
 
-                float angleRad = angleDeg * Mth.DEG_TO_RAD;
+                    double toCx = -dx;
+                    double toCz = -dz;
+                    double len = Math.sqrt(toCx * toCx + toCz * toCz);
+                    if (len < 0.01) continue;
 
-                double toCx = -dx;
-                double toCz = -dz;
-                double len = Math.sqrt(toCx * toCx + toCz * toCz);
-                if (len < 0.01) continue;
+                    double axisX = -toCz / len;
+                    double axisZ = toCx / len;
 
-                double axisX = -toCz / len;
-                double axisZ = toCx / len;
+                    Quaternionf rotation = new Quaternionf().setAngleAxis(-angleRad, (float) axisX, 0, (float) axisZ);
+                    int lifetime = MAX_LIFETIME;
+                    int ringIndex = hDist < 2.5 ? 0 : hDist < 3.5 ? 1 : hDist < 4.5 ? 2 : 3;
+                    lifetime -= ringIndex * 5;
 
-                Quaternionf rotation = new Quaternionf().setAngleAxis(-angleRad, (float) axisX, 0, (float) axisZ);
-
-                blocks.add(new TiltBlock(bx, by, bz, state, rotation, ringIndex));
+                    targets.put(groundPos, new BlockData(state, rotation, (float)(by - groundPos.getY()), lifetime));
+                }
             }
         }
 
-        if (blocks.isEmpty()) return;
+        for (var entry : targets.entrySet()) {
+            BlockPos pos = entry.getKey();
+            BlockData data = entry.getValue();
 
-        long tick = level.getGameTime();
-        activeEffects.put(nextId++, new GroundTiltEffect(blocks, tick));
-
-        if (activeEffects.size() > 16) {
-            activeEffects.values().stream().findFirst().ifPresent(e -> {
-                activeEffects.values().remove(e);
-            });
+            level.setBlock(pos, ModBlocks.CRATER.get().defaultBlockState(), 3);
+            if (level.getBlockEntity(pos) instanceof CraterBlockEntity be) {
+                be.setData(data.state, data.rotation, data.liftHeight, data.lifetime);
+            }
         }
+
+        effectCounter++;
     }
 
     private static BlockPos findGroundPos(Level level, int x, int startY, int z) {
@@ -126,71 +98,5 @@ public class SlamGroundTiltHandler {
         return null;
     }
 
-    @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (activeEffects.isEmpty()) return;
-        Minecraft mc = Minecraft.getInstance();
-        Level level = mc.level;
-        if (level == null) return;
-
-        long tick = level.getGameTime();
-        activeEffects.values().removeIf(e -> e.elapsedTicks(tick) > TOTAL_DURATION + DISSOLVE_PER_RING);
-    }
-
-    @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) return;
-        if (activeEffects.isEmpty()) return;
-
-        Minecraft mc = Minecraft.getInstance();
-        Level level = mc.level;
-        if (level == null) return;
-
-        PoseStack poseStack = event.getPoseStack();
-        MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
-        BlockRenderDispatcher dispatcher = mc.getBlockRenderer();
-        Vec3 camPos = event.getCamera().getPosition();
-
-        long tick = level.getGameTime();
-
-        for (GroundTiltEffect effect : activeEffects.values()) {
-            long elapsed = effect.elapsedTicks(tick);
-            if (elapsed > TOTAL_DURATION) continue;
-
-            for (TiltBlock block : effect.blocks) {
-                int dissolveStart = HOLD_TICKS + block.ringIndex * DISSOLVE_PER_RING;
-                int dissolveEnd = dissolveStart + DISSOLVE_PER_RING;
-
-                if (elapsed >= dissolveEnd) continue;
-
-                float yOffset = 0;
-                float sinkAmount = (float) (block.y - BlockPos.containing(block.x, block.y, block.z).getY());
-                if (elapsed >= dissolveStart) {
-                    float progress = (float) (elapsed - dissolveStart) / DISSOLVE_PER_RING;
-                    yOffset = -sinkAmount * progress;
-                }
-
-                poseStack.pushPose();
-
-                double rx = block.x - camPos.x;
-                double ry = block.y - camPos.y + yOffset;
-                double rz = block.z - camPos.z;
-                poseStack.translate(rx, ry, rz);
-
-                poseStack.translate(0, -0.5, 0);
-                poseStack.mulPose(block.rotation);
-                poseStack.translate(0, 0.5, 0);
-
-                poseStack.translate(-0.5, -0.5, -0.5);
-
-                int light = LevelRenderer.getLightColor(level, BlockPos.containing(block.x, block.y + 1.0, block.z));
-                dispatcher.renderSingleBlock(block.state, poseStack, buffer, light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
-
-                poseStack.popPose();
-            }
-        }
-
-        buffer.endBatch();
-    }
+    private record BlockData(BlockState state, Quaternionf rotation, float liftHeight, int lifetime) {}
 }

@@ -95,6 +95,13 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
         BlockEntity be = arkLevel.getBlockEntity(arkLoc.pos());
         if (be instanceof StressArkBlockEntity ark) {
+            // Clean up old Ark binding before switching
+            if (bindingType == BindingType.ARK && arkPos != null && arkDim != null) {
+                ServerLevel oldArkLevel = server.getLevel(arkDim);
+                if (oldArkLevel != null && oldArkLevel.getBlockEntity(arkPos) instanceof StressArkBlockEntity oldArk) {
+                    oldArk.unregisterEngine(worldPosition);
+                }
+            }
             // Clean up old reader binding if switching to Ark
             if (bindingType == BindingType.READER && linkedPos != null && linkedDim != null) {
                 ServerLevel targetLevel = server.getLevel(linkedDim);
@@ -109,6 +116,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             this.bindingType = BindingType.ARK;
             ark.registerEngine(this.worldPosition);
             setChanged();
+            LOGGER.warn("[BIND_ARK] ENGINE{} re-bound to ARK{}", fmtPos(worldPosition), fmtPos(arkLoc.pos()));
         }
     }
 
@@ -127,6 +135,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     private void refreshFromArk() {
         if (arkPos == null || arkDim == null || level == null) return;
+        // Verify we're still bound to the correct Ark (re-binds if player placed a new Ark)
+        tryAutoBindArk();
+        if (bindingType != BindingType.ARK) return;
         MinecraftServer server = ((ServerLevel) level).getServer();
         ServerLevel arkLevel = server.getLevel(arkDim);
         if (arkLevel == null || !arkLevel.isLoaded(arkPos)) {
