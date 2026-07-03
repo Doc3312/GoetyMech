@@ -1,9 +1,10 @@
 package com.goetymech.addon.common.magic.spell;
 
-import com.goetymech.addon.common.block.entity.StressArkBlockEntity;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.item.StressShieldFocus;
+import com.goetymech.addon.common.utils.GlobalBlockPos;
+import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.common.utils.StressShieldHelper;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
@@ -52,8 +53,7 @@ public class StressShieldSpell extends Spell {
     }
 
     @Override
-    public boolean hasCustomCooldown(LivingEntity caster, ItemStack staff,
-                                     ItemStack focus, int initialCooldown) {
+    public boolean hasCustomCooldown(LivingEntity caster, ItemStack staff, ItemStack focus, int initialCooldown) {
         return true;
     }
 
@@ -78,8 +78,7 @@ public class StressShieldSpell extends Spell {
     @Override
     public void useParticle(Level worldIn, LivingEntity caster, ItemStack stack) {
         if (worldIn instanceof ServerLevel server && caster.tickCount % 5 == 0) {
-            ServerParticleUtil.addParticlesAroundMiddleSelf(server,
-                    ParticleTypes.ENCHANTED_HIT, caster);
+            ServerParticleUtil.addParticlesAroundMiddleSelf(server, ParticleTypes.ENCHANTED_HIT, caster);
         }
     }
 
@@ -89,8 +88,7 @@ public class StressShieldSpell extends Spell {
     }
 
     @Override
-    public void SpellResult(ServerLevel worldIn, LivingEntity caster,
-                            ItemStack staff, SpellStat spellStat) {
+    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         if (!(caster instanceof Player player)) return;
 
         IStressShield shield = StressShieldHelper.getShield(player);
@@ -140,12 +138,18 @@ public class StressShieldSpell extends Spell {
     }
 
     private float readStress(Player player, ServerLevel worldIn) {
-        BlockPos arkPos = StressArkBlockEntity.getActiveArkPos(player.getUUID());
-        if (arkPos != null && worldIn.isLoaded(arkPos)
-                && worldIn.getBlockEntity(arkPos) instanceof StressArkBlockEntity ark) {
-            return ark.getCachedTotalStress();
+        // Priority 1: Active Ark via Service
+        StressLinkService service = StressLinkService.get(worldIn);
+        if (service != null) {
+            GlobalBlockPos arkPos = service.getArkForOwner(player.getUUID());
+            if (arkPos != null && arkPos.dimension().equals(worldIn.dimension())
+                    && worldIn.isLoaded(arkPos.pos())
+                    && worldIn.getBlockEntity(arkPos.pos()) instanceof com.goetymech.addon.common.block.entity.StressArkBlockEntity ark) {
+                return ark.getCachedTotalStress();
+            }
         }
 
+        // Priority 2: Direct reader binding
         ItemStack focus = WandUtil.findFocus(player);
         if (focus.isEmpty() || !(focus.getItem() instanceof StressShieldFocus)) return 0;
         if (!StressShieldFocus.isBound(focus)) return 0;
