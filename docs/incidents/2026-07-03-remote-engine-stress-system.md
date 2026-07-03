@@ -1,6 +1,6 @@
 # Remote Engine Stress System — Issues & Round 3 Debugging
 
-status: disputed (③④ still broken, root cause unknown)
+status: superseded (2016-07-03 round 4: restore updateStressFor + add Ark consumption packet)
 
 ## 背景
 
