@@ -15,3 +15,4 @@
 ## Timeline
 
 - **2026-06-27** — 降级 `[TEST]` 调试日志从 INFO 为 DEBUG。
+- **2026-07-03** — 远程应力隔离（Issue ②③）：`calculateStressApplied()` 返回 0，remoteConsumption 不再注入 Reader 的 Create 网络应力；`setConsumedRemotely()` / `removeConsumer()` / `purgeStaleEntries()` 全部移除 `updateStressFor()` 调用，`consumedRemotely` 纯 Ark 簿记用。

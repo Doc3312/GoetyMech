@@ -26,3 +26,7 @@ Create 动力方块，可在无传统动力源的位置远程提供旋转动力�
   - 工具提示：NONE 模式 `addToGoggleTooltip()` return false；ARK 模式显示 "Source: Ark总消耗 / Ark总可用"
   - Ark cached 数据（`cachedArkTotalAvailable / cachedArkEnginesConsumption`）写于 `!clientPacket` 外层，始终同步到 client
   - `setPlacedBy()` 始终存 `placerUUID`；`RemoteEngineBlockItem.useOn()` 潜行+绑定 Reader → `PASS` 交由 `StressReaderBlock.use()` 处理解绑
+- **2026-07-03** — 解绑重构 + enginePos NBT
+  - `RemoteEngineBlockItem.useOn()` 潜行分支不再 PASS，直接处理解绑：查 enginePos → 调 `engine.clearLinkedPos()` → `clearBinding()`
+  - `RemoteEngineBlockItem` 新增 `TAG_ENGINE_X/Y/Z`、`writeEnginePos()`、`getEnginePos()`，`clearBinding()` 一并清除 enginePos
+  - `RemoteEngineBlock.setPlacedBy()` 在绑定 Reader 时调用 `RemoteEngineBlockItem.writeEnginePos(stack, pos)` 写入引擎位置

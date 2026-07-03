@@ -23,3 +23,4 @@
 - `PLAYER_ACTIVE_ARK` 全局 Map（`UUID → ArkLocation`）存玩家最后放置/交互的 Ark
 - `onArkRemoved()` 清理所有绑定的引擎
 - NBT 序列化：ArkLocation（dim/pos）保存/读取
+- **2026-07-03** — 应力分配公式修正：`distributeConsumption()` 移除 `+ reader.getConsumedRemotely()`，可用应力 = `capacity - stress`（真实本地方块应力）。
