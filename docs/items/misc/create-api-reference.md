@@ -43,9 +43,15 @@
 | 方法 | 说明 |
 |------|------|
 | `get(K object)` | 返回 null 则跳过 |
-| `onRegister(Runnable invalidate)` | 注册后的回调 |
-| `forTag(TagKey<K>, Function<K,Holder<K>>, V)` | 为整个 tag 提供值（自动 tag reload 时 invalidate） |
+| `onRegister(Runnable invalidate)` | **注册后的回调** — 参数 `invalidate` 是一个 `Runnable`，调用时清除此 provider 的缓存。常用于监听 TagReloadEvent，在 tag 变更时自动失效 |
+| `forTag(TagKey<K>, Function<K,Holder<K>>, V)` | 为整个 tag 提供值（自动注册 tag reload 监听，调用 `invalidate.run()` 刷新） |
 | `forBlockTag(...)`/`forItemTag(...)`/`forEntityTag(...)`/`forFluidTag(...)` | 各类型的快捷方法 |
+
+**Provider 执行机制：**
+1. `get(K)` 先查直接注册 → 有值直接返回
+2. 无直接注册 → 遍历所有 provider（reverse-registration order，后注册的先查）
+3. provider 返回值被 **缓存**（除非调用 `invalidate()`）
+4. 常用于 tag-based 注册（如 `create:passive_boiler_heaters` tag 下的所有方块自动获得 `BoilerHeater.PASSIVE`）
 
 **`SimpleRegistry.Multi<K, V>`** — 支持多个值 per key：
 
