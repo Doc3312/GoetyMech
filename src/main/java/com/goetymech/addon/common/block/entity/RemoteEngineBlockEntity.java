@@ -3,6 +3,7 @@ package com.goetymech.addon.common.block.entity;
 import java.util.List;
 import java.util.UUID;
 
+import com.goetymech.addon.common.utils.EngineStatus;
 import com.goetymech.addon.common.utils.GlobalBlockPos;
 import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
@@ -18,7 +19,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -33,10 +33,30 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     private float remoteSpeed;
     private float remoteBudget;
     private float remoteCapacity;
+
     private int consumeReportTick;
+    private int staleTick;
+    private EngineStatus status = EngineStatus.NO_BUDGET;
 
     public RemoteEngineBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.REMOTE_ENGINE_ENTITY.get(), pos, state);
+    }
+
+    public static void tick(Level level, BlockPos pos, BlockState state, RemoteEngineBlockEntity self) {
+        if (level.isClientSide) return;
+        if (++self.consumeReportTick < 20) return;
+        self.consumeReportTick = 0;
+
+        // P1: report actual network consumption
+        StressLinkService service = StressLinkService.get(level);
+        if (service != null) {
+            service.reportEngineConsumption(GlobalBlockPos.of(level, pos), self.stress);
+        }
+
+        // P3: check for stale reader (each callback = 20gt, threshold 2 = 40gt)
+        if (++self.staleTick > 2) {
+            self.status = EngineStatus.READER_UNLOADED;
+        }
     }
 
     @Override
@@ -82,20 +102,15 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         this.remoteSpeed = Math.abs(speed);
         this.remoteBudget = Math.max(0, budget);
         this.remoteCapacity = Math.max(0, capacity);
+        this.staleTick = 0;
+        this.status = budget > 0 ? EngineStatus.ACTIVE
+                : capacity > 0 ? EngineStatus.IDLE
+                : EngineStatus.NO_BUDGET;
         updateGeneratedRotation();
         if (level != null && !level.isClientSide) {
-            reportConsumption();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             setChanged();
             sendData();
-        }
-    }
-
-    private void reportConsumption() {
-        if (level == null || level.isClientSide) return;
-        StressLinkService service = StressLinkService.get(level);
-        if (service != null) {
-            service.reportEngineConsumption(GlobalBlockPos.of(level, worldPosition), remoteBudget);
         }
     }
 
@@ -140,6 +155,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         this.remoteSpeed = 0;
         this.remoteBudget = 0;
         this.remoteCapacity = 0;
+        this.status = EngineStatus.NO_BUDGET;
         setChanged();
         if (level != null && !level.isClientSide) {
             StressLinkService service = StressLinkService.get(level);
@@ -175,6 +191,22 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 .add(su)
                 .style(ChatFormatting.GREEN)
                 .forGoggles(tooltip, 1);
+
+        // Status
+        if (placerUUID != null) {
+            CreateLang.text("Link: ")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+            ChatFormatting color = switch (status) {
+                case ACTIVE -> ChatFormatting.GREEN;
+                case IDLE -> ChatFormatting.GRAY;
+                case NO_BUDGET -> ChatFormatting.YELLOW;
+                case READER_UNLOADED -> ChatFormatting.RED;
+            };
+            CreateLang.translate("status." + status.name().toLowerCase())
+                    .style(color)
+                    .forGoggles(tooltip, 1);
+        }
 
         if (remoteCapacity > 0) {
             CreateLang.text("Source: ")

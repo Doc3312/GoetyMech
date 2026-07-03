@@ -19,29 +19,23 @@ public class StressLinkService extends SavedData {
     private static final String DATA_NAME = "goetymech_stresslink";
 
     // === Persisted ===
-    // enginePos → readerPos
     private final Map<GlobalBlockPos, GlobalBlockPos> engineToReader = new LinkedHashMap<>();
     private transient final Map<GlobalBlockPos, GlobalBlockPos> readerToEngine = new HashMap<>();
-    // readerPos → ownerUUID
     private final Map<GlobalBlockPos, UUID> readerOwners = new HashMap<>();
     private transient final Map<UUID, Set<GlobalBlockPos>> ownerReaders = new HashMap<>();
 
-    // === Runtime-only (not persisted) ===
+    // === Runtime-only ===
     private transient final Map<GlobalBlockPos, StressReaderBlockEntity> activeReaders = new HashMap<>();
     private transient final Map<GlobalBlockPos, RemoteEngineBlockEntity> activeEngines = new HashMap<>();
-
-    // Engine registry by placerUUID — unbound engines auto-pull from player's readers
     private transient final Map<GlobalBlockPos, UUID> engineRegistry = new HashMap<>();
     private transient final Map<UUID, Set<GlobalBlockPos>> playerEngines = new HashMap<>();
 
-    // Engine consumption report — updated by engines so Ark can show total system usage
+    // P2: actual consumption reported by engines via tick()
     private final Map<GlobalBlockPos, Float> engineConsumption = new HashMap<>();
     private transient final Map<UUID, Float> playerEngineConsumption = new HashMap<>();
 
-    // Reader data cache — updated by updateFromNetwork(), read by Ark
     private transient final Map<GlobalBlockPos, ReaderSnapshot> readerCache = new HashMap<>();
 
-    // Ark registry — rebuilt as Arks load/unload (multi-Ark per owner supported)
     private transient final Map<GlobalBlockPos, UUID> arkRegistry = new HashMap<>();
     private transient final Map<UUID, Set<GlobalBlockPos>> ownerArks = new HashMap<>();
 
@@ -49,9 +43,7 @@ public class StressLinkService extends SavedData {
         public float getAvailable() { return Math.max(0, capacity - stress); }
     }
 
-    public StressLinkService() {
-        super();
-    }
+    public StressLinkService() { super(); }
 
     // ── Static accessor ──
 
@@ -84,10 +76,17 @@ public class StressLinkService extends SavedData {
         if (enginePos != null) pushToEngine(enginePos);
     }
 
-    public void onReaderUnload(StressReaderBlockEntity reader) {
-        if (reader.getLevel() == null) return;
-        GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
-        activeReaders.remove(key);
+    public void onReaderUnload(GlobalBlockPos readerPos) {
+        activeReaders.remove(readerPos);
+        // P5: push zero to bound engine
+        GlobalBlockPos enginePos = readerToEngine.get(readerPos);
+        if (enginePos != null) {
+            RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+            if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+        }
+        // P5: recalc auto-pool for this owner
+        UUID owner = readerOwners.get(readerPos);
+        if (owner != null) pushToPlayerEngines(owner);
     }
 
     public void onReaderDestroyed(StressReaderBlockEntity reader) {
@@ -95,9 +94,9 @@ public class StressLinkService extends SavedData {
         GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
         activeReaders.remove(key);
         readerCache.remove(key);
-        readerOwners.remove(key);
+        UUID owner = readerOwners.remove(key);
         rebuildOwnerIndex();
-        // Unbind any engine bound to this reader
+
         GlobalBlockPos enginePos = readerToEngine.remove(key);
         if (enginePos != null) {
             engineToReader.remove(enginePos);
@@ -105,6 +104,9 @@ public class StressLinkService extends SavedData {
             if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
             setDirty();
         }
+
+        // P5: recalc auto-pool
+        if (owner != null) pushToPlayerEngines(owner);
     }
 
     // ── Engine lifecycle ──
@@ -120,6 +122,7 @@ public class StressLinkService extends SavedData {
 
     public void onEngineUnload(GlobalBlockPos enginePos) {
         activeEngines.remove(enginePos);
+        engineConsumption.remove(enginePos);
         UUID owner = engineRegistry.remove(enginePos);
         if (owner != null) {
             Set<GlobalBlockPos> set = playerEngines.get(owner);
@@ -127,6 +130,8 @@ public class StressLinkService extends SavedData {
                 set.remove(enginePos);
                 if (set.isEmpty()) playerEngines.remove(owner);
             }
+            // P5: recalc auto-pool for remaining engines
+            pushToPlayerEngines(owner);
         }
     }
 
@@ -174,7 +179,7 @@ public class StressLinkService extends SavedData {
                 reader.getNetworkStress(),
                 reader.getSpeed()));
 
-        // Push to bound engine (1:1 binding)
+        // Push to bound engine (1:1)
         GlobalBlockPos enginePos = readerToEngine.get(readerKey);
         if (enginePos != null) pushToEngine(enginePos);
 
@@ -202,7 +207,7 @@ public class StressLinkService extends SavedData {
         engine.applyRemoteUpdate(speed, budget, capacity);
     }
 
-    // ── Player engine registry (unbound engines by placerUUID) ──
+    // ── Player engine registry (auto-pool) ──
 
     public void registerPlayerEngine(GlobalBlockPos enginePos, @Nullable UUID ownerUUID) {
         if (ownerUUID == null) return;
@@ -220,30 +225,41 @@ public class StressLinkService extends SavedData {
         Set<GlobalBlockPos> engines = playerEngines.get(ownerUUID);
         if (engines == null || engines.isEmpty()) return;
 
+        // P0: count only active + unbound engines
+        List<GlobalBlockPos> activeUnbound = new ArrayList<>();
+        for (GlobalBlockPos ep : engines) {
+            if (!activeEngines.containsKey(ep)) continue;
+            if (engineToReader.containsKey(ep)) continue;
+            activeUnbound.add(ep);
+        }
+        if (activeUnbound.isEmpty()) return;
+
+        // Sum all readers' available stress
+        float totalAvailable = 0;
         float totalCapacity = 0;
-        float totalStress = 0;
-        for (GlobalBlockPos readerPos : getReadersForOwner(ownerUUID)) {
-            ReaderSnapshot snap = readerCache.get(readerPos);
+        for (GlobalBlockPos rp : getReadersForOwner(ownerUUID)) {
+            ReaderSnapshot snap = readerCache.get(rp);
             if (snap != null) {
                 totalCapacity += snap.capacity();
-                totalStress += snap.stress();
+                totalAvailable += snap.getAvailable();
             }
         }
-        float totalAvailable = Math.max(0, totalCapacity - totalStress);
 
-        for (GlobalBlockPos enginePos : engines) {
-            if (engineToReader.containsKey(enginePos)) continue;
-            RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+        // P0: equal split
+        float budgetPerEngine = totalAvailable / activeUnbound.size();
+
+        for (GlobalBlockPos ep : activeUnbound) {
+            RemoteEngineBlockEntity engine = activeEngines.get(ep);
             if (engine != null) {
-                engine.applyRemoteUpdate(16, totalAvailable, totalCapacity);
+                engine.applyRemoteUpdate(16, budgetPerEngine, totalCapacity);
             }
         }
     }
 
-    // ── Engine consumption tracking ──
+    // ── Engine consumption tracking (P2) ──
 
-    public void reportEngineConsumption(GlobalBlockPos enginePos, float consumed) {
-        Float prev = engineConsumption.put(enginePos, consumed);
+    public void reportEngineConsumption(GlobalBlockPos enginePos, float actualStress) {
+        Float prev = engineConsumption.put(enginePos, actualStress);
         UUID owner = engineRegistry.get(enginePos);
         if (owner != null) {
             float total = 0;
@@ -269,7 +285,7 @@ public class StressLinkService extends SavedData {
         return readerStress + getPlayerEngineConsumption(ownerUUID);
     }
 
-    // ── Reader ownership registry (for Ark) ──
+    // ── Reader ownership ──
 
     public void registerReaderOwner(GlobalBlockPos readerPos, UUID ownerUUID) {
         readerOwners.put(readerPos, ownerUUID);
