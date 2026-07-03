@@ -50,13 +50,13 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public void invalidate() {
-        super.invalidate();
         if (level != null && !level.isClientSide) {
             StressLinkService service = StressLinkService.get(level);
             if (service != null) {
-                service.onEngineUnload(GlobalBlockPos.of(level, worldPosition));
+                service.unbind(GlobalBlockPos.of(level, worldPosition));
             }
         }
+        super.invalidate();
     }
 
     @Override

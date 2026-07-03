@@ -105,9 +105,19 @@ public class StressLinkService extends SavedData {
     // ──────────────────────────────────────────────
 
     public void bind(GlobalBlockPos enginePos, GlobalBlockPos readerPos) {
+        // Remove old binding for this engine, if any
         GlobalBlockPos oldReader = engineToReader.get(enginePos);
         if (oldReader != null) {
             readerToEngine.remove(oldReader);
+        }
+        // If this reader is already bound to another engine, disconnect the old one
+        GlobalBlockPos oldEngine = readerToEngine.get(readerPos);
+        if (oldEngine != null && !oldEngine.equals(enginePos)) {
+            engineToReader.remove(oldEngine);
+            RemoteEngineBlockEntity stale = activeEngines.get(oldEngine);
+            if (stale != null) {
+                stale.applyRemoteUpdate(0, 0);
+            }
         }
         engineToReader.put(enginePos, readerPos);
         readerToEngine.put(readerPos, enginePos);
