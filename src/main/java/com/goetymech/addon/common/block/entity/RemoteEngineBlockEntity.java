@@ -218,17 +218,19 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public void invalidate() {
-        cleanupConsumption();
+        LOGGER.warn("[INVALIDATE] ENGINE{} binding={}", fmtPos(worldPosition), bindingType);
+        cleanupConsumption("invalidate");
         super.invalidate();
     }
 
     @Override
     public void onChunkUnloaded() {
-        cleanupConsumption();
+        LOGGER.warn("[CHUNK_UNLOAD] ENGINE{} binding={}", fmtPos(worldPosition), bindingType);
+        cleanupConsumption("chunk_unload");
         super.onChunkUnloaded();
     }
 
-    private void cleanupConsumption() {
+    private void cleanupConsumption(String source) {
         if (level == null || level.isClientSide) return;
         MinecraftServer server = ((ServerLevel) level).getServer();
 
@@ -237,7 +239,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             if (arkLevel != null && arkLevel.getBlockEntity(arkPos) instanceof StressArkBlockEntity ark) {
                 ark.unregisterEngine(worldPosition);
             } else {
-                LOGGER.warn("[CLEANUP] ENGINE{} arkLevelExists={} arkBE_found={}", fmtPos(worldPosition), arkLevel != null,
+                LOGGER.warn("[CLEANUP] ENGINE{} src={} arkLevelExists={} arkBE_found={}", fmtPos(worldPosition), source, arkLevel != null,
                         arkLevel != null && arkLevel.getBlockEntity(arkPos) instanceof StressArkBlockEntity);
             }
         } else if (bindingType == BindingType.READER && linkedPos != null && linkedDim != null) {
