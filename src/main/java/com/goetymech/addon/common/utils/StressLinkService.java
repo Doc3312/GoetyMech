@@ -219,6 +219,7 @@ public class StressLinkService extends SavedData {
             }
             playerEngines.computeIfAbsent(ownerUUID, k -> new HashSet<>()).add(enginePos);
         }
+        pushToPlayerEngines(ownerUUID);
     }
 
     public void pushToPlayerEngines(UUID ownerUUID) {

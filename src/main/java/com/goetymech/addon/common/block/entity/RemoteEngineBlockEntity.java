@@ -144,6 +144,12 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void setPlacerUUID(UUID uuid) {
         this.placerUUID = uuid;
         setChanged();
+        if (level != null && !level.isClientSide) {
+            StressLinkService service = StressLinkService.get(level);
+            if (service != null) {
+                service.registerPlayerEngine(GlobalBlockPos.of(level, worldPosition), uuid);
+            }
+        }
     }
 
     @Nullable
@@ -239,11 +245,10 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 compound.putString("LinkedDim", linkedDim.location().toString());
             }
         }
-        if (!clientPacket) {
-            compound.putFloat("RemoteSpeed", remoteSpeed);
-            compound.putFloat("RemoteBudget", remoteBudget);
-            compound.putFloat("RemoteCapacity", remoteCapacity);
-        }
+        compound.putFloat("RemoteSpeed", remoteSpeed);
+        compound.putFloat("RemoteBudget", remoteBudget);
+        compound.putFloat("RemoteCapacity", remoteCapacity);
+        compound.putInt("Status", status.ordinal());
     }
 
     @Override
@@ -265,10 +270,12 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                         ResourceLocation.tryParse(compound.getString("LinkedDim")));
             }
         }
-        if (!clientPacket) {
-            remoteSpeed = compound.getFloat("RemoteSpeed");
-            remoteBudget = compound.getFloat("RemoteBudget");
-            remoteCapacity = compound.getFloat("RemoteCapacity");
+        remoteSpeed = compound.getFloat("RemoteSpeed");
+        remoteBudget = compound.getFloat("RemoteBudget");
+        remoteCapacity = compound.getFloat("RemoteCapacity");
+        if (compound.contains("Status")) {
+            int si = compound.getInt("Status");
+            status = si >= 0 && si < EngineStatus.values().length ? EngineStatus.values()[si] : EngineStatus.NO_BUDGET;
         }
     }
 }
