@@ -35,19 +35,27 @@ public class GatewayUtil {
         if (itemId == null) return null;
 
         return TAG_CACHE.computeIfAbsent(itemId, id -> {
+            // 1. Try data-driven mapping (from JSON reload listener)
+            ResourceLocation mapped = GatewayMappingLoader.getTagForItem(id);
+            if (mapped != null) {
+                TagKey<Structure> tag = TagKey.create(Registries.STRUCTURE, mapped);
+                Registry<Structure> registry = registryAccess.registryOrThrow(Registries.STRUCTURE);
+                if (registry.getTag(tag).isPresent() && registry.getTag(tag).get().size() > 0) {
+                    return tag;
+                }
+            }
+
+            // 2. Fallback: convention-based derivation
             String path = id.getPath();
             String namespace = id.getNamespace();
             String stem = path.replaceAll("_eye$", "").replaceAll("^eye_of_", "");
 
-            // Try convention: <namespace>:explorer_maps/<stem>
             TagKey<Structure> tag = tryTag(registryAccess, namespace, "explorer_maps/" + stem);
             if (tag != null) return tag;
 
-            // Try vanilla convention: <namespace>:eye_of_<stem>_located
             tag = tryTag(registryAccess, namespace, "eye_of_" + stem + "_located");
             if (tag != null) return tag;
 
-            // Try: <namespace>:<stem>
             tag = tryTag(registryAccess, namespace, stem);
             if (tag != null) return tag;
 

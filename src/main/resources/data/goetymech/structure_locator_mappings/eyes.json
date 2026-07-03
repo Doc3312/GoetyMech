@@ -1,0 +1,7 @@
+{
+  "values": {
+    "minecraft:ender_eye": "minecraft:eye_of_ender_located",
+    "goety:cryptic_eye": "goety:explorer_maps/crypt",
+    "goety:void_eye": "goety:explorer_maps/final_terminal"
+  }
+}

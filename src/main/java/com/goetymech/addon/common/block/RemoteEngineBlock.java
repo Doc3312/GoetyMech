@@ -17,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -76,7 +75,6 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
         if (placer instanceof Player && !level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof RemoteEngineBlockEntity engine) {
-                engine.setPlacerUUID(placer.getUUID());
                 if (RemoteEngineBlockItem.isBound(stack)) {
                     engine.setLinkedPos(
                             RemoteEngineBlockItem.getBoundPos(stack),
@@ -97,14 +95,4 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
         return false;
     }
 
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide) return null;
-        return (world, pos, state1, be) -> {
-            if (be instanceof RemoteEngineBlockEntity engine) {
-                RemoteEngineBlockEntity.tick(world, pos, state1, engine);
-            }
-        };
-    }
 }

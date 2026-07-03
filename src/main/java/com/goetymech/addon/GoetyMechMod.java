@@ -5,6 +5,8 @@ import com.goetymech.addon.common.capabilities.StressShieldProvider;
 import com.goetymech.addon.common.events.StressShieldEvents;
 import com.goetymech.addon.common.events.VoidBlinkEvents;
 import com.goetymech.addon.common.menu.ModMenuTypes;
+import com.goetymech.addon.common.utils.GatewayMappingLoader;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.compat.caelus.CaelusLoaded;
 import com.goetymech.addon.config.ModConfig;
@@ -74,6 +76,9 @@ public class GoetyMechMod {
 
         MinecraftForge.EVENT_BUS.register(StressShieldEvents.class);
         MinecraftForge.EVENT_BUS.register(VoidBlinkEvents.class);
+        MinecraftForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> {
+            event.addListener(new GatewayMappingLoader());
+        });
 
         modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.register(IStressShield.class);
