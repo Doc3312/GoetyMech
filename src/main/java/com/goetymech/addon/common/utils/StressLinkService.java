@@ -102,7 +102,7 @@ public class StressLinkService extends SavedData {
         if (enginePos != null) {
             engineToReader.remove(enginePos);
             RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-            if (engine != null) engine.applyRemoteUpdate(0, 0);
+            if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
             setDirty();
         }
     }
@@ -140,7 +140,7 @@ public class StressLinkService extends SavedData {
         if (oldEngine != null && !oldEngine.equals(enginePos)) {
             engineToReader.remove(oldEngine);
             RemoteEngineBlockEntity stale = activeEngines.get(oldEngine);
-            if (stale != null) stale.applyRemoteUpdate(0, 0);
+            if (stale != null) stale.applyRemoteUpdate(0, 0, 0);
         }
 
         engineToReader.put(enginePos, readerPos);
@@ -155,7 +155,7 @@ public class StressLinkService extends SavedData {
         setDirty();
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-        if (engine != null) engine.applyRemoteUpdate(0, 0);
+        if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
     }
 
     @Nullable

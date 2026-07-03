@@ -32,6 +32,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     private float remoteSpeed;
     private float remoteBudget;
+    private float remoteCapacity;
+    private int consumeReportTick;
 
     public RemoteEngineBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.REMOTE_ENGINE_ENTITY.get(), pos, state);
@@ -41,9 +43,13 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void initialize() {
         super.initialize();
         if (level != null && !level.isClientSide) {
+            GlobalBlockPos gpos = GlobalBlockPos.of(level, worldPosition);
             StressLinkService service = StressLinkService.get(level);
             if (service != null) {
                 service.onEngineLoad(this);
+                if (placerUUID != null) {
+                    service.registerPlayerEngine(gpos, placerUUID);
+                }
             }
         }
     }
@@ -72,26 +78,38 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         }
     }
 
-    public void applyRemoteUpdate(float speed, float budget) {
+    public void applyRemoteUpdate(float speed, float budget, float capacity) {
         this.remoteSpeed = Math.abs(speed);
         this.remoteBudget = Math.max(0, budget);
+        this.remoteCapacity = Math.max(0, capacity);
         updateGeneratedRotation();
         if (level != null && !level.isClientSide) {
+            reportConsumption();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             setChanged();
             sendData();
         }
     }
 
+    private void reportConsumption() {
+        if (level == null || level.isClientSide) return;
+        StressLinkService service = StressLinkService.get(level);
+        if (service != null) {
+            service.reportEngineConsumption(GlobalBlockPos.of(level, worldPosition), remoteBudget);
+        }
+    }
+
     @Override
     public float getGeneratedSpeed() {
-        return (linkedPos != null && linkedDim != null) ? remoteSpeed : 0;
+        if (linkedPos != null) return remoteSpeed;
+        if (placerUUID != null && remoteBudget > 0) return 16;
+        return 0;
     }
 
     @Override
     public float calculateAddedStressCapacity() {
-        float s = Math.abs(remoteSpeed);
-        if (s < 0.01f || linkedPos == null) return 0;
+        float s = Math.abs(getGeneratedSpeed());
+        if (s < 0.01f) return 0;
         return remoteBudget / s;
     }
 
@@ -113,11 +131,15 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         setChanged();
     }
 
+    @Nullable
+    public UUID getPlacerUUID() { return placerUUID; }
+
     public void clearLinkedPos() {
         this.linkedPos = null;
         this.linkedDim = null;
         this.remoteSpeed = 0;
         this.remoteBudget = 0;
+        this.remoteCapacity = 0;
         setChanged();
         if (level != null && !level.isClientSide) {
             StressLinkService service = StressLinkService.get(level);
@@ -131,7 +153,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        if (!StressImpact.isEnabled() || linkedPos == null) return false;
+        if (!StressImpact.isEnabled()) return false;
 
         LangBuilder su = CreateLang.translate("generic.unit.stress");
         float rpm = Math.abs(getSpeed());
@@ -143,20 +165,30 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
 
-        float total = remoteBudget;
-        float consumed = remoteBudget;
+        float added = Math.abs(calculateAddedStressCapacity());
 
         CreateLang.translate("gui.stressometer.capacity")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-        CreateLang.number(consumed)
+        CreateLang.number(added)
                 .add(su)
                 .style(ChatFormatting.GREEN)
-                .text(ChatFormatting.GRAY, " / ")
-                .add(CreateLang.number(total)
-                        .add(su).style(ChatFormatting.DARK_GRAY))
                 .forGoggles(tooltip, 1);
+
+        if (remoteCapacity > 0) {
+            CreateLang.text("Source: ")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+            CreateLang.number(remoteBudget)
+                    .add(CreateLang.translate("generic.unit.stress"))
+                    .style(ChatFormatting.DARK_GREEN)
+                    .text(ChatFormatting.GRAY, " / ")
+                    .add(CreateLang.number(remoteCapacity)
+                            .add(CreateLang.translate("generic.unit.stress"))
+                            .style(ChatFormatting.DARK_GRAY))
+                    .forGoggles(tooltip, 1);
+        }
 
         return true;
     }
@@ -178,6 +210,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (!clientPacket) {
             compound.putFloat("RemoteSpeed", remoteSpeed);
             compound.putFloat("RemoteBudget", remoteBudget);
+            compound.putFloat("RemoteCapacity", remoteCapacity);
         }
     }
 
@@ -203,6 +236,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (!clientPacket) {
             remoteSpeed = compound.getFloat("RemoteSpeed");
             remoteBudget = compound.getFloat("RemoteBudget");
+            remoteCapacity = compound.getFloat("RemoteCapacity");
         }
     }
 }

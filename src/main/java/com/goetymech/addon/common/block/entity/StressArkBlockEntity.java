@@ -59,27 +59,22 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (++tickCounter < 20) return;
         tickCounter = 0;
 
-        float totalCap = 0, totalStress = 0;
+        float totalCap = 0;
         int readerCount = 0;
 
         for (GlobalBlockPos readerPos : service.getReadersForOwner(ownerUUID)) {
             StressLinkService.ReaderSnapshot snap = service.getCachedReaderData(readerPos);
             if (snap == null) continue;
             totalCap += snap.capacity();
-            totalStress += snap.stress();
             readerCount++;
         }
 
-        boolean changed = Math.abs(totalCap - cachedTotalCapacity) > 0.01f
-                || Math.abs(totalStress - cachedTotalStress) > 0.01f
-                || readerCount != cachedNetworkCount;
+        float totalStress = service.getTotalSystemStress(ownerUUID);
 
-        if (changed) {
-            cachedTotalCapacity = totalCap;
-            cachedTotalStress = totalStress;
-            cachedNetworkCount = readerCount;
-            syncToClient();
-        }
+        cachedTotalCapacity = totalCap;
+        cachedTotalStress = totalStress;
+        cachedNetworkCount = readerCount;
+        syncToClient();
     }
 
     // ── Lifecycle ──
