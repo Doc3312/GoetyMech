@@ -22,7 +22,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("TEST");
 
     public static record ArkLocation(ResourceKey<Level> dimension, BlockPos pos) {}
 
@@ -119,7 +124,11 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
             for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
                 if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    total += Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
+                    float avail = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
+                    LOGGER.warn("[TOT_AVAIL] ARK{} reader{} cap={} stress={} avail={}",
+                            fmtPos(worldPosition), fmtPos(reader.getBlockPos()),
+                            (int)reader.getNetworkCapacity(), (int)reader.getNetworkStress(), (int)avail);
+                    total += avail;
                 }
             }
         }
@@ -144,7 +153,12 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
                 if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
                     float selfConsumption = reader.getConsumedFor(this.worldPosition);
-                    total += Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + selfConsumption);
+                    float raw = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + selfConsumption);
+                    LOGGER.warn("[RAW_AVAIL] ARK{} reader{} cap={} stress={} selfConsumed={} raw={}",
+                            fmtPos(worldPosition), fmtPos(reader.getBlockPos()),
+                            (int)reader.getNetworkCapacity(), (int)reader.getNetworkStress(),
+                            (int)selfConsumption, (int)raw);
+                    total += raw;
                 }
             }
         }
@@ -185,6 +199,16 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
                 || Math.abs(totalStress - cachedTotalStress) > 0.01f
                 || netCount != cachedNetworkCount;
 
+        LOGGER.warn("[RECOMPUTE] ARK{} dirty={} totalCap={}{} totalStress={}{} netCount={} engines={}",
+                fmtPos(worldPosition), dirty,
+                (int)totalCap, (changed && totalCap != cachedTotalCapacity ? " (was " + (int)cachedTotalCapacity + ")" : ""),
+                (int)totalStress, (changed && totalStress != cachedTotalStress ? " (was " + (int)cachedTotalStress + ")" : ""),
+                netCount, boundEngines.size());
+
+        for (var entry : boundEngines.entrySet()) {
+            LOGGER.warn("[RECOMPUTE] ARK{} boundEngine{} consumption={}", fmtPos(worldPosition), fmtPos(entry.getKey()), (int)entry.getValue().consumption);
+        }
+
         if (changed || !hasEverSynced) {
             cachedTotalCapacity = totalCap;
             cachedTotalStress = totalStress;
@@ -198,6 +222,8 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     }
 
     private void distributeConsumption(Collection<StressReaderBlockEntity> readers) {
+        LOGGER.warn("[DISTRIBUTE] ARK{} readers={}", fmtPos(worldPosition), readers.size());
+
         if (boundEngines.isEmpty() || readers.isEmpty()) return;
 
         float totalEngineConsumption = 0;
@@ -205,7 +231,10 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             totalEngineConsumption += entry.consumption;
         }
 
+        LOGGER.warn("[DISTRIBUTE] ARK{} totalEngineConsumption={}", fmtPos(worldPosition), (int)totalEngineConsumption);
+
         if (totalEngineConsumption <= 0) {
+            LOGGER.warn("[DISTRIBUTE] ARK{} consumption=0 -> remove all", fmtPos(worldPosition));
             for (StressReaderBlockEntity reader : readers) {
                 reader.removeConsumer(this.worldPosition);
             }
@@ -218,15 +247,26 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         int idx = 0;
         for (StressReaderBlockEntity reader : readers) {
             available[idx] = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedFor(this.worldPosition));
+            LOGGER.warn("[DISTRIBUTE] ARK{} reader{} availCalculated={} (cap={} stress={} selfConsumed={})",
+                    fmtPos(worldPosition), fmtPos(reader.getBlockPos()), (int)available[idx],
+                    (int)reader.getNetworkCapacity(), (int)reader.getNetworkStress(),
+                    (int)reader.getConsumedFor(this.worldPosition));
             totalAvailable += available[idx];
             idx++;
         }
-        if (totalAvailable <= 0) return;
+        LOGGER.warn("[DISTRIBUTE] ARK{} totalAvailable={}", fmtPos(worldPosition), (int)totalAvailable);
+        if (totalAvailable <= 0) {
+            LOGGER.warn("[DISTRIBUTE] ARK{} totalAvailable<=0 -> skip", fmtPos(worldPosition));
+            return;
+        }
 
         idx = 0;
         for (StressReaderBlockEntity reader : readers) {
             float allocated = totalEngineConsumption * (available[idx] / totalAvailable);
-            reader.setConsumedRemotely(this.worldPosition, Math.min(allocated, available[idx]));
+            float actual = Math.min(allocated, available[idx]);
+            LOGGER.warn("[DISTRIBUTE] ARK{} reader{} allocated={} capped={}",
+                    fmtPos(worldPosition), fmtPos(reader.getBlockPos()), (int)allocated, (int)actual);
+            reader.setConsumedRemotely(this.worldPosition, actual);
             idx++;
         }
     }
@@ -347,5 +387,9 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             }
         }
         forceRefresh = true;
+    }
+
+    private static String fmtPos(BlockPos pos) {
+        return "[" + pos.getX() + "," + pos.getY() + "," + pos.getZ() + "]";
     }
 }

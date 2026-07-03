@@ -66,8 +66,15 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!level.isClientSide && level.getGameTime() % 100 == 0) {
-            purgeStaleEntries();
+        if (!level.isClientSide) {
+            if (level.getGameTime() % 100 == 0) {
+                purgeStaleEntries();
+            }
+            if (level.getGameTime() % 20 == 0) {
+                LOGGER.warn("[TICK] READER {} cap={} stress={} speed={} thSpeed={} over={} consumed={} consumers={}",
+                        fmtPos(worldPosition), (int)capacity, (int)stress, getSpeed(), getTheoreticalSpeed(),
+                        overStressed, (int)getConsumedRemotely(), remoteConsumers.size());
+            }
         }
     }
 
@@ -80,18 +87,30 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     @Override
     public float calculateStressApplied() {
         float s = Math.abs(getTheoreticalSpeed());
-        if (s < 0.01f) return 0;
-        return getConsumedRemotely() / s;
+        if (s < 0.01f) {
+            LOGGER.warn("[CALC_STRESS] READER {} speed=0 -> return 0", fmtPos(worldPosition));
+            return 0;
+        }
+        float consumed = getConsumedRemotely();
+        float result = consumed / s;
+        LOGGER.warn("[CALC_STRESS] READER {} consumed={} speed={} -> return {}", fmtPos(worldPosition), (int)consumed, s, (int)result);
+        return result;
     }
 
     public float getAvailableFor(BlockPos enginePos) {
         float selfAmount = 0;
         ConsumerEntry entry = remoteConsumers.get(enginePos);
         if (entry != null) selfAmount = entry.amount;
-        return Math.max(0, getNetworkCapacity() - getNetworkStress() + selfAmount);
+        float avail = Math.max(0, getNetworkCapacity() - getNetworkStress() + selfAmount);
+        LOGGER.warn("[AVAIL] READER {} forEngine{} cap={} stress={} selfConsumed={} -> avail={}",
+                fmtPos(worldPosition), fmtPos(enginePos), (int)getNetworkCapacity(), (int)getNetworkStress(),
+                (int)selfAmount, (int)avail);
+        return avail;
     }
 
     public void setConsumedRemotely(BlockPos enginePos, float amount) {
+        LOGGER.warn("[SET_CONSUMED] READER {} enginePos{} amount={} (before: consumers={})",
+                fmtPos(worldPosition), fmtPos(enginePos), (int)amount, remoteConsumers.size());
         purgeStaleEntries();
         if (Math.abs(amount) < 0.001f) {
             remoteConsumers.remove(enginePos);
@@ -100,8 +119,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                     level != null ? level.getGameTime() : 0));
         }
         float newTotal = getConsumedRemotely();
-        LOGGER.debug("[TEST] SR{} REMOTE | engines={} | total={} | speed={} | hasNet={}",
-                fmtPos(worldPosition), remoteConsumers.size(), newTotal, getSpeed(), hasNetwork());
+        LOGGER.warn("[SET_CONSUMED] READER {} enginePos{} amount={} -> total={} consumers={}",
+                fmtPos(worldPosition), fmtPos(enginePos), (int)amount, (int)newTotal, remoteConsumers.size());
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
@@ -112,8 +131,12 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     public void removeConsumer(BlockPos enginePos) {
         float oldTotal = getConsumedRemotely();
+        LOGGER.warn("[RM_CONSUMED] READER {} enginePos{} oldTotal={} consumers={}",
+                fmtPos(worldPosition), fmtPos(enginePos), (int)oldTotal, remoteConsumers.size());
         remoteConsumers.remove(enginePos);
         float newTotal = getConsumedRemotely();
+        LOGGER.warn("[RM_CONSUMED] READER {} enginePos{} newTotal={} consumers={}",
+                fmtPos(worldPosition), fmtPos(enginePos), (int)newTotal, remoteConsumers.size());
         if (Math.abs(oldTotal - newTotal) <= 0.001f) return;
         if (level != null && !level.isClientSide) {
             setChanged();

@@ -75,8 +75,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (level instanceof ServerLevel && ++tickCounter >= 20) {
             tickCounter = 0;
             tryRefreshRpm();
-            LOGGER.debug("[REMOTE_ENGINE] tick at {}: cachedRpm={} cachedConsumed={} speed={} stress={} capacity={}",
-                    worldPosition, cachedRpm, cachedConsumed, this.speed, this.stress, this.capacity);
+            LOGGER.warn("[TICK] ENGINE {} ARK={} cap={} stress={} speed={} thSpeed={} over={} genSpeed={}",
+                    fmtPos(worldPosition), bindingType, this.capacity, this.stress, this.speed, getTheoreticalSpeed(), overStressed, getGeneratedSpeed());
         }
     }
 
@@ -140,8 +140,11 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
         float rawTotal = ark.getRawAvailableStress();
         int engineCount = ark.getEngineCount();
+        float prevConsumed = cachedConsumed;
         cachedConsumed = engineCount > 0 ? Math.max(0, rawTotal) / engineCount : 0;
         ark.reportConsumption(this.worldPosition, cachedConsumed);
+        LOGGER.warn("[ARK_REF] ENGINE {} availDisp={} availRaw={} engineCount={} prevConsumed={} newConsumed={} rpm={}",
+                fmtPos(worldPosition), (int)cachedArkTotalAvailable, (int)rawTotal, engineCount, (int)prevConsumed, (int)cachedConsumed, cachedRpm);
 
         updateGeneratedRotation();
 
@@ -168,7 +171,11 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         cachedNetworkStress = reader.getNetworkStress();
 
         float rawAvailable = reader.getAvailableFor(this.worldPosition);
+        float prevConsumed = cachedConsumed;
         cachedConsumed = Math.max(rawAvailable, 0);
+        LOGGER.warn("[READER_REF] ENGINE {} Reader{} cap={} stress={} availForMe={} prevConsumed={} newConsumed={} rpm={}",
+                fmtPos(worldPosition), fmtPos(linkedPos), (int)cachedNetworkCapacity, (int)cachedNetworkStress,
+                (int)rawAvailable, (int)prevConsumed, (int)cachedConsumed, cachedRpm);
 
         reader.setConsumedRemotely(this.worldPosition, cachedConsumed);
 
@@ -190,10 +197,16 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public float calculateAddedStressCapacity() {
         float speed = Math.abs(this.speed);
-        if (speed < 0.01f) return 0;
-        if (bindingType != BindingType.NONE && cachedConsumed > 0) {
-            return cachedConsumed / speed;
+        if (speed < 0.01f) {
+            LOGGER.warn("[CALC_CAP] ENGINE {} speed=0 -> return 0", fmtPos(worldPosition));
+            return 0;
         }
+        if (bindingType != BindingType.NONE && cachedConsumed > 0) {
+            float result = cachedConsumed / speed;
+            LOGGER.warn("[CALC_CAP] ENGINE {} cachedConsumed={} speed={} -> result={}", fmtPos(worldPosition), (int)cachedConsumed, speed, (int)result);
+            return result;
+        }
+        LOGGER.warn("[CALC_CAP] ENGINE {} binding={} cachedConsumed={} -> return 0", fmtPos(worldPosition), bindingType, (int)cachedConsumed);
         return 0;
     }
 
