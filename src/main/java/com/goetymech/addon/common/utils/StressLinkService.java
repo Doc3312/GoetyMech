@@ -30,6 +30,14 @@ public class StressLinkService extends SavedData {
     private transient final Map<GlobalBlockPos, StressReaderBlockEntity> activeReaders = new HashMap<>();
     private transient final Map<GlobalBlockPos, RemoteEngineBlockEntity> activeEngines = new HashMap<>();
 
+    // Engine registry by placerUUID — unbound engines auto-pull from player's readers
+    private transient final Map<GlobalBlockPos, UUID> engineRegistry = new HashMap<>();
+    private transient final Map<UUID, Set<GlobalBlockPos>> playerEngines = new HashMap<>();
+
+    // Engine consumption report — updated by engines so Ark can show total system usage
+    private final Map<GlobalBlockPos, Float> engineConsumption = new HashMap<>();
+    private transient final Map<UUID, Float> playerEngineConsumption = new HashMap<>();
+
     // Reader data cache — updated by updateFromNetwork(), read by Ark
     private transient final Map<GlobalBlockPos, ReaderSnapshot> readerCache = new HashMap<>();
 
@@ -112,6 +120,14 @@ public class StressLinkService extends SavedData {
 
     public void onEngineUnload(GlobalBlockPos enginePos) {
         activeEngines.remove(enginePos);
+        UUID owner = engineRegistry.remove(enginePos);
+        if (owner != null) {
+            Set<GlobalBlockPos> set = playerEngines.get(owner);
+            if (set != null) {
+                set.remove(enginePos);
+                if (set.isEmpty()) playerEngines.remove(owner);
+            }
+        }
     }
 
     // ── Binding management ──
@@ -158,8 +174,13 @@ public class StressLinkService extends SavedData {
                 reader.getNetworkStress(),
                 reader.getSpeed()));
 
+        // Push to bound engine (1:1 binding)
         GlobalBlockPos enginePos = readerToEngine.get(readerKey);
         if (enginePos != null) pushToEngine(enginePos);
+
+        // Push to all player engines (auto-pool)
+        UUID owner = readerOwners.get(readerKey);
+        if (owner != null) pushToPlayerEngines(owner);
     }
 
     @Nullable
@@ -176,8 +197,76 @@ public class StressLinkService extends SavedData {
         if (reader == null || engine == null) return;
 
         float speed = reader.getSpeed();
-        float budget = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
-        engine.applyRemoteUpdate(speed, budget);
+        float capacity = reader.getNetworkCapacity();
+        float budget = Math.max(0, capacity - reader.getNetworkStress());
+        engine.applyRemoteUpdate(speed, budget, capacity);
+    }
+
+    // ── Player engine registry (unbound engines by placerUUID) ──
+
+    public void registerPlayerEngine(GlobalBlockPos enginePos, @Nullable UUID ownerUUID) {
+        if (ownerUUID == null) return;
+        UUID prev = engineRegistry.put(enginePos, ownerUUID);
+        if (!ownerUUID.equals(prev)) {
+            if (prev != null) {
+                Set<GlobalBlockPos> s = playerEngines.get(prev);
+                if (s != null) s.remove(enginePos);
+            }
+            playerEngines.computeIfAbsent(ownerUUID, k -> new HashSet<>()).add(enginePos);
+        }
+    }
+
+    public void pushToPlayerEngines(UUID ownerUUID) {
+        Set<GlobalBlockPos> engines = playerEngines.get(ownerUUID);
+        if (engines == null || engines.isEmpty()) return;
+
+        float totalCapacity = 0;
+        float totalStress = 0;
+        for (GlobalBlockPos readerPos : getReadersForOwner(ownerUUID)) {
+            ReaderSnapshot snap = readerCache.get(readerPos);
+            if (snap != null) {
+                totalCapacity += snap.capacity();
+                totalStress += snap.stress();
+            }
+        }
+        float totalAvailable = Math.max(0, totalCapacity - totalStress);
+
+        for (GlobalBlockPos enginePos : engines) {
+            if (engineToReader.containsKey(enginePos)) continue;
+            RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+            if (engine != null) {
+                engine.applyRemoteUpdate(16, totalAvailable, totalCapacity);
+            }
+        }
+    }
+
+    // ── Engine consumption tracking ──
+
+    public void reportEngineConsumption(GlobalBlockPos enginePos, float consumed) {
+        Float prev = engineConsumption.put(enginePos, consumed);
+        UUID owner = engineRegistry.get(enginePos);
+        if (owner != null) {
+            float total = 0;
+            for (var entry : engineConsumption.entrySet()) {
+                if (owner.equals(engineRegistry.get(entry.getKey()))) {
+                    total += entry.getValue();
+                }
+            }
+            playerEngineConsumption.put(owner, total);
+        }
+    }
+
+    public float getPlayerEngineConsumption(UUID ownerUUID) {
+        return playerEngineConsumption.getOrDefault(ownerUUID, 0f);
+    }
+
+    public float getTotalSystemStress(UUID ownerUUID) {
+        float readerStress = 0;
+        for (GlobalBlockPos readerPos : getReadersForOwner(ownerUUID)) {
+            ReaderSnapshot snap = readerCache.get(readerPos);
+            if (snap != null) readerStress += snap.stress();
+        }
+        return readerStress + getPlayerEngineConsumption(ownerUUID);
     }
 
     // ── Reader ownership registry (for Ark) ──

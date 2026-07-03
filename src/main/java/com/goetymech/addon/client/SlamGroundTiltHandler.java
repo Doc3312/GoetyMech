@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.*;
 
@@ -22,9 +23,7 @@ public class SlamGroundTiltHandler {
 
     private static final int MAX_LIFETIME = 60;
     private static final int SCAN_DOWN = 5;
-
-    private static final int EFFECT_ID_LIMIT = 100;
-    private static int effectCounter = 0;
+    private static final double RADIUS = 6.0;
 
     public static void startEffect(Vec3 center) {
         Minecraft mc = Minecraft.getInstance();
@@ -33,6 +32,8 @@ public class SlamGroundTiltHandler {
 
         BlockPos centerPos = BlockPos.containing(center);
         int baseY = centerPos.getY();
+
+        double bounceExponentCoef = Math.min(1.0 / (RADIUS * RADIUS), 0.1);
 
         Map<BlockPos, BlockData> targets = new LinkedHashMap<>();
 
@@ -48,28 +49,36 @@ public class SlamGroundTiltHandler {
                     BlockState state = level.getBlockState(groundPos);
                     if (state.isAir() || state.is(Blocks.BEDROCK) || state.getBlock() instanceof CraterBlock) continue;
 
-                    double t = Mth.clamp((hDist - 2.0) / 3.0, 0.0, 1.0);
-                    double smoothT = t * t * (3.0 - 2.0 * t);
-                    float angleDeg = (float) (5.0 + smoothT * 55.0);
-                    float lift = (float) (smoothT * 0.35);
-                    double by = groundPos.getY() + 0.5 + lift;
+                    // --- EpicFight exact formulas ---
 
-                    float angleRad = angleDeg * Mth.DEG_TO_RAD;
+                    // Rotation axis: IMPACT_DIRECTION(0,-1,0) × centerToBlock(dx,0,dz) = (-dz, 0, dx)
+                    double axisLen = Math.sqrt(dx * dx + dz * dz);
+                    if (axisLen < 0.01) continue;
+                    float axisX = (float)(-dz / axisLen);
+                    float axisZ = (float)(dx / axisLen);
 
-                    double toCx = -dx;
-                    double toCz = -dz;
-                    double len = Math.sqrt(toCx * toCx + toCz * toCz);
-                    if (len < 0.01) continue;
+                    // Angle: (distance/radius) × 15° + random(-5°, +5°)
+                    float angleDeg = (float)((hDist / RADIUS) * 15.0 + level.random.nextFloat() * 10.0 - 5.0);
 
-                    double axisX = -toCz / len;
-                    double axisZ = toCx / len;
+                    Quaternionf rotation = new Quaternionf().setAngleAxis(angleDeg * Mth.DEG_TO_RAD, axisX, 0, axisZ);
 
-                    Quaternionf rotation = new Quaternionf().setAngleAxis(-angleRad, (float) axisX, 0, (float) axisZ);
-                    int lifetime = MAX_LIFETIME;
+                    // Random jitter: X ±7.5°, Y ±20°, Z ±7.5°
+                    rotation.mul(new Quaternionf().rotationX((level.random.nextFloat() * 15.0F - 7.5F) * Mth.DEG_TO_RAD));
+                    rotation.mul(new Quaternionf().rotationY((level.random.nextFloat() * 40.0F - 20.0F) * Mth.DEG_TO_RAD));
+                    rotation.mul(new Quaternionf().rotationZ((level.random.nextFloat() * 15.0F - 7.5F) * Mth.DEG_TO_RAD));
+
+                    // Translate (lift): (0, max(0, distance/radius - 0.5) × 0.5, 0)
+                    float liftY = Math.max(0.0F, (float)(hDist / RADIUS) - 0.5F) * 0.5F;
+                    Vector3f translate = new Vector3f(0, liftY, 0);
+
+                    // Bounce: distance² × min(1/radius², 0.1)
+                    double bouncing = hDist * hDist * bounceExponentCoef;
+
+                    // Ring-based lifetime (inner → outer, 5 tick difference per ring)
                     int ringIndex = hDist < 2.5 ? 0 : hDist < 3.5 ? 1 : hDist < 4.5 ? 2 : 3;
-                    lifetime -= ringIndex * 5;
+                    int lifetime = MAX_LIFETIME - ringIndex * 5;
 
-                    targets.put(groundPos, new BlockData(state, rotation, (float)(by - groundPos.getY()), lifetime));
+                    targets.put(groundPos, new BlockData(state, rotation, translate, bouncing, lifetime));
                 }
             }
         }
@@ -80,11 +89,9 @@ public class SlamGroundTiltHandler {
 
             level.setBlock(pos, ModBlocks.CRATER.get().defaultBlockState(), 3);
             if (level.getBlockEntity(pos) instanceof CraterBlockEntity be) {
-                be.setData(data.state, data.rotation, data.liftHeight, data.lifetime);
+                be.setData(data.state, data.rotation, data.translate, data.bouncing, data.lifetime);
             }
         }
-
-        effectCounter++;
     }
 
     private static BlockPos findGroundPos(Level level, int x, int startY, int z) {
@@ -98,5 +105,5 @@ public class SlamGroundTiltHandler {
         return null;
     }
 
-    private record BlockData(BlockState state, Quaternionf rotation, float liftHeight, int lifetime) {}
+    private record BlockData(BlockState state, Quaternionf rotation, Vector3f translate, double bouncing, int lifetime) {}
 }

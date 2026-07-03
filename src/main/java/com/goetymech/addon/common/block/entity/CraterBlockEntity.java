@@ -5,32 +5,31 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class CraterBlockEntity extends BlockEntity {
 
     private BlockState originalState = Blocks.AIR.defaultBlockState();
     private Quaternionf rotation = new Quaternionf();
-    private float liftHeight = 0;
+    private Vector3f translate = new Vector3f();
+    private double bouncing = 0;
     private int lifetime = 0;
     private int maxLifetime = 60;
-
-    private static final int BOUNCE_UP_TICKS = 6;
-    private static final int FINAL_DISSOLVE_TICKS = 5;
 
     public CraterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.CRATER_ENTITY.get(), pos, state);
     }
 
-    public void setData(BlockState originalState, Quaternionf rotation, float liftHeight, int maxLifetime) {
+    public void setData(BlockState originalState, Quaternionf rotation, Vector3f translate, double bouncing, int maxLifetime) {
         this.originalState = originalState;
         this.rotation = rotation;
-        this.liftHeight = liftHeight;
+        this.translate = translate;
+        this.bouncing = bouncing;
         this.maxLifetime = maxLifetime;
         this.lifetime = 0;
         setChanged();
@@ -38,46 +37,29 @@ public class CraterBlockEntity extends BlockEntity {
 
     public BlockState getOriginalState() { return originalState; }
     public Quaternionf getRotation() { return rotation; }
-    public float getLiftHeight() { return liftHeight; }
+    public Vector3f getTranslate() { return translate; }
+    public double getBouncing() { return bouncing; }
     public int getLifetime() { return lifetime; }
     public int getMaxLifetime() { return maxLifetime; }
-
-    public float getBounce(float partialTick) {
-        if (lifetime < BOUNCE_UP_TICKS) {
-            float t = (lifetime + partialTick) / BOUNCE_UP_TICKS;
-            return liftHeight * (1 - (1 - t) * (1 - t));
-        }
-        int postBounce = lifetime - BOUNCE_UP_TICKS;
-        float remain = maxLifetime - BOUNCE_UP_TICKS;
-        if (remain <= 0) return liftHeight;
-        float decay = 1 - (postBounce + partialTick) / remain;
-        return liftHeight * Math.max(0, decay);
-    }
-
-    public float getDissolveFade(float partialTick) {
-        int remaining = maxLifetime - lifetime;
-        if (remaining > FINAL_DISSOLVE_TICKS) return 1;
-        return Math.max(0, (remaining - partialTick) / FINAL_DISSOLVE_TICKS);
-    }
 
     public static void clientTick(Level level, BlockPos pos, BlockState state, CraterBlockEntity be) {
         be.lifetime++;
 
         if (be.lifetime >= be.maxLifetime) {
+            level.removeBlockEntity(pos);
             level.setBlock(pos, be.originalState, 3);
             return;
         }
 
-        int remaining = be.maxLifetime - be.lifetime;
-        if (remaining <= FINAL_DISSOLVE_TICKS && level instanceof ClientLevel cl) {
-            if (cl.random.nextInt(3) == 0) {
+        if (be.originalState.shouldSpawnParticlesOnBreak() && be.maxLifetime - be.lifetime < 10) {
+            if (level instanceof ClientLevel cl && cl.random.nextInt(3) == 0) {
                 cl.addParticle(
                         new BlockParticleOption(ParticleTypes.BLOCK, be.originalState),
                         pos.getX() + cl.random.nextDouble(),
                         pos.getY() + 0.5,
                         pos.getZ() + cl.random.nextDouble(),
                         (cl.random.nextDouble() - 0.5) * 0.3,
-                        cl.random.nextDouble() * 0.3 + 0.1,
+                        cl.random.nextDouble() * 0.5,
                         (cl.random.nextDouble() - 0.5) * 0.3);
             }
         }
