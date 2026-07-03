@@ -26,8 +26,8 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SlamGroundTiltHandler {
 
-    private static final int HOLD_TICKS = 20;
-    private static final int DISSOLVE_PER_RING = 5;
+    private static final int HOLD_TICKS = 40;
+    private static final int DISSOLVE_PER_RING = 10;
     private static final int TOTAL_DURATION = HOLD_TICKS + 4 * DISSOLVE_PER_RING;
     private static final int SCAN_DOWN = 5;
 
@@ -96,7 +96,7 @@ public class SlamGroundTiltHandler {
                 double axisX = -toCz / len;
                 double axisZ = toCx / len;
 
-                Quaternionf rotation = new Quaternionf().setAngleAxis(angleRad, (float) axisX, 0, (float) axisZ);
+                Quaternionf rotation = new Quaternionf().setAngleAxis(-angleRad, (float) axisX, 0, (float) axisZ);
 
                 blocks.add(new TiltBlock(bx, by, bz, state, rotation, ringIndex));
             }
