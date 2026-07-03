@@ -103,7 +103,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
             for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
                 if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    float available = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedRemotely());
+                    float available = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
                     if (available > bestAvailable) {
                         bestAvailable = available;
                         bestRpm = reader.getSpeed();
@@ -119,7 +119,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         synchronized (StressReaderBlockEntity.ACTIVE_READERS) {
             for (StressReaderBlockEntity reader : StressReaderBlockEntity.ACTIVE_READERS) {
                 if (reader.hasNetwork() && reader.getLevel() != null && reader.getLevel().isLoaded(reader.getBlockPos())) {
-                    total += Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedRemotely());
+                    total += Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
                 }
             }
         }
@@ -200,7 +200,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         float totalAvailable = 0;
         int idx = 0;
         for (StressReaderBlockEntity reader : readers) {
-            available[idx] = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress() + reader.getConsumedRemotely());
+            available[idx] = Math.max(0, reader.getNetworkCapacity() - reader.getNetworkStress());
             totalAvailable += available[idx];
             idx++;
         }

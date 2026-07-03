@@ -3,7 +3,6 @@ package com.goetymech.addon.common.block.entity;
 import java.util.List;
 import java.util.UUID;
 
-import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
@@ -166,7 +165,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         cachedNetworkStress = reader.getNetworkStress();
 
         float rawAvailable = cachedNetworkCapacity - cachedNetworkStress;
-        float trueAvailable = Math.max(0, rawAvailable + reader.getConsumedRemotely());
+        float trueAvailable = Math.max(0, rawAvailable);
 
         cachedConsumed = Math.max(trueAvailable, 0);
 
@@ -191,7 +190,10 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public float calculateAddedStressCapacity() {
         float speed = Math.abs(this.speed);
         if (speed < 0.01f) return 0;
-        return ModConfig.REMOTE_ENGINE_STRESS_TO_RPM_RATIO.get().floatValue();
+        if (bindingType != BindingType.NONE && cachedConsumed > 0) {
+            return cachedConsumed / speed;
+        }
+        return 0;
     }
 
     @Override
