@@ -1,5 +1,6 @@
 package com.goetymech.addon.common.net.s2c;
 
+import com.goetymech.addon.client.SlamGroundTiltHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
@@ -48,6 +49,8 @@ public class S2CSlamImpactPacket {
             if (level == null) return;
 
             Vec3 pos = new Vec3(packet.x, packet.y, packet.z);
+
+            SlamGroundTiltHandler.startEffect(pos);
 
             // 播放冲击音效
             level.playLocalSound(
