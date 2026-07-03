@@ -224,7 +224,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (level == null || level.isClientSide || ownerUUID == null) return;
         Player player = level.getPlayerByUUID(ownerUUID);
         if (player instanceof ServerPlayer sp) {
-            ModNetwork.sendTo(sp, new S2CStressArkDataPacket(cachedTotalCapacity, cachedTotalStress, cachedNetworkCount));
+            ModNetwork.sendTo(sp, new S2CStressArkDataPacket(cachedTotalCapacity, cachedTotalStress, cachedNetworkCount, getTotalConsumedByEngines()));
         }
     }
 
@@ -232,7 +232,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (level == null || level.isClientSide || ownerUUID == null) return;
         Player player = level.getPlayerByUUID(ownerUUID);
         if (player instanceof ServerPlayer sp) {
-            ModNetwork.sendTo(sp, new S2CStressArkDataPacket(-1, -1, 0));
+            ModNetwork.sendTo(sp, new S2CStressArkDataPacket(-1, -1, 0, 0));
         }
     }
 

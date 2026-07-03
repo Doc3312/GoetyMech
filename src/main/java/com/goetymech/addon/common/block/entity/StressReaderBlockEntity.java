@@ -96,6 +96,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
         }
     }
 
@@ -107,6 +109,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (level != null && !level.isClientSide) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
         }
     }
 
@@ -122,6 +126,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (removed) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            if (hasNetwork())
+                getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
         }
     }
 

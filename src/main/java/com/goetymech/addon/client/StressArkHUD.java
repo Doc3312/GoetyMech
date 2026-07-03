@@ -22,14 +22,16 @@ public class StressArkHUD {
     private static float totalCapacity;
     private static float totalStress;
     private static int networkCount;
+    private static float engineConsumption;
     private static boolean hasData;
 
     public static final IGuiOverlay OVERLAY = StressArkHUD::drawHUD;
 
-    public static void onData(float cap, float stress, int networks) {
+    public static void onData(float cap, float stress, int networks, float consumption) {
         totalCapacity = cap;
         totalStress = stress;
         networkCount = networks;
+        engineConsumption = consumption;
         hasData = true;
     }
 
@@ -38,6 +40,7 @@ public class StressArkHUD {
         totalCapacity = 0;
         totalStress = 0;
         networkCount = 0;
+        engineConsumption = 0;
     }
 
     public static void drawHUD(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
@@ -80,5 +83,10 @@ public class StressArkHUD {
         int textX = barX + 37;
         int textY = barY + 1;
         gui.drawString(font, text, textX, textY, 0xFFFFFF);
+
+        if (engineConsumption > 0) {
+            String engText = "Eng: " + (int) engineConsumption + " SU";
+            gui.drawString(font, engText, barX, barY + BAR_HEIGHT + 2, 0x55FF55);
+        }
     }
 }
