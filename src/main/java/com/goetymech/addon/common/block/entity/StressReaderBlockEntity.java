@@ -201,7 +201,9 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
         float cap = getNetworkCapacity();
         float netStress = getNetworkStress();
-        float fraction = cap == 0 ? 0 : netStress / cap;
+        float consumedRemotely = getConsumedRemotely();
+        float displayStress = netStress + consumedRemotely;
+        float fraction = cap == 0 ? 0 : displayStress / cap;
 
         if (getTheoreticalSpeed() == 0) {
             CreateLang.text(TooltipHelper.makeProgressBar(3, 0))
@@ -216,17 +218,16 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
 
-            float remaining = getAvailableStress();
+            float remaining = Math.max(0, cap - displayStress);
             LangBuilder su = CreateLang.translate("generic.unit.stress");
             LangBuilder stressTip = CreateLang.number(remaining)
                 .add(su)
                 .style(StressImpact.of(fraction).getRelativeColor());
 
-            if (remaining != cap)
-                stressTip.text(ChatFormatting.GRAY, " / ")
-                    .add(CreateLang.number(cap)
-                        .add(su)
-                        .style(ChatFormatting.DARK_GRAY));
+            stressTip.text(ChatFormatting.GRAY, " / ")
+                .add(CreateLang.number(cap)
+                    .add(su)
+                    .style(ChatFormatting.DARK_GRAY));
 
             stressTip.forGoggles(tooltip, 1);
         }

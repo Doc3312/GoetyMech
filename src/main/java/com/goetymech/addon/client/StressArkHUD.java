@@ -56,8 +56,9 @@ public class StressArkHUD {
     }
 
     private static void drawStressBar(GuiGraphics gui, Font font, int width, int height) {
-        float used = totalStress;
         float cap = totalCapacity;
+        float used = engineConsumption;
+        float available = Math.max(0, cap - used);
         float fraction = cap <= 0 ? 0 : used / cap;
 
         int barX = width / 2 + 50;
@@ -79,14 +80,9 @@ public class StressArkHUD {
         gui.blit(Goety.location("textures/gui/soul_energy_bar.png"),
                 barX + 9, barY + 2, offset, 0, fillWidth, ENERGY_BAR_HEIGHT, 234, ENERGY_BAR_HEIGHT);
 
-        String text = (int) used + "/" + (int) cap + " SU";
+        String text = (int) available + "/" + (int) cap + " SU";
         int textX = barX + 37;
         int textY = barY + 1;
         gui.drawString(font, text, textX, textY, 0xFFFFFF);
-
-        if (engineConsumption > 0) {
-            String engText = "Eng: " + (int) engineConsumption + " SU";
-            gui.drawString(font, engText, barX, barY + BAR_HEIGHT + 2, 0x55FF55);
-        }
     }
 }

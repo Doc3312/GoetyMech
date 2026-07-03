@@ -274,48 +274,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (!StressImpact.isEnabled()) return false;
         if (bindingType == BindingType.NONE) return false;
 
-        if (bindingType == BindingType.ARK) {
-            CreateLang.text("Remote Engine (Ark)")
-                    .style(ChatFormatting.WHITE)
-                    .forGoggles(tooltip);
-
-            LangBuilder su = CreateLang.translate("generic.unit.stress");
-            float rpm = Math.abs(getSpeed());
-
-            CreateLang.text("RPM: ")
-                    .style(ChatFormatting.GRAY)
-                    .forGoggles(tooltip);
-            CreateLang.number(rpm)
-                    .style(ChatFormatting.AQUA)
-                    .forGoggles(tooltip, 1);
-
-            CreateLang.text("Source: ")
-                    .style(ChatFormatting.GRAY)
-                    .forGoggles(tooltip);
-            CreateLang.number(cachedArkEnginesConsumption)
-                    .add(su)
-                    .style(ChatFormatting.GREEN)
-                    .text(ChatFormatting.GRAY, " / ")
-                    .add(CreateLang.number(cachedArkTotalAvailable)
-                            .add(su).style(ChatFormatting.DARK_GRAY))
-                    .forGoggles(tooltip, 1);
-
-            return true;
-        }
-
-        if (linkedPos == null) return false;
-
-        CreateLang.text("Remote Engine: ["
-                + linkedPos.getX() + ", "
-                + linkedPos.getY() + ", "
-                + linkedPos.getZ() + "]")
-                .style(ChatFormatting.WHITE)
-                .forGoggles(tooltip);
-
         LangBuilder su = CreateLang.translate("generic.unit.stress");
         float rpm = Math.abs(getSpeed());
-        float cap = cachedNetworkCapacity;
-        float consumed = cachedConsumed;
 
         CreateLang.text("RPM: ")
                 .style(ChatFormatting.GRAY)
@@ -324,14 +284,42 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
 
-        CreateLang.text("Source: ")
+        if (bindingType == BindingType.ARK) {
+            float total = Math.max(0, cachedArkTotalAvailable);
+            float used = cachedArkEnginesConsumption;
+            float remaining = Math.max(0, total - used);
+
+            CreateLang.translate("gui.stressometer.capacity")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+
+            CreateLang.number(remaining)
+                    .add(su)
+                    .style(ChatFormatting.GREEN)
+                    .text(ChatFormatting.GRAY, " / ")
+                    .add(CreateLang.number(total)
+                            .add(su).style(ChatFormatting.DARK_GRAY))
+                    .forGoggles(tooltip, 1);
+
+            return true;
+        }
+
+        if (linkedPos == null) return false;
+
+        float total = Math.max(0, cachedNetworkCapacity - cachedNetworkStress);
+        float consumed = cachedConsumed;
+        float remaining = Math.max(0, total - consumed);
+
+        CreateLang.translate("gui.stressometer.capacity")
                 .style(ChatFormatting.GRAY)
                 .forGoggles(tooltip);
-        CreateLang.number(consumed)
+
+        CreateLang.number(remaining)
                 .add(su)
                 .style(ChatFormatting.GREEN)
                 .text(ChatFormatting.GRAY, " / ")
-                .add(CreateLang.number(cap).add(su).style(ChatFormatting.DARK_GRAY))
+                .add(CreateLang.number(total)
+                        .add(su).style(ChatFormatting.DARK_GRAY))
                 .forGoggles(tooltip, 1);
 
         return true;
