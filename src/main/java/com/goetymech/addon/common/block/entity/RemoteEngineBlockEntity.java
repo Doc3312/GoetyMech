@@ -238,6 +238,30 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         setChanged();
     }
 
+    public void clearLinkedPos() {
+        if (bindingType == BindingType.READER && level != null && !level.isClientSide) {
+            MinecraftServer server = ((ServerLevel) level).getServer();
+            if (linkedDim != null) {
+                ServerLevel targetLevel = server.getLevel(linkedDim);
+                if (targetLevel != null && targetLevel.getBlockEntity(linkedPos) instanceof StressReaderBlockEntity reader) {
+                    reader.removeConsumer(worldPosition);
+                }
+            }
+        }
+        this.bindingType = BindingType.NONE;
+        this.linkedPos = null;
+        this.linkedDim = null;
+        this.arkPos = null;
+        this.arkDim = null;
+        this.cachedConsumed = 0;
+        this.cachedRpm = 0;
+        setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            sendData();
+        }
+    }
+
     @Override
     public void updateGeneratedRotation() {
         super.updateGeneratedRotation();
