@@ -8,7 +8,6 @@ import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,20 +38,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         super(ModBlocks.STRESS_ARK_ENTITY.get(), pos, state);
     }
 
-    // ── Backward compat for StressShieldSpell ──
-
-    @Nullable
-    public static BlockPos getActiveArkPos(UUID playerUUID) {
-        return null;
-    }
-
-    public static record ArkLocation(ResourceKey<Level> dimension, BlockPos pos) {}
-
-    @Nullable
-    public static ArkLocation getActiveArkLocation(UUID playerUUID) {
-        return null;
-    }
-
     // ── Tick ──
 
     public static void tick(Level level, BlockPos pos, BlockState state, StressArkBlockEntity self) {
@@ -63,15 +48,8 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         StressLinkService service = StressLinkService.get(level);
         if (service == null) return;
 
-        // Ensure this Ark is registered as the owner's active Ark
-        GlobalBlockPos thisPos = GlobalBlockPos.of(level, pos);
-        GlobalBlockPos current = service.getArkForOwner(self.ownerUUID);
-        if (current == null) {
-            service.registerArk(thisPos, self.ownerUUID);
-        } else if (!current.equals(thisPos)) {
-            return; // Another Ark is the active one for this player
-        }
-
+        // Register this Ark — all Arks for one owner are active simultaneously
+        service.registerArk(GlobalBlockPos.of(level, pos), self.ownerUUID);
         self.refreshStats(service);
     }
 
@@ -103,38 +81,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
             syncToClient();
         }
     }
-
-    public float getRepresentativeRPM() {
-        StressLinkService service = StressLinkService.get(level);
-        if (service == null || ownerUUID == null) return 0;
-        float bestRpm = 0;
-        float bestAvailable = -1;
-        for (GlobalBlockPos readerPos : service.getReadersForOwner(ownerUUID)) {
-            StressLinkService.ReaderSnapshot snap = service.getCachedReaderData(readerPos);
-            if (snap == null) continue;
-            float avail = snap.getAvailable();
-            if (avail > bestAvailable) {
-                bestAvailable = avail;
-                bestRpm = snap.speed();
-            }
-        }
-        return bestRpm;
-    }
-
-    public float getTotalAvailableStress() {
-        StressLinkService service = StressLinkService.get(level);
-        if (service == null || ownerUUID == null) return 0;
-        float total = 0;
-        for (GlobalBlockPos readerPos : service.getReadersForOwner(ownerUUID)) {
-            StressLinkService.ReaderSnapshot snap = service.getCachedReaderData(readerPos);
-            if (snap != null) total += snap.getAvailable();
-        }
-        return total;
-    }
-
-    public float getTotalConsumedByEngines() { return 0; }
-    public float getRawAvailableStress() { return getTotalAvailableStress(); }
-    public int getEngineCount() { return 0; }
 
     // ── Lifecycle ──
 

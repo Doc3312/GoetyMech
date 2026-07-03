@@ -64,11 +64,6 @@ public class ModConfig {
     /** 召唤仆从寿命（tick） */
     public static final ForgeConfigSpec.IntValue SQUAD_LIFESPAN;
 
-    // ====== Remote Engine 配置 ======
-
-    /** 远程引擎应力→转速换算比 */
-    public static final ForgeConfigSpec.IntValue REMOTE_ENGINE_STRESS_TO_RPM_RATIO;
-
     // ====== Rift Walk Focus 配置 ======
 
     /** 裂纬聚晶（低级裂隙）灵魂消耗 */
@@ -368,15 +363,6 @@ public class ModConfig {
         SQUAD_LIFESPAN = BUILDER
                 .comment("召唤仆从寿命（tick）", "范围: 20-72000，默认 6000（5分钟）")
                 .defineInRange("squad_lifespan", 6000, 20, 72000);
-
-        // ====== Remote Engine 配置 ======
-        BUILDER.push("remote_engine");
-
-        REMOTE_ENGINE_STRESS_TO_RPM_RATIO = BUILDER
-                .comment("远程引擎的应力→转速换算比", "RPM = 可用应力 / 此值", "例: 可用应力 1024, 比值 64 → 16 RPM", "范围: 1-1024，默认 64")
-                .defineInRange("stress_to_rpm_ratio", 64, 1, 1024);
-
-        BUILDER.pop();
 
         // ====== Rift Walk Focus 配置 ======
         BUILDER.push("rift_walk");

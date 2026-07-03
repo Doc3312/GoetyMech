@@ -33,9 +33,9 @@ public class StressLinkService extends SavedData {
     // Reader data cache — updated by updateFromNetwork(), read by Ark
     private transient final Map<GlobalBlockPos, ReaderSnapshot> readerCache = new HashMap<>();
 
-    // Ark registry — rebuilt as Arks load/unload
+    // Ark registry — rebuilt as Arks load/unload (multi-Ark per owner supported)
     private transient final Map<GlobalBlockPos, UUID> arkRegistry = new HashMap<>();
-    private transient final Map<UUID, GlobalBlockPos> ownerArk = new HashMap<>();
+    private transient final Map<UUID, Set<GlobalBlockPos>> ownerArks = new HashMap<>();
 
     public record ReaderSnapshot(float capacity, float stress, float speed) {
         public float getAvailable() { return Math.max(0, capacity - stress); }
@@ -196,17 +196,28 @@ public class StressLinkService extends SavedData {
 
     public void registerArk(GlobalBlockPos arkPos, UUID ownerUUID) {
         arkRegistry.put(arkPos, ownerUUID);
-        ownerArk.put(ownerUUID, arkPos);
+        ownerArks.computeIfAbsent(ownerUUID, k -> new LinkedHashSet<>()).add(arkPos);
     }
 
     public void unregisterArk(GlobalBlockPos arkPos) {
         UUID owner = arkRegistry.remove(arkPos);
-        if (owner != null) ownerArk.remove(owner, arkPos);
+        if (owner != null) {
+            Set<GlobalBlockPos> arks = ownerArks.get(owner);
+            if (arks != null) {
+                arks.remove(arkPos);
+                if (arks.isEmpty()) ownerArks.remove(owner);
+            }
+        }
     }
 
-    @Nullable
-    public GlobalBlockPos getArkForOwner(UUID ownerUUID) {
-        return ownerArk.get(ownerUUID);
+    public List<GlobalBlockPos> getArksForOwner(UUID ownerUUID) {
+        Set<GlobalBlockPos> arks = ownerArks.get(ownerUUID);
+        return arks != null ? new ArrayList<>(arks) : List.of();
+    }
+
+    public int getArkCountForOwner(UUID ownerUUID) {
+        Set<GlobalBlockPos> arks = ownerArks.get(ownerUUID);
+        return arks != null ? arks.size() : 0;
     }
 
     // ── SavedData ──

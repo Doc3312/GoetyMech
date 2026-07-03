@@ -138,18 +138,18 @@ public class StressShieldSpell extends Spell {
     }
 
     private float readStress(Player player, ServerLevel worldIn) {
-        // Priority 1: Active Ark via Service
         StressLinkService service = StressLinkService.get(worldIn);
-        if (service != null) {
-            GlobalBlockPos arkPos = service.getArkForOwner(player.getUUID());
-            if (arkPos != null && arkPos.dimension().equals(worldIn.dimension())
-                    && worldIn.isLoaded(arkPos.pos())
-                    && worldIn.getBlockEntity(arkPos.pos()) instanceof com.goetymech.addon.common.block.entity.StressArkBlockEntity ark) {
-                return ark.getCachedTotalStress();
-            }
-        }
+        if (service == null) return 0;
 
-        // Priority 2: Direct reader binding
+        // Priority 1: Sum stress from all readers owned by this player
+        float total = 0;
+        for (GlobalBlockPos readerPos : service.getReadersForOwner(player.getUUID())) {
+            StressLinkService.ReaderSnapshot snap = service.getCachedReaderData(readerPos);
+            if (snap != null) total += snap.stress();
+        }
+        if (total > 0) return total;
+
+        // Priority 2: Direct reader binding via StressShieldFocus
         ItemStack focus = WandUtil.findFocus(player);
         if (focus.isEmpty() || !(focus.getItem() instanceof StressShieldFocus)) return 0;
         if (!StressShieldFocus.isBound(focus)) return 0;
