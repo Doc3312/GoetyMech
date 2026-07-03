@@ -116,7 +116,6 @@ public class ModBlocks {
 
     public static void registerStressValues(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            BlockStressValues.IMPACTS.register(STRESS_READER.get(), () -> 0.0);
             BlockStressValues.CAPACITIES.register(REMOTE_ENGINE.get(), () -> 0.0);
             BlockStressValues.IMPACTS.register(REMOTE_ENGINE.get(), () -> 0.0);
         });

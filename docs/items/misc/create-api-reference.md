@@ -256,7 +256,7 @@ MovementBehaviour.movementBehaviour(behaviour)
 
 ### 2.6 `BlockSpoutingBehaviour` — 喷灌方块行为
 
-`com.simibubi.create.api.behaviour.spouting.BlockingSpoutingBehaviour`
+`com.simibubi.create.api.behaviour.spouting.BlockSpoutingBehaviour`
 
 `@FunctionalInterface`
 
@@ -313,6 +313,60 @@ StateChangingBehavior.setTo(amount, fluidTest, block/state)
 // 递增 IntegerProperty:
 StateChangingBehavior.incrementingState(amount, fluidTest, property)
 ```
+
+---
+
+### 2.9 `BoilerHeater` — 锅炉热源
+
+`com.simibubi.create.api.boiler.BoilerHeater`
+
+`@FunctionalInterface`，用于为锅炉提供热量。
+
+| 静态常量 | 值 | 说明 |
+|----------|-----|------|
+| `PASSIVE_HEAT` | `0` | 被动热源标记（火焰、岩浆块） |
+| `NO_HEAT` | `-1` | 无热量标记 |
+| `PASSIVE` | 内置实例 | 用于 `create:passive_boiler_heaters` block tag |
+| `BLAZE_BURNER` | 内置实例 | 烈焰炉热源——addon 可复用 |
+
+| 静态字段 | 类型 |
+|----------|------|
+| `REGISTRY` | `SimpleRegistry<Block, BoilerHeater>` |
+
+```java
+// 查询：
+float heat = BoilerHeater.findHeat(level, pos, state); // <0 表示无热量
+```
+
+`float getHeat(Level level, BlockPos pos, BlockState state)` — 返回值含义：
+- `≥1` — 有效热量（越大越强）
+- `0` (`PASSIVE_HEAT`) — 被动热（限制锅炉能力）
+- `<0` (`NO_HEAT`) — 无热量
+
+---
+
+### 2.10 `ConnectivityHandler` — 多块结构连接管理器
+
+`com.simibubi.create.api.connectivity.ConnectivityHandler`
+
+用于管理 FluidTank / ItemVault 等多块方块结构的自动化连接。实现方需实现 `IMultiBlockEntityContainer`。
+
+```java
+// 形成多块：
+ConnectivityHandler.formMulti(be); // T extends BlockEntity & IMultiBlockEntityContainer
+// 拆分多块：
+ConnectivityHandler.splitMulti(be);
+// 查询指定位置的部件：
+ConnectivityHandler.partAt(type, level, pos); // → T (nullable)
+// 判断两个位置是否在同一多块中：
+ConnectivityHandler.isConnected(level, pos, other); // → boolean
+```
+
+**`IMultiBlockEntityContainer` 所需方法：** `getController()`、`getControllerBE()`、`setController(BlockPos)`、`removeController(boolean)`、`getWidth()`/`setWidth(int)`、`getHeight()`/`setHeight(int)`、`getMaxWidth()`、`getMaxLength(axis, width)`、`getMainConnectionAxis()`、`getExtraData()`/`setExtraData(Object)`、`modifyExtraData(Object)`、`preventConnectivityUpdate()`、`notifyMultiUpdated()`。
+
+子接口：
+- `IMultiBlockEntityContainer.Fluid` — `hasTank()`, `getTank(int)`, `setTankSize(int, int)`, `getFluid(int)`, `getTankSize(int)`
+- `IMultiBlockEntityContainer.Inventory` — `hasInventory()`
 
 ---
 
