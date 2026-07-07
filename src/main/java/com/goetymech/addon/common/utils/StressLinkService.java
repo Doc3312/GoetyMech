@@ -314,26 +314,24 @@ public class StressLinkService extends SavedData {
             engineLocalStress.put(enginePos, localStress);
 
             // 实时过载检测：如果引擎上报的实际消耗超过了分配给它的预算，
-            // 立即标记过载并停转，不等下一个 tick 的 distributeBudget。
-            // 防止新引擎加入后因 engineLocalStress 初始为 0 被误判正常，
-            // 导致引擎网络通断振荡，进而传导到 reader 网络引发全系统振荡。
-            Float budget = engineBudget.get(enginePos);
-            if (budget != null && budget > 0 && localStress > budget) {
-                overstrainedEngines.add(enginePos);
-                engineBudget.put(enginePos, 0f);
-                RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-                if (engine != null) {
+            // 立即标记过载并标记 reader 为 dirty，让 distributeBudget 统一推送 speed=0。
+            // 注意：不在此方法中直接调用 applyRemoteUpdate，否则会在
+            // KineticNetwork.sync 遍历 members 时触发网络结构变化导致 CME。
+            if (!suppressEngineUpdates) {
+                Float budget = engineBudget.get(enginePos);
+                if (budget != null && budget > 0 && localStress > budget) {
+                    overstrainedEngines.add(enginePos);
+                    engineBudget.put(enginePos, 0f);
                     GlobalBlockPos readerPos = engineToReader.get(enginePos);
-                    StressReaderBlockEntity reader = readerPos != null ? activeReaders.get(readerPos) : null;
-                    float cap = reader != null ? reader.getNetworkCapacity() : 0;
-                    float rStress = reader != null ? reader.getNetworkStress() : 0;
-                    engine.applyRemoteUpdate(0, 0, cap, rStress);
+                    if (readerPos != null) {
+                        dirtyReaders.add(readerPos);
+                    }
                 }
             }
         }
         engineLocalCapacity.put(enginePos, localCapacity);
 
-        // pushToEngine 期间抑制回传，防止死循环
+        // pushToEngine 期间抑制回传，防止死循环和 CME
         if (suppressEngineUpdates) return;
 
         GlobalBlockPos readerPos = engineToReader.get(enginePos);
