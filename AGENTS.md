@@ -104,10 +104,32 @@ IF auto-commit 包含 `src/` 下的生产代码变更（`.java` 文件） THEN �
 
 不触发 runClient 的排除项：仅修改 `docs/`、`AGENTS.md`、`*.json`、`*.yaml`、`*.yml`、`*.toml` 等非代码文件。
 
+### 文档结构规范
+
+创建文档时必须遵循以下目录结构。**禁止在 `docs/items/misc/` 下存放文件**（该目录已废弃）。
+
+**可用类别（category）：**
+
+| 类别 | 用途 | 示例 |
+|------|------|------|
+| `focus/` | 聚晶（聚焦器）类物品 | `focus/<item>/spec.md` |
+| `curio/` | 饰品/首饰类物品 | `curio/<item>/spec.md` |
+| `entity/` | 实体（生物/仆从）文档 | `entity/<entity>.md` |
+| `reference/` | API 参考、配方系统、模组集成 | `reference/<topic>.md` |
+| `design/` | 架构设计、系统模式、原型记录 | `design/<topic>.md` |
+
+**物品/方块/实体文档规则：**
+- 每个 item 必须用 `<category>/<item>/spec.md` + `<category>/<item>/timeline.md` 目录格式
+- flat `.md` 文件已废弃（仅 `entity/` 和 `reference/` 仍允许 flat 文件）
+- 新建时使用脚手架脚本：`node .opencode/scripts/new-item-doc.mjs <category> <item>`
+- 新增 category 必须先在本文件注册
+
 ### 即时错误记录
 
-IF 调试超过 **15 分钟**未定位、且根因非 trivial THEN 压缩上下文或关闭对话前写入 `docs/incidents/<date>-<slug>.md`。
+IF 调试超过 **15 分钟**未定位、且根因非 trivial THEN 压缩上下文或关闭对话前写入 `docs/incidents/<domain>.<YYYYMMDD>.<slug>.md`。
 
+- 命名格式：`<domain>.<YYYYMMDD>.<slug>.md`
+- domain 取值：item 注册名（kebab-case）、`_meta`（工作流/工具链）、`_mimic`（拟态系统）、`_skills`（渲染/建模/原型经验）、`_prototype`（物理原型经验）
 - 「15 分钟」= 跨对话累计纯调试时间
 - 同一根因的多次尝试 = 一个错误，不重复写
 - 记录头部含 `status: verified | disputed | superseded`
@@ -115,6 +137,8 @@ IF 调试超过 **15 分钟**未定位、且根因非 trivial THEN 压缩上下�
 ### 物品文档自动记录
 
 IF 任何代码修改涉及已注册物品/方块/实体 THEN 自动在 `docs/items/<category>/<item>/timeline.md` 追一条记录（格式：改动 / 原因 / 关联）。
+
+**对新物品/方块/实体：** 如果文档尚不存在，先用 `node .opencode/scripts/new-item-doc.mjs <category> <item>` 创建目录结构，再追加 timeline。
 
 触发条件不只是 openspec task 完成，还包括：
 - 直接编辑了物品/方块/实体的 Java 源文件
