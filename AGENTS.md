@@ -31,6 +31,7 @@ Single-context repo。参见 `docs/agents/domain.md`。
 | openspec-apply-change | implement / build / fix task |
 | grill-me | discussion / plan / design |
 | grill-with-docs | new term / concept / ADR |
+| closeout-feature | 归档 / 记录 / 完结 / 功能冻结 |
 
 ## 核心工作流（高优先级，每条规则均为 IF → THEN 格式）
 
@@ -113,7 +114,7 @@ IF 调试超过 **15 分钟**未定位、且根因非 trivial THEN 压缩上下�
 
 ### 物品文档自动记录
 
-IF 任何代码修改涉及已注册物品/方块/实体 THEN 自动在 `docs/items/<category>/<item-slug>.md` 追一条 timeline 记录（格式：改动 / 原因 / 关联）。
+IF 任何代码修改涉及已注册物品/方块/实体 THEN 自动在 `docs/items/<category>/<item>/timeline.md` 追一条记录（格式：改动 / 原因 / 关联）。
 
 触发条件不只是 openspec task 完成，还包括：
 - 直接编辑了物品/方块/实体的 Java 源文件
@@ -150,12 +151,13 @@ IF 想编辑一个被其他任务声索的文件 THEN plugin 会警告，此时�
 
 ### 用户说「归档」时做什么
 
-IF 用户说「归档 / 记录一下 / 记下来」THEN：
-- 如果有未记录的物品改动 → 更新 `docs/items/` 对应 timeline
-- 如果有调试经验或教训 → 写 `docs/incidents/`
-- 如果涉及架构决策 → 更新 `docs/agents/` 或写 ADR
+IF 用户说「归档 / 记录一下 / 记下来」THEN 调用 closeout-feature skill 执行 4 步 protocol：
+1. timeline 追加
+2. 经验提取（写 incidents）
+3. incident 索引更新
+4. 整理清理
 
-不触发 openspec archive-change（那是不同的动作）。
+不触发 openspec archive-change（那是管 change git tag 的不同动作）。
 
 ### 自动追问
 
