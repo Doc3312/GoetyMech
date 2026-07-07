@@ -7,6 +7,7 @@ description: "package / convention / register"
 
 # GoetyMech 项目架构规范
 
+> ⚠ 本技能最后更新于 2026-06。部分包结构和注册模式可能与当前代码存在偏差。
 > 前置模组源码路径见 `.opencode/skills/_shared/libcode-paths.md`。
 > 快速排除：当前任务如果不涉及新建类、决定包路径、理解注册模式或评估架构设计，请跳过本 skill。
 
