@@ -278,9 +278,11 @@ public class StressLinkService extends SavedData {
                     pushToEngineInternal(engine, speed, availableBudget, capacity, readerStress);
                     allocated += engineConsumption;
                 } else {
-                    // 预算不足：标记过载，budget=0
+                    // 预算不足：标记过载，speed=0 让引擎完全停转。
+                    // 若只设 budget=0 但 speed>0，Create 会判定引擎"有速度无应力"而过载，
+                    // 导致连接方块被破坏。speed=0 让引擎安全离线。
                     overstrainedEngines.add(enginePos);
-                    pushToEngineInternal(engine, speed, 0, capacity, readerStress);
+                    pushToEngineInternal(engine, 0, 0, capacity, readerStress);
                 }
             }
         } finally {
@@ -298,7 +300,12 @@ public class StressLinkService extends SavedData {
     // ── Engine consumption tracking ──
 
     public void onEngineNetworkChanged(GlobalBlockPos enginePos, float localStress, float localCapacity) {
-        engineLocalStress.put(enginePos, localStress);
+        // 过载引擎的消耗不更新：budget=0 会导致 stress 归零，
+        // 但分配预算时需要使用其"额定消耗"来判断是否可以恢复，
+        // 否则会在 0>=0 判定正常 → 给 budget → stress 恢复 → 又过载 之间振荡
+        if (!overstrainedEngines.contains(enginePos)) {
+            engineLocalStress.put(enginePos, localStress);
+        }
         engineLocalCapacity.put(enginePos, localCapacity);
 
         // pushToEngine 期间抑制回传，防止死循环
