@@ -74,7 +74,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         cachedTotalCapacity = totalCap;
         cachedTotalStress = totalStress;
         cachedNetworkCount = readerCount;
-        syncToClient();
+        syncToClient(service.getEngineConsumptionForOwner(ownerUUID));
     }
 
     // ── Lifecycle ──
@@ -116,12 +116,12 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
     // ── Packet ──
 
-    private void syncToClient() {
+    private void syncToClient(float consumption) {
         if (level == null || level.isClientSide || ownerUUID == null) return;
         Player player = level.getPlayerByUUID(ownerUUID);
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CStressArkDataPacket(
-                    cachedTotalCapacity, cachedTotalStress, cachedNetworkCount, 0));
+                    cachedTotalCapacity, cachedTotalStress, cachedNetworkCount, consumption));
         }
     }
 

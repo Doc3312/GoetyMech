@@ -30,6 +30,8 @@ public class StressLinkService extends SavedData {
     private transient final Map<GlobalBlockPos, ReaderSnapshot> readerCache = new HashMap<>();
     private transient final Map<GlobalBlockPos, UUID> arkRegistry = new HashMap<>();
     private transient final Map<UUID, Set<GlobalBlockPos>> ownerArks = new HashMap<>();
+    private transient final Map<GlobalBlockPos, Float> engineLocalStress = new HashMap<>();
+    private transient final Map<GlobalBlockPos, Float> engineLocalCapacity = new HashMap<>();
 
     public record ReaderSnapshot(float capacity, float stress, float speed) {
         public float getAvailable() { return Math.max(0, capacity - stress); }
@@ -68,6 +70,8 @@ public class StressLinkService extends SavedData {
         readerCache.clear();
         arkRegistry.clear();
         ownerArks.clear();
+        engineLocalStress.clear();
+        engineLocalCapacity.clear();
         setDirty();
     }
 
@@ -126,6 +130,8 @@ public class StressLinkService extends SavedData {
 
     public void onEngineUnload(GlobalBlockPos enginePos) {
         activeEngines.remove(enginePos);
+        engineLocalStress.remove(enginePos);
+        engineLocalCapacity.remove(enginePos);
     }
 
     // ── Binding management ──
@@ -193,6 +199,27 @@ public class StressLinkService extends SavedData {
         float capacity = reader.getNetworkCapacity();
         float budget = Math.max(0, capacity - reader.getNetworkStress());
         engine.applyRemoteUpdate(speed, budget, capacity);
+    }
+
+    // ── Engine consumption tracking ──
+
+    public void onEngineNetworkChanged(GlobalBlockPos enginePos, float localStress, float localCapacity) {
+        engineLocalStress.put(enginePos, localStress);
+        engineLocalCapacity.put(enginePos, localCapacity);
+    }
+
+    public float getEngineConsumptionForOwner(UUID ownerUUID) {
+        float total = 0;
+        for (var entry : engineToReader.entrySet()) {
+            GlobalBlockPos enginePos = entry.getKey();
+            GlobalBlockPos readerPos = entry.getValue();
+            UUID readerOwner = readerOwners.get(readerPos);
+            if (ownerUUID.equals(readerOwner)) {
+                Float stress = engineLocalStress.get(enginePos);
+                if (stress != null) total += stress;
+            }
+        }
+        return total;
     }
 
     // ── Reader ownership ──

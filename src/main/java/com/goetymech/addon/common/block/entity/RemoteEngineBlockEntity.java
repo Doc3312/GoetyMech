@@ -7,6 +7,7 @@ import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
+import com.simibubi.create.content.kinetics.KineticNetwork;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.lang.LangBuilder;
@@ -42,6 +43,13 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             StressLinkService service = StressLinkService.get(level);
             if (service != null) {
                 service.onEngineLoad(this);
+                KineticNetwork network = getOrCreateNetwork();
+                if (network != null) {
+                    service.onEngineNetworkChanged(
+                            GlobalBlockPos.of(level, worldPosition),
+                            network.calculateStress(),
+                            network.calculateCapacity());
+                }
             }
         }
     }
@@ -79,6 +87,20 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             setChanged();
             sendData();
+        }
+    }
+
+    @Override
+    public void updateFromNetwork(float capacity, float stress, int networkSize) {
+        super.updateFromNetwork(capacity, stress, networkSize);
+        if (level != null && !level.isClientSide) {
+            StressLinkService service = StressLinkService.get(level);
+            if (service != null) {
+                service.onEngineNetworkChanged(
+                        GlobalBlockPos.of(level, worldPosition),
+                        this.stress,
+                        this.capacity);
+            }
         }
     }
 
@@ -160,6 +182,21 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                     .text(ChatFormatting.GRAY, " / ")
                     .add(CreateLang.number(remoteCapacity)
                             .add(CreateLang.translate("generic.unit.stress"))
+                            .style(ChatFormatting.DARK_GRAY))
+                    .forGoggles(tooltip, 1);
+
+            float localStr = this.stress;
+            float localCap = this.capacity;
+            boolean over = localCap > 0 && localStr > localCap;
+            CreateLang.text("本地消耗: ")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+            CreateLang.number(localStr)
+                    .add(su)
+                    .style(over ? ChatFormatting.RED : ChatFormatting.GOLD)
+                    .text(ChatFormatting.GRAY, " / ")
+                    .add(CreateLang.number(localCap)
+                            .add(su)
                             .style(ChatFormatting.DARK_GRAY))
                     .forGoggles(tooltip, 1);
         }
