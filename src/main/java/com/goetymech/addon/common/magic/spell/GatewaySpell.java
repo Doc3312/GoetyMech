@@ -1,9 +1,7 @@
 package com.goetymech.addon.common.magic.spell;
 
-import com.goetymech.addon.common.entity.StructureHighlightMarker;
 import com.goetymech.addon.common.utils.GatewayUtil;
 import com.goetymech.addon.config.ModConfig;
-import com.goetymech.addon.init.ModEntities;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
@@ -125,14 +123,7 @@ public class GatewaySpell extends Spell {
         }
 
         GatewayUtil.teleportPlayer(worldIn, player, pos);
-        spawnHighlightMarker(worldIn, bounds);
         this.playSound(worldIn, caster, SoundEvents.ENDERMAN_TELEPORT);
-    }
-
-    private void spawnHighlightMarker(ServerLevel level, AABB bounds) {
-        StructureHighlightMarker marker = new StructureHighlightMarker(
-                ModEntities.STRUCTURE_HIGHLIGHT_MARKER.get(), level, bounds);
-        level.addFreshEntity(marker);
     }
 
     private boolean checkForceFlag(ServerPlayer player) {

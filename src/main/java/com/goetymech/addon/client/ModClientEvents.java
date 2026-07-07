@@ -11,7 +11,6 @@ import com.goetymech.addon.client.render.RemoteEngineRenderer;
 import com.goetymech.addon.client.render.SculkBidingModel;
 import com.goetymech.addon.client.render.SculkBidingRenderer;
 import com.goetymech.addon.client.render.StressReaderRenderer;
-import com.goetymech.addon.client.render.StructureHighlightRenderer;
 import com.goetymech.addon.common.menu.ModMenuTypes;
 import com.goetymech.addon.init.ModBlocks;
 import com.goetymech.addon.init.ModEntities;
@@ -117,8 +116,6 @@ public class ModClientEvents {
                 RemoteEngineRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.CRATER_ENTITY.get(),
                 CraterBlockRenderer::new);
-        event.registerEntityRenderer(ModEntities.STRUCTURE_HIGHLIGHT_MARKER.get(),
-                StructureHighlightRenderer::new);
     }
 
     @SubscribeEvent

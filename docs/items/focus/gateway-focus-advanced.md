@@ -12,14 +12,13 @@
 
 高级版结构传送聚晶。与定点聚晶行为一致，但遍历所有维度搜索最近的结构，支持跨维度传送。
 
-传送完成后进入 Freecam 灵魂出窍模式，玩家摄像机脱离身体自由穿墙飞行 60 秒，身体留在传送点无敌保护。
+传送完成后进入 Freecam 灵魂出窍模式，玩家摄像机脱离身体自由穿墙飞行 60 秒，身体留在传送点无敌保护。同时获得夜视效果，便于观察结构。
 
 ## 流程
 
 ```
 施法 → 跨维度搜索结构 → 传送至安全点
-                         → 蓝色线框标记边界 (60s)
-                         → Freecam 激活 (60s)
+                         → Freecam 激活 (60s) + 夜视
                            ├  WASD 穿墙飞行
                            ├  身体无敌 + 位置锁定
                            └  Shift 或超时 → 返回身体
@@ -31,3 +30,4 @@
 |------|--------|--------|-----------|
 | 2026-07-04 | 创建神行聚晶 + GatewayAdvancedSpell | 需求：跨维度结构传送，遍历 server.getAllLevels() | GatewayAdvancedSpell / GatewayUtil / ModConfig.GATEWAY_ADV_COST / ModConfig.GATEWAY_ADV_COOLDOWN |
 | 2026-07-07 | 新增 Freecam 灵魂出窍模式 | 替代线框无法透视的问题，玩家可自由穿墙探索结构 | FreecamHandler / FreecamInputHandler / CameraMixin / FreecamEvents / S2CStartFreecamPacket / C2SFreecamEndPacket / ModConfig.FREECAM_DURATION / ModConfig.FREECAM_SPEED |
+| 2026-07-07 | 删除线框渲染（StructureHighlightRenderer/Marker）；Freecam 增加夜视效果 | 线框无实际作用，夜视帮助观察结构内部 | GatewayAdvancedSpell |

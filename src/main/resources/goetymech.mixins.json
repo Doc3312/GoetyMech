@@ -17,8 +17,7 @@
     "ParticleEngineMixin",
     "TimerAccessor",
     "TutorialMixin",
-    "EntityMixin",
-    "RenderStateShardAccessor"
+    "EntityMixin"
   ],
   "mixins": [
     "CollectingNeighborUpdaterMixin",
