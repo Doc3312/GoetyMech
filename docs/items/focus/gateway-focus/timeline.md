@@ -8,3 +8,4 @@
 | 2026-07-07 | Freecam 移动平滑化（速度驱动+摩擦衰减0.91+partialTick插值） | 原位置驱动导致一卡一顿 | FreecamHandler / FreecamInputHandler / CameraMixin |
 | 2026-07-07 | Freecam 退出键 Shift→R，Shift 改为下降 | Shift 退出冲突下降操作；R 键不与其他操作冲突 | FreecamInputHandler / ModClientEvents |
 | 2026-07-07 | 新建 FreecamHUD 热力条上方红色提示"按R退出神行状态" | 用户需知道退出方式 | FreecamHUD / ModClientEvents |
+| 2026-07-07 | 重构为原版旁观者模式，删除自定义 Freecam 管线 | 自定义渲染层卡顿不可修复，原版 spectator 零行移动代码 | FreecamSpectatorHandler / CameraMixin / FreecamHUD / ModClientForgeEvents |
