@@ -126,10 +126,19 @@ IF auto-commit 包含 `src/` 下的生产代码变更（`.java` 文件） THEN �
 
 ### 即时错误记录
 
-IF 调试超过 **15 分钟**未定位、且根因非 trivial THEN 压缩上下文或关闭对话前写入 `docs/incidents/<domain>.<YYYYMMDD>.<slug>.md`。
+IF 调试超过 **15 分钟**未定位、且根因非 trivial THEN 压缩上下文或关闭对话前写入 `docs/incidents/<subdir>/<YYYYMMDD>.<slug>.md`。
 
-- 命名格式：`<domain>.<YYYYMMDD>.<slug>.md`
-- domain 取值：item 注册名（kebab-case）、`_meta`（工作流/工具链）、`_mimic`（拟态系统）、`_skills`（渲染/建模/原型经验）、`_prototype`（物理原型经验）
+**子目录规则：**
+
+| 子目录 | 用途 |
+|--------|------|
+| `_meta/` | 工作流/工具链/流程类错误 |
+| `_mimic/` | 拟态系统相关 |
+| `_craft/` | 渲染/建模/原型/物理经验（原 `_skills`） |
+| `_prototype/` | 物理原型经验 |
+| `<item-reg-name>/` | 绑定到某个注册物品的错误 |
+
+- 文件名去掉 domain 前缀（如 `_meta.20260623.foo.md` → `_meta/20260623.foo.md`）
 - 「15 分钟」= 跨对话累计纯调试时间
 - 同一根因的多次尝试 = 一个错误，不重复写
 - 记录头部含 `status: verified | disputed | superseded`
@@ -138,7 +147,14 @@ IF 调试超过 **15 分钟**未定位、且根因非 trivial THEN 压缩上下�
 
 IF 任何代码修改涉及已注册物品/方块/实体 THEN 自动在 `docs/items/<category>/<item>/timeline.md` 追一条记录（格式：改动 / 原因 / 关联）。
 
+触发条件不只是 openspec task 完成，还包括：
+- 直接编辑了物品/方块/实体的 Java 源文件
+- 修改了注册类（ModItems/ModBlocks/ModEntities）
+- 新建了物品/方块/实体的 Java 类文件
+- openspec-apply-change 标记 task 完成
+
 **对新物品/方块/实体：** 如果文档尚不存在，先用 `node .opencode/scripts/new-item-doc.mjs <category> <item>` 创建目录结构，再追加 timeline。
+openspec-apply-change skill 已集成此步骤（step 6 子步骤）。
 
 触发条件不只是 openspec task 完成，还包括：
 - 直接编辑了物品/方块/实体的 Java 源文件
