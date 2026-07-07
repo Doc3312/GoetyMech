@@ -15,9 +15,10 @@ public class FreecamHUD {
     public static final IGuiOverlay OVERLAY = FreecamHUD::drawHUD;
 
     public static void drawHUD(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
-        if (!FreecamHandler.getInstance().isActive()) return;
-
         Minecraft mc = Minecraft.getInstance();
+        if (mc.gameMode == null || mc.gameMode.getPlayerMode() == null) return;
+        if (!mc.gameMode.getPlayerMode().isSpectator()) return;
+
         Font font = mc.font;
         if (font == null) return;
 

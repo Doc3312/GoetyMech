@@ -72,11 +72,12 @@ public class ModClientForgeEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
-        FreecamHandler fh = FreecamHandler.getInstance();
-        if (fh.isActive()) {
-            FreecamInputHandler.handleInput(mc.getFrameTime());
-            fh.tick();
-            return;
+        if (mc.player != null && mc.player.isSpectator()) {
+            if (ModClientEvents.freecamExitKey != null && ModClientEvents.freecamExitKey.consumeClick()) {
+                ModNetwork.CHANNEL.sendToServer(new C2SFreecamEndPacket());
+                return;
+            }
+            mc.options.keyPickItem.consumeClick();
         }
 
         // === Freeze packet delay countdown ===

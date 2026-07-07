@@ -1,8 +1,6 @@
 package com.goetymech.addon.common.magic.spell;
 
-import com.goetymech.addon.common.events.FreecamEvents;
-import com.goetymech.addon.common.net.ModNetwork;
-import com.goetymech.addon.common.net.s2c.S2CStartFreecamPacket;
+import com.goetymech.addon.common.events.FreecamSpectatorHandler;
 import com.goetymech.addon.common.utils.GatewayUtil;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
@@ -150,17 +148,11 @@ public class GatewayAdvancedSpell extends Spell {
     }
 
     private void triggerFreecam(ServerLevel level, ServerPlayer player) {
-        FreecamEvents.setFreecam(player, true);
+        FreecamSpectatorHandler.activate(player);
         player.addEffect(new MobEffectInstance(
                 MobEffects.NIGHT_VISION,
                 ModConfig.FREECAM_DURATION.get(),
                 0, false, false, false
-        ));
-        ModNetwork.sendTo(player, new S2CStartFreecamPacket(
-                player.position().add(0, 2, 0),
-                player.position(),
-                player.getYRot(),
-                player.getXRot()
         ));
     }
 

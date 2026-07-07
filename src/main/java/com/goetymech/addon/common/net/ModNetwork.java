@@ -16,7 +16,6 @@ import com.goetymech.addon.common.net.s2c.S2CSlamImpactPacket;
 import com.goetymech.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetymech.addon.common.net.s2c.S2CStressArkDataPacket;
 import com.goetymech.addon.common.net.s2c.S2CAssimilationDataPacket;
-import com.goetymech.addon.common.net.s2c.S2CStartFreecamPacket;
 import com.goetymech.addon.common.net.s2c.S2CStressShieldUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

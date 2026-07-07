@@ -87,6 +87,10 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     public void setRemoteEngineConsumption(float consumption) {
         this.remoteEngineConsumption = consumption;
         setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            sendData();
+        }
     }
 
     @Nullable

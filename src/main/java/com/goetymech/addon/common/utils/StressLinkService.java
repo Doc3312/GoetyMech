@@ -209,6 +209,12 @@ public class StressLinkService extends SavedData {
     public void onEngineNetworkChanged(GlobalBlockPos enginePos, float localStress, float localCapacity) {
         engineLocalStress.put(enginePos, localStress);
         engineLocalCapacity.put(enginePos, localCapacity);
+
+        GlobalBlockPos readerPos = engineToReader.get(enginePos);
+        if (readerPos != null) {
+            StressReaderBlockEntity reader = activeReaders.get(readerPos);
+            if (reader != null) reader.setRemoteEngineConsumption(localStress);
+        }
     }
 
     public float getEngineConsumptionForReader(GlobalBlockPos readerPos) {

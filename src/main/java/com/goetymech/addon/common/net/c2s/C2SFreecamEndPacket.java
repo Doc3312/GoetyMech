@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.net.c2s;
 
-import com.goetymech.addon.common.events.FreecamEvents;
+import com.goetymech.addon.common.events.FreecamSpectatorHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -20,7 +20,7 @@ public class C2SFreecamEndPacket {
         ctx.get().enqueueWork(() -> {
             var player = ctx.get().getSender();
             if (player == null) return;
-            FreecamEvents.onClientEndFreecam(player);
+            FreecamSpectatorHandler.deactivate(player);
         });
         ctx.get().setPacketHandled(true);
     }
