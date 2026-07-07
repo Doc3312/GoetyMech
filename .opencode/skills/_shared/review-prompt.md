@@ -1,4 +1,4 @@
-﻿# Review Subagent Prompt
+# Review Subagent Prompt
 
 审查任务通过 Task 工具传入本 prompt。审查完成立即返回结果，不保留状态。
 

@@ -66,3 +66,10 @@ description: JEI / recipe display / ghost drag
 | `mezz.jei.api.recipe.transfer` | 配方转移 |
 | `mezz.jei.api.registration` | 注册接口 |
 | `mezz.jei.api.runtime` | 运行时 |
+
+## 相关技能
+
+| 技能 | 典型切换场景 |
+|------|-------------|
+| `create-dev` | 添加 Create 机器的 JEI 配方展示/加工动画时 |
+| `goety-addon-dev` | 添加聚晶/法术的 JEI 配方展示或幽灵拖拽时 |

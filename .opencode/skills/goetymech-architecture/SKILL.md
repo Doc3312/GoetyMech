@@ -1,4 +1,4 @@
-﻿---
+---
 name: "GoetyMech-architecture"
 description: "package / convention / register"
 ---

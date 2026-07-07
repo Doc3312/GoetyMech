@@ -1,4 +1,4 @@
-﻿# Tags 系统 + 内容注册 + DataGen + Stress
+# Tags 系统 + 内容注册 + DataGen + Stress
 
 ## Tags 系统
 

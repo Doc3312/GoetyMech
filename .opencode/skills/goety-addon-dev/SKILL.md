@@ -122,3 +122,12 @@ minecraft.runs.configureEach {
 | [focus-spell.md](focus-spell.md) | Goety 核心 API + Focus/Spell/Summoned/Projectile 全链路开发 |
 | [warden-practice.md](warden-practice.md) | Warden 实战经验（Brain/愤怒/出土/音效） |
 | [utility-reference.md](utility-reference.md) | 工具方法速查表 + Goety API 接口速查 |
+
+## 相关技能
+
+| 技能 | 典型切换场景 |
+|------|-------------|
+| `entity-render-dev` | 需要为新的仆从/法术实体编写渲染器和模型时 |
+| `goety-block-anim-and-particle` | 添加方块动画、粒子效果或镜头震动时 |
+| `jei-dev` | 为聚晶/方块添加 JEI 配方展示或幽灵拖拽时 |
+| `goetymech-architecture` | 不确定新建类的包路径或注册模式时 |

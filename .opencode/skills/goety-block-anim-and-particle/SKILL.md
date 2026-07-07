@@ -144,3 +144,10 @@ CameraShake.cameraShake(Level level, Vec3 position, float radius, float intensit
 3. **不传 ownerId 的 AoEParticleOption**：圆形呈灰色；传入 `player.getId()` 后根据玩家阵营着色（红色=敌对，绿色=友方）
 4. **sendParticles 在 ClientLevel 不可用**：仅在 `ServerLevel` 调用
 5. **findGroundPos 向下搜索**：`BlockFinder.moveDownToGround(entity)` 或手动 `findGroundPos(level, x, startY, z)` 限制搜索深度（通常 3 格）以避免穿透
+
+## 相关技能
+
+| 技能 | 典型切换场景 |
+|------|-------------|
+| `goety-addon-dev` | 需要理解方块注册、BE tick 或 Goety 事件系统时 |
+| `entity-render-dev` | 添加生物/实体的动画或粒子附着时 |

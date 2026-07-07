@@ -185,3 +185,10 @@ List<Entity> targets = level().getEntities(this, box.inflate(0.5),
 2. 日志输出 target 信息 — 确认 predicate（`instanceof`, UUID 过滤）
 3. 日志输出 inflate 后的 box — 对比目标实体 AABB
 4. `canBeCollidedWith()` / `isPushable()` 不影响 getEntities() 但影响物理分离程度
+
+## 相关技能
+
+| 技能 | 典型切换场景 |
+|------|-------------|
+| `item-ister-flat-quads` | 渲染的是物品图标/叠加层而非实体时 |
+| `goety-addon-dev` | 需要了解 Goety 实体注册模式和召唤 API 时 |

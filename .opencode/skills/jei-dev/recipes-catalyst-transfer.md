@@ -1,4 +1,4 @@
-﻿# Recipe Transfer + Catalyst
+# Recipe Transfer + Catalyst
 
 ## Recipe Transfer
 

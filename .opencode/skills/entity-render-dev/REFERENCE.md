@@ -1,4 +1,4 @@
-﻿# Entity Render Reference
+# Entity Render Reference
 
 ## ModModelLayer Pattern
 

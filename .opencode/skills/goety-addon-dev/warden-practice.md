@@ -1,4 +1,4 @@
-﻿# Warden（坚守者）开发实战经验
+# Warden（坚守者）开发实战经验
 
 > 来自 SculkBindSpell 开发过程，涵盖召唤原版 Warden、Brain 记忆操作、出土动画、音效冲突等。
 

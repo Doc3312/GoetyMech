@@ -1,4 +1,4 @@
-﻿# Plugin + Recipe Category + Recipes
+# Plugin + Recipe Category + Recipes
 
 ## Plugin 最小实现
 
