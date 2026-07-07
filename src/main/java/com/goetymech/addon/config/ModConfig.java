@@ -238,6 +238,9 @@ public class ModConfig {
 
     // ====== Time Freeze 配置 ======
 
+    /** 开发者模式开关（开启后输出结构化测试日志） */
+    public static final ForgeConfigSpec.BooleanValue DEV_MODE;
+
     /** 时停总开关 */
     public static final ForgeConfigSpec.BooleanValue TIME_STOP_ENABLED;
 
@@ -256,6 +259,15 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue FLESH_CASKET_COOLDOWN;
 
     static {
+        // ====== 开发者模式 ======
+        BUILDER.push("dev");
+
+        DEV_MODE = BUILDER
+                .comment("开发者模式", "开启后输出 [TEST] 结构化日志用于游戏内验证", "范围: true/false，默认 false")
+                .define("dev_mode", false);
+
+        BUILDER.pop();
+
         // ====== Flesh Casket 配置 ======
         BUILDER.push("flesh_casket");
 

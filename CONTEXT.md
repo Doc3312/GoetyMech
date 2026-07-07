@@ -41,3 +41,26 @@
 | MC 版本 | 1.20.1 / Forge 47.4.0 / Java 17 |
 | 映射 | Parchment 2023.09.03 |
 | 前置 | Curios 5.3.4, Goety 2.x, Create 6.0.8 |
+
+---
+
+## 开发测试规范
+
+### 结构化日志格式
+
+所有需要在游戏内验证的功能，在关键操作点输出结构化日志：
+
+```
+GoetyMechMod.LOGGER.info("[TEST][<feature-slug>] key=value key=value ...")
+```
+
+- `[TEST]` 标记为测试日志，不干扰普通日志阅读
+- `[<feature-slug>]` 功能标识（如 `stress-shield`, `void-blink`, `crushing-wheel`）
+- `key=value` 结构化数据，用空格分隔
+
+**输出控制**：devMode ON 时 info 级输出，OFF 时 debug 级输出。
+
+### JUnit 5 单元测试
+
+`src/test/java/` 下写纯逻辑测试（不依赖 MC 运行时）。
+测试是开发脚手架，验证通过后按用户要求删除。

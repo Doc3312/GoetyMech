@@ -116,6 +116,13 @@ dependencies {
     // Caelus — 可选依赖，提供 Curios 背部槽的飞行 attribute
     compileOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:3.2.0+1.20.1:api")
     runtimeOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:3.2.0+1.20.1")
+
+    // JUnit 5 — 仅用于开发阶段的纯逻辑单元测试（src/test/java/）
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 processResources {
