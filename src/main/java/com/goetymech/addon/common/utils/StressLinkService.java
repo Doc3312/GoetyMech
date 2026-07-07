@@ -32,6 +32,8 @@ public class StressLinkService extends SavedData {
     private transient final Map<UUID, Set<GlobalBlockPos>> ownerArks = new HashMap<>();
     private transient final Map<GlobalBlockPos, Float> engineLocalStress = new HashMap<>();
     private transient final Map<GlobalBlockPos, Float> engineLocalCapacity = new HashMap<>();
+    // 记录分配给每个引擎的预算（功率单位 su·rpm），用于 onEngineNetworkChanged 中实时检测过载
+    private transient final Map<GlobalBlockPos, Float> engineBudget = new HashMap<>();
 
     // 重入防护：pushToEngine 期间抑制 onEngineNetworkChanged 的回传，
     // 避免 applyRemoteUpdate → engine 网络变化 → onEngineNetworkChanged →
@@ -86,6 +88,7 @@ public class StressLinkService extends SavedData {
         ownerArks.clear();
         engineLocalStress.clear();
         engineLocalCapacity.clear();
+        engineBudget.clear();
         overstrainedEngines.clear();
         dirtyReaders.clear();
         setDirty();
@@ -161,6 +164,7 @@ public class StressLinkService extends SavedData {
         overstrainedEngines.remove(enginePos);
         engineLocalStress.remove(enginePos);
         engineLocalCapacity.remove(enginePos);
+        engineBudget.remove(enginePos);
     }
 
     // ── Binding management ──
@@ -193,6 +197,7 @@ public class StressLinkService extends SavedData {
         overstrainedEngines.remove(enginePos);
         engineLocalStress.remove(enginePos);
         engineLocalCapacity.remove(enginePos);
+        engineBudget.remove(enginePos);
         setDirty();
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
@@ -275,6 +280,7 @@ public class StressLinkService extends SavedData {
                 if (availableBudget >= engineConsumption) {
                     // 预算充足：正常运转
                     overstrainedEngines.remove(enginePos);
+                    engineBudget.put(enginePos, availableBudget);
                     pushToEngineInternal(engine, speed, availableBudget, capacity, readerStress);
                     allocated += engineConsumption;
                 } else {
@@ -282,6 +288,7 @@ public class StressLinkService extends SavedData {
                     // 若只设 budget=0 但 speed>0，Create 会判定引擎"有速度无应力"而过载，
                     // 导致连接方块被破坏。speed=0 让引擎安全离线。
                     overstrainedEngines.add(enginePos);
+                    engineBudget.put(enginePos, 0f);
                     pushToEngineInternal(engine, 0, 0, capacity, readerStress);
                 }
             }
@@ -305,6 +312,24 @@ public class StressLinkService extends SavedData {
         // 否则会在 0>=0 判定正常 → 给 budget → stress 恢复 → 又过载 之间振荡
         if (!overstrainedEngines.contains(enginePos)) {
             engineLocalStress.put(enginePos, localStress);
+
+            // 实时过载检测：如果引擎上报的实际消耗超过了分配给它的预算，
+            // 立即标记过载并停转，不等下一个 tick 的 distributeBudget。
+            // 防止新引擎加入后因 engineLocalStress 初始为 0 被误判正常，
+            // 导致引擎网络通断振荡，进而传导到 reader 网络引发全系统振荡。
+            Float budget = engineBudget.get(enginePos);
+            if (budget != null && budget > 0 && localStress > budget) {
+                overstrainedEngines.add(enginePos);
+                engineBudget.put(enginePos, 0f);
+                RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+                if (engine != null) {
+                    GlobalBlockPos readerPos = engineToReader.get(enginePos);
+                    StressReaderBlockEntity reader = readerPos != null ? activeReaders.get(readerPos) : null;
+                    float cap = reader != null ? reader.getNetworkCapacity() : 0;
+                    float rStress = reader != null ? reader.getNetworkStress() : 0;
+                    engine.applyRemoteUpdate(0, 0, cap, rStress);
+                }
+            }
         }
         engineLocalCapacity.put(enginePos, localCapacity);
 
