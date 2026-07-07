@@ -6,6 +6,7 @@ import com.goetymech.addon.common.time.TimeContext;
 import com.goetymech.addon.common.time.TimeStopUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,9 +22,11 @@ public class CameraMixin {
     @Shadow protected void setRotation(float yRot, float xRot) {}
 
     private static boolean gp$freecamOverride;
+    private static float gp$partialTick;
 
     @ModifyVariable(method = "setup", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private float gp$partial(float value) {
+        gp$partialTick = value;
         FreecamHandler fh = FreecamHandler.getInstance();
         if (fh.isActive()) {
             gp$freecamOverride = true;
@@ -44,7 +47,16 @@ public class CameraMixin {
         if (!gp$freecamOverride) return;
         FreecamHandler fh = FreecamHandler.getInstance();
         if (!fh.isActive()) return;
-        setPosition(fh.getCameraPos());
+        Vec3 prev = fh.getPrevCameraPos();
+        Vec3 curr = fh.getCameraPos();
+        if (prev != null) {
+            double x = Mth.lerp(gp$partialTick, prev.x, curr.x);
+            double y = Mth.lerp(gp$partialTick, prev.y, curr.y);
+            double z = Mth.lerp(gp$partialTick, prev.z, curr.z);
+            setPosition(new Vec3(x, y, z));
+        } else {
+            setPosition(curr);
+        }
         setRotation(fh.getYaw(), fh.getPitch());
     }
 }
