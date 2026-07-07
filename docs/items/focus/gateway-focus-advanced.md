@@ -19,9 +19,10 @@
 ```
 施法 → 跨维度搜索结构 → 传送至安全点
                          → Freecam 激活 (60s) + 夜视
-                           ├  WASD 穿墙飞行
+                           ├  WASD/Jump/Shift 自由飞行（速度驱动 + 摩擦平滑）
                            ├  身体无敌 + 位置锁定
-                           └  Shift 或超时 → 返回身体
+                           ├  屏幕上方红色提示 "按R退出神行状态"
+                           └  R 或超时 → 返回身体
 ```
 
 ## 演化记录
@@ -31,3 +32,4 @@
 | 2026-07-04 | 创建神行聚晶 + GatewayAdvancedSpell | 需求：跨维度结构传送，遍历 server.getAllLevels() | GatewayAdvancedSpell / GatewayUtil / ModConfig.GATEWAY_ADV_COST / ModConfig.GATEWAY_ADV_COOLDOWN |
 | 2026-07-07 | 新增 Freecam 灵魂出窍模式 | 替代线框无法透视的问题，玩家可自由穿墙探索结构 | FreecamHandler / FreecamInputHandler / CameraMixin / FreecamEvents / S2CStartFreecamPacket / C2SFreecamEndPacket / ModConfig.FREECAM_DURATION / ModConfig.FREECAM_SPEED |
 | 2026-07-07 | 删除线框渲染（StructureHighlightRenderer/Marker）；Freecam 增加夜视效果 | 线框无实际作用，夜视帮助观察结构内部 | GatewayAdvancedSpell |
+| 2026-07-07 | Freecam 移动平滑化 + 退出键 Shift→R + 红色 HUD 提示 | 修复卡顿，Shift 冲突，增加退出可见性 | FreecamHandler / FreecamInputHandler / CameraMixin / FreecamHUD / ModClientEvents |
