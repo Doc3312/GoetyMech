@@ -1,6 +1,9 @@
 package com.goetymech.addon.common.magic.spell;
 
 import com.goetymech.addon.common.entity.StructureHighlightMarker;
+import com.goetymech.addon.common.events.FreecamEvents;
+import com.goetymech.addon.common.net.ModNetwork;
+import com.goetymech.addon.common.net.s2c.S2CStartFreecamPacket;
 import com.goetymech.addon.common.utils.GatewayUtil;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModEntities;
@@ -143,7 +146,18 @@ public class GatewayAdvancedSpell extends Spell {
 
         GatewayUtil.teleportPlayer(bestLevel, player, teleportPos);
         spawnHighlightMarker(bestLevel, bounds);
+        triggerFreecam(bestLevel, player);
         this.playSound(worldIn, caster, SoundEvents.ENDERMAN_TELEPORT);
+    }
+
+    private void triggerFreecam(ServerLevel level, ServerPlayer player) {
+        FreecamEvents.setFreecam(player, true);
+        ModNetwork.sendTo(player, new S2CStartFreecamPacket(
+                player.position().add(0, 2, 0),
+                player.position(),
+                player.getYRot(),
+                player.getXRot()
+        ));
     }
 
     private void spawnHighlightMarker(ServerLevel level, AABB bounds) {

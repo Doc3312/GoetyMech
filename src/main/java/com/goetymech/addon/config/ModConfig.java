@@ -236,6 +236,14 @@ public class ModConfig {
     /** 神行聚晶冷却时间（tick） */
     public static final ForgeConfigSpec.IntValue GATEWAY_ADV_COOLDOWN;
 
+    // ====== Freecam 配置 ======
+
+    /** Freecam 持续时间（tick） */
+    public static final ForgeConfigSpec.IntValue FREECAM_DURATION;
+
+    /** Freecam 飞行速度（blocks/tick） */
+    public static final ForgeConfigSpec.DoubleValue FREECAM_SPEED;
+
     // ====== Time Freeze 配置 ======
 
     /** 开发者模式开关（开启后输出结构化测试日志） */
@@ -660,6 +668,19 @@ public class ModConfig {
         GATEWAY_ADV_COOLDOWN = BUILDER
                 .comment("神行聚晶冷却时间（tick）", "范围: 100-72000，默认 9600（8分钟）")
                 .defineInRange("advanced_cooldown", 9600, 100, 72000);
+
+        BUILDER.pop();
+
+        // ====== Freecam 配置 ======
+        BUILDER.push("freecam");
+
+        FREECAM_DURATION = BUILDER
+                .comment("神行聚晶 Freecam 持续时间（tick）", "范围: 20-12000，默认 1200（60秒）")
+                .defineInRange("duration", 1200, 20, 12000);
+
+        FREECAM_SPEED = BUILDER
+                .comment("Freecam 飞行速度（blocks/tick）", "范围: 0.1-10.0，默认 1.0")
+                .defineInRange("speed", 1.0, 0.1, 10.0);
 
         BUILDER.pop();
     }

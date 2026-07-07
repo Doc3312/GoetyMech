@@ -6,6 +6,7 @@ import com.goetymech.addon.common.net.c2s.C2SCancelSlamPacket;
 import com.goetymech.addon.common.net.c2s.C2SVoidBlinkPacket;
 import com.goetymech.addon.common.net.c2s.C2SJumpChargePacket;
 import com.goetymech.addon.common.net.c2s.C2STimeStopPacket;
+import com.goetymech.addon.common.net.c2s.C2SFreecamEndPacket;
 import com.goetymech.addon.common.net.c2s.C2SWallInputPacket;
 import com.goetymech.addon.common.net.c2s.C2SWallJumpOffPacket;
 import com.goetymech.addon.common.net.c2s.C2SFlightInputPacket;
@@ -15,6 +16,7 @@ import com.goetymech.addon.common.net.s2c.S2CSlamImpactPacket;
 import com.goetymech.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetymech.addon.common.net.s2c.S2CStressArkDataPacket;
 import com.goetymech.addon.common.net.s2c.S2CAssimilationDataPacket;
+import com.goetymech.addon.common.net.s2c.S2CStartFreecamPacket;
 import com.goetymech.addon.common.net.s2c.S2CStressShieldUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -100,6 +102,14 @@ public class ModNetwork {
                 C2SVoidBlinkPacket::encode,
                 C2SVoidBlinkPacket::decode,
                 C2SVoidBlinkPacket::handle);
+        CHANNEL.registerMessage(idx++, S2CStartFreecamPacket.class,
+                S2CStartFreecamPacket::encode,
+                S2CStartFreecamPacket::decode,
+                S2CStartFreecamPacket::handle);
+        CHANNEL.registerMessage(idx++, C2SFreecamEndPacket.class,
+                C2SFreecamEndPacket::encode,
+                C2SFreecamEndPacket::decode,
+                C2SFreecamEndPacket::handle);
     }
 
     public static <MSG> void sendTo(ServerPlayer player, MSG msg) {

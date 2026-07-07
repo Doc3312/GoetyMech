@@ -72,6 +72,13 @@ public class ModClientForgeEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
+        FreecamHandler fh = FreecamHandler.getInstance();
+        if (fh.isActive()) {
+            FreecamInputHandler.handleInput(mc.getFrameTime());
+            fh.tick();
+            return;
+        }
+
         // === Freeze packet delay countdown ===
         if (freezePacketDelay > 0) {
             freezePacketDelay--;
