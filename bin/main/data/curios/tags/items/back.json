@@ -1,16 +1,10 @@
 {
   "replace": false,
   "values": [
-    "goetypunk:prototype",
-    "goetypunk:prototype_mimic",
-    "goetypunk:flesh_casket_a_1",
-    "goetypunk:flesh_casket_a_2",
-    "goetypunk:flesh_casket_a_3",
-    "goetypunk:flesh_casket_b_1",
-    "goetypunk:flesh_casket_b_2",
-    "goetypunk:flesh_casket_b_3",
-    "goetypunk:flesh_casket_c_1",
-    "goetypunk:flesh_casket_c_2",
-    "goetypunk:flesh_casket_c_3"
+    "goetymech:prototype",
+    "goetymech:prototype_mimic",
+    "goetymech:flesh_casket_1",
+    "goetymech:flesh_casket_2",
+    "goetymech:flesh_casket_3"
   ]
 }

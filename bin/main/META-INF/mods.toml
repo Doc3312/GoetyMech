@@ -4,62 +4,62 @@ license="All Rights Reserved"
 issueTrackerURL=""
 
 [[mods]]
-modId="goetypunk"
-version="1.0.0-goetypunk-1.20.1"
-displayName="GoetyPunk"
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
 logoFile="logo.png"
-credits="GoetyPunk Team"
-authors="GoetyPunk Team"
+credits="${mod_authors}"
+authors="${mod_authors}"
 description='''
-GoetyPunk - A Goety addon that extends the necromancy experience with new minion types, a flesh furnace for twisted embryo cooking/transforming, and more dark content.
+${mod_description}
 
 Requires Goety 2.x, Curios, and Create as dependencies.
 '''
 updateJSONURL=""
 
-[[dependencies.goetypunk]]
+[[dependencies.${mod_id}]]
 modId="forge"
 mandatory=true
 versionRange="[47,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.goetypunk]]
+[[dependencies.${mod_id}]]
 modId="minecraft"
 mandatory=true
 versionRange="[1.20.1,1.21)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.goetypunk]]
+[[dependencies.${mod_id}]]
 modId="curios"
 mandatory=true
 versionRange="[5.3.4,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.goetypunk]]
+[[dependencies.${mod_id}]]
 modId="goety"
 mandatory=true
 versionRange="[2,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.goetypunk]]
+[[dependencies.${mod_id}]]
 modId="create"
 mandatory=true
 versionRange="[6.0,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.goetypunk]]
+[[dependencies.${mod_id}]]
 modId="patchouli"
 mandatory=false
 versionRange="[1.20.1-80,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.goetypunk]]
+[[dependencies.${mod_id}]]
 modId="caelus"
 mandatory=false
 versionRange="[3.0,)"

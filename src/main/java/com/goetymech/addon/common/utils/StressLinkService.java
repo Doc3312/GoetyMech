@@ -33,6 +33,11 @@ public class StressLinkService extends SavedData {
     private transient final Map<GlobalBlockPos, Float> engineLocalStress = new HashMap<>();
     private transient final Map<GlobalBlockPos, Float> engineLocalCapacity = new HashMap<>();
 
+    // 重入防护：pushToEngine 期间抑制 onEngineNetworkChanged 的回传，
+    // 避免 applyRemoteUpdate → engine 网络变化 → onEngineNetworkChanged →
+    // setRemoteEngineConsumption → reader 网络 sync → pushToEngine 的死循环
+    private transient boolean suppressEngineUpdates = false;
+
     public record ReaderSnapshot(float capacity, float stress, float speed) {
         public float getAvailable() { return Math.max(0, capacity - stress); }
     }
@@ -207,7 +212,16 @@ public class StressLinkService extends SavedData {
         // 加回 Xi 得到 capacity - localStress - Σ(j≠i)Xj，避免双重计入与正反馈振荡
         float thisEngineConsumption = engineLocalStress.getOrDefault(enginePos, 0f);
         float budget = Math.max(0, capacity - reader.getNetworkStress() + thisEngineConsumption);
-        engine.applyRemoteUpdate(speed, budget, capacity);
+
+        // 抑制回传：applyRemoteUpdate 会触发 engine 自己的网络更新，
+        // 进而触发 onEngineNetworkChanged 回传 reader，形成递归。
+        // 用 suppress 标志在 push 期间阻断回传，末尾统一同步最终状态。
+        suppressEngineUpdates = true;
+        try {
+            engine.applyRemoteUpdate(speed, budget, capacity);
+        } finally {
+            suppressEngineUpdates = false;
+        }
 
         reader.setRemoteEngineConsumption(getEngineConsumptionForReader(readerPos));
     }
@@ -217,6 +231,9 @@ public class StressLinkService extends SavedData {
     public void onEngineNetworkChanged(GlobalBlockPos enginePos, float localStress, float localCapacity) {
         engineLocalStress.put(enginePos, localStress);
         engineLocalCapacity.put(enginePos, localCapacity);
+
+        // pushToEngine 期间抑制回传，防止死循环
+        if (suppressEngineUpdates) return;
 
         GlobalBlockPos readerPos = engineToReader.get(enginePos);
         if (readerPos != null) {
