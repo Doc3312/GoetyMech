@@ -920,7 +920,7 @@ public class PrototypeEvents {
 
     private static void spawnSingleRing(ServerLevel level, SlamAnimData slam) {
         int ringIdx = slam.nextRingToSpawn;
-        double startDist = 5.0;
+        double startDist = 3.0;
         double ringInner = startDist + ringIdx;
         double ringOuter = startDist + ringIdx + 1;
 

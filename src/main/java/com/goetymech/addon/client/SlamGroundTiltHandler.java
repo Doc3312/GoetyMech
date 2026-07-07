@@ -40,7 +40,7 @@ public class SlamGroundTiltHandler {
         for (int dx = -5; dx <= 5; dx++) {
             for (int dz = -5; dz <= 5; dz++) {
                 double hDist = Math.sqrt(dx * dx + dz * dz);
-                if (hDist < 1.5 || hDist > 5.5) continue;
+                if (hDist > 5.5) continue;
 
                 BlockPos groundPos = findGroundPos(level, centerPos.getX() + dx, baseY, centerPos.getZ() + dz);
                 if (groundPos == null) continue;
