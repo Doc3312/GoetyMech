@@ -203,7 +203,10 @@ public class StressLinkService extends SavedData {
 
         float speed = reader.getSpeed();
         float capacity = reader.getNetworkCapacity();
-        float budget = Math.max(0, capacity - reader.getNetworkStress());
+        // budget 需加回当前引擎自身消耗：getNetworkStress() 已含所有远程引擎消耗（ΣXi），
+        // 加回 Xi 得到 capacity - localStress - Σ(j≠i)Xj，避免双重计入与正反馈振荡
+        float thisEngineConsumption = engineLocalStress.getOrDefault(enginePos, 0f);
+        float budget = Math.max(0, capacity - reader.getNetworkStress() + thisEngineConsumption);
         engine.applyRemoteUpdate(speed, budget, capacity);
 
         reader.setRemoteEngineConsumption(getEngineConsumptionForReader(readerPos));

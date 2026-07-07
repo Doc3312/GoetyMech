@@ -60,7 +60,9 @@ public class StressArkHUD {
         float stress = totalStress;
         float used = Math.max(stress, 0);
         float available = Math.max(0, cap - used);
-        float netAvailable = Math.max(0, available - engineConsumption);
+        // totalStress（used）已含远程引擎消耗（Reader.calculateStressApplied 注入 Create 网络），
+        // 不再重复扣减 engineConsumption
+        float netAvailable = available;
         float fraction = cap <= 0 ? 0 : Math.min(used / cap, 1.125f);
 
         int barX = width / 2 + 50;
