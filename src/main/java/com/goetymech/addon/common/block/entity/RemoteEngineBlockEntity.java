@@ -22,9 +22,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.annotation.Nullable;
 
 public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
+
+    private static final Logger LOGGER = LogManager.getLogger("StressLinkDebug");
 
     @Nullable private BlockPos linkedPos;
     @Nullable private ResourceKey<Level> linkedDim;
@@ -105,6 +110,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         if (level != null && !level.isClientSide) {
             StressLinkService service = StressLinkService.get(level);
             if (service != null) {
+                LOGGER.info("[RemoteEngine.updateFromNetwork] pos={} capacity={} stress={} networkSize={}",
+                        worldPosition, capacity, stress, networkSize);
                 service.onEngineNetworkChanged(
                         GlobalBlockPos.of(level, worldPosition),
                         this.stress,
