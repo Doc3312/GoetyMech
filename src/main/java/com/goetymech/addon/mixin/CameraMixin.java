@@ -57,6 +57,8 @@ public class CameraMixin {
         } else {
             setPosition(curr);
         }
-        setRotation(fh.getYaw(), fh.getPitch());
+        float yaw = Mth.rotLerp(gp$partialTick, fh.getPrevYaw(), fh.getYaw());
+        float pitch = Mth.lerp(gp$partialTick, fh.getPrevPitch(), fh.getPitch());
+        setRotation(yaw, pitch);
     }
 }

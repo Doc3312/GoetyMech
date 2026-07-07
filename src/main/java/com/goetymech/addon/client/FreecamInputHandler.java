@@ -16,6 +16,8 @@ public class FreecamInputHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
+        handler.savePrevRotation();
+
         if (ModClientEvents.freecamExitKey.isDown()) {
             handler.endFreecam();
             return;
@@ -50,5 +52,6 @@ public class FreecamInputHandler {
             mc.player.input.jumping = false;
             mc.player.input.shiftKeyDown = false;
         }
+        mc.player.setJumping(false);
     }
 }
