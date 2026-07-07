@@ -101,10 +101,6 @@ public class ModNetwork {
                 C2SVoidBlinkPacket::encode,
                 C2SVoidBlinkPacket::decode,
                 C2SVoidBlinkPacket::handle);
-        CHANNEL.registerMessage(idx++, S2CStartFreecamPacket.class,
-                S2CStartFreecamPacket::encode,
-                S2CStartFreecamPacket::decode,
-                S2CStartFreecamPacket::handle);
         CHANNEL.registerMessage(idx++, C2SFreecamEndPacket.class,
                 C2SFreecamEndPacket::encode,
                 C2SFreecamEndPacket::decode,

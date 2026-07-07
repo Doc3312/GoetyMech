@@ -4,6 +4,7 @@ import com.goetymech.addon.GoetyMechMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -16,8 +17,7 @@ public class FreecamHUD {
 
     public static void drawHUD(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.gameMode == null || mc.gameMode.getPlayerMode() == null) return;
-        if (!mc.gameMode.getPlayerMode().isSpectator()) return;
+        if (mc.gameMode == null || mc.gameMode.getPlayerMode() != GameType.SPECTATOR) return;
 
         Font font = mc.font;
         if (font == null) return;

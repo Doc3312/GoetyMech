@@ -11,6 +11,7 @@ import com.goetymech.addon.common.item.TimeFocusPouch;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.c2s.C2SOpenFleshCasketPacket;
+import com.goetymech.addon.common.net.c2s.C2SFreecamEndPacket;
 import com.goetymech.addon.common.net.c2s.C2STimeStopPacket;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;

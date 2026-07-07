@@ -39,6 +39,8 @@ public class FreecamSpectatorHandler {
         tag.putInt(TAG_REMAINING, ModConfig.FREECAM_DURATION.get());
 
         player.setGameMode(GameType.SPECTATOR);
+        player.getAbilities().setFlyingSpeed((float) (ModConfig.FREECAM_SPEED.get() * 0.05));
+        player.onUpdateAbilities();
     }
 
     public static void deactivate(ServerPlayer player) {
