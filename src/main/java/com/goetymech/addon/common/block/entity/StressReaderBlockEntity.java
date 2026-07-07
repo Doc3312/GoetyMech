@@ -23,6 +23,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     @Nullable private UUID placerUUID;
     private float remoteEngineConsumption;
+    private float realStress;
+    private float realCapacity;
 
     public StressReaderBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.STRESS_READER_ENTITY.get(), pos, state);
@@ -64,9 +66,11 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     @Override
     public void updateFromNetwork(float capacity, float stress, int networkSize) {
+        this.realStress = stress;
+        this.realCapacity = capacity;
         float prevCap = this.capacity;
         float prevStress = this.stress;
-        super.updateFromNetwork(capacity, stress, networkSize);
+        super.updateFromNetwork(capacity, stress + remoteEngineConsumption, networkSize);
         if (level != null && !level.isClientSide
                 && (prevCap != this.capacity || prevStress != this.stress)) {
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
@@ -80,7 +84,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     public float getNetworkCapacity() { return capacity; }
 
-    public float getNetworkStress() { return stress + remoteEngineConsumption; }
+    public float getNetworkStress() { return stress; }
 
     public float getAvailableStress() { return Math.max(0, capacity - getNetworkStress()); }
 
@@ -90,6 +94,10 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         this.remoteEngineConsumption = consumption;
         setChanged();
         if (level != null && !level.isClientSide) {
+            if (realCapacity > 0) {
+                super.updateFromNetwork(realCapacity, realStress + consumption, 0);
+                level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
+            }
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             sendData();
         }
