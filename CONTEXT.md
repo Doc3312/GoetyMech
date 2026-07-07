@@ -64,3 +64,32 @@ GoetyMechMod.LOGGER.info("[TEST][<feature-slug>] key=value key=value ...")
 
 `src/test/java/` 下写纯逻辑测试（不依赖 MC 运行时）。
 测试是开发脚手架，验证通过后按用户要求删除。
+
+### 测试工作流
+
+每个 feature 开发按以下顺序：
+
+```
+1. 设计阶段（openspec proposal）
+   └─ 在 proposal 中包含 Test Plan 章节
+       | 场景 | 步骤 | 期望结果 | 验证方式(JUnit/日志/手动) |
+
+2. 实现阶段
+   ├─ 写 JUnit 测试（验证纯逻辑：消耗公式、条件判断、数据转换）
+   ├─ 写功能代码
+   ├─ gradlew compileJava 编译验证
+   ├─ gradlew runClient 游戏内验证（配合 devMode 结构化日志）
+   └─ 按需求删除 JUnit 测试（Test Plan 保留在 spec 中）
+
+3. 归档阶段
+   └─ closeout-feature skill: timeline + 经验 + incidents
+```
+
+### 验证方式分工
+
+| 验证内容 | 方式 | 示例 |
+|---------|------|------|
+| 纯逻辑（无 MC 依赖） | JUnit 5 | Spell 消耗计算、应力容量公式 |
+| BlockEntity 交互 | GameTest（可选） | 应力绑定/解绑 |
+| Spell/item 施法链路 | devMode + 结构化日志 | 焦点右键后的 SpellResult |
+| 客户端渲染/HUD | runClient 手动 | 覆盖、粒子、GUI |
