@@ -161,30 +161,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                 .style(ChatFormatting.AQUA)
                 .forGoggles(tooltip, 1);
 
-        float added = Math.abs(calculateAddedStressCapacity());
-
-        CreateLang.translate("gui.stressometer.capacity")
-                .style(ChatFormatting.GRAY)
-                .forGoggles(tooltip);
-
-        CreateLang.number(added)
-                .add(su)
-                .style(ChatFormatting.GREEN)
-                .forGoggles(tooltip, 1);
-
-        if (linkedPos != null && remoteCapacity > 0) {
-            CreateLang.text("Source: ")
-                    .style(ChatFormatting.GRAY)
-                    .forGoggles(tooltip);
-            CreateLang.number(remoteBudget)
-                    .add(CreateLang.translate("generic.unit.stress"))
-                    .style(ChatFormatting.DARK_GREEN)
-                    .text(ChatFormatting.GRAY, " / ")
-                    .add(CreateLang.number(remoteCapacity)
-                            .add(CreateLang.translate("generic.unit.stress"))
-                            .style(ChatFormatting.DARK_GRAY))
-                    .forGoggles(tooltip, 1);
-
+        if (linkedPos != null) {
             float localStr = this.stress;
             float localCap = this.capacity;
             boolean over = localCap > 0 && localStr > localCap;

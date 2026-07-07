@@ -87,10 +87,5 @@ public class StressArkHUD {
         int textY = barY + 1;
         gui.drawString(font, text, textX, textY, used > cap ? 0xFF5555 : 0xFFFFFF);
 
-        if (engineConsumption > 0) {
-            String consText = "引擎消耗: " + (int) engineConsumption + " SU";
-            gui.drawString(font, consText, barX + 66, barY + 11,
-                    used > cap ? 0xFF5555 : 0xAAAAAA);
-        }
     }
 }

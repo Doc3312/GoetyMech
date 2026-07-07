@@ -208,6 +208,13 @@ public class StressLinkService extends SavedData {
         engineLocalCapacity.put(enginePos, localCapacity);
     }
 
+    public float getEngineConsumptionForReader(GlobalBlockPos readerPos) {
+        GlobalBlockPos enginePos = readerToEngine.get(readerPos);
+        if (enginePos == null) return 0;
+        Float stress = engineLocalStress.get(enginePos);
+        return stress != null ? stress : 0;
+    }
+
     public float getEngineConsumptionForOwner(UUID ownerUUID) {
         float total = 0;
         for (var entry : engineToReader.entrySet()) {

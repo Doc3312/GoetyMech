@@ -8,8 +8,10 @@ import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -118,7 +120,10 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
     private void syncToClient(float consumption) {
         if (level == null || level.isClientSide || ownerUUID == null) return;
-        Player player = level.getPlayerByUUID(ownerUUID);
+        MinecraftServer server = level.getServer();
+        if (server == null) return;
+        PlayerList players = server.getPlayerList();
+        Player player = players.getPlayer(ownerUUID);
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CStressArkDataPacket(
                     cachedTotalCapacity, cachedTotalStress, cachedNetworkCount, consumption));
@@ -127,7 +132,10 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
     private void sendClearPacket() {
         if (level == null || level.isClientSide || ownerUUID == null) return;
-        Player player = level.getPlayerByUUID(ownerUUID);
+        MinecraftServer server = level.getServer();
+        if (server == null) return;
+        PlayerList players = server.getPlayerList();
+        Player player = players.getPlayer(ownerUUID);
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CStressArkDataPacket(-1, -1, 0, 0));
         }

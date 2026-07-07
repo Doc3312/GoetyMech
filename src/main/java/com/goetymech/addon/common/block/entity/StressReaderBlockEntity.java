@@ -2,6 +2,7 @@ package com.goetymech.addon.common.block.entity;
 
 import java.util.*;
 
+import com.goetymech.addon.common.utils.GlobalBlockPos;
 import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
@@ -158,6 +159,23 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                         .style(ChatFormatting.DARK_GRAY));
 
             stressTip.forGoggles(tooltip, 1);
+
+            if (level != null && !level.isClientSide) {
+                StressLinkService service = StressLinkService.get(level);
+                if (service != null) {
+                    float engCons = service.getEngineConsumptionForReader(
+                            GlobalBlockPos.of(level, worldPosition));
+                    if (engCons > 0) {
+                        CreateLang.text("引擎消耗: ")
+                                .style(ChatFormatting.GRAY)
+                                .forGoggles(tooltip);
+                        CreateLang.number(engCons)
+                                .add(su)
+                                .style(ChatFormatting.GOLD)
+                                .forGoggles(tooltip, 1);
+                    }
+                }
+            }
         }
 
         return true;
