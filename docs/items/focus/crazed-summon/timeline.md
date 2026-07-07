@@ -1,0 +1,4 @@
+# crazed-summon Timeline
+
+- **2026-06-24** — 初始实现。
+- **2026-06-29** — CrazedSummonFocus + CrazedSummonSpell 注册完成并加入 GoetyMech 创造模式标签页。
