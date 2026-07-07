@@ -38,6 +38,15 @@ public class StressLinkService extends SavedData {
     // setRemoteEngineConsumption → reader 网络 sync → pushToEngine 的死循环
     private transient boolean suppressEngineUpdates = false;
 
+    // 延迟推送标记：onReaderNetworkChanged 不立即推送，只标记 dirty，
+    // 在 tick() 中统一推送，避免在网络 sync 遍历期间因 detachKinetics 修改 members
+    // 导致 ConcurrentModificationException
+    private transient final Set<GlobalBlockPos> dirtyReaders = new HashSet<>();
+
+    // 过载引擎集合：应力不足时，后加入的引擎被标记为过载，budget=0，
+    // 其消耗不计入 reader 网络，保护先加入的引擎正常运转
+    private transient final Set<GlobalBlockPos> overstrainedEngines = new HashSet<>();
+
     public record ReaderSnapshot(float capacity, float stress, float speed) {
         public float getAvailable() { return Math.max(0, capacity - stress); }
     }
@@ -77,6 +86,8 @@ public class StressLinkService extends SavedData {
         ownerArks.clear();
         engineLocalStress.clear();
         engineLocalCapacity.clear();
+        overstrainedEngines.clear();
+        dirtyReaders.clear();
         setDirty();
     }
 
@@ -93,7 +104,11 @@ public class StressLinkService extends SavedData {
         rebuildOwnerIndex();
 
         Set<GlobalBlockPos> engines = readerToEngine.get(key);
-        if (engines != null) engines.forEach(this::pushToEngine);
+        if (engines != null && !engines.isEmpty()) {
+            // reader 加载后标记 dirty，由 tick 统一推送，
+            // 避免在加载流程中触发网络结构修改
+            dirtyReaders.add(key);
+        }
     }
 
     public void onReaderUnload(GlobalBlockPos readerPos) {
@@ -119,6 +134,7 @@ public class StressLinkService extends SavedData {
         if (engines != null) {
             for (GlobalBlockPos ep : engines) {
                 engineToReader.remove(ep);
+                overstrainedEngines.remove(ep);
                 RemoteEngineBlockEntity engine = activeEngines.get(ep);
                 if (engine != null) engine.applyRemoteUpdate(0, 0, 0, 0);
             }
@@ -134,11 +150,15 @@ public class StressLinkService extends SavedData {
         activeEngines.put(key, engine);
 
         GlobalBlockPos readerPos = engineToReader.get(key);
-        if (readerPos != null) pushToEngine(key);
+        if (readerPos != null) {
+            // 引擎加载后标记 reader dirty，由 tick 统一推送
+            dirtyReaders.add(readerPos);
+        }
     }
 
     public void onEngineUnload(GlobalBlockPos enginePos) {
         activeEngines.remove(enginePos);
+        overstrainedEngines.remove(enginePos);
         engineLocalStress.remove(enginePos);
         engineLocalCapacity.remove(enginePos);
     }
@@ -155,7 +175,8 @@ public class StressLinkService extends SavedData {
         engineToReader.put(enginePos, readerPos);
         readerToEngine.computeIfAbsent(readerPos, k -> new LinkedHashSet<>()).add(enginePos);
         setDirty();
-        pushToEngine(enginePos);
+        // 新引擎加入：标记 reader dirty，由 tick 统一分配预算
+        dirtyReaders.add(readerPos);
     }
 
     public void unbind(GlobalBlockPos enginePos) {
@@ -166,7 +187,12 @@ public class StressLinkService extends SavedData {
                 engines.remove(enginePos);
                 if (engines.isEmpty()) readerToEngine.remove(readerPos);
             }
+            // 解绑后重新分配剩余引擎的预算
+            dirtyReaders.add(readerPos);
         }
+        overstrainedEngines.remove(enginePos);
+        engineLocalStress.remove(enginePos);
+        engineLocalCapacity.remove(enginePos);
         setDirty();
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
@@ -189,8 +215,12 @@ public class StressLinkService extends SavedData {
                 reader.getNetworkStress(),
                 reader.getSpeed()));
 
-        Set<GlobalBlockPos> engines = readerToEngine.get(readerKey);
-        if (engines != null) engines.forEach(this::pushToEngine);
+        // 延迟推送：不立即 pushToEngine，标记为 dirty 后由 tick() 统一推送。
+        // 原因：此方法在 reader 网络 sync 遍历中被调用，
+        // 立即 push 可能触发 engine 的 applyRemoteUpdate → updateGeneratedRotation
+        // → detachKinetics，修改 engine 网络 members，若此时 engine 网络也在
+        // sync 遍历则会导致 ConcurrentModificationException。
+        dirtyReaders.add(readerKey);
     }
 
     @Nullable
@@ -198,33 +228,71 @@ public class StressLinkService extends SavedData {
         return readerCache.get(readerPos);
     }
 
-    private void pushToEngine(GlobalBlockPos enginePos) {
-        GlobalBlockPos readerPos = engineToReader.get(enginePos);
-        if (readerPos == null) return;
+    // ── Tick: 延迟推送 + 批量分配 ──
 
+    public void tick() {
+        if (dirtyReaders.isEmpty()) return;
+        Set<GlobalBlockPos> snapshot = new HashSet<>(dirtyReaders);
+        dirtyReaders.clear();
+        for (GlobalBlockPos readerPos : snapshot) {
+            distributeBudget(readerPos);
+        }
+    }
+
+    // 按引擎加入顺序（LinkedHashSet）分配 reader 的应力预算：
+    // 先加入的引擎优先获得预算，后加入的引擎若预算不足则标记为过载（budget=0）。
+    // 过载引擎的消耗不计入 reader 网络，保护已有引擎正常运转。
+    private void distributeBudget(GlobalBlockPos readerPos) {
         StressReaderBlockEntity reader = activeReaders.get(readerPos);
-        RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-        if (reader == null || engine == null) return;
+        if (reader == null) return;
+
+        Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
+        if (engines == null || engines.isEmpty()) return;
 
         float speed = reader.getSpeed();
         float capacity = reader.getNetworkCapacity();
         float readerStress = reader.getNetworkStress();
-        // budget 需加回当前引擎自身消耗：getNetworkStress() 已含所有远程引擎消耗（ΣXi），
-        // 加回 Xi 得到 capacity - localStress - Σ(j≠i)Xj，避免双重计入与正反馈振荡
-        float thisEngineConsumption = engineLocalStress.getOrDefault(enginePos, 0f);
-        float budget = Math.max(0, capacity - readerStress + thisEngineConsumption);
+        float remoteConsumption = getEngineConsumptionForReader(readerPos);
 
-        // 抑制回传：applyRemoteUpdate 会触发 engine 自己的网络更新，
-        // 进而触发 onEngineNetworkChanged 回传 reader，形成递归。
-        // 用 suppress 标志在 push 期间阻断回传，末尾统一同步最终状态。
+        // reader 本地消耗 = reader 总 stress - 远程引擎消耗（非过载的）
+        float localStress = readerStress - remoteConsumption;
+        // 可分配给引擎的总预算 = reader 总容量 - 本地消耗
+        float totalBudget = Math.max(0, capacity - localStress);
+
+        float allocated = 0;
+
+        // 抑制回传：批量推送过程中引擎网络变化不应回传修改 reader 消耗，
+        // 全部推送完成后统一设置一次
         suppressEngineUpdates = true;
         try {
-            engine.applyRemoteUpdate(speed, budget, capacity, readerStress);
+            for (GlobalBlockPos enginePos : engines) {
+                RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+                if (engine == null) continue;
+
+                float engineConsumption = engineLocalStress.getOrDefault(enginePos, 0f);
+                float availableBudget = Math.max(0, totalBudget - allocated);
+
+                if (availableBudget >= engineConsumption) {
+                    // 预算充足：正常运转
+                    overstrainedEngines.remove(enginePos);
+                    pushToEngineInternal(engine, speed, availableBudget, capacity, readerStress);
+                    allocated += engineConsumption;
+                } else {
+                    // 预算不足：标记过载，budget=0
+                    overstrainedEngines.add(enginePos);
+                    pushToEngineInternal(engine, speed, 0, capacity, readerStress);
+                }
+            }
         } finally {
             suppressEngineUpdates = false;
         }
 
+        // 全部推送完成后，统一更新 reader 的远程引擎消耗
         reader.setRemoteEngineConsumption(getEngineConsumptionForReader(readerPos));
+    }
+
+    private void pushToEngineInternal(RemoteEngineBlockEntity engine, float speed, float budget, float capacity, float readerStress) {
+        engine.applyRemoteUpdate(speed, budget, capacity, readerStress);
     }
 
     // ── Engine consumption tracking ──
@@ -248,6 +316,9 @@ public class StressLinkService extends SavedData {
         if (engines == null || engines.isEmpty()) return 0;
         float total = 0;
         for (GlobalBlockPos ep : engines) {
+            // 过载引擎不计入消耗：其 budget=0，引擎网络已过载停转，
+            // 不应再占用 reader 的应力配额
+            if (overstrainedEngines.contains(ep)) continue;
             Float stress = engineLocalStress.get(ep);
             if (stress != null) total += stress;
         }
