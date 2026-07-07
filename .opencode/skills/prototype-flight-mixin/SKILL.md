@@ -1,6 +1,7 @@
 ﻿---
 name: "prototype-flight-mixin"
 description: "elytra flight / Mixin / velocity"
+superseded_by: "docs/skills/physics-flight-mixin.md"
 ---
 
 # Prototype 飞行 Mixin — 探索与实现

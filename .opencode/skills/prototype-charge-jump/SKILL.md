@@ -1,6 +1,7 @@
 ﻿---
 name: "prototype-charge-jump"
 description: "charge jump / jump height"
+superseded_by: "docs/skills/physics-charge-jump.md"
 ---
 
 # Prototype 蓄力跳跃 — 开发 & 调参指南
