@@ -87,16 +87,18 @@ public class StressLinkService extends SavedData {
                 reader.getSpeed()));
         rebuildOwnerIndex();
 
-        GlobalBlockPos enginePos = readerToEngine.get(key);
-        if (enginePos != null) pushToEngine(enginePos);
+        Set<GlobalBlockPos> engines = readerToEngine.get(key);
+        if (engines != null) engines.forEach(this::pushToEngine);
     }
 
     public void onReaderUnload(GlobalBlockPos readerPos) {
         activeReaders.remove(readerPos);
-        GlobalBlockPos enginePos = readerToEngine.get(readerPos);
-        if (enginePos != null) {
-            RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-            if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+        Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
+        if (engines != null) {
+            for (GlobalBlockPos ep : engines) {
+                RemoteEngineBlockEntity engine = activeEngines.get(ep);
+                if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+            }
         }
     }
 
@@ -108,11 +110,13 @@ public class StressLinkService extends SavedData {
         readerOwners.remove(key);
         rebuildOwnerIndex();
 
-        GlobalBlockPos enginePos = readerToEngine.remove(key);
-        if (enginePos != null) {
-            engineToReader.remove(enginePos);
-            RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-            if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+        Set<GlobalBlockPos> engines = readerToEngine.remove(key);
+        if (engines != null) {
+            for (GlobalBlockPos ep : engines) {
+                engineToReader.remove(ep);
+                RemoteEngineBlockEntity engine = activeEngines.get(ep);
+                if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+            }
             setDirty();
         }
     }
@@ -138,17 +142,13 @@ public class StressLinkService extends SavedData {
 
     public void bind(GlobalBlockPos enginePos, GlobalBlockPos readerPos) {
         GlobalBlockPos oldReader = engineToReader.get(enginePos);
-        if (oldReader != null) readerToEngine.remove(oldReader);
-
-        GlobalBlockPos oldEngine = readerToEngine.get(readerPos);
-        if (oldEngine != null && !oldEngine.equals(enginePos)) {
-            engineToReader.remove(oldEngine);
-            RemoteEngineBlockEntity stale = activeEngines.get(oldEngine);
-            if (stale != null) stale.applyRemoteUpdate(0, 0, 0);
+        if (oldReader != null) {
+            Set<GlobalBlockPos> engines = readerToEngine.get(oldReader);
+            if (engines != null) engines.remove(enginePos);
         }
 
         engineToReader.put(enginePos, readerPos);
-        readerToEngine.put(readerPos, enginePos);
+        readerToEngine.computeIfAbsent(readerPos, k -> new LinkedHashSet<>()).add(enginePos);
         setDirty();
         pushToEngine(enginePos);
     }
