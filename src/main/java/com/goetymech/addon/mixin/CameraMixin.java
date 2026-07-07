@@ -6,7 +6,9 @@ import com.goetymech.addon.common.time.TimeContext;
 import com.goetymech.addon.common.time.TimeStopUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -14,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Camera.class)
 public class CameraMixin {
+
+    @Shadow protected void setPosition(Vec3 pos) {}
+    @Shadow protected void setRotation(float yRot, float xRot) {}
 
     private static boolean gp$freecamOverride;
 
@@ -39,8 +44,7 @@ public class CameraMixin {
         if (!gp$freecamOverride) return;
         FreecamHandler fh = FreecamHandler.getInstance();
         if (!fh.isActive()) return;
-        Camera camera = (Camera) (Object) this;
-        camera.setPosition(fh.getCameraPos());
-        camera.setRotation(fh.getYaw(), fh.getPitch());
+        setPosition(fh.getCameraPos());
+        setRotation(fh.getYaw(), fh.getPitch());
     }
 }
