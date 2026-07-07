@@ -79,8 +79,11 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     }
 
     public float getNetworkCapacity() { return capacity; }
-    public float getNetworkStress() { return stress; }
-    public float getAvailableStress() { return Math.max(0, capacity - stress); }
+
+    @Override
+    public float getNetworkStress() { return stress + remoteEngineConsumption; }
+
+    public float getAvailableStress() { return Math.max(0, capacity - getNetworkStress()); }
 
     public float getRemoteEngineConsumption() { return remoteEngineConsumption; }
 
@@ -114,8 +117,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     public int getComparatorOutput() {
         if (capacity <= 0) return 0;
-        float netAvailable = Math.max(0, getAvailableStress() - remoteEngineConsumption);
-        float ratio = netAvailable / capacity;
+        float ratio = getAvailableStress() / capacity;
         return Mth.clamp((int)(ratio * 15), 0, 15);
     }
 
@@ -174,16 +176,6 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                         .style(ChatFormatting.DARK_GRAY));
 
             stressTip.forGoggles(tooltip, 1);
-
-            if (remoteEngineConsumption > 0) {
-                CreateLang.text("引擎消耗: ")
-                        .style(ChatFormatting.GRAY)
-                        .forGoggles(tooltip);
-                CreateLang.number(remoteEngineConsumption)
-                        .add(su)
-                        .style(ChatFormatting.GOLD)
-                        .forGoggles(tooltip, 1);
-            }
         }
 
         return true;
