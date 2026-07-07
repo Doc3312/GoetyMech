@@ -4,3 +4,4 @@
 - **2026-06-24** — 初始实现
 - **2026-06-27** — 日志降级
 - **2026-07-03** — Ark 集成、应力隔离、updateStressFor 恢复
+- **2026-07-07** — 重构：删除 calculateStressApplied()/静态全局变量；只读模式；updateFromNetwork() 事件驱动推送
