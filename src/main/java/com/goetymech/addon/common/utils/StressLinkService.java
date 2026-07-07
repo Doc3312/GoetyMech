@@ -268,8 +268,8 @@ public class StressLinkService extends SavedData {
         // 可分配给引擎的总预算 = reader 总容量 - 本地消耗
         float totalBudget = Math.max(0, capacity - localStress);
 
-        LOGGER.info("[distributeBudget] START reader={} speed={} capacity={} readerStress={} remoteConsumption={} localStress={} totalBudget={}",
-                readerPos.toShortString(), speed, capacity, readerStress, remoteConsumption, localStress, totalBudget);
+            LOGGER.info("[distributeBudget] START reader={} speed={} capacity={} readerStress={} remoteConsumption={} localStress={} totalBudget={}",
+                readerPos, speed, capacity, readerStress, remoteConsumption, localStress, totalBudget);
 
         float allocated = 0;
 
@@ -287,7 +287,7 @@ public class StressLinkService extends SavedData {
                 boolean wasOverstrained = overstrainedEngines.contains(enginePos);
 
                 LOGGER.info("[distributeBudget] engine#{}={} consumption={} availableBudget={} wasOverstrained={}",
-                        idx, enginePos.toShortString(), engineConsumption, availableBudget, wasOverstrained);
+                        idx, enginePos, engineConsumption, availableBudget, wasOverstrained);
 
                 if (availableBudget >= engineConsumption) {
                     // 预算充足：正常运转
@@ -316,7 +316,7 @@ public class StressLinkService extends SavedData {
         float finalConsumption = getEngineConsumptionForReader(readerPos);
         reader.setRemoteEngineConsumption(finalConsumption);
         LOGGER.info("[distributeBudget] END reader={} finalRemoteConsumption={}",
-                readerPos.toShortString(), finalConsumption);
+                readerPos, finalConsumption);
     }
 
     private void pushToEngineInternal(RemoteEngineBlockEntity engine, float speed, float budget, float capacity, float readerStress) {
@@ -334,7 +334,7 @@ public class StressLinkService extends SavedData {
             engineLocalStress.put(enginePos, localStress);
 
             LOGGER.info("[onEngineNetworkChanged] engine={} oldStress={} newStress={} capacity={} overstrained={}",
-                    enginePos.toShortString(), oldStress, localStress, localCapacity, overstrainedEngines.contains(enginePos));
+                    enginePos, oldStress, localStress, localCapacity, overstrainedEngines.contains(enginePos));
 
             // 实时过载检测：如果引擎上报的实际消耗超过了分配给它的预算，
             // 立即标记过载并标记 reader 为 dirty，让 distributeBudget 统一推送 speed=0。
@@ -344,7 +344,7 @@ public class StressLinkService extends SavedData {
                 Float budget = engineBudget.get(enginePos);
                 if (budget != null && budget > 0 && localStress > budget) {
                     LOGGER.info("[onEngineNetworkChanged] OVERLOAD DETECTED engine={} stress={} budget={}",
-                            enginePos.toShortString(), localStress, budget);
+                            enginePos, localStress, budget);
                     overstrainedEngines.add(enginePos);
                     engineBudget.put(enginePos, 0f);
                     GlobalBlockPos readerPos = engineToReader.get(enginePos);
@@ -363,7 +363,7 @@ public class StressLinkService extends SavedData {
         if (readerPos != null) {
             float totalConsumption = getEngineConsumptionForReader(readerPos);
             LOGGER.info("[onEngineNetworkChanged] update reader={} totalRemoteConsumption={}",
-                    readerPos.toShortString(), totalConsumption);
+                    readerPos, totalConsumption);
             StressReaderBlockEntity reader = activeReaders.get(readerPos);
             if (reader != null) reader.setRemoteEngineConsumption(totalConsumption);
         }
