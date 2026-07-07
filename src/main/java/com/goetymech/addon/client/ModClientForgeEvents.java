@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
@@ -73,12 +74,13 @@ public class ModClientForgeEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
-        if (mc.player != null && mc.player.isSpectator()) {
+        if (mc.gameMode != null && mc.gameMode.getPlayerMode() == GameType.SPECTATOR) {
             if (ModClientEvents.freecamExitKey != null && ModClientEvents.freecamExitKey.consumeClick()) {
                 ModNetwork.CHANNEL.sendToServer(new C2SFreecamEndPacket());
                 return;
             }
             mc.options.keyPickItem.consumeClick();
+            mc.options.keyTogglePerspective.consumeClick();
         }
 
         // === Freeze packet delay countdown ===

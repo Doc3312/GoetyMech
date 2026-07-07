@@ -1,7 +1,6 @@
 package com.goetymech.addon.common.events;
 
 import com.goetymech.addon.config.ModConfig;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -9,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -64,6 +64,12 @@ public class FreecamSpectatorHandler {
         tag.remove(TAG_REMAINING);
 
         player.setGameMode(savedType);
+        player.getAbilities().flying = false;
+        player.getAbilities().mayfly = false;
+        player.getAbilities().setFlyingSpeed(0.05f);
+        player.onUpdateAbilities();
+        player.fallDistance = 0;
+        player.setDeltaMovement(Vec3.ZERO);
 
         ServerLevel savedLevel = player.getServer().getLevel(
                 ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimStr)));
@@ -80,7 +86,8 @@ public class FreecamSpectatorHandler {
 
         int remaining = tag.getInt(TAG_REMAINING) - 1;
         if (remaining <= 0) {
-            deactivate(player);
+            ServerPlayer sp = player;
+            sp.getServer().execute(() -> deactivate(sp));
             return;
         }
         tag.putInt(TAG_REMAINING, remaining);
