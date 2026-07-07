@@ -10,3 +10,4 @@
 - **2026-07-07** — 自动绑定 Ark：新增 placerUUID 字段+NBT；setPlacedBy() 存储；initialize() 调用 tryAutoBindArk()；tryAutoBindArk 通过 service.getReadersForOwner 找同玩家 Reader
 - **2026-07-08** — StackOverflow 死循环修复：pushToEngine 添加 suppressEngineUpdates 重入防护，阻断 applyRemoteUpdate → engine 网络变化 → onEngineNetworkChanged → setRemoteEngineConsumption → reader 网络 sync → pushToEngine 的递归循环；budget 公式修正加回当前引擎消耗避免双重计入
 - **2026-07-08** — Goggle 显示改进：「本地消耗」改名为「已分配应力」；新增「网络应力」行显示 reader 网络总使用/总容量；applyRemoteUpdate 增加 readerStress 参数，pushToEngine 传递 reader.getNetworkStress()；NBT 新增 RemoteReaderStress 字段
+- **2026-07-08** — overstrained 隔离 + CME 修复：StressLinkService 改为延迟推送（dirtyReaders + ServerTickEvent）避免遍历期间修改集合导致 ConcurrentModificationException；按引擎加入顺序（LinkedHashSet）批量分配预算，新引擎应力不足时标记为过载（budget=0）且其消耗不计入 reader 网络，保护已有引擎正常运转
