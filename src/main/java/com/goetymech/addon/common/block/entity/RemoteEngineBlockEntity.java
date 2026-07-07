@@ -34,6 +34,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     private float remoteSpeed;
     private float remoteBudget;
     private float remoteCapacity;
+    // Reader 网络的已使用应力（含本地消耗 + 所有远程引擎消耗），用于 Goggle 显示网络应力状况
+    private float remoteReaderStress;
 
     public RemoteEngineBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.REMOTE_ENGINE_ENTITY.get(), pos, state);
@@ -84,10 +86,11 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         }
     }
 
-    public void applyRemoteUpdate(float speed, float budget, float capacity) {
+    public void applyRemoteUpdate(float speed, float budget, float capacity, float readerStress) {
         this.remoteSpeed = Math.abs(speed);
         this.remoteBudget = Math.max(0, budget);
         this.remoteCapacity = Math.max(0, capacity);
+        this.remoteReaderStress = Math.max(0, readerStress);
         updateGeneratedRotation();
         if (level != null && !level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
@@ -142,6 +145,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         this.remoteSpeed = 0;
         this.remoteBudget = 0;
         this.remoteCapacity = 0;
+        this.remoteReaderStress = 0;
         setChanged();
         if (level != null && !level.isClientSide) {
             StressLinkService service = StressLinkService.get(level);
@@ -190,7 +194,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
             float localStr = this.stress;
             float localCap = this.capacity;
             boolean over = localCap > 0 && localStr > localCap;
-            CreateLang.text("本地消耗: ")
+            // 已分配应力：引擎网络的消耗/容量（原「本地消耗」改名，语义更清晰）
+            CreateLang.text("已分配应力: ")
                     .style(ChatFormatting.GRAY)
                     .forGoggles(tooltip);
             CreateLang.number(localStr)
@@ -198,6 +203,22 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                     .style(over ? ChatFormatting.RED : ChatFormatting.GOLD)
                     .text(ChatFormatting.GRAY, " / ")
                     .add(CreateLang.number(localCap)
+                            .add(su)
+                            .style(ChatFormatting.DARK_GRAY))
+                    .forGoggles(tooltip, 1);
+
+            // 网络应力：Reader 网络总使用/总容量（含本地消耗 + 所有远程引擎消耗）
+            float netStr = this.remoteReaderStress;
+            float netCap = this.remoteCapacity;
+            boolean netOver = netCap > 0 && netStr > netCap;
+            CreateLang.text("网络应力: ")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+            CreateLang.number(netStr)
+                    .add(su)
+                    .style(netOver ? ChatFormatting.RED : ChatFormatting.AQUA)
+                    .text(ChatFormatting.GRAY, " / ")
+                    .add(CreateLang.number(netCap)
                             .add(su)
                             .style(ChatFormatting.DARK_GRAY))
                     .forGoggles(tooltip, 1);
@@ -220,6 +241,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         compound.putFloat("RemoteSpeed", remoteSpeed);
         compound.putFloat("RemoteBudget", remoteBudget);
         compound.putFloat("RemoteCapacity", remoteCapacity);
+        compound.putFloat("RemoteReaderStress", remoteReaderStress);
         if (placerUUID != null) {
             compound.putUUID("PlacerUUID", placerUUID);
         }
@@ -242,6 +264,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         remoteSpeed = compound.getFloat("RemoteSpeed");
         remoteBudget = compound.getFloat("RemoteBudget");
         remoteCapacity = compound.getFloat("RemoteCapacity");
+        remoteReaderStress = compound.getFloat("RemoteReaderStress");
         if (compound.hasUUID("PlacerUUID")) {
             placerUUID = compound.getUUID("PlacerUUID");
         } else {

@@ -62,7 +62,6 @@ public class StressArkHUD {
         float available = Math.max(0, cap - used);
         // totalStress（used）已含远程引擎消耗（Reader.calculateStressApplied 注入 Create 网络），
         // 不再重复扣减 engineConsumption
-        float netAvailable = available;
         float fraction = cap <= 0 ? 0 : Math.min(used / cap, 1.125f);
 
         int barX = width / 2 + 50;
@@ -84,7 +83,8 @@ public class StressArkHUD {
         gui.blit(Goety.location("textures/gui/soul_energy_bar.png"),
                 barX + 9, barY + 2, offset, 0, fillWidth, ENERGY_BAR_HEIGHT, 234, ENERGY_BAR_HEIGHT);
 
-        String text = (int) netAvailable + "/" + (int) cap + " SU";
+        // 显示「已用/容量」，与引擎 Goggle 显示格式一致
+        String text = (int) used + "/" + (int) cap + " SU";
         int textX = barX + 37;
         int textY = barY + 1;
         gui.drawString(font, text, textX, textY, used > cap ? 0xFF5555 : 0xFFFFFF);

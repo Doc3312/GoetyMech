@@ -102,7 +102,7 @@ public class StressLinkService extends SavedData {
         if (engines != null) {
             for (GlobalBlockPos ep : engines) {
                 RemoteEngineBlockEntity engine = activeEngines.get(ep);
-                if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+                if (engine != null) engine.applyRemoteUpdate(0, 0, 0, 0);
             }
         }
     }
@@ -120,7 +120,7 @@ public class StressLinkService extends SavedData {
             for (GlobalBlockPos ep : engines) {
                 engineToReader.remove(ep);
                 RemoteEngineBlockEntity engine = activeEngines.get(ep);
-                if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+                if (engine != null) engine.applyRemoteUpdate(0, 0, 0, 0);
             }
             setDirty();
         }
@@ -170,7 +170,7 @@ public class StressLinkService extends SavedData {
         setDirty();
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-        if (engine != null) engine.applyRemoteUpdate(0, 0, 0);
+        if (engine != null) engine.applyRemoteUpdate(0, 0, 0, 0);
     }
 
     @Nullable
@@ -208,17 +208,18 @@ public class StressLinkService extends SavedData {
 
         float speed = reader.getSpeed();
         float capacity = reader.getNetworkCapacity();
+        float readerStress = reader.getNetworkStress();
         // budget 需加回当前引擎自身消耗：getNetworkStress() 已含所有远程引擎消耗（ΣXi），
         // 加回 Xi 得到 capacity - localStress - Σ(j≠i)Xj，避免双重计入与正反馈振荡
         float thisEngineConsumption = engineLocalStress.getOrDefault(enginePos, 0f);
-        float budget = Math.max(0, capacity - reader.getNetworkStress() + thisEngineConsumption);
+        float budget = Math.max(0, capacity - readerStress + thisEngineConsumption);
 
         // 抑制回传：applyRemoteUpdate 会触发 engine 自己的网络更新，
         // 进而触发 onEngineNetworkChanged 回传 reader，形成递归。
         // 用 suppress 标志在 push 期间阻断回传，末尾统一同步最终状态。
         suppressEngineUpdates = true;
         try {
-            engine.applyRemoteUpdate(speed, budget, capacity);
+            engine.applyRemoteUpdate(speed, budget, capacity, readerStress);
         } finally {
             suppressEngineUpdates = false;
         }
