@@ -75,6 +75,7 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
         if (placer instanceof Player && !level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof RemoteEngineBlockEntity engine) {
+                engine.setPlacerUUID(placer.getUUID());
                 if (RemoteEngineBlockItem.isBound(stack)) {
                     engine.setLinkedPos(
                             RemoteEngineBlockItem.getBoundPos(stack),

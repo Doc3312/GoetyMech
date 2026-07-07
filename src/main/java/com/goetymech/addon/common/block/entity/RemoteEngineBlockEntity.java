@@ -1,6 +1,7 @@
 package com.goetymech.addon.common.block.entity;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.goetymech.addon.common.utils.GlobalBlockPos;
 import com.goetymech.addon.common.utils.StressLinkService;
@@ -28,6 +29,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     @Nullable private BlockPos linkedPos;
     @Nullable private ResourceKey<Level> linkedDim;
 
+    @Nullable private UUID placerUUID;
+
     private float remoteSpeed;
     private float remoteBudget;
     private float remoteCapacity;
@@ -50,6 +53,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
                             network.calculateStress(),
                             network.calculateCapacity());
                 }
+            }
+            if (linkedPos == null && placerUUID != null) {
+                tryAutoBindArk(placerUUID);
             }
         }
     }
@@ -147,6 +153,25 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         }
     }
 
+    @Nullable
+    public UUID getPlacerUUID() { return placerUUID; }
+
+    public void setPlacerUUID(UUID uuid) {
+        this.placerUUID = uuid;
+        setChanged();
+    }
+
+    private void tryAutoBindArk(UUID ownerUUID) {
+        if (linkedPos != null || level == null || level.isClientSide) return;
+        StressLinkService service = StressLinkService.get(level);
+        if (service == null) return;
+        List<GlobalBlockPos> readers = service.getReadersForOwner(ownerUUID);
+        if (!readers.isEmpty()) {
+            GlobalBlockPos first = readers.get(0);
+            setLinkedPos(first.pos(), first.dimension());
+        }
+    }
+
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         if (!StressImpact.isEnabled()) return false;
@@ -195,6 +220,9 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         compound.putFloat("RemoteSpeed", remoteSpeed);
         compound.putFloat("RemoteBudget", remoteBudget);
         compound.putFloat("RemoteCapacity", remoteCapacity);
+        if (placerUUID != null) {
+            compound.putUUID("PlacerUUID", placerUUID);
+        }
     }
 
     @Override
@@ -214,5 +242,10 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         remoteSpeed = compound.getFloat("RemoteSpeed");
         remoteBudget = compound.getFloat("RemoteBudget");
         remoteCapacity = compound.getFloat("RemoteCapacity");
+        if (compound.hasUUID("PlacerUUID")) {
+            placerUUID = compound.getUUID("PlacerUUID");
+        } else {
+            placerUUID = null;
+        }
     }
 }

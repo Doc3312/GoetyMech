@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 public class StressReaderBlockEntity extends KineticBlockEntity {
 
     @Nullable private UUID placerUUID;
+    private float remoteEngineConsumption;
 
     public StressReaderBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.STRESS_READER_ENTITY.get(), pos, state);
@@ -81,6 +82,13 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     public float getNetworkStress() { return stress; }
     public float getAvailableStress() { return Math.max(0, capacity - stress); }
 
+    public float getRemoteEngineConsumption() { return remoteEngineConsumption; }
+
+    public void setRemoteEngineConsumption(float consumption) {
+        this.remoteEngineConsumption = consumption;
+        setChanged();
+    }
+
     @Nullable
     public UUID getPlacerUUID() { return placerUUID; }
 
@@ -102,7 +110,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     public int getComparatorOutput() {
         if (capacity <= 0) return 0;
-        float ratio = getAvailableStress() / capacity;
+        float netAvailable = Math.max(0, getAvailableStress() - remoteEngineConsumption);
+        float ratio = netAvailable / capacity;
         return Mth.clamp((int)(ratio * 15), 0, 15);
     }
 
@@ -112,6 +121,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         if (placerUUID != null) {
             compound.putUUID("PlacerUUID", placerUUID);
         }
+        compound.putFloat("RemoteEngineConsumption", remoteEngineConsumption);
     }
 
     @Override
@@ -122,6 +132,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         } else {
             placerUUID = null;
         }
+        remoteEngineConsumption = compound.getFloat("RemoteEngineConsumption");
     }
 
     @Override
@@ -160,21 +171,14 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
             stressTip.forGoggles(tooltip, 1);
 
-            if (level != null && !level.isClientSide) {
-                StressLinkService service = StressLinkService.get(level);
-                if (service != null) {
-                    float engCons = service.getEngineConsumptionForReader(
-                            GlobalBlockPos.of(level, worldPosition));
-                    if (engCons > 0) {
-                        CreateLang.text("引擎消耗: ")
-                                .style(ChatFormatting.GRAY)
-                                .forGoggles(tooltip);
-                        CreateLang.number(engCons)
-                                .add(su)
-                                .style(ChatFormatting.GOLD)
-                                .forGoggles(tooltip, 1);
-                    }
-                }
+            if (remoteEngineConsumption > 0) {
+                CreateLang.text("引擎消耗: ")
+                        .style(ChatFormatting.GRAY)
+                        .forGoggles(tooltip);
+                CreateLang.number(remoteEngineConsumption)
+                        .add(su)
+                        .style(ChatFormatting.GOLD)
+                        .forGoggles(tooltip, 1);
             }
         }
 
