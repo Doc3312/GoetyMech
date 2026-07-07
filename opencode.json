@@ -10,5 +10,8 @@
       "*DIM-?[0-9]*": "ask",
       "*": "allow"
     }
-  }
+  },
+  "plugins": [
+    ".opencode/plugins/skill-preloader.ts"
+  ]
 }
