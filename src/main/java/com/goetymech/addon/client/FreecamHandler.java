@@ -10,6 +10,7 @@ public class FreecamHandler {
 
     private boolean active;
     private Vec3 cameraPos;
+    private Vec3 prevCameraPos;
     private Vec3 bodyPos;
     private float yaw;
     private float pitch;
@@ -28,6 +29,7 @@ public class FreecamHandler {
     public void activate(Vec3 cameraPos, Vec3 bodyPos, float yaw, float pitch) {
         this.active = true;
         this.cameraPos = cameraPos;
+        this.prevCameraPos = cameraPos;
         this.bodyPos = bodyPos;
         this.yaw = yaw;
         this.pitch = pitch;
@@ -38,6 +40,7 @@ public class FreecamHandler {
     public void deactivate() {
         this.active = false;
         this.cameraPos = null;
+        this.prevCameraPos = null;
         this.bodyPos = null;
         this.velocity = Vec3.ZERO;
     }
@@ -51,6 +54,8 @@ public class FreecamHandler {
             endFreecam();
             return;
         }
+        prevCameraPos = cameraPos;
+        velocity = velocity.scale(0.91);
         cameraPos = cameraPos.add(velocity);
     }
 
@@ -65,12 +70,15 @@ public class FreecamHandler {
 
     public boolean isActive() { return active; }
     public Vec3 getCameraPos() { return cameraPos; }
+    public Vec3 getPrevCameraPos() { return prevCameraPos; }
     public Vec3 getBodyPos() { return bodyPos; }
     public float getYaw() { return yaw; }
     public float getPitch() { return pitch; }
+    public Vec3 getVelocity() { return velocity; }
     public int getRemainingTicks() { return remainingTicks; }
 
     public void setYaw(float yaw) { this.yaw = yaw; }
     public void setPitch(float pitch) { this.pitch = pitch; }
     public void setVelocity(Vec3 velocity) { this.velocity = velocity; }
+    public void addVelocity(Vec3 delta) { this.velocity = this.velocity.add(delta); }
 }
