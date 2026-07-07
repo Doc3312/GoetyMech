@@ -40,6 +40,7 @@ public class ModClientEvents {
     private static final Logger LOGGER = LoggerFactory.getLogger("ModClientEvents");
 
     public static KeyMapping fleshCasketKey;
+    public static KeyMapping freecamExitKey;
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
@@ -88,6 +89,11 @@ public class ModClientEvents {
                     GLFW.GLFW_KEY_Z, "key.goetymech.category");
             Minecraft.getInstance().options.keyMappings =
                     ArrayUtils.add(Minecraft.getInstance().options.keyMappings, fleshCasketKey);
+
+            freecamExitKey = new KeyMapping("key.goetymech.freecam_exit",
+                    GLFW.GLFW_KEY_R, "key.goetymech.category");
+            Minecraft.getInstance().options.keyMappings =
+                    ArrayUtils.add(Minecraft.getInstance().options.keyMappings, freecamExitKey);
         });
 
         LOGGER.info("[MOD_CLIENT] Flywheel Visuals DISABLED for diagnosis - using BESR only");
@@ -121,6 +127,7 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "stress_ark_hud", StressArkHUD.OVERLAY);
+        event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "freecam_hud", FreecamHUD.OVERLAY);
     }
 
     @SubscribeEvent
