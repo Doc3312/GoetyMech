@@ -34,3 +34,4 @@
 | 2026-07-07 | 删除线框渲染（StructureHighlightRenderer/Marker）；Freecam 增加夜视效果 | 线框无实际作用，夜视帮助观察结构内部 | GatewayAdvancedSpell |
 | 2026-07-07 | Freecam 移动平滑化 + 退出键 Shift→R + 红色 HUD 提示 | 修复卡顿，Shift 冲突，增加退出可见性 | FreecamHandler / FreecamInputHandler / CameraMixin / FreecamHUD / ModClientEvents |
 | 2026-07-07 | 重构为原版旁观者模式，删除自定义 Freecam 管线（4个文件） | 自定义渲染层卡顿不可修复，原版 spectator 零行移动代码 | FreecamSpectatorHandler / CameraMixin / FreecamHUD / ModClientForgeEvents |
+| 2026-07-07 | deferred deactivate + abilities 强制重置；F5/旁观者菜单吞噬 | spectator 退出后玩家飘在空中/无法跳跃；掉帧 | FreecamSpectatorHandler / ModClientForgeEvents / CameraMixin |
