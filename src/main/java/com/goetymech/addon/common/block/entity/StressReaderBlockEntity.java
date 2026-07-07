@@ -80,7 +80,6 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
 
     public float getNetworkCapacity() { return capacity; }
 
-    @Override
     public float getNetworkStress() { return stress + remoteEngineConsumption; }
 
     public float getAvailableStress() { return Math.max(0, capacity - getNetworkStress()); }
