@@ -20,7 +20,7 @@ public class StressLinkService extends SavedData {
 
     // === Persisted ===
     private final Map<GlobalBlockPos, GlobalBlockPos> engineToReader = new LinkedHashMap<>();
-    private transient final Map<GlobalBlockPos, GlobalBlockPos> readerToEngine = new HashMap<>();
+    private transient final Map<GlobalBlockPos, Set<GlobalBlockPos>> readerToEngine = new HashMap<>();
     private final Map<GlobalBlockPos, UUID> readerOwners = new HashMap<>();
     private transient final Map<UUID, Set<GlobalBlockPos>> ownerReaders = new HashMap<>();
 
@@ -155,7 +155,13 @@ public class StressLinkService extends SavedData {
 
     public void unbind(GlobalBlockPos enginePos) {
         GlobalBlockPos readerPos = engineToReader.remove(enginePos);
-        if (readerPos != null) readerToEngine.remove(readerPos);
+        if (readerPos != null) {
+            Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
+            if (engines != null) {
+                engines.remove(enginePos);
+                if (engines.isEmpty()) readerToEngine.remove(readerPos);
+            }
+        }
         setDirty();
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
@@ -178,8 +184,8 @@ public class StressLinkService extends SavedData {
                 reader.getNetworkStress(),
                 reader.getSpeed()));
 
-        GlobalBlockPos enginePos = readerToEngine.get(readerKey);
-        if (enginePos != null) pushToEngine(enginePos);
+        Set<GlobalBlockPos> engines = readerToEngine.get(readerKey);
+        if (engines != null) engines.forEach(this::pushToEngine);
     }
 
     @Nullable
@@ -200,8 +206,7 @@ public class StressLinkService extends SavedData {
         float budget = Math.max(0, capacity - reader.getNetworkStress());
         engine.applyRemoteUpdate(speed, budget, capacity);
 
-        Float engStress = engineLocalStress.get(enginePos);
-        reader.setRemoteEngineConsumption(engStress != null ? engStress : 0);
+        reader.setRemoteEngineConsumption(getEngineConsumptionForReader(readerPos));
     }
 
     // ── Engine consumption tracking ──
@@ -213,15 +218,19 @@ public class StressLinkService extends SavedData {
         GlobalBlockPos readerPos = engineToReader.get(enginePos);
         if (readerPos != null) {
             StressReaderBlockEntity reader = activeReaders.get(readerPos);
-            if (reader != null) reader.setRemoteEngineConsumption(localStress);
+            if (reader != null) reader.setRemoteEngineConsumption(getEngineConsumptionForReader(readerPos));
         }
     }
 
     public float getEngineConsumptionForReader(GlobalBlockPos readerPos) {
-        GlobalBlockPos enginePos = readerToEngine.get(readerPos);
-        if (enginePos == null) return 0;
-        Float stress = engineLocalStress.get(enginePos);
-        return stress != null ? stress : 0;
+        Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
+        if (engines == null || engines.isEmpty()) return 0;
+        float total = 0;
+        for (GlobalBlockPos ep : engines) {
+            Float stress = engineLocalStress.get(ep);
+            if (stress != null) total += stress;
+        }
+        return total;
     }
 
     public float getEngineConsumptionForOwner(UUID ownerUUID) {
@@ -330,7 +339,7 @@ public class StressLinkService extends SavedData {
             GlobalBlockPos enginePos = GlobalBlockPos.load(e.getCompound("engine"));
             GlobalBlockPos readerPos = GlobalBlockPos.load(e.getCompound("reader"));
             engineToReader.put(enginePos, readerPos);
-            readerToEngine.put(readerPos, enginePos);
+            readerToEngine.computeIfAbsent(readerPos, k -> new LinkedHashSet<>()).add(enginePos);
         }
 
         readerOwners.clear();
