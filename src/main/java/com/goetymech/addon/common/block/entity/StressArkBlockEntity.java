@@ -19,16 +19,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("TEST");
+    private static final Logger LOGGER = LoggerFactory.getLogger("StressArkBE-DIAG");
 
     @Nullable private UUID ownerUUID;
     private float cachedTotalCapacity;
@@ -46,7 +45,10 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     public static void tick(Level level, BlockPos pos, BlockState state, StressArkBlockEntity self) {
         if (!(level instanceof ServerLevel)) return;
         self.chunkLoadBlock();
-        if (self.ownerUUID == null) return;
+        if (self.ownerUUID == null) {
+            LOGGER.info("[ARK-dx] tick bailed: ownerUUID=null at {}", pos);
+            return;
+        }
 
         GoetyMechMod.STRESS_LINK.registerArk(GlobalBlockPos.of(level, pos), self.ownerUUID);
         self.refreshStats();
@@ -59,13 +61,14 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         }
         if (++tickCounter < 20) return;
         tickCounter = 0;
+        LOGGER.info("[ARK-dx] refreshStats sending: owner={} cap={} stress={} readers={}",
+                ownerUUID, cachedTotalCapacity, cachedTotalStress, cachedNetworkCount);
 
         float totalCap = 0;
         float totalStress = 0;
         int readerCount = 0;
 
         List<GlobalBlockPos> readers = GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID);
-        LOGGER.info("[refreshStats] owner={} readersCount={}", ownerUUID, readers.size());
 
         for (GlobalBlockPos readerPos : readers) {
             GlobalStressLinkManager.ReaderSnapshot snap = GoetyMechMod.STRESS_LINK.getCachedReaderData(readerPos);
@@ -73,16 +76,12 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
                 totalCap += snap.capacity();
                 totalStress += snap.stress();
                 readerCount++;
-                LOGGER.info("[refreshStats] reader={} fromCache cap={} stress={}", readerPos, snap.capacity(), snap.stress());
             } else {
                 StressReaderBlockEntity reader = GoetyMechMod.STRESS_LINK.activeReaders.get(readerPos);
                 if (reader != null) {
                     totalCap += reader.getNetworkCapacity();
                     totalStress += reader.getNetworkStress();
                     readerCount++;
-                    LOGGER.info("[refreshStats] reader={} fromActive cap={} stress={}", readerPos, reader.getNetworkCapacity(), reader.getNetworkStress());
-                } else {
-                    LOGGER.info("[refreshStats] reader={} not found in cache or active", readerPos);
                 }
             }
         }
@@ -91,8 +90,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         cachedTotalStress = totalStress;
         cachedNetworkCount = readerCount;
         float consumption = GoetyMechMod.STRESS_LINK.getEngineConsumptionForOwner(ownerUUID);
-        LOGGER.info("[refreshStats] result cap={} stress={} readerCount={} consumption={}", 
-                totalCap, totalStress, readerCount, consumption);
         syncToClient(consumption);
     }
 
@@ -114,8 +111,11 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     public UUID getOwnerUUID() { return ownerUUID; }
 
     public void onArkRemoved() {
+        LOGGER.info("[ARK-dx] onArkRemoved called at {} owner={}", worldPosition, ownerUUID);
         if (level != null && !level.isClientSide) {
             GoetyMechMod.STRESS_LINK.unregisterArk(GlobalBlockPos.of(level, worldPosition));
+        } else {
+            LOGGER.info("[ARK-dx] onArkRemoved skip unregister: level={} client={}", level, level != null && level.isClientSide);
         }
         sendClearPacket();
         ownerUUID = null;
@@ -130,24 +130,34 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     // ── Packet ──
 
     private void syncToClient(float consumption) {
-        if (level == null || level.isClientSide || ownerUUID == null) return;
+        if (level == null || level.isClientSide || ownerUUID == null) {
+            LOGGER.info("[ARK-dx] syncToClient skip: level={} client={} owner={}", level, level != null && level.isClientSide, ownerUUID);
+            return;
+        }
         MinecraftServer server = level.getServer();
         if (server == null) return;
         PlayerList players = server.getPlayerList();
         Player player = players.getPlayer(ownerUUID);
         if (player instanceof ServerPlayer sp) {
+            LOGGER.info("[ARK-dx] >> SENDING DATA packet to {}: cap={} stress={} count={} cons={}", ownerUUID, cachedTotalCapacity, cachedTotalStress, cachedNetworkCount, consumption);
             ModNetwork.sendTo(sp, new S2CStressArkDataPacket(
                     cachedTotalCapacity, cachedTotalStress, cachedNetworkCount, consumption));
+        } else {
+            LOGGER.info("[ARK-dx] syncToClient player not found for {}", ownerUUID);
         }
     }
 
     private void sendClearPacket() {
-        if (level == null || level.isClientSide || ownerUUID == null) return;
+        if (level == null || level.isClientSide || ownerUUID == null) {
+            LOGGER.info("[ARK-dx] sendClearPacket skip: level={} client={} owner={}", level, level != null && level.isClientSide, ownerUUID);
+            return;
+        }
         MinecraftServer server = level.getServer();
         if (server == null) return;
         PlayerList players = server.getPlayerList();
         Player player = players.getPlayer(ownerUUID);
         if (player instanceof ServerPlayer sp) {
+            LOGGER.info("[ARK-dx] >> SENDING CLEAR packet to {}", ownerUUID);
             ModNetwork.sendTo(sp, new S2CStressArkDataPacket(-1, -1, 0, 0));
         }
     }
