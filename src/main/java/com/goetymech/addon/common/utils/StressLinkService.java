@@ -9,6 +9,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -183,11 +184,15 @@ public class StressLinkService extends SavedData {
         if (oldReader != null) {
             Set<GlobalBlockPos> engines = readerToEngine.get(oldReader);
             if (engines != null) engines.remove(enginePos);
+            // 释放旧绑定的区块强加载
+            unforceLoadEngineChunk(enginePos);
         }
 
         engineToReader.put(enginePos, readerPos);
         readerToEngine.computeIfAbsent(readerPos, k -> new LinkedHashSet<>()).add(enginePos);
         setDirty();
+        // 强加载引擎所在区块（1x1范围），确保跨维度引擎即使玩家离开也能正常工作
+        forceLoadEngineChunk(enginePos);
         // 新引擎加入：标记 reader dirty，由 tick 统一分配预算
         dirtyReaders.add(readerPos);
     }
@@ -203,6 +208,8 @@ public class StressLinkService extends SavedData {
             // 解绑后重新分配剩余引擎的预算
             dirtyReaders.add(readerPos);
         }
+        // 释放区块强加载
+        unforceLoadEngineChunk(enginePos);
         overstrainedEngines.remove(enginePos);
         engineLocalStress.remove(enginePos);
         engineLocalCapacity.remove(enginePos);
@@ -212,6 +219,26 @@ public class StressLinkService extends SavedData {
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
         if (engine != null) engine.applyRemoteUpdate(0, 0, 0, 0);
+    }
+
+    private void forceLoadEngineChunk(GlobalBlockPos enginePos) {
+        if (minecraftServer == null) return;
+        ServerLevel engineLevel = minecraftServer.getLevel(enginePos.dimension());
+        if (engineLevel == null) return;
+        ChunkPos chunkPos = new ChunkPos(enginePos.pos());
+        engineLevel.setChunkForced(chunkPos.x, chunkPos.z, true);
+        LOGGER.info("[forceLoadEngineChunk] engine={} chunk=({},{}) dimension={}",
+                enginePos, chunkPos.x, chunkPos.z, enginePos.dimension());
+    }
+
+    private void unforceLoadEngineChunk(GlobalBlockPos enginePos) {
+        if (minecraftServer == null) return;
+        ServerLevel engineLevel = minecraftServer.getLevel(enginePos.dimension());
+        if (engineLevel == null) return;
+        ChunkPos chunkPos = new ChunkPos(enginePos.pos());
+        engineLevel.setChunkForced(chunkPos.x, chunkPos.z, false);
+        LOGGER.info("[unforceLoadEngineChunk] engine={} chunk=({},{}) dimension={}",
+                enginePos, chunkPos.x, chunkPos.z, enginePos.dimension());
     }
 
     @Nullable

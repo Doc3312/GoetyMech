@@ -66,10 +66,6 @@ public class FreecamSpectatorHandler {
 
         player.noPhysics = false;
         player.setGameMode(savedType);
-        player.getAbilities().flying = false;
-        player.getAbilities().mayfly = false;
-        player.getAbilities().setFlyingSpeed(0.05f);
-        player.onUpdateAbilities();
         player.setDeltaMovement(Vec3.ZERO);
         player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), Vec3.ZERO));
         player.fallDistance = 0;
