@@ -142,7 +142,9 @@ public class StressShieldSpell extends Spell {
     private float readStress(Player player, ServerLevel worldIn) {
         // Priority 1: Ark path — aggregated capacity
         if (GoetyMechMod.STRESS_LINK.hasArk(player.getUUID())) {
-            return GoetyMechMod.STRESS_LINK.getAggregatedCapacity(player.getUUID());
+            float cap = GoetyMechMod.STRESS_LINK.getAggregatedCapacity(player.getUUID());
+            GoetyMechMod.LOGGER.debug("StressShieldSpell → Ark path capacity={} for {}", cap, player.getUUID());
+            return cap;
         }
 
         // Priority 2: Direct reader binding via StressShieldFocus

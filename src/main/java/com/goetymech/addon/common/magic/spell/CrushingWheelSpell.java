@@ -100,7 +100,9 @@ public class CrushingWheelSpell extends Spell {
         UUID playerUUID = player.getUUID();
         int capacity;
         if (GoetyMechMod.STRESS_LINK.hasArk(playerUUID)) {
+            GoetyMechMod.LOGGER.debug("CrushingWheelSpell → Ark path for {}", playerUUID);
             capacity = (int) GoetyMechMod.STRESS_LINK.getAggregatedCapacity(playerUUID);
+            GoetyMechMod.LOGGER.debug("CrushingWheelSpell → Ark capacity={}", capacity);
         } else if (StressFocus.isBound(focus)) {
             BlockPos boundPos = StressFocus.getBoundPos(focus);
             String boundDim = StressFocus.getBoundDimension(focus);

@@ -476,18 +476,25 @@ public class GlobalStressLinkManager {
     }
 
     public float getAggregatedCapacity(UUID ownerUUID) {
+        List<GlobalBlockPos> readers = getReadersForOwner(ownerUUID);
+        GoetyMechMod.LOGGER.debug("getAggregatedCapacity for {} → {} readers", ownerUUID, readers.size());
         float total = 0;
-        for (GlobalBlockPos readerPos : getReadersForOwner(ownerUUID)) {
+        for (GlobalBlockPos readerPos : readers) {
             ReaderSnapshot snap = getCachedReaderData(readerPos);
             if (snap != null) {
                 total += snap.capacity();
+                GoetyMechMod.LOGGER.debug("  reader {} cached capacity={}", readerPos.pos(), snap.capacity());
             } else {
                 StressReaderBlockEntity reader = activeReaders.get(readerPos);
                 if (reader != null) {
                     total += reader.getNetworkCapacity();
+                    GoetyMechMod.LOGGER.debug("  reader {} live capacity={}", readerPos.pos(), reader.getNetworkCapacity());
+                } else {
+                    GoetyMechMod.LOGGER.debug("  reader {} not found in cache or active", readerPos.pos());
                 }
             }
         }
+        GoetyMechMod.LOGGER.debug("getAggregatedCapacity total={}", total);
         return total;
     }
 
