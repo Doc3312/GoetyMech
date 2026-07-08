@@ -59,9 +59,7 @@ public class StressFocus extends MagicFocus {
     }
 
     public static void updateDamageCache(ItemStack stack, int damage) {
-        if (stack.hasTag()) {
-            stack.getTag().putInt(TAG_CACHED_DAMAGE, damage);
-        }
+        stack.getOrCreateTag().putInt(TAG_CACHED_DAMAGE, damage);
     }
 
     public static void clearBinding(ItemStack stack) {

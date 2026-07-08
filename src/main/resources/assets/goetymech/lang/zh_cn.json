@@ -101,6 +101,7 @@
   "container.goetymech.flesh_casket": "血肉晶匣",
   "item.goetymech.stress_shield_focus": "应力护盾聚晶",
   "info.goetymech.stress_shield.bound": "§a已绑定至应力读取器",
+  "info.goetymech.stress_shield.shield_value": "§a应力网络转化护盾值：%s",
   "info.goetymech.stress_shield.not_bound": "§c未绑定",
   "info.goetymech.stress_shield.unbound": "§e已解绑",
   "info.goetymech.stress_shield.shift_info": "将网络应力转化为个人护盾。潜行右键解绑。",

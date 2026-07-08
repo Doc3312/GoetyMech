@@ -101,6 +101,7 @@
   "container.goetymech.flesh_casket": "Flesh Casket",
   "item.goetymech.stress_shield_focus": "Stress Shield Focus",
   "info.goetymech.stress_shield.bound": "§aBound to Stress Reader",
+  "info.goetymech.stress_shield.shield_value": "§aStress network shield value: %s",
   "info.goetymech.stress_shield.not_bound": "§cNot bound",
   "info.goetymech.stress_shield.unbound": "§eUnbound",
   "info.goetymech.stress_shield.shift_info": "Convert network stress into a personal shield. Sneak-right-click to unbind.",

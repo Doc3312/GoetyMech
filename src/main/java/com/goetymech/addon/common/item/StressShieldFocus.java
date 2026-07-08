@@ -26,6 +26,7 @@ public class StressShieldFocus extends MagicFocus {
     private static final String TAG_BLOCK_Y = "goetymech.shield_by";
     private static final String TAG_BLOCK_Z = "goetymech.shield_bz";
     private static final String TAG_DIMENSION = "goetymech.shield_dim";
+    private static final String TAG_CACHED_SHIELD = "goetymech.cached_shield";
 
     public StressShieldFocus() {
         super(new StressShieldSpell());
@@ -57,6 +58,10 @@ public class StressShieldFocus extends MagicFocus {
         return stack.getTag().getString(TAG_DIMENSION);
     }
 
+    public static void updateShieldCache(ItemStack stack, float shieldValue) {
+        stack.getOrCreateTag().putFloat(TAG_CACHED_SHIELD, shieldValue);
+    }
+
     public static void clearBinding(ItemStack stack) {
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
@@ -65,6 +70,7 @@ public class StressShieldFocus extends MagicFocus {
             tag.remove(TAG_BLOCK_Y);
             tag.remove(TAG_BLOCK_Z);
             tag.remove(TAG_DIMENSION);
+            tag.remove(TAG_CACHED_SHIELD);
         }
     }
 
@@ -94,7 +100,8 @@ public class StressShieldFocus extends MagicFocus {
 
         boolean hasArk = level != null && level.isClientSide && StressArkHUD.hasArk();
         if (isBound(stack) || hasArk) {
-            tooltip.add(Component.translatable("info.goetymech.stress_shield.bound")
+            float shield = stack.hasTag() ? stack.getTag().getFloat(TAG_CACHED_SHIELD) : 0;
+            tooltip.add(Component.translatable("info.goetymech.stress_shield.shield_value", String.format("%.1f", shield))
                     .withStyle(ChatFormatting.GREEN));
         } else {
             tooltip.add(Component.translatable("info.goetymech.stress_shield.not_bound")

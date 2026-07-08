@@ -127,6 +127,9 @@ public class StressShieldSpell extends Spell {
         if (!focus.isEmpty()) {
             SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }
+        if (!focus.isEmpty() && focus.getItem() instanceof StressShieldFocus) {
+            StressShieldFocus.updateShieldCache(focus, shieldValue);
+        }
 
         if (!player.isCreative()) {
             int cost = ModConfig.STRESS_SHIELD_COST.get();
