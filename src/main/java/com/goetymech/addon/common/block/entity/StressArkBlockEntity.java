@@ -23,12 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("TEST");
 
     @Nullable private UUID ownerUUID;
     private float cachedTotalCapacity;
@@ -65,7 +60,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         int readerCount = 0;
 
         List<GlobalBlockPos> readers = GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID);
-        LOGGER.info("[refreshStats] owner={} readersCount={}", ownerUUID, readers.size());
 
         for (GlobalBlockPos readerPos : readers) {
             GlobalStressLinkManager.ReaderSnapshot snap = GoetyMechMod.STRESS_LINK.getCachedReaderData(readerPos);
@@ -73,16 +67,12 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
                 totalCap += snap.capacity();
                 totalStress += snap.stress();
                 readerCount++;
-                LOGGER.info("[refreshStats] reader={} fromCache cap={} stress={}", readerPos, snap.capacity(), snap.stress());
             } else {
                 StressReaderBlockEntity reader = GoetyMechMod.STRESS_LINK.activeReaders.get(readerPos);
                 if (reader != null) {
                     totalCap += reader.getNetworkCapacity();
                     totalStress += reader.getNetworkStress();
                     readerCount++;
-                    LOGGER.info("[refreshStats] reader={} fromActive cap={} stress={}", readerPos, reader.getNetworkCapacity(), reader.getNetworkStress());
-                } else {
-                    LOGGER.info("[refreshStats] reader={} not found in cache or active", readerPos);
                 }
             }
         }
@@ -91,8 +81,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         cachedTotalStress = totalStress;
         cachedNetworkCount = readerCount;
         float consumption = GoetyMechMod.STRESS_LINK.getEngineConsumptionForOwner(ownerUUID);
-        LOGGER.info("[refreshStats] result cap={} stress={} readerCount={} consumption={}", 
-                totalCap, totalStress, readerCount, consumption);
         syncToClient(consumption);
     }
 

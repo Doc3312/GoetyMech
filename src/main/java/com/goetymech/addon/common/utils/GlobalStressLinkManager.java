@@ -129,6 +129,10 @@ public class GlobalStressLinkManager {
         if (reader.getLevel() == null) return;
         GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
         activeReaders.put(key, reader);
+        readerCache.put(key, new ReaderSnapshot(
+                reader.getNetworkCapacity(),
+                reader.getNetworkStress(),
+                reader.getSpeed()));
         rebuildOwnerIndex();
 
         Set<GlobalBlockPos> engines = readerToEngine.get(key);
