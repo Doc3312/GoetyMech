@@ -32,6 +32,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CrushingWheelSpell extends Spell {
 
@@ -96,40 +97,43 @@ public class CrushingWheelSpell extends Spell {
 
         boolean useStaffBonus = rightStaff(staff);
 
-        if (!StressFocus.isBound(focus)) {
+        UUID playerUUID = player.getUUID();
+        int capacity;
+        if (GoetyMechMod.STRESS_LINK.hasArk(playerUUID)) {
+            capacity = (int) GoetyMechMod.STRESS_LINK.getAggregatedCapacity(playerUUID);
+        } else if (StressFocus.isBound(focus)) {
+            BlockPos boundPos = StressFocus.getBoundPos(focus);
+            String boundDim = StressFocus.getBoundDimension(focus);
+            if (boundPos == null || boundDim == null) return;
+
+            ResourceKey<Level> dimKey = ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.tryParse(boundDim));
+            ServerLevel stressLevel = player.getServer().getLevel(dimKey);
+            if (stressLevel == null) return;
+
+            if (!stressLevel.isLoaded(boundPos) ||
+                    !(stressLevel.getBlockEntity(boundPos) instanceof StressReaderBlockEntity reader)) {
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.stress_focus.reader_lost")
+                                .withStyle(ChatFormatting.RED), true);
+                StressFocus.clearBinding(focus);
+                return;
+            }
+            capacity = (int) reader.getNetworkCapacity();
+        } else {
             player.displayClientMessage(
                     Component.translatable("info.goetymech.stress_focus.not_bound")
                             .withStyle(ChatFormatting.RED), true);
             return;
         }
 
-        BlockPos boundPos = StressFocus.getBoundPos(focus);
-        String boundDim = StressFocus.getBoundDimension(focus);
-        if (boundPos == null || boundDim == null) return;
-
-        ResourceKey<Level> dimKey = ResourceKey.create(Registries.DIMENSION,
-                ResourceLocation.tryParse(boundDim));
-        ServerLevel stressLevel = player.getServer().getLevel(dimKey);
-        if (stressLevel == null) return;
-
-        if (!stressLevel.isLoaded(boundPos) ||
-                !(stressLevel.getBlockEntity(boundPos) instanceof StressReaderBlockEntity reader)) {
-            player.displayClientMessage(
-                    Component.translatable("info.goetymech.stress_focus.reader_lost")
-                            .withStyle(ChatFormatting.RED), true);
-            StressFocus.clearBinding(focus);
-            return;
-        }
-
-        int capacity = (int) reader.getNetworkCapacity();
-        int totalStress = (int) reader.getNetworkStress();
         int divisor = ModConfig.STRESS_DAMAGE_DIVISOR.get();
         int damage = Math.max(1, (int) (capacity / divisor));
         if (useStaffBonus) {
             damage = (int) (damage * 1.5);
         }
-        GoetyMechMod.LOGGER.debug("StressFocus spell → capacity={} stress={} divisor={} damage={}",
-                capacity, totalStress, divisor, damage);
+        GoetyMechMod.LOGGER.debug("StressFocus spell → capacity={} divisor={} damage={}",
+                capacity, divisor, damage);
         StressFocus.updateDamageCache(focus, damage);
 
         double baseDistance = ModConfig.CRUSHING_WHEEL_BASE_DISTANCE.get();

@@ -4,8 +4,6 @@ import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.item.StressShieldFocus;
 import com.goetymech.addon.GoetyMechMod;
-import com.goetymech.addon.common.utils.GlobalBlockPos;
-import com.goetymech.addon.common.utils.GlobalStressLinkManager;
 import com.goetymech.addon.common.utils.StressShieldHelper;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
@@ -139,13 +137,10 @@ public class StressShieldSpell extends Spell {
     }
 
     private float readStress(Player player, ServerLevel worldIn) {
-        // Priority 1: Sum stress from all readers owned by this player
-        float total = 0;
-        for (GlobalBlockPos readerPos : GoetyMechMod.STRESS_LINK.getReadersForOwner(player.getUUID())) {
-            GlobalStressLinkManager.ReaderSnapshot snap = GoetyMechMod.STRESS_LINK.getCachedReaderData(readerPos);
-            if (snap != null) total += snap.stress();
+        // Priority 1: Ark path — aggregated capacity
+        if (GoetyMechMod.STRESS_LINK.hasArk(player.getUUID())) {
+            return GoetyMechMod.STRESS_LINK.getAggregatedCapacity(player.getUUID());
         }
-        if (total > 0) return total;
 
         // Priority 2: Direct reader binding via StressShieldFocus
         ItemStack focus = WandUtil.findFocus(player);
@@ -163,6 +158,6 @@ public class StressShieldSpell extends Spell {
 
         if (!(stressLevel.getBlockEntity(boundPos) instanceof StressReaderBlockEntity reader)) return 0;
 
-        return reader.getNetworkStress();
+        return reader.getNetworkCapacity();
     }
 }

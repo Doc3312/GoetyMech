@@ -471,6 +471,26 @@ public class GlobalStressLinkManager {
         return arks != null ? arks.size() : 0;
     }
 
+    public boolean hasArk(UUID ownerUUID) {
+        return getArkCountForOwner(ownerUUID) > 0;
+    }
+
+    public float getAggregatedCapacity(UUID ownerUUID) {
+        float total = 0;
+        for (GlobalBlockPos readerPos : getReadersForOwner(ownerUUID)) {
+            ReaderSnapshot snap = getCachedReaderData(readerPos);
+            if (snap != null) {
+                total += snap.capacity();
+            } else {
+                StressReaderBlockEntity reader = activeReaders.get(readerPos);
+                if (reader != null) {
+                    total += reader.getNetworkCapacity();
+                }
+            }
+        }
+        return total;
+    }
+
     // ── Chunk force loading ──
 
     private void forceLoadEngineChunk(@Nullable RemoteEngineBlockEntity engine, GlobalBlockPos enginePos) {
