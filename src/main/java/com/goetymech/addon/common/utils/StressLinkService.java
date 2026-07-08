@@ -2,6 +2,7 @@ package com.goetymech.addon.common.utils;
 
 import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
+import com.simibubi.create.content.kinetics.KineticNetwork;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -38,6 +39,8 @@ public class StressLinkService extends SavedData {
     private transient final Map<GlobalBlockPos, Float> engineLocalCapacity = new HashMap<>();
     // 记录分配给每个引擎的预算（功率单位 su·rpm），用于 onEngineNetworkChanged 中实时检测过载
     private transient final Map<GlobalBlockPos, Float> engineBudget = new HashMap<>();
+    // 记录每个引擎所属的 KineticNetwork 对象引用，用于去重：同一网络内的多个引擎只计一次 stress
+    private transient final Map<GlobalBlockPos, Object> engineNetworkKey = new HashMap<>();
 
     // 重入防护：pushToEngine 期间抑制 onEngineNetworkChanged 的回传，
     // 避免 applyRemoteUpdate → engine 网络变化 → onEngineNetworkChanged →
