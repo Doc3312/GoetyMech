@@ -17,10 +17,8 @@ import com.goetymech.addon.common.item.GatewayFocus;
 import com.goetymech.addon.common.item.GatewayAdvancedFocus;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
-import com.goetymech.addon.common.item.curio.AutoCastDummyWand;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.SoulCatcherCurio;
-import com.Polarice3.Goety.api.magic.SpellType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -166,12 +164,13 @@ public class ModItems {
     public static final RegistryObject<Item> FLESH_CASKET_3 =
             ITEMS.register("flesh_casket_3", () -> new FleshCasketItem(3));
 
-    public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND =
-            ITEMS.register("auto_cast_dummy_wand", AutoCastDummyWand::new);
-
-    public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND_T1 =
-            ITEMS.register("auto_cast_dummy_wand_t1",
-                    () -> new AutoCastDummyWand(SpellType.NONE));
+    // --- auto_cast_dummy_wand 注册已注释（保留供未来测试使用） ---
+    // public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND =
+    //         ITEMS.register("auto_cast_dummy_wand", () -> null);
+    //
+    // public static final RegistryObject<Item> AUTO_CAST_DUMMY_WAND_T1 =
+    //         ITEMS.register("auto_cast_dummy_wand_t1",
+    //                 () -> null);
 
     /** 定点聚晶 — 基础版：同维度传送至结构附近 */
     public static final RegistryObject<Item> GATEWAY_FOCUS =
