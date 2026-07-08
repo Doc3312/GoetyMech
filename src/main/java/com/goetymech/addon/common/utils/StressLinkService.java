@@ -257,6 +257,7 @@ public class StressLinkService extends SavedData {
     // 按引擎加入顺序（LinkedHashSet）分配 reader 的应力预算：
     // 先加入的引擎优先获得预算，后加入的引擎若预算不足则标记为过载（budget=0）。
     // 过载引擎的消耗不计入 reader 网络，保护已有引擎正常运转。
+    // 注意：同一 KineticNetwork 内的多个引擎只计一次消耗，但所有引擎都获得相同的预算分配。
     private void distributeBudget(GlobalBlockPos readerPos) {
         StressReaderBlockEntity reader = activeReaders.get(readerPos);
         if (reader == null) return;
@@ -276,45 +277,67 @@ public class StressLinkService extends SavedData {
         // 可分配给引擎的总预算 = reader 总容量 - 本地消耗
         float totalBudget = Math.max(0, capacity - localStress);
 
-            LOGGER.info("[distributeBudget] START reader={} speed={} capacity={} readerStress={} remoteConsumption={} localStress={} totalBudget={}",
-                readerPos, speed, capacity, readerStress, remoteConsumption, localStress, totalBudget);
+        LOGGER.info("[distributeBudget] START reader={} speed={} capacity={} readerStress={} remoteConsumption={} localStress={} totalBudget={} engineCount={}",
+                readerPos, speed, capacity, readerStress, remoteConsumption, localStress, totalBudget, engines.size());
+
+        // 按网络分组：同一网络的引擎共享消耗和预算
+        Map<Object, List<GlobalBlockPos>> networkToEngines = new LinkedHashMap<>();
+        for (GlobalBlockPos ep : engines) {
+            if (overstrainedEngines.contains(ep)) continue;
+            Object networkKey = engineNetworkKey.getOrDefault(ep, ep);
+            networkToEngines.computeIfAbsent(networkKey, k -> new ArrayList<>()).add(ep);
+        }
 
         float allocated = 0;
 
-        // 抑制回传：批量推送过程中引擎网络变化不应回传修改 reader 消耗，
-        // 全部推送完成后统一设置一次
         suppressEngineUpdates = true;
         try {
-            int idx = 0;
-            for (GlobalBlockPos enginePos : engines) {
-                RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
-                if (engine == null) continue;
+            int netIdx = 0;
+            for (var entry : networkToEngines.entrySet()) {
+                Object networkKey = entry.getKey();
+                List<GlobalBlockPos> engineList = entry.getValue();
 
-                float engineConsumption = engineLocalStress.getOrDefault(enginePos, 0f);
-                float availableBudget = Math.max(0, totalBudget - allocated);
-                boolean wasOverstrained = overstrainedEngines.contains(enginePos);
-
-                LOGGER.info("[distributeBudget] engine#{}={} consumption={} availableBudget={} wasOverstrained={}",
-                        idx, enginePos, engineConsumption, availableBudget, wasOverstrained);
-
-                if (availableBudget >= engineConsumption) {
-                    // 预算充足：正常运转
-                    overstrainedEngines.remove(enginePos);
-                    engineBudget.put(enginePos, availableBudget);
-                    pushToEngineInternal(engine, speed, availableBudget, capacity, readerStress);
-                    allocated += engineConsumption;
-                    LOGGER.info("[distributeBudget]   -> OK speed={} budget={} allocatedTotal={}",
-                            speed, availableBudget, allocated);
-                } else {
-                    // 预算不足：标记过载，speed=0 让引擎完全停转。
-                    // 若只设 budget=0 但 speed>0，Create 会判定引擎"有速度无应力"而过载，
-                    // 导致连接方块被破坏。speed=0 让引擎安全离线。
-                    overstrainedEngines.add(enginePos);
-                    engineBudget.put(enginePos, 0f);
-                    pushToEngineInternal(engine, 0, 0, capacity, readerStress);
-                    LOGGER.info("[distributeBudget]   -> OVERSTRAIN speed=0 budget=0");
+                // 取网络中任意一个引擎的消耗（同网络内所有引擎消耗相同）
+                float networkConsumption = 0;
+                if (!engineList.isEmpty()) {
+                    networkConsumption = engineLocalStress.getOrDefault(engineList.get(0), 0f);
                 }
-                idx++;
+
+                float availableBudget = Math.max(0, totalBudget - allocated);
+
+                LOGGER.info("[distributeBudget] network#{} key={} consumption={} availableBudget={} engineCount={}",
+                        netIdx, networkKey, networkConsumption, availableBudget, engineList.size());
+
+                if (availableBudget >= networkConsumption) {
+                    // 预算充足：同网络内所有引擎都正常运转
+                    // 同一网络内的引擎共享总预算，每个引擎获得 budget / engineCount，
+                    // 这样总容量 = engineCount * (budget / engineCount) / speed = budget / speed，不会叠加
+                    float perEngineBudget = availableBudget / engineList.size();
+                    for (GlobalBlockPos enginePos : engineList) {
+                        overstrainedEngines.remove(enginePos);
+                        engineBudget.put(enginePos, availableBudget);
+                        RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+                        if (engine != null) {
+                            pushToEngineInternal(engine, speed, perEngineBudget, capacity, readerStress);
+                            LOGGER.info("[distributeBudget]   -> engine={} OK speed={} budget={} (total={}, count={})",
+                                    enginePos, speed, perEngineBudget, availableBudget, engineList.size());
+                        }
+                    }
+                    allocated += networkConsumption;
+                    LOGGER.info("[distributeBudget]   -> allocatedTotal={}", allocated);
+                } else {
+                    // 预算不足：同网络内所有引擎都过载停转
+                    for (GlobalBlockPos enginePos : engineList) {
+                        overstrainedEngines.add(enginePos);
+                        engineBudget.put(enginePos, 0f);
+                        RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+                        if (engine != null) {
+                            pushToEngineInternal(engine, 0, 0, capacity, readerStress);
+                            LOGGER.info("[distributeBudget]   -> engine={} OVERSTRAIN speed=0 budget=0", enginePos);
+                        }
+                    }
+                }
+                netIdx++;
             }
         } finally {
             suppressEngineUpdates = false;
