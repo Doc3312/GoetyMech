@@ -96,6 +96,7 @@ public class StressLinkService extends SavedData {
         engineLocalStress.clear();
         engineLocalCapacity.clear();
         engineBudget.clear();
+        engineNetworkKey.clear();
         overstrainedEngines.clear();
         dirtyReaders.clear();
         setDirty();
@@ -172,6 +173,7 @@ public class StressLinkService extends SavedData {
         engineLocalStress.remove(enginePos);
         engineLocalCapacity.remove(enginePos);
         engineBudget.remove(enginePos);
+        engineNetworkKey.remove(enginePos);
     }
 
     // ── Binding management ──
@@ -205,6 +207,7 @@ public class StressLinkService extends SavedData {
         engineLocalStress.remove(enginePos);
         engineLocalCapacity.remove(enginePos);
         engineBudget.remove(enginePos);
+        engineNetworkKey.remove(enginePos);
         setDirty();
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
@@ -267,7 +270,9 @@ public class StressLinkService extends SavedData {
         float remoteConsumption = getEngineConsumptionForReader(readerPos);
 
         // reader 本地消耗 = reader 总 stress - 远程引擎消耗（非过载的）
-        float localStress = readerStress - remoteConsumption;
+        // Math.max(0, ...) 防止重复计数或其他异常导致 localStress 为负，
+        // 避免 totalBudget 异常膨胀形成正反馈循环
+        float localStress = Math.max(0, readerStress - remoteConsumption);
         // 可分配给引擎的总预算 = reader 总容量 - 本地消耗
         float totalBudget = Math.max(0, capacity - localStress);
 
@@ -329,6 +334,14 @@ public class StressLinkService extends SavedData {
     // ── Engine consumption tracking ──
 
     public void onEngineNetworkChanged(GlobalBlockPos enginePos, float localStress, float localCapacity) {
+        // 更新引擎网络身份：同一 KineticNetwork 内的多个引擎用相同的 key，用于去重
+        RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
+        if (engine != null && engine.hasNetwork()) {
+            engineNetworkKey.put(enginePos, engine.getOrCreateNetwork());
+        } else {
+            engineNetworkKey.put(enginePos, enginePos);
+        }
+
         // 过载引擎的消耗不更新：budget=0 会导致 stress 归零，
         // 但分配预算时需要使用其"额定消耗"来判断是否可以恢复，
         // 否则会在 0>=0 判定正常 → 给 budget → stress 恢复 → 又过载 之间振荡
@@ -375,13 +388,20 @@ public class StressLinkService extends SavedData {
     public float getEngineConsumptionForReader(GlobalBlockPos readerPos) {
         Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
         if (engines == null || engines.isEmpty()) return 0;
-        float total = 0;
+
+        // 按引擎所属的 KineticNetwork 分组去重：同一网络内的多个引擎只计一次 stress
+        Map<Object, Float> networkStress = new HashMap<>();
         for (GlobalBlockPos ep : engines) {
-            // 过载引擎不计入消耗：其 budget=0，引擎网络已过载停转，
-            // 不应再占用 reader 的应力配额
             if (overstrainedEngines.contains(ep)) continue;
             Float stress = engineLocalStress.get(ep);
-            if (stress != null) total += stress;
+            if (stress == null) continue;
+            Object networkKey = engineNetworkKey.getOrDefault(ep, ep);
+            networkStress.put(networkKey, stress);
+        }
+
+        float total = 0;
+        for (float stress : networkStress.values()) {
+            total += stress;
         }
         return total;
     }
