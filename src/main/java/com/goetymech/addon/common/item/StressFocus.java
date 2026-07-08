@@ -99,10 +99,12 @@ public class StressFocus extends MagicFocus {
                 .withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE));
 
         boolean hasArk = level != null && level.isClientSide && StressArkHUD.hasArk();
-        if (isBound(stack) || hasArk) {
-            tooltip.add(Component.translatable("info.goetymech.stress_focus.bound")
+        if (hasArk) {
+            float cap = StressArkHUD.getTotalCapacity();
+            int damage = Math.max(1, (int) (cap / ModConfig.STRESS_DAMAGE_DIVISOR.get()));
+            tooltip.add(Component.translatable("info.goetymech.stress_focus.cached_damage", damage)
                     .withStyle(ChatFormatting.GREEN));
-
+        } else if (isBound(stack)) {
             int damage = stack.hasTag() ? stack.getTag().getInt(TAG_CACHED_DAMAGE) : 0;
             tooltip.add(Component.translatable("info.goetymech.stress_focus.cached_damage", damage)
                     .withStyle(ChatFormatting.GREEN));

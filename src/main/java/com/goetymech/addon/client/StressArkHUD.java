@@ -39,6 +39,14 @@ public class StressArkHUD {
         return hasData;
     }
 
+    public static float getTotalCapacity() {
+        return totalCapacity;
+    }
+
+    public static float getTotalStress() {
+        return totalStress;
+    }
+
     public static void clearData() {
         hasData = false;
         totalCapacity = 0;

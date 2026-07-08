@@ -99,7 +99,12 @@ public class StressShieldFocus extends MagicFocus {
                 .withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE));
 
         boolean hasArk = level != null && level.isClientSide && StressArkHUD.hasArk();
-        if (isBound(stack) || hasArk) {
+        if (hasArk) {
+            float cap = StressArkHUD.getTotalCapacity();
+            float shield = cap / ModConfig.STRESS_SHIELD_DIVISOR.get();
+            tooltip.add(Component.translatable("info.goetymech.stress_shield.shield_value", String.format("%.1f", shield))
+                    .withStyle(ChatFormatting.GREEN));
+        } else if (isBound(stack)) {
             float shield = stack.hasTag() ? stack.getTag().getFloat(TAG_CACHED_SHIELD) : 0;
             tooltip.add(Component.translatable("info.goetymech.stress_shield.shield_value", String.format("%.1f", shield))
                     .withStyle(ChatFormatting.GREEN));
