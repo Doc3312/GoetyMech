@@ -74,7 +74,7 @@ public class ModClientForgeEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
-        if (mc.gameMode != null && mc.gameMode.getPlayerMode() == GameType.SPECTATOR) {
+        if (mc.gameMode != null && mc.gameMode.getPlayerMode() == GameType.SPECTATOR && ModClientEvents.freecamActive) {
             if (ModClientEvents.freecamExitKey != null && ModClientEvents.freecamExitKey.consumeClick()) {
                 ModNetwork.CHANNEL.sendToServer(new C2SFreecamEndPacket());
                 return;

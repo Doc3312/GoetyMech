@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 public class ModClientEvents {
     private static final Logger LOGGER = LoggerFactory.getLogger("ModClientEvents");
 
+    public static boolean freecamActive = false;
     public static KeyMapping fleshCasketKey;
     public static KeyMapping freecamExitKey;
 

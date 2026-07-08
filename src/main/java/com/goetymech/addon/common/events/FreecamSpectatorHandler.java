@@ -1,5 +1,7 @@
 package com.goetymech.addon.common.events;
 
+import com.goetymech.addon.common.net.ModNetwork;
+import com.goetymech.addon.common.net.s2c.S2CSetFreecamPacket;
 import com.goetymech.addon.config.ModConfig;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -64,6 +66,7 @@ public class FreecamSpectatorHandler {
         tag.remove(TAG_DIM);
         tag.remove(TAG_REMAINING);
 
+        ModNetwork.sendTo(player, new S2CSetFreecamPacket(false));
         player.noPhysics = false;
         player.setGameMode(savedType);
         player.setDeltaMovement(Vec3.ZERO);
