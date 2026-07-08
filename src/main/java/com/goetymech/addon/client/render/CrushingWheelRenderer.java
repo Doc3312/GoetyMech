@@ -53,8 +53,8 @@ public class CrushingWheelRenderer extends EntityRenderer<CrushingWheelEntity> {
 
         poseStack.pushPose();
 
-        // pivot to wheel center (BlockBench [0,16,8] = Minecraft [0,1,0.5] from entity feet)
-        poseStack.translate(0, 1.0, 0.5);
+        // pivot to wheel center (BlockBench [0,16,0] = Minecraft [0,1,0] from entity feet)
+        poseStack.translate(0, 1.0, 0);
 
         // wheel face toward summoner
         float yaw = entity.getYRot() * Mth.DEG_TO_RAD;
@@ -63,7 +63,7 @@ public class CrushingWheelRenderer extends EntityRenderer<CrushingWheelEntity> {
         float spin = (entity.tickCount + partialTicks) * 0.5F;
         poseStack.mulPose(Axis.ZP.rotation(spin));
 
-        poseStack.translate(0, -1.0, -0.5);
+        poseStack.translate(0, -1.0, 0);
 
         VertexConsumer baseVc = buffer.getBuffer(RenderType.entityCutout(TEXTURE));
         VertexConsumer vc = new VertexConsumer() {

@@ -112,7 +112,7 @@ public class CrushingWheelEntity extends Entity {
         double rx = 1.0 * c + 0.5 * s;
         double rz = 1.0 * s + 0.5 * c;
         double cx = this.getX();
-        double cz = this.getZ() + 0.5;
+        double cz = this.getZ();
         return new AABB(cx - rx, this.getY(), cz - rz,
                         cx + rx, this.getY() + 2.0, cz + rz);
     }
