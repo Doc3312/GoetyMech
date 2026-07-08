@@ -14,16 +14,63 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class GatewaySpell extends Spell {
 
     private static final String TAG_SAFE_FAILED_POS = "GatewaySafeFailedPos";
+
+    private boolean tryMapTeleport(ServerPlayer player, ServerLevel worldIn, ItemStack offhand) {
+        BlockPos mapTarget = GatewayUtil.readMapTarget(offhand, worldIn);
+        if (mapTarget == null) return false;
+
+        player.displayClientMessage(
+                Component.translatable("info.goetymech.gateway.map_target_found"), true);
+        doTeleport(worldIn, player, mapTarget);
+        return true;
+    }
+
+    private void doTeleport(ServerLevel level, ServerPlayer player, BlockPos target) {
+        AABB bounds = new AABB(target).inflate(48);
+        boolean forceTeleport = checkForceFlag(player);
+        Vec3 pos;
+
+        if (forceTeleport) {
+            BlockPos hightPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, target);
+            if (hightPos.getY() <= level.getMinBuildHeight()) {
+                hightPos = target.atY(level.getSeaLevel());
+            }
+            pos = Vec3.atCenterOf(hightPos);
+            clearForceFlag(player);
+        } else {
+            BlockPos safePos = GatewayUtil.findSafeTeleportPos(level, bounds, player);
+            if (safePos != null) {
+                pos = Vec3.atCenterOf(safePos);
+            } else {
+                setForceFlag(player, target);
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.gateway.danger_area"), true);
+                return;
+            }
+        }
+
+        int cost = ModConfig.GATEWAY_COST.get();
+        ItemStack focus = WandUtil.findFocus(player);
+        if (focus.isEmpty()) return;
+        if (rightStaff(focus)) {
+            cost = Math.max(1, cost / 2);
+        }
+        if (!player.isCreative()) {
+            SEHelper.decreaseSouls(player, cost);
+        }
+        SEHelper.addCooldown(player, focus.getItem(), ModConfig.GATEWAY_COOLDOWN.get());
+
+        GatewayUtil.teleportPlayer(level, player, pos);
+        this.playSound(level, player, SoundEvents.ENDERMAN_TELEPORT);
+    }
 
     @Override
     public int defaultSoulCost() {
@@ -68,6 +115,16 @@ public class GatewaySpell extends Spell {
 
         ItemStack offhand = player.getOffhandItem();
 
+        if (offhand.is(net.minecraft.world.item.Items.FILLED_MAP)) {
+            if (GatewayUtil.isMapWithMarker(offhand, worldIn)) {
+                tryMapTeleport(player, worldIn, offhand);
+            } else {
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.gateway.no_marker"), true);
+            }
+            return;
+        }
+
         TagKey<Structure> tag = GatewayUtil.deriveStructureTag(
                 player.getServer().registryAccess(), offhand);
         if (tag == null) {
@@ -83,48 +140,7 @@ public class GatewaySpell extends Spell {
             return;
         }
 
-        AABB bounds = GatewayUtil.getStructureBoundingBox(worldIn, structPos, tag);
-        if (bounds == null) {
-            bounds = new AABB(structPos).inflate(48);
-        }
-
-        boolean forceTeleport = checkForceFlag(player);
-        Vec3 pos;
-
-        if (forceTeleport) {
-            BlockPos hightPos = worldIn.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, structPos);
-            if (hightPos.getY() <= worldIn.getMinBuildHeight()) {
-                hightPos = structPos.atY(worldIn.getSeaLevel());
-            }
-            pos = Vec3.atCenterOf(hightPos);
-            clearForceFlag(player);
-        } else {
-            BlockPos safePos = GatewayUtil.findSafeTeleportPos(worldIn, bounds, player);
-            if (safePos != null) {
-                pos = Vec3.atCenterOf(safePos);
-            } else {
-                setForceFlag(player, structPos);
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.gateway.danger_area"), true);
-                return;
-            }
-        }
-
-        int cost = ModConfig.GATEWAY_COST.get();
-        if (rightStaff(staff)) {
-            cost = Math.max(1, cost / 2);
-        }
-        if (!player.isCreative()) {
-            SEHelper.decreaseSouls(player, cost);
-        }
-
-        ItemStack focus = WandUtil.findFocus(caster);
-        if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), ModConfig.GATEWAY_COOLDOWN.get());
-        }
-
-        GatewayUtil.teleportPlayer(worldIn, player, pos);
-        this.playSound(worldIn, caster, SoundEvents.ENDERMAN_TELEPORT);
+        doTeleport(worldIn, player, structPos);
     }
 
     private boolean checkForceFlag(ServerPlayer player) {

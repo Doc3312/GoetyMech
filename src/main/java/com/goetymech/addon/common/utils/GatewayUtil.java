@@ -12,8 +12,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
@@ -68,6 +72,42 @@ public class GatewayUtil {
         TagKey<Structure> tagKey = TagKey.create(Registries.STRUCTURE, loc);
         if (registry.getTag(tagKey).isPresent() && registry.getTag(tagKey).get().size() > 0) {
             return tagKey;
+        }
+        return null;
+    }
+
+    public static boolean isMapWithMarker(ItemStack stack, ServerLevel level) {
+        if (!stack.is(Items.FILLED_MAP)) return false;
+        MapItemSavedData data = MapItem.getSavedData(stack, level);
+        if (data == null) return false;
+        for (MapDecoration deco : data.decorations.values()) {
+            if (deco.getType() != MapDecoration.Type.PLAYER
+                    && deco.getType() != MapDecoration.Type.FRAME
+                    && deco.getType() != MapDecoration.Type.PLAYER_OFF_MAP
+                    && deco.getType() != MapDecoration.Type.PLAYER_OFF_LIMITS) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Nullable
+    public static BlockPos readMapTarget(ItemStack stack, ServerLevel level) {
+        if (!stack.is(Items.FILLED_MAP)) return null;
+        MapItemSavedData data = MapItem.getSavedData(stack, level);
+        if (data == null) return null;
+        for (MapDecoration deco : data.decorations.values()) {
+            if (deco.getType() == MapDecoration.Type.PLAYER
+                    || deco.getType() == MapDecoration.Type.FRAME
+                    || deco.getType() == MapDecoration.Type.PLAYER_OFF_MAP
+                    || deco.getType() == MapDecoration.Type.PLAYER_OFF_LIMITS) {
+                continue;
+            }
+            int scaleMul = 1 << data.scale;
+            int worldX = (int)(deco.getX() / 2.0f * scaleMul) + data.centerX;
+            int worldZ = (int)(deco.getY() / 2.0f * scaleMul) + data.centerZ;
+            int worldY = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, new BlockPos(worldX, 0, worldZ)).getY();
+            return new BlockPos(worldX, worldY, worldZ);
         }
         return null;
     }

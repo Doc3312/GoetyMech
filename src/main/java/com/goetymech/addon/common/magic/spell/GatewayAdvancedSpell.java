@@ -20,13 +20,92 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class GatewayAdvancedSpell extends Spell {
 
     private static final String TAG_SAFE_FAILED_POS = "GatewayAdvSafeFailedPos";
+
+    private boolean tryMapTeleport(ServerPlayer player, ItemStack offhand) {
+        if (player.getServer() == null) return false;
+
+        BlockPos bestPos = null;
+        ServerLevel bestLevel = null;
+        double bestDist = Double.MAX_VALUE;
+        BlockPos playerPos = player.blockPosition();
+
+        for (ServerLevel level : player.getServer().getAllLevels()) {
+            if (level.dimension() == player.level().dimension()) continue;
+            BlockPos mapTarget = GatewayUtil.readMapTarget(offhand, level);
+            if (mapTarget == null) continue;
+            double dist = mapTarget.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestPos = mapTarget;
+                bestLevel = level;
+            }
+        }
+
+        if (bestPos != null && bestLevel != null) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.gateway.map_target_found"), true);
+            doTeleport(bestLevel, player, bestPos);
+            return true;
+        }
+
+        BlockPos currentDimTarget = GatewayUtil.readMapTarget(offhand, (ServerLevel) player.level());
+        if (currentDimTarget != null) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.gateway.map_target_found"), true);
+            doTeleport((ServerLevel) player.level(), player, currentDimTarget);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void doTeleport(ServerLevel level, ServerPlayer player, BlockPos target) {
+        AABB bounds = new AABB(target).inflate(48);
+        boolean forceTeleport = checkForceFlag(player);
+        Vec3 teleportPos;
+
+        if (forceTeleport) {
+            BlockPos hightPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, target);
+            if (hightPos.getY() <= level.getMinBuildHeight()) {
+                hightPos = target.atY(level.getSeaLevel());
+            }
+            teleportPos = Vec3.atCenterOf(hightPos);
+            clearForceFlag(player);
+        } else {
+            BlockPos safePos = GatewayUtil.findSafeTeleportPos(level, bounds, player);
+            if (safePos != null) {
+                teleportPos = Vec3.atCenterOf(safePos);
+            } else {
+                setForceFlag(player, target);
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.gateway.danger_area"), true);
+                return;
+            }
+        }
+
+        int cost = ModConfig.GATEWAY_ADV_COST.get();
+        ItemStack focus = WandUtil.findFocus(player);
+        if (focus.isEmpty()) return;
+        if (rightStaff(focus)) {
+            cost = Math.max(1, cost / 2);
+        }
+        if (!player.isCreative()) {
+            SEHelper.decreaseSouls(player, cost);
+        }
+        SEHelper.addCooldown(player, focus.getItem(), ModConfig.GATEWAY_ADV_COOLDOWN.get());
+
+        GatewayUtil.teleportPlayer(level, player, teleportPos);
+        triggerFreecam(level, player);
+        this.playSound(level, player, SoundEvents.ENDERMAN_TELEPORT);
+    }
 
     @Override
     public int defaultSoulCost() {
@@ -72,6 +151,16 @@ public class GatewayAdvancedSpell extends Spell {
 
         ItemStack offhand = player.getOffhandItem();
 
+        if (offhand.is(Items.FILLED_MAP)) {
+            if (GatewayUtil.isMapWithMarker(offhand, (ServerLevel) player.level())) {
+                tryMapTeleport(player, offhand);
+            } else {
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.gateway.no_marker"), true);
+            }
+            return;
+        }
+
         TagKey<Structure> tag = GatewayUtil.deriveStructureTag(
                 player.getServer().registryAccess(), offhand);
         if (tag == null) {
@@ -82,7 +171,6 @@ public class GatewayAdvancedSpell extends Spell {
 
         BlockPos bestPos = null;
         ServerLevel bestLevel = null;
-        AABB bestBounds = null;
         double bestDist = Double.MAX_VALUE;
         BlockPos playerPos = player.blockPosition();
 

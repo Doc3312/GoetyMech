@@ -123,5 +123,7 @@
   "item.goetymech.gateway_focus_advanced": "Advanced Gateway Focus",
   "info.goetymech.gateway.no_eye": "§cPlace a structure eye in your offhand",
   "info.goetymech.gateway.no_structure": "§cNo structure found within range",
-  "info.goetymech.gateway.danger_area": "§eTarget area is dangerous, cast again to force teleport"
+  "info.goetymech.gateway.danger_area": "§eTarget area is dangerous, cast again to force teleport",
+  "info.goetymech.gateway.no_marker": "§cMap has no valid marker",
+  "info.goetymech.gateway.map_target_found": "§aMap marker located"
 }
