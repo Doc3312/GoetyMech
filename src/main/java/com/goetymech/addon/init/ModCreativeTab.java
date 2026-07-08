@@ -16,7 +16,7 @@ public class ModCreativeTab {
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GoetyMechMod.MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> GOETYPUNK_TAB = TABS.register("goetymech",
+    public static final RegistryObject<CreativeModeTab> GOETYMECH_TAB = TABS.register("goetymech",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.goetymech"))
                     .icon(() -> new ItemStack(ModItems.TWISTED_EMBRYO.get()))
