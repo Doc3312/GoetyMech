@@ -7,3 +7,5 @@
 - **2026-07-07** — 消费反馈：refreshStats() 调用 service.getEngineConsumptionForOwner()；syncToClient 透传消耗值；HUD 显示净可用和引擎消耗行
 - **2026-07-07** — 间接影响：StressLinkService readerToEngine 改 1:N，getEngineConsumptionForOwner() 聚合所有引擎消耗，Ark 消耗显示更准确
 - **2026-07-08** — HUD 显示格式修正：文本从「剩余/容量」(netAvailable) 改为「已用/容量」(used)，与引擎 Goggle 显示格式一致；进度条逻辑不变
+- **2026-07-08** — 存档加载修复：GlobalStressLinkManager 添加 loadTickDelay 延迟初始化机制；存档加载后等待10tick再填充 readerCache 和触发 distributeBudget()；修复重进存档后绑定关系丢失问题
+- **2026-07-08** — HUD 持久化修复：添加 PlayerLoggedInEvent 监听；玩家登录时检查是否有活动 Ark，若无则发送清除包；修复破坏 Ark 后 HUD 不消失问题

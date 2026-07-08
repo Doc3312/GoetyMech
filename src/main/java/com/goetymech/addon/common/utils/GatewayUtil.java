@@ -6,6 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
@@ -96,6 +97,15 @@ public class GatewayUtil {
         if (!stack.is(Items.FILLED_MAP)) return null;
         MapItemSavedData data = MapItem.getSavedData(stack, level);
         if (data == null) return null;
+
+        ServerLevel targetLevel = level;
+        if (level.getServer() != null) {
+            ServerLevel mapDimLevel = level.getServer().getLevel(data.dimension);
+            if (mapDimLevel != null) {
+                targetLevel = mapDimLevel;
+            }
+        }
+
         for (MapDecoration deco : data.getDecorations()) {
             if (deco.getType() == MapDecoration.Type.PLAYER
                     || deco.getType() == MapDecoration.Type.FRAME
@@ -128,12 +138,41 @@ public class GatewayUtil {
     @Nullable
     public static BlockPos findSafeTeleportPos(ServerLevel level, AABB structureBounds, Player player) {
         BlockPos center = BlockPos.containing(structureBounds.getCenter());
+        int minY = Math.max(level.getMinBuildHeight(), (int) structureBounds.minY - 5);
+        int maxY = Math.min(level.getMaxBuildHeight(), (int) structureBounds.maxY + 3);
 
         for (int radius = 20; radius <= 50; radius += 5) {
             for (BlockPos candidate : perimeterCandidates(center, radius)) {
                 if (isInsideStructureBounds(structureBounds, candidate)) continue;
-                BlockPos safe = checkPosition(level, candidate);
+                BlockPos safe = checkPositionVertical(level, candidate, maxY, minY);
                 if (safe != null) return safe;
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private static BlockPos checkPositionVertical(ServerLevel level, BlockPos xzPos, int startY, int stopY) {
+        for (int y = startY; y >= stopY; y--) {
+            BlockPos candidate = xzPos.atY(y);
+            Optional<Vec3> safe = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, candidate);
+            if (safe.isEmpty()) continue;
+            BlockPos safePos = BlockPos.containing(safe.get());
+            if (hasLavaAt(level, safePos)) continue;
+            return safePos;
+        }
+
+        BlockPos heightmapPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, xzPos);
+        if (heightmapPos.getY() > level.getMinBuildHeight()) {
+            int y = heightmapPos.getY();
+            for (int dy = 0; dy >= -5; dy--) {
+                BlockPos candidate = heightmapPos.atY(y + dy);
+                Optional<Vec3> safe = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, candidate);
+                if (safe.isEmpty()) continue;
+                BlockPos safePos = BlockPos.containing(safe.get());
+                if (hasLavaAt(level, safePos)) continue;
+                return safePos;
             }
         }
 
@@ -159,18 +198,6 @@ public class GatewayUtil {
     private static boolean isInsideStructureBounds(AABB bounds, BlockPos pos) {
         return bounds.minX <= pos.getX() && pos.getX() <= bounds.maxX
                 && bounds.minZ <= pos.getZ() && pos.getZ() <= bounds.maxZ;
-    }
-
-    @Nullable
-    public static BlockPos checkPosition(ServerLevel level, BlockPos xzPos) {
-        int groundY = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, xzPos).getY();
-        if (groundY <= level.getMinBuildHeight()) return null;
-        BlockPos candidate = xzPos.atY(groundY);
-        Optional<Vec3> safe = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, candidate);
-        if (safe.isEmpty()) return null;
-        BlockPos safePos = BlockPos.containing(safe.get());
-        if (hasLavaAt(level, safePos)) return null;
-        return safePos;
     }
 
     private static boolean hasLavaAt(ServerLevel level, BlockPos pos) {

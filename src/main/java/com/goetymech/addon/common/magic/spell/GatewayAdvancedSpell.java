@@ -33,39 +33,14 @@ public class GatewayAdvancedSpell extends Spell {
     private boolean tryMapTeleport(ServerPlayer player, ItemStack offhand) {
         if (player.getServer() == null) return false;
 
-        BlockPos bestPos = null;
-        ServerLevel bestLevel = null;
-        double bestDist = Double.MAX_VALUE;
-        BlockPos playerPos = player.blockPosition();
+        ServerLevel playerLevel = (ServerLevel) player.level();
+        BlockPos target = GatewayUtil.readMapTarget(offhand, playerLevel);
+        if (target == null) return false;
 
-        for (ServerLevel level : player.getServer().getAllLevels()) {
-            if (level.dimension() == player.level().dimension()) continue;
-            BlockPos mapTarget = GatewayUtil.readMapTarget(offhand, level);
-            if (mapTarget == null) continue;
-            double dist = mapTarget.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
-            if (dist < bestDist) {
-                bestDist = dist;
-                bestPos = mapTarget;
-                bestLevel = level;
-            }
-        }
-
-        if (bestPos != null && bestLevel != null) {
-            player.displayClientMessage(
-                    Component.translatable("info.goetymech.gateway.map_target_found"), true);
-            doTeleport(bestLevel, player, bestPos);
-            return true;
-        }
-
-        BlockPos currentDimTarget = GatewayUtil.readMapTarget(offhand, (ServerLevel) player.level());
-        if (currentDimTarget != null) {
-            player.displayClientMessage(
-                    Component.translatable("info.goetymech.gateway.map_target_found"), true);
-            doTeleport((ServerLevel) player.level(), player, currentDimTarget);
-            return true;
-        }
-
-        return false;
+        player.displayClientMessage(
+                Component.translatable("info.goetymech.gateway.map_target_found"), true);
+        doTeleport(playerLevel, player, target);
+        return true;
     }
 
     private void doTeleport(ServerLevel level, ServerPlayer player, BlockPos target) {
