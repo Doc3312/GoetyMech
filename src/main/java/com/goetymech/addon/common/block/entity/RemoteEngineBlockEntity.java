@@ -154,6 +154,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     private void tryAutoBindArk(UUID ownerUUID) {
         if (linkedPos != null || level == null || level.isClientSide) return;
+        if (GoetyMechMod.STRESS_LINK.getArkCountForOwner(ownerUUID) <= 0) return;
         List<GlobalBlockPos> readers = GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID);
         if (!readers.isEmpty()) {
             GlobalBlockPos first = readers.get(0);
