@@ -47,6 +47,9 @@ public class StressLinkService extends SavedData {
     // 避免 applyRemoteUpdate → engine 网络变化 → onEngineNetworkChanged →
     // setRemoteEngineConsumption → reader 网络 sync → pushToEngine 的死循环
     private transient boolean suppressEngineUpdates = false;
+    
+    // 服务器引用，用于跨维度区块强加载
+    private transient MinecraftServer server;
 
     // 延迟推送标记：onReaderNetworkChanged 不立即推送，只标记 dirty，
     // 在 tick() 中统一推送，避免在网络 sync 遍历期间因 detachKinetics 修改 members
@@ -74,8 +77,10 @@ public class StressLinkService extends SavedData {
     public static StressLinkService get(MinecraftServer server) {
         ServerLevel overworld = server.getLevel(Level.OVERWORLD);
         if (overworld == null) return null;
-        return overworld.getDataStorage().computeIfAbsent(
+        StressLinkService service = overworld.getDataStorage().computeIfAbsent(
                 StressLinkService::loadStatic, StressLinkService::new, DATA_NAME);
+        service.server = server;
+        return service;
     }
 
     private static StressLinkService loadStatic(CompoundTag tag) {
@@ -222,8 +227,8 @@ public class StressLinkService extends SavedData {
     }
 
     private void forceLoadEngineChunk(GlobalBlockPos enginePos) {
-        if (minecraftServer == null) return;
-        ServerLevel engineLevel = minecraftServer.getLevel(enginePos.dimension());
+        if (server == null) return;
+        ServerLevel engineLevel = server.getLevel(enginePos.dimension());
         if (engineLevel == null) return;
         ChunkPos chunkPos = new ChunkPos(enginePos.pos());
         engineLevel.setChunkForced(chunkPos.x, chunkPos.z, true);
@@ -232,8 +237,8 @@ public class StressLinkService extends SavedData {
     }
 
     private void unforceLoadEngineChunk(GlobalBlockPos enginePos) {
-        if (minecraftServer == null) return;
-        ServerLevel engineLevel = minecraftServer.getLevel(enginePos.dimension());
+        if (server == null) return;
+        ServerLevel engineLevel = server.getLevel(enginePos.dimension());
         if (engineLevel == null) return;
         ChunkPos chunkPos = new ChunkPos(enginePos.pos());
         engineLevel.setChunkForced(chunkPos.x, chunkPos.z, false);
