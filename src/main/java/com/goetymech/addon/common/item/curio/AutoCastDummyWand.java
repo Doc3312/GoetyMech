@@ -18,11 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/*
- * AutoCastDummyWand — 保留以供未来自动施法测试使用。
- * 原用于 Flesh Casket 自动施法功能的开发调试。
- * 如需重新激活：取消注释并恢复 ModItems 中的注册。
- *
 public class AutoCastDummyWand extends Item implements IWand {
     private final SpellType primaryType;
     private final List<SpellType> spellTypes;
@@ -76,4 +71,3 @@ public class AutoCastDummyWand extends Item implements IWand {
         };
     }
 }
-*/
