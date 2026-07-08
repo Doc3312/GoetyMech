@@ -53,6 +53,10 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     }
 
     private void refreshStats() {
+        if (tickCounter < 0) {
+            tickCounter++;
+            return;
+        }
         if (++tickCounter < 20) return;
         tickCounter = 0;
 
@@ -151,5 +155,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (tag.hasUUID("OwnerUUID")) {
             ownerUUID = tag.getUUID("OwnerUUID");
         }
+        tickCounter = -20;
     }
 }

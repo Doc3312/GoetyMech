@@ -7,14 +7,12 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
-import net.minecraft.world.level.border.WorldBorder;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
@@ -89,51 +87,59 @@ public class GatewayUtil {
 
     @Nullable
     public static BlockPos findSafeTeleportPos(ServerLevel level, AABB structureBounds, Player player) {
-        int startRadius = 20;
-        int maxRadius = 50;
-        int verticalRange = 20;
-
         BlockPos center = BlockPos.containing(structureBounds.getCenter());
 
-        for (int radius = startRadius; radius <= maxRadius; radius += 5) {
-            for (int dy = -verticalRange; dy <= verticalRange; dy++) {
-                for (int dx = -radius; dx <= radius; dx++) {
-                    for (int dz = -radius; dz <= radius; dz++) {
-                        if (Math.abs(dx) != radius && Math.abs(dz) != radius) continue;
-                        BlockPos candidate = center.offset(dx, dy, dz);
-                        if (isInsideStructureBounds(structureBounds, candidate)) continue;
-                        Vec3 safe = checkPosition(level, candidate);
-                        if (safe != null) return BlockPos.containing(safe);
-                    }
-                }
+        for (int radius = 20; radius <= 50; radius += 5) {
+            for (BlockPos candidate : perimeterCandidates(center, radius)) {
+                if (isInsideStructureBounds(structureBounds, candidate)) continue;
+                BlockPos safe = checkPosition(level, candidate);
+                if (safe != null) return safe;
             }
         }
+
         return null;
+    }
+
+    private static java.util.List<BlockPos> perimeterCandidates(BlockPos center, int radius) {
+        java.util.List<BlockPos> list = new java.util.ArrayList<>();
+        int r = radius;
+        list.add(center.offset(r, 0, 0));
+        list.add(center.offset(-r, 0, 0));
+        list.add(center.offset(0, 0, r));
+        list.add(center.offset(0, 0, -r));
+        if (r >= 10) {
+            list.add(center.offset(r, 0, r));
+            list.add(center.offset(r, 0, -r));
+            list.add(center.offset(-r, 0, r));
+            list.add(center.offset(-r, 0, -r));
+        }
+        return list;
     }
 
     private static boolean isInsideStructureBounds(AABB bounds, BlockPos pos) {
         return bounds.minX <= pos.getX() && pos.getX() <= bounds.maxX
-                && bounds.minY <= pos.getY() && pos.getY() <= bounds.maxY
                 && bounds.minZ <= pos.getZ() && pos.getZ() <= bounds.maxZ;
     }
 
     @Nullable
-    public static Vec3 checkPosition(ServerLevel level, BlockPos pos) {
-        if (pos.getY() < level.getMinBuildHeight()) return null;
-        Optional<Vec3> safe = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, pos);
+    public static BlockPos checkPosition(ServerLevel level, BlockPos xzPos) {
+        int groundY = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, xzPos).getY();
+        if (groundY <= level.getMinBuildHeight()) return null;
+        BlockPos candidate = xzPos.atY(groundY);
+        Optional<Vec3> safe = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, candidate);
         if (safe.isEmpty()) return null;
         BlockPos safePos = BlockPos.containing(safe.get());
         if (hasLavaAt(level, safePos)) return null;
-        return safe.get();
+        return safePos;
     }
 
     private static boolean hasLavaAt(ServerLevel level, BlockPos pos) {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                if (level.getFluidState(pos.offset(dx, 0, dz)).is(net.minecraft.tags.FluidTags.LAVA)) return true;
+                if (level.getFluidState(pos.offset(dx, 0, dz)).is(FluidTags.LAVA)) return true;
             }
         }
-        return level.getFluidState(pos.below()).is(net.minecraft.tags.FluidTags.LAVA);
+        return level.getFluidState(pos.below()).is(FluidTags.LAVA);
     }
 
     public static boolean teleportPlayer(ServerLevel targetLevel, Player player, Vec3 pos) {

@@ -20,7 +20,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -36,7 +35,7 @@ public class GatewayAdvancedSpell extends Spell {
 
     @Override
     public int defaultCastDuration() {
-        return 0;
+        return 100;
     }
 
     @Override
@@ -64,9 +63,7 @@ public class GatewayAdvancedSpell extends Spell {
         return new SpellStat(0, 0, 0, 0, 0, 0);
     }
 
-    @Override
-    public void useParticle(Level worldIn, LivingEntity caster, ItemStack stack) {
-    }
+    
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -115,7 +112,11 @@ public class GatewayAdvancedSpell extends Spell {
         Vec3 teleportPos;
 
         if (forceTeleport) {
-            teleportPos = Vec3.atCenterOf(bestPos);
+            BlockPos hightPos = bestLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, bestPos);
+            if (hightPos.getY() <= bestLevel.getMinBuildHeight()) {
+                hightPos = bestPos.atY(bestLevel.getSeaLevel());
+            }
+            teleportPos = Vec3.atCenterOf(hightPos);
             clearForceFlag(player);
         } else {
             BlockPos safePos = GatewayUtil.findSafeTeleportPos(bestLevel, bounds, player);

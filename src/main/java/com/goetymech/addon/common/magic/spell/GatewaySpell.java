@@ -17,7 +17,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -33,7 +32,7 @@ public class GatewaySpell extends Spell {
 
     @Override
     public int defaultCastDuration() {
-        return 0;
+        return 100;
     }
 
     @Override
@@ -61,9 +60,7 @@ public class GatewaySpell extends Spell {
         return new SpellStat(0, 0, 0, 0, 0, 0);
     }
 
-    @Override
-    public void useParticle(Level worldIn, LivingEntity caster, ItemStack stack) {
-    }
+    
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -95,7 +92,11 @@ public class GatewaySpell extends Spell {
         Vec3 pos;
 
         if (forceTeleport) {
-            pos = Vec3.atCenterOf(structPos);
+            BlockPos hightPos = worldIn.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, structPos);
+            if (hightPos.getY() <= worldIn.getMinBuildHeight()) {
+                hightPos = structPos.atY(worldIn.getSeaLevel());
+            }
+            pos = Vec3.atCenterOf(hightPos);
             clearForceFlag(player);
         } else {
             BlockPos safePos = GatewayUtil.findSafeTeleportPos(worldIn, bounds, player);

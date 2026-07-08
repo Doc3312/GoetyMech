@@ -89,7 +89,7 @@ dependencies {
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${minecraft_version}")
 
     // Goety - 编译和运行时依赖
-    implementation fg.deobf("curse.maven:goety-586095:8189894")
+    implementation fg.deobf("curse.maven:goety-586095:8362863")
 
     // Create - 编译和运行时依赖
     implementation(fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false })

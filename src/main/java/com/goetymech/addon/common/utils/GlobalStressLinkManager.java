@@ -45,6 +45,7 @@ public class GlobalStressLinkManager {
     public boolean suppressEngineUpdates = false;
     public Set<GlobalBlockPos> dirtyReaders = new HashSet<>();
     public Set<GlobalBlockPos> overstrainedEngines = new HashSet<>();
+    private int loadTickDelay = 0;
 
     private StressLinkSavedData savedData;
 
@@ -68,10 +69,8 @@ public class GlobalStressLinkManager {
         readerOwners = savedData.getReaderOwners();
         rebuildOwnerIndex();
 
-        // 存档加载后：标记所有 reader 为 dirty，触发 distributeBudget() 填充运行时缓存
-        for (GlobalBlockPos readerPos : readerToEngine.keySet()) {
-            dirtyReaders.add(readerPos);
-        }
+        // 存档加载后：设置延迟计数器，等待 Reader 网络数据初始化完成后再填充缓存
+        loadTickDelay = 10;
 
         // 存档加载后：重新应用跨维度引擎的区块强加载
         for (GlobalBlockPos enginePos : engineToReader.keySet()) {
@@ -240,6 +239,22 @@ public class GlobalStressLinkManager {
     // ── Tick: 延迟推送 + 批量分配 ──
 
     public void tick() {
+        if (loadTickDelay > 0) {
+            loadTickDelay--;
+            if (loadTickDelay == 0) {
+                for (GlobalBlockPos readerPos : readerToEngine.keySet()) {
+                    StressReaderBlockEntity reader = activeReaders.get(readerPos);
+                    if (reader != null) {
+                        readerCache.put(readerPos, new ReaderSnapshot(
+                                reader.getNetworkCapacity(),
+                                reader.getNetworkStress(),
+                                reader.getSpeed()));
+                    }
+                }
+            }
+            return;
+        }
+
         if (dirtyReaders.isEmpty()) return;
         Set<GlobalBlockPos> snapshot = new HashSet<>(dirtyReaders);
         dirtyReaders.clear();
