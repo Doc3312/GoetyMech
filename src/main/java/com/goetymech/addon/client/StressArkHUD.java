@@ -35,6 +35,10 @@ public class StressArkHUD {
         hasData = true;
     }
 
+    public static boolean hasArk() {
+        return hasData;
+    }
+
     public static void clearData() {
         hasData = false;
         totalCapacity = 0;

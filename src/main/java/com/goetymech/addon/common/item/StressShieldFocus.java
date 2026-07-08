@@ -2,6 +2,7 @@ package com.goetymech.addon.common.item;
 
 import com.goetymech.addon.common.magic.spell.StressShieldSpell;
 import com.goetymech.addon.config.ModConfig;
+import com.goetymech.addon.client.StressArkHUD;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import com.Polarice3.Goety.utils.ItemHelper;
 import net.minecraft.ChatFormatting;
@@ -91,7 +92,8 @@ public class StressShieldFocus extends MagicFocus {
         tooltip.add(Component.translatable("item.goety.focus.info")
                 .withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE));
 
-        if (isBound(stack)) {
+        boolean hasArk = level != null && level.isClientSide && StressArkHUD.hasArk();
+        if (isBound(stack) || hasArk) {
             tooltip.add(Component.translatable("info.goetymech.stress_shield.bound")
                     .withStyle(ChatFormatting.GREEN));
         } else {
