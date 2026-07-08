@@ -80,7 +80,7 @@ public class GatewayUtil {
         if (!stack.is(Items.FILLED_MAP)) return false;
         MapItemSavedData data = MapItem.getSavedData(stack, level);
         if (data == null) return false;
-        for (MapDecoration deco : data.decorations.values()) {
+        for (MapDecoration deco : data.getDecorations()) {
             if (deco.getType() != MapDecoration.Type.PLAYER
                     && deco.getType() != MapDecoration.Type.FRAME
                     && deco.getType() != MapDecoration.Type.PLAYER_OFF_MAP
@@ -96,7 +96,7 @@ public class GatewayUtil {
         if (!stack.is(Items.FILLED_MAP)) return null;
         MapItemSavedData data = MapItem.getSavedData(stack, level);
         if (data == null) return null;
-        for (MapDecoration deco : data.decorations.values()) {
+        for (MapDecoration deco : data.getDecorations()) {
             if (deco.getType() == MapDecoration.Type.PLAYER
                     || deco.getType() == MapDecoration.Type.FRAME
                     || deco.getType() == MapDecoration.Type.PLAYER_OFF_MAP
