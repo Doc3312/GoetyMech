@@ -4,13 +4,9 @@ import com.goetymech.addon.client.StressArkHUD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.function.Supplier;
 
 public class S2CStressArkDataPacket {
-    private static final Logger LOGGER = LoggerFactory.getLogger("ArkPacket-DIAG");
-
     private final float totalCapacity;
     private final float totalStress;
     private final int networkCount;
@@ -37,10 +33,8 @@ public class S2CStressArkDataPacket {
     public static void handle(S2CStressArkDataPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (packet.totalCapacity < 0) {
-                LOGGER.info("[ARK-dx] CLIENT << CLEAR");
                 StressArkHUD.clearData();
             } else {
-                LOGGER.info("[ARK-dx] CLIENT << DATA: cap={} stress={}", packet.totalCapacity, packet.totalStress);
                 StressArkHUD.onData(packet.totalCapacity, packet.totalStress, packet.networkCount, packet.engineConsumption);
             }
         });
