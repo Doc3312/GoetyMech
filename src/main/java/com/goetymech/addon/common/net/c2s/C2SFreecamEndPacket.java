@@ -20,7 +20,7 @@ public class C2SFreecamEndPacket {
         ctx.get().enqueueWork(() -> {
             var player = ctx.get().getSender();
             if (player == null) return;
-            FreecamSpectatorHandler.deactivate(player);
+            player.getServer().execute(() -> FreecamSpectatorHandler.deactivate(player));
         });
         ctx.get().setPacketHandled(true);
     }

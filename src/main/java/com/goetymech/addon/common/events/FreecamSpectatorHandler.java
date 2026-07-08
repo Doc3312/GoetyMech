@@ -3,7 +3,6 @@ package com.goetymech.addon.common.events;
 import com.goetymech.addon.config.ModConfig;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -67,14 +66,13 @@ public class FreecamSpectatorHandler {
 
         player.noPhysics = false;
         player.setGameMode(savedType);
-        player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
         player.getAbilities().flying = false;
         player.getAbilities().mayfly = false;
         player.getAbilities().setFlyingSpeed(0.05f);
         player.onUpdateAbilities();
-        player.fallDistance = 0;
         player.setDeltaMovement(Vec3.ZERO);
         player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), Vec3.ZERO));
+        player.fallDistance = 0;
 
         ServerLevel savedLevel = player.getServer().getLevel(
                 ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimStr)));
