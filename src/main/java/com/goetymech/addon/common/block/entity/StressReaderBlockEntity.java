@@ -2,8 +2,8 @@ package com.goetymech.addon.common.block.entity;
 
 import java.util.*;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.utils.GlobalBlockPos;
-import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -32,10 +32,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     public void initialize() {
         super.initialize();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.onReaderLoad(this);
-            }
+            GoetyMechMod.STRESS_LINK.onReaderLoad(this);
         }
     }
 
@@ -43,10 +40,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     public void invalidate() {
         super.invalidate();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.onReaderDestroyed(this);
-            }
+            GoetyMechMod.STRESS_LINK.onReaderDestroyed(this);
         }
     }
 
@@ -54,11 +48,8 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.onReaderUnload(
-                        com.goetymech.addon.common.utils.GlobalBlockPos.of(level, worldPosition));
-            }
+            GoetyMechMod.STRESS_LINK.onReaderUnload(
+                    GlobalBlockPos.of(level, worldPosition));
         }
     }
 
@@ -71,10 +62,7 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
                 && (prevCap != this.capacity || prevStress != this.stress)) {
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
             setChanged();
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.onReaderNetworkChanged(this);
-            }
+            GoetyMechMod.STRESS_LINK.onReaderNetworkChanged(this);
         }
     }
 
@@ -121,12 +109,9 @@ public class StressReaderBlockEntity extends KineticBlockEntity {
         this.placerUUID = uuid;
         setChanged();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.registerReaderOwner(
-                        com.goetymech.addon.common.utils.GlobalBlockPos.of(level, worldPosition),
-                        uuid);
-            }
+            GoetyMechMod.STRESS_LINK.registerReaderOwner(
+                    GlobalBlockPos.of(level, worldPosition),
+                    uuid);
         }
     }
 

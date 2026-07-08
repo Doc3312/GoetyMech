@@ -1,10 +1,11 @@
 package com.goetymech.addon.common.block.entity;
 
 import com.Polarice3.Goety.api.entities.IChunkLoader;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.s2c.S2CStressArkDataPacket;
 import com.goetymech.addon.common.utils.GlobalBlockPos;
-import com.goetymech.addon.common.utils.StressLinkService;
+import com.goetymech.addon.common.utils.GlobalStressLinkManager;
 import com.goetymech.addon.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -47,17 +48,11 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         self.chunkLoadBlock();
         if (self.ownerUUID == null) return;
 
-        StressLinkService service = StressLinkService.get(level);
-        if (service == null) return;
-
-        // Register this Ark — all Arks for one owner are active simultaneously
-        service.registerArk(GlobalBlockPos.of(level, pos), self.ownerUUID);
-        self.refreshStats(service);
+        GoetyMechMod.STRESS_LINK.registerArk(GlobalBlockPos.of(level, pos), self.ownerUUID);
+        self.refreshStats();
     }
 
-    // ── Stats via Service cache (no direct getBlockEntity) ──
-
-    private void refreshStats(StressLinkService service) {
+    private void refreshStats() {
         if (++tickCounter < 20) return;
         tickCounter = 0;
 
@@ -65,8 +60,8 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         float totalStress = 0;
         int readerCount = 0;
 
-        for (GlobalBlockPos readerPos : service.getReadersForOwner(ownerUUID)) {
-            StressLinkService.ReaderSnapshot snap = service.getCachedReaderData(readerPos);
+        for (GlobalBlockPos readerPos : GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID)) {
+            GlobalStressLinkManager.ReaderSnapshot snap = GoetyMechMod.STRESS_LINK.getCachedReaderData(readerPos);
             if (snap == null) continue;
             totalCap += snap.capacity();
             totalStress += snap.stress();
@@ -76,7 +71,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         cachedTotalCapacity = totalCap;
         cachedTotalStress = totalStress;
         cachedNetworkCount = readerCount;
-        syncToClient(service.getEngineConsumptionForOwner(ownerUUID));
+        syncToClient(GoetyMechMod.STRESS_LINK.getEngineConsumptionForOwner(ownerUUID));
     }
 
     // ── Lifecycle ──
@@ -84,10 +79,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
     public void setOwner(LivingEntity entity) {
         this.ownerUUID = entity.getUUID();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.registerArk(GlobalBlockPos.of(level, worldPosition), ownerUUID);
-            }
+            GoetyMechMod.STRESS_LINK.registerArk(GlobalBlockPos.of(level, worldPosition), ownerUUID);
         }
         setChanged();
     }
@@ -101,10 +93,7 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
 
     public void onArkRemoved() {
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.unregisterArk(GlobalBlockPos.of(level, worldPosition));
-            }
+            GoetyMechMod.STRESS_LINK.unregisterArk(GlobalBlockPos.of(level, worldPosition));
         }
         sendClearPacket();
         ownerUUID = null;

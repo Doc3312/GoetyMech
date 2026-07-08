@@ -3,8 +3,9 @@ package com.goetymech.addon.common.magic.spell;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.item.StressShieldFocus;
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.utils.GlobalBlockPos;
-import com.goetymech.addon.common.utils.StressLinkService;
+import com.goetymech.addon.common.utils.GlobalStressLinkManager;
 import com.goetymech.addon.common.utils.StressShieldHelper;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
@@ -138,13 +139,10 @@ public class StressShieldSpell extends Spell {
     }
 
     private float readStress(Player player, ServerLevel worldIn) {
-        StressLinkService service = StressLinkService.get(worldIn);
-        if (service == null) return 0;
-
         // Priority 1: Sum stress from all readers owned by this player
         float total = 0;
-        for (GlobalBlockPos readerPos : service.getReadersForOwner(player.getUUID())) {
-            StressLinkService.ReaderSnapshot snap = service.getCachedReaderData(readerPos);
+        for (GlobalBlockPos readerPos : GoetyMechMod.STRESS_LINK.getReadersForOwner(player.getUUID())) {
+            GlobalStressLinkManager.ReaderSnapshot snap = GoetyMechMod.STRESS_LINK.getCachedReaderData(readerPos);
             if (snap != null) total += snap.stress();
         }
         if (total > 0) return total;

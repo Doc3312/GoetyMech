@@ -2,10 +2,12 @@ package com.goetymech.addon;
 
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
+import com.goetymech.addon.common.events.StressLinkEvents;
 import com.goetymech.addon.common.events.StressShieldEvents;
 import com.goetymech.addon.common.events.VoidBlinkEvents;
 import com.goetymech.addon.common.menu.ModMenuTypes;
 import com.goetymech.addon.common.utils.GatewayMappingLoader;
+import com.goetymech.addon.common.utils.GlobalStressLinkManager;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.compat.caelus.CaelusLoaded;
@@ -46,6 +48,7 @@ public class GoetyMechMod {
 
     public static final String MOD_ID = "goetymech";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final GlobalStressLinkManager STRESS_LINK = new GlobalStressLinkManager();
 
     public GoetyMechMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

@@ -3,8 +3,8 @@ package com.goetymech.addon.common.block.entity;
 import java.util.List;
 import java.util.UUID;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.utils.GlobalBlockPos;
-import com.goetymech.addon.common.utils.StressLinkService;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.IRotate.StressImpact;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
@@ -50,16 +50,13 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void initialize() {
         super.initialize();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.onEngineLoad(this);
-                KineticNetwork network = getOrCreateNetwork();
-                if (network != null) {
-                    service.onEngineNetworkChanged(
-                            GlobalBlockPos.of(level, worldPosition),
-                            network.calculateStress(),
-                            network.calculateCapacity());
-                }
+            GoetyMechMod.STRESS_LINK.onEngineLoad(this);
+            KineticNetwork network = getOrCreateNetwork();
+            if (network != null) {
+                GoetyMechMod.STRESS_LINK.onEngineNetworkChanged(
+                        GlobalBlockPos.of(level, worldPosition),
+                        network.calculateStress(),
+                        network.calculateCapacity());
             }
             if (linkedPos == null && placerUUID != null) {
                 tryAutoBindArk(placerUUID);
@@ -71,11 +68,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void invalidate() {
         if (level != null && !level.isClientSide) {
             GlobalBlockPos gpos = GlobalBlockPos.of(level, worldPosition);
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.unbind(gpos);
-                service.onEngineUnload(gpos);
-            }
+            GoetyMechMod.STRESS_LINK.unbind(gpos);
+            GoetyMechMod.STRESS_LINK.onEngineUnload(gpos);
         }
         super.invalidate();
     }
@@ -84,10 +78,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.onEngineUnload(GlobalBlockPos.of(level, worldPosition));
-            }
+            GoetyMechMod.STRESS_LINK.onEngineUnload(GlobalBlockPos.of(level, worldPosition));
         }
     }
 
@@ -108,15 +99,12 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void updateFromNetwork(float capacity, float stress, int networkSize) {
         super.updateFromNetwork(capacity, stress, networkSize);
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                LOGGER.info("[RemoteEngine.updateFromNetwork] pos={} capacity={} stress={} networkSize={}",
-                        worldPosition, capacity, stress, networkSize);
-                service.onEngineNetworkChanged(
-                        GlobalBlockPos.of(level, worldPosition),
-                        this.stress,
-                        this.capacity);
-            }
+            LOGGER.info("[RemoteEngine.updateFromNetwork] pos={} capacity={} stress={} networkSize={}",
+                    worldPosition, capacity, stress, networkSize);
+            GoetyMechMod.STRESS_LINK.onEngineNetworkChanged(
+                    GlobalBlockPos.of(level, worldPosition),
+                    this.stress,
+                    this.capacity);
         }
     }
 
@@ -138,11 +126,8 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         this.linkedDim = dim;
         setChanged();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.bind(GlobalBlockPos.of(level, worldPosition),
-                        new GlobalBlockPos(dim, pos));
-            }
+            GoetyMechMod.STRESS_LINK.bind(GlobalBlockPos.of(level, worldPosition),
+                    new GlobalBlockPos(dim, pos));
         }
     }
 
@@ -155,10 +140,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
         this.remoteReaderStress = 0;
         setChanged();
         if (level != null && !level.isClientSide) {
-            StressLinkService service = StressLinkService.get(level);
-            if (service != null) {
-                service.unbind(GlobalBlockPos.of(level, worldPosition));
-            }
+            GoetyMechMod.STRESS_LINK.unbind(GlobalBlockPos.of(level, worldPosition));
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
             sendData();
         }
@@ -174,9 +156,7 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
 
     private void tryAutoBindArk(UUID ownerUUID) {
         if (linkedPos != null || level == null || level.isClientSide) return;
-        StressLinkService service = StressLinkService.get(level);
-        if (service == null) return;
-        List<GlobalBlockPos> readers = service.getReadersForOwner(ownerUUID);
+        List<GlobalBlockPos> readers = GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID);
         if (!readers.isEmpty()) {
             GlobalBlockPos first = readers.get(0);
             setLinkedPos(first.pos(), first.dimension());
