@@ -13,16 +13,12 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class StressLinkService extends SavedData {
 
     private static final String DATA_NAME = "goetymech_stresslink";
-    private static final Logger LOGGER = LogManager.getLogger("StressLinkDebug");
 
     // === Persisted ===
     private final Map<GlobalBlockPos, GlobalBlockPos> engineToReader = new LinkedHashMap<>();
@@ -232,8 +228,6 @@ public class StressLinkService extends SavedData {
         if (engineLevel == null) return;
         ChunkPos chunkPos = new ChunkPos(enginePos.pos());
         engineLevel.setChunkForced(chunkPos.x, chunkPos.z, true);
-        LOGGER.info("[forceLoadEngineChunk] engine={} chunk=({},{}) dimension={}",
-                enginePos, chunkPos.x, chunkPos.z, enginePos.dimension());
     }
 
     private void unforceLoadEngineChunk(GlobalBlockPos enginePos) {
@@ -242,8 +236,6 @@ public class StressLinkService extends SavedData {
         if (engineLevel == null) return;
         ChunkPos chunkPos = new ChunkPos(enginePos.pos());
         engineLevel.setChunkForced(chunkPos.x, chunkPos.z, false);
-        LOGGER.info("[unforceLoadEngineChunk] engine={} chunk=({},{}) dimension={}",
-                enginePos, chunkPos.x, chunkPos.z, enginePos.dimension());
     }
 
     @Nullable
@@ -309,9 +301,6 @@ public class StressLinkService extends SavedData {
         // 可分配给引擎的总预算 = reader 总容量 - 本地消耗
         float totalBudget = Math.max(0, capacity - localStress);
 
-        LOGGER.info("[distributeBudget] START reader={} speed={} capacity={} readerStress={} remoteConsumption={} localStress={} totalBudget={} engineCount={}",
-                readerPos, speed, capacity, readerStress, remoteConsumption, localStress, totalBudget, engines.size());
-
         // 按网络分组：同一网络的引擎共享消耗和预算
         Map<Object, List<GlobalBlockPos>> networkToEngines = new LinkedHashMap<>();
         for (GlobalBlockPos ep : engines) {
@@ -337,9 +326,6 @@ public class StressLinkService extends SavedData {
 
                 float availableBudget = Math.max(0, totalBudget - allocated);
 
-                LOGGER.info("[distributeBudget] network#{} key={} consumption={} availableBudget={} engineCount={}",
-                        netIdx, networkKey, networkConsumption, availableBudget, engineList.size());
-
                 if (availableBudget >= networkConsumption) {
                     // 预算充足：同网络内所有引擎都正常运转
                     // 同一网络内的引擎共享总预算，每个引擎获得 budget / engineCount，
@@ -351,12 +337,9 @@ public class StressLinkService extends SavedData {
                         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
                         if (engine != null) {
                             pushToEngineInternal(engine, speed, perEngineBudget, capacity, readerStress);
-                            LOGGER.info("[distributeBudget]   -> engine={} OK speed={} budget={} (total={}, count={})",
-                                    enginePos, speed, perEngineBudget, availableBudget, engineList.size());
                         }
                     }
                     allocated += networkConsumption;
-                    LOGGER.info("[distributeBudget]   -> allocatedTotal={}", allocated);
                 } else {
                     // 预算不足：同网络内所有引擎都过载停转
                     for (GlobalBlockPos enginePos : engineList) {
@@ -365,7 +348,6 @@ public class StressLinkService extends SavedData {
                         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
                         if (engine != null) {
                             pushToEngineInternal(engine, 0, 0, capacity, readerStress);
-                            LOGGER.info("[distributeBudget]   -> engine={} OVERSTRAIN speed=0 budget=0", enginePos);
                         }
                     }
                 }
@@ -378,8 +360,6 @@ public class StressLinkService extends SavedData {
         // 全部推送完成后，统一更新 reader 的远程引擎消耗
         float finalConsumption = getEngineConsumptionForReader(readerPos);
         reader.setRemoteEngineConsumption(finalConsumption);
-        LOGGER.info("[distributeBudget] END reader={} finalRemoteConsumption={}",
-                readerPos, finalConsumption);
     }
 
     private void pushToEngineInternal(RemoteEngineBlockEntity engine, float speed, float budget, float capacity, float readerStress) {
@@ -404,18 +384,9 @@ public class StressLinkService extends SavedData {
             float oldStress = engineLocalStress.getOrDefault(enginePos, -1f);
             engineLocalStress.put(enginePos, localStress);
 
-            LOGGER.info("[onEngineNetworkChanged] engine={} oldStress={} newStress={} capacity={} overstrained={}",
-                    enginePos, oldStress, localStress, localCapacity, overstrainedEngines.contains(enginePos));
-
-            // 实时过载检测：如果引擎上报的实际消耗超过了分配给它的预算，
-            // 立即标记过载并标记 reader 为 dirty，让 distributeBudget 统一推送 speed=0。
-            // 注意：不在此方法中直接调用 applyRemoteUpdate，否则会在
-            // KineticNetwork.sync 遍历 members 时触发网络结构变化导致 CME。
             if (!suppressEngineUpdates) {
                 Float budget = engineBudget.get(enginePos);
                 if (budget != null && budget > 0 && localStress > budget) {
-                    LOGGER.info("[onEngineNetworkChanged] OVERLOAD DETECTED engine={} stress={} budget={}",
-                            enginePos, localStress, budget);
                     overstrainedEngines.add(enginePos);
                     engineBudget.put(enginePos, 0f);
                     GlobalBlockPos readerPos = engineToReader.get(enginePos);
@@ -433,8 +404,6 @@ public class StressLinkService extends SavedData {
         GlobalBlockPos readerPos = engineToReader.get(enginePos);
         if (readerPos != null) {
             float totalConsumption = getEngineConsumptionForReader(readerPos);
-            LOGGER.info("[onEngineNetworkChanged] update reader={} totalRemoteConsumption={}",
-                    readerPos, totalConsumption);
             StressReaderBlockEntity reader = activeReaders.get(readerPos);
             if (reader != null) reader.setRemoteEngineConsumption(totalConsumption);
         }

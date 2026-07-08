@@ -11,3 +11,4 @@
 - **2026-07-08** — StackOverflow 死循环修复：pushToEngine 添加 suppressEngineUpdates 重入防护，阻断 applyRemoteUpdate → engine 网络变化 → onEngineNetworkChanged → setRemoteEngineConsumption → reader 网络 sync → pushToEngine 的递归循环；budget 公式修正加回当前引擎消耗避免双重计入
 - **2026-07-08** — Goggle 显示改进：「本地消耗」改名为「已分配应力」；新增「网络应力」行显示 reader 网络总使用/总容量；applyRemoteUpdate 增加 readerStress 参数，pushToEngine 传递 reader.getNetworkStress()；NBT 新增 RemoteReaderStress 字段
 - **2026-07-08** — overstrained 隔离 + CME 修复：StressLinkService 改为延迟推送（dirtyReaders + ServerTickEvent）避免遍历期间修改集合导致 ConcurrentModificationException；按引擎加入顺序（LinkedHashSet）批量分配预算，新引擎应力不足时标记为过载（budget=0）且其消耗不计入 reader 网络，保护已有引擎正常运转
+- **2026-07-09** — 存档保存/加载深度修复：添加 shuttingDown 标志和 ServerStoppingEvent 监听；服务器关闭期间阻止 markDirty() 执行，防止第二次 save(File) 覆盖第一次保存的正确数据；添加 loading 标志，加载期间阻止 unbind() 删除绑定关系；修复重进存档后绑定关系丢失和 Ark 显示 0/0 的问题

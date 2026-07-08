@@ -4,26 +4,26 @@ import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.simibubi.create.content.kinetics.KineticNetwork;
+import com.simibubi.create.foundation.utility.SavedDataUtil;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import java.io.File;
 import java.util.*;
 
 public class GlobalStressLinkManager {
-
-    private static final Logger LOGGER = LogManager.getLogger("StressLinkDebug");
 
     // === Persistent data ===
     public Map<GlobalBlockPos, GlobalBlockPos> engineToReader = new LinkedHashMap<>();
@@ -45,7 +45,6 @@ public class GlobalStressLinkManager {
     public boolean suppressEngineUpdates = false;
     public Set<GlobalBlockPos> dirtyReaders = new HashSet<>();
     public Set<GlobalBlockPos> overstrainedEngines = new HashSet<>();
-    private int loadTickDelay = 0;
 
     private StressLinkSavedData savedData;
 
@@ -53,12 +52,26 @@ public class GlobalStressLinkManager {
         public float getAvailable() { return Math.max(0, capacity - stress); }
     }
 
+    private boolean loading = false;
+    private boolean shuttingDown = false;
+
     public void levelLoaded(LevelAccessor level) {
         MinecraftServer server = level.getServer();
         if (server == null || server.overworld() != level) return;
+        this.server = server;
+        loading = true;
+        shuttingDown = false;
         cleanUp();
         savedData = null;
         loadStressLinkData(server);
+        loading = false;
+    }
+
+    public void playerLogin(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            MinecraftServer server = serverPlayer.getServer();
+            loadStressLinkData(server);
+        }
     }
 
     private void loadStressLinkData(MinecraftServer server) {
@@ -69,17 +82,27 @@ public class GlobalStressLinkManager {
         readerOwners = savedData.getReaderOwners();
         rebuildOwnerIndex();
 
-        // 存档加载后：设置延迟计数器，等待 Reader 网络数据初始化完成后再填充缓存
-        loadTickDelay = 10;
-
-        // 存档加载后：重新应用跨维度引擎的区块强加载
         for (GlobalBlockPos enginePos : engineToReader.keySet()) {
             forceLoadEngineChunk(null, enginePos);
         }
     }
 
     public void markDirty() {
-        if (savedData != null) savedData.setDirty();
+        if (shuttingDown) return;
+        ensureSavedData();
+        if (savedData != null) {
+            savedData.setDirty();
+        }
+    }
+
+    private void ensureSavedData() {
+        if (savedData == null && server != null) {
+            savedData = StressLinkSavedData.load(server);
+            engineToReader = savedData.getEngineToReader();
+            readerToEngine = savedData.getReaderToEngine();
+            readerOwners = savedData.getReaderOwners();
+            rebuildOwnerIndex();
+        }
     }
 
     public void cleanUp() {
@@ -155,6 +178,7 @@ public class GlobalStressLinkManager {
 
         GlobalBlockPos readerPos = engineToReader.get(key);
         if (readerPos != null) {
+            forceLoadEngineChunk(engine, key);
             dirtyReaders.add(readerPos);
         }
     }
@@ -186,7 +210,12 @@ public class GlobalStressLinkManager {
         dirtyReaders.add(readerPos);
     }
 
+    public void onServerStopping() {
+        shuttingDown = true;
+    }
+
     public void unbind(GlobalBlockPos enginePos) {
+        if (loading) return;
         GlobalBlockPos readerPos = engineToReader.remove(enginePos);
         if (readerPos != null) {
             Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
@@ -202,7 +231,9 @@ public class GlobalStressLinkManager {
         engineLocalCapacity.remove(enginePos);
         engineBudget.remove(enginePos);
         engineNetworkKey.remove(enginePos);
-        markDirty();
+        if (!shuttingDown) {
+            markDirty();
+        }
 
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
         if (engine != null) engine.applyRemoteUpdate(0, 0, 0, 0);
@@ -235,25 +266,6 @@ public class GlobalStressLinkManager {
     // ── Tick: 延迟推送 + 批量分配 ──
 
     public void tick() {
-        if (loadTickDelay > 0) {
-            loadTickDelay--;
-            if (loadTickDelay == 0) {
-                for (GlobalBlockPos readerPos : readerToEngine.keySet()) {
-                    StressReaderBlockEntity reader = activeReaders.get(readerPos);
-                    if (reader != null) {
-                        readerCache.put(readerPos, new ReaderSnapshot(
-                                reader.getNetworkCapacity(),
-                                reader.getNetworkStress(),
-                                reader.getSpeed()));
-                    }
-                }
-                for (GlobalBlockPos readerPos : readerToEngine.keySet()) {
-                    dirtyReaders.add(readerPos);
-                }
-            }
-            return;
-        }
-
         if (dirtyReaders.isEmpty()) return;
         Set<GlobalBlockPos> snapshot = new HashSet<>(dirtyReaders);
         dirtyReaders.clear();
@@ -468,8 +480,6 @@ public class GlobalStressLinkManager {
         if (engineLevel == null) return;
         ChunkPos chunkPos = new ChunkPos(enginePos.pos());
         engineLevel.setChunkForced(chunkPos.x, chunkPos.z, true);
-        LOGGER.info("[forceLoadEngineChunk] engine={} chunk=({},{}) dimension={}",
-                enginePos, chunkPos.x, chunkPos.z, enginePos.dimension());
     }
 
     private void unforceLoadEngineChunk(@Nullable RemoteEngineBlockEntity engine, GlobalBlockPos enginePos) {
@@ -516,6 +526,11 @@ public class GlobalStressLinkManager {
             tag.put("readerOwners", ownersList);
 
             return tag;
+        }
+
+        @Override
+        public void save(@NotNull File file) {
+            SavedDataUtil.saveWithDatOld(this, file);
         }
 
         private static StressLinkSavedData load(CompoundTag nbt) {

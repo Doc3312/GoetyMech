@@ -99,8 +99,6 @@ public class RemoteEngineBlockEntity extends GeneratingKineticBlockEntity {
     public void updateFromNetwork(float capacity, float stress, int networkSize) {
         super.updateFromNetwork(capacity, stress, networkSize);
         if (level != null && !level.isClientSide) {
-            LOGGER.info("[RemoteEngine.updateFromNetwork] pos={} capacity={} stress={} networkSize={}",
-                    worldPosition, capacity, stress, networkSize);
             GoetyMechMod.STRESS_LINK.onEngineNetworkChanged(
                     GlobalBlockPos.of(level, worldPosition),
                     this.stress,

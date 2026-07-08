@@ -64,18 +64,36 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         float totalStress = 0;
         int readerCount = 0;
 
-        for (GlobalBlockPos readerPos : GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID)) {
+        List<GlobalBlockPos> readers = GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID);
+        LOGGER.info("[refreshStats] owner={} readersCount={}", ownerUUID, readers.size());
+
+        for (GlobalBlockPos readerPos : readers) {
             GlobalStressLinkManager.ReaderSnapshot snap = GoetyMechMod.STRESS_LINK.getCachedReaderData(readerPos);
-            if (snap == null) continue;
-            totalCap += snap.capacity();
-            totalStress += snap.stress();
-            readerCount++;
+            if (snap != null) {
+                totalCap += snap.capacity();
+                totalStress += snap.stress();
+                readerCount++;
+                LOGGER.info("[refreshStats] reader={} fromCache cap={} stress={}", readerPos, snap.capacity(), snap.stress());
+            } else {
+                StressReaderBlockEntity reader = GoetyMechMod.STRESS_LINK.activeReaders.get(readerPos);
+                if (reader != null) {
+                    totalCap += reader.getNetworkCapacity();
+                    totalStress += reader.getNetworkStress();
+                    readerCount++;
+                    LOGGER.info("[refreshStats] reader={} fromActive cap={} stress={}", readerPos, reader.getNetworkCapacity(), reader.getNetworkStress());
+                } else {
+                    LOGGER.info("[refreshStats] reader={} not found in cache or active", readerPos);
+                }
+            }
         }
 
         cachedTotalCapacity = totalCap;
         cachedTotalStress = totalStress;
         cachedNetworkCount = readerCount;
-        syncToClient(GoetyMechMod.STRESS_LINK.getEngineConsumptionForOwner(ownerUUID));
+        float consumption = GoetyMechMod.STRESS_LINK.getEngineConsumptionForOwner(ownerUUID);
+        LOGGER.info("[refreshStats] result cap={} stress={} readerCount={} consumption={}", 
+                totalCap, totalStress, readerCount, consumption);
+        syncToClient(consumption);
     }
 
     // ── Lifecycle ──
@@ -155,6 +173,6 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (tag.hasUUID("OwnerUUID")) {
             ownerUUID = tag.getUUID("OwnerUUID");
         }
-        tickCounter = -20;
+        tickCounter = 0;
     }
 }
