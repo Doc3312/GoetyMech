@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -114,6 +115,17 @@ public class StockTickerSpell extends Spell {
         if (!stbe.behaviour.mayInteract(player)) {
             player.displayClientMessage(
                     Component.translatable("info.goetymech.stock_ticker_focus.locked"), true);
+            return;
+        }
+
+        if (this.isShifting(caster)) {
+            if (!player.isCreative()) {
+                SEHelper.decreaseSouls(player, defaultSoulCost());
+            }
+            SEHelper.addCooldown(player, focus.getItem(), defaultSpellCooldown());
+            NetworkHooks.openScreen(player, new DepositProvider(stbe.behaviour.freqId, new SimpleContainer(54)),
+                    buf -> {});
+            this.playSound(worldIn, caster, this.CastingSound());
             return;
         }
 
