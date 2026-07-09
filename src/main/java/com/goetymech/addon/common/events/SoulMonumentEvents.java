@@ -3,17 +3,15 @@ package com.goetymech.addon.common.events;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.Polarice3.Goety.common.items.magic.TaglockKit;
-import com.Polarice3.Goety.utils.ModDamageSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -46,12 +44,10 @@ public class SoulMonumentEvents {
     }
 
     @SubscribeEvent
-    public static void onMonumentServantHurt(LivingHurtEvent event) {
-        if (!(event.getEntity() instanceof Mob mob)) return;
-        if (!mob.getPersistentData().getBoolean("goetymech.monument_summoned")) return;
-        if (!event.getSource().is(ModDamageSource.DISMISSED)) return;
-        event.setCanceled(true);
-        mob.discard();
+    public static void onMonumentServantDrops(LivingDropsEvent event) {
+        if (event.getEntity().getPersistentData().getBoolean("goetymech.monument_summoned")) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
