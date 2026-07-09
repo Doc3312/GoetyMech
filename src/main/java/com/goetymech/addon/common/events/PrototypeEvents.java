@@ -280,7 +280,7 @@ public class PrototypeEvents {
                 //GoetyMechMod.LOGGER.debug("PROTO_DIAG START: isCJ={}, charge={}, onGround={}, zza={}, isSprint={}, isFly={}, hSpeed={}",
                 //        isCJ, charge, player.onGround(), player.zza, player.isSprinting(),
                 //        player.isFallFlying(), String.format("%.4f", startHS));
-                if (player.onGround() && player.zza > 0.0F && charge == 0 && !player.isSprinting()) {
+                if (player.onGround() && player.zza > 0.0F && charge == 0 && !player.isSprinting() && !player.isShiftKeyDown()) {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
                     //GoetyMechMod.LOGGER.debug("Prototype ground takeoff: zza={}, motion={}", player.zza, m);

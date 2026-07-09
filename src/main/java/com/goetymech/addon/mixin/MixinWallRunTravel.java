@@ -1,6 +1,5 @@
 package com.goetymech.addon.mixin;
 
-import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.client.ClientWallRunState;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.config.ModConfig;
@@ -40,19 +39,12 @@ public abstract class MixinWallRunTravel {
         double tierMult = PrototypeItem.getTierMultiplier(kills);
         double speed = ModConfig.WALL_RUN_SPEED.get() * tierMult;
 
-        double mvSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
-                ? player.getAttribute(Attributes.MOVEMENT_SPEED).getValue() : -1;
-        double mvBase = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
-                ? player.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() : -1;
-        boolean hasMod = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
-                && player.getAttribute(Attributes.MOVEMENT_SPEED).getModifier(
-                        java.util.UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890")) != null;
-        int sprintTick = PrototypeItem.getSprintTick(player);
-        GoetyMechMod.LOGGER.debug("WALL_SPEED: speed={} mvSpeed={} mvBase={} sprintTick={} hasMod={} fwd={} strafe={} wallN=({}) kills={} tierMult={}",
-                String.format("%.4f", speed), String.format("%.4f", mvSpeed), String.format("%.4f", mvBase),
-                sprintTick, hasMod, wallFwd, wallStrafe,
-                String.format("%.2f,%.2f,%.2f", wallN.x, wallN.y, wallN.z),
-                kills, String.format("%.3f", tierMult));
+        double mvVal = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
+                ? player.getAttribute(Attributes.MOVEMENT_SPEED).getValue() : 0.1;
+        double mvBaseVal = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
+                ? player.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() : 0.1;
+        double sprintMult = Math.max(1.0, mvVal / mvBaseVal);
+        speed = speed * sprintMult;
 
         Vec3 climbVec = wallUp.scale(wallFwd * speed);
         Vec3 strafeVec = wallRight.scale(wallStrafe * speed);
