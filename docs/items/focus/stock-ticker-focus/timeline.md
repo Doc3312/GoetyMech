@@ -22,7 +22,22 @@
 - **修复移动/滑翔时面板关闭**：改用自己的 `MenuProvider`，创建 `StockKeeperCategoryMenu` 的匿名子类覆写 `stillValid` 跳过距离检查
   - 根因：`StockKeeperCategoryMenu.stillValid` 检查 `player.getBlockReach() + 4` 的距离，移动时超出阈值
   - 改用 `!contentHolder.isRemoved()`（只检查 BE 是否存在）
-- **跨维度远程支持**：`S2CRegisterStockCachePacket` + `CrossDimStockCache` + `LevelMixin` 注入 `getBlockEntity`
+- **跨维度远程支持（尝试）**：`S2CRegisterStockCachePacket` + `CrossDimStockCache` + `LevelMixin` 注入 `getBlockEntity`
   - 原理：服务端发送注册包创建假 BE → `Level.getBlockEntity` 在客户端找不到时走缓存
-  - 一个 Mixin 覆盖所有调用方（`createOnClient`、`handleClient`）
   - 约束：库存数据不自动刷新（依赖 `divideAndSendTo` 的初始推送）
+- **3.1 玩家投递**：`PackagerBlockEntityMixin` @Inject TAIL 拦截打包机输出，地址匹配玩家名时 `ItemHandlerHelper.giveItemToPlayer()` 直接给包裹
+  - 背包满 → PackageEntity 实体掉落
+- **3.2 存入仓库**：`DepositProvider` + Shift+施法打开 54 格双箱子 GUI
+  - 关闭 GUI → 遍历网络 PackagerLink 的 `targetInventory` → `insertItemStacked`
+  - 满 → 重开 GUI 显示剩余物品
+- **距离限制绕过**：`BlockEntityConfigurationPacketMixin` + `StockKeeperRequestMenuMixin` 跳过 createOnClient 的 BE 依赖
+  - 问题：网络包竞态（不同频道）导致远距离 GUI 打不开；`StockKeeperRequestMenuMixin` 的假 BE 存在假包/卡顿
+
+## 2026-07-10 (归档冻结)
+
+- **功能冻结归档**
+  - 已实现：瞬间施法、轮盘切换、移动/滑翔保持、stillValid 绕过
+  - 部分实现：3.1 玩家投递（同维度近距离 OK）、3.2 存入仓库（OK）
+  - 修复失败：远距离/跨维度打开 Create GUI + 远程下单
+  - 已知问题：远距离施法 GUI 无法打开；取物品时出现假包（phantom package）和卡顿
+  - 关联 openspec：`stock-ticker-focus`
