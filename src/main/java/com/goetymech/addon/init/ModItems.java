@@ -17,6 +17,7 @@ import com.goetymech.addon.common.item.GatewayFocus;
 import com.goetymech.addon.common.item.GatewayAdvancedFocus;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
+import com.goetymech.addon.common.item.SoulMonumentBlockItem;
 import com.goetymech.addon.common.item.curio.AutoCastDummyWand;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.EctoplasmCatcherCurio;
@@ -85,20 +86,20 @@ public class ModItems {
 
     public static final RegistryObject<Item> TIER1_SOUL_MONUMENT =
             ITEMS.register("tier1_soul_monument", () ->
-                    new BlockItem(ModBlocks.TIER1_SOUL_MONUMENT.get(),
-                            new Item.Properties().rarity(Rarity.RARE))
+                    new SoulMonumentBlockItem(ModBlocks.TIER1_SOUL_MONUMENT.get(),
+                            new Item.Properties().rarity(Rarity.RARE).fireResistant())
             );
 
     public static final RegistryObject<Item> TIER2_SOUL_MONUMENT =
             ITEMS.register("tier2_soul_monument", () ->
-                    new BlockItem(ModBlocks.TIER2_SOUL_MONUMENT.get(),
-                            new Item.Properties().rarity(Rarity.RARE))
+                    new SoulMonumentBlockItem(ModBlocks.TIER2_SOUL_MONUMENT.get(),
+                            new Item.Properties().rarity(Rarity.RARE).fireResistant())
             );
 
     public static final RegistryObject<Item> TIER3_SOUL_MONUMENT =
             ITEMS.register("tier3_soul_monument", () ->
-                    new BlockItem(ModBlocks.TIER3_SOUL_MONUMENT.get(),
-                            new Item.Properties().rarity(Rarity.RARE))
+                    new SoulMonumentBlockItem(ModBlocks.TIER3_SOUL_MONUMENT.get(),
+                            new Item.Properties().rarity(Rarity.RARE).fireResistant())
             );
 
     /** 兵团聚晶 — 远程一键编队召唤 */

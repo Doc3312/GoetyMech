@@ -126,5 +126,18 @@
   "info.goetymech.gateway.no_structure": "§c搜索范围内未发现结构",
   "info.goetymech.gateway.danger_area": "§e目标区域危险，再次施法将强制传送",
   "info.goetymech.gateway.no_marker": "§c地图上无有效标记点",
-  "info.goetymech.gateway.map_target_found": "§a已定位地图标记点"
+  "info.goetymech.gateway.map_target_found": "§a已定位地图标记点",
+
+  "block.goetymech.tier1_soul_monument": "一阶魂灵丰碑",
+  "block.goetymech.tier2_soul_monument": "二阶魂灵丰碑",
+  "block.goetymech.tier3_soul_monument": "三阶魂灵丰碑",
+  "item.goetymech.tier1_soul_monument": "一阶魂灵丰碑",
+  "item.goetymech.tier2_soul_monument": "二阶魂灵丰碑",
+  "item.goetymech.tier3_soul_monument": "三阶魂灵丰碑",
+  "info.goetymech.soul_monument.capacity": "§7当前容量：§f%d/%d",
+  "info.goetymech.soul_monument.already_recording": "§c该丰碑正在录入中",
+  "info.goetymech.soul_monument.full": "§c该丰碑已满",
+  "info.goetymech.soul_monument.recording_started": "§a开始录入，请在300s内献祭村民",
+  "info.goetymech.soul_monument.recording_timeout": "§e录入超时",
+  "info.goetymech.squad_focus.bound_success_monument": "§a已绑定至魂灵丰碑"
 }

@@ -126,5 +126,18 @@
   "info.goetymech.gateway.no_structure": "§cNo structure found within range",
   "info.goetymech.gateway.danger_area": "§eTarget area is dangerous, cast again to force teleport",
   "info.goetymech.gateway.no_marker": "§cMap has no valid marker",
-  "info.goetymech.gateway.map_target_found": "§aMap marker located"
+  "info.goetymech.gateway.map_target_found": "§aMap marker located",
+
+  "block.goetymech.tier1_soul_monument": "Tier 1 Soul Monument",
+  "block.goetymech.tier2_soul_monument": "Tier 2 Soul Monument",
+  "block.goetymech.tier3_soul_monument": "Tier 3 Soul Monument",
+  "item.goetymech.tier1_soul_monument": "Tier 1 Soul Monument",
+  "item.goetymech.tier2_soul_monument": "Tier 2 Soul Monument",
+  "item.goetymech.tier3_soul_monument": "Tier 3 Soul Monument",
+  "info.goetymech.soul_monument.capacity": "§7Capacity: §f%d/%d",
+  "info.goetymech.soul_monument.already_recording": "§cThis monument is already recording",
+  "info.goetymech.soul_monument.full": "§cThis monument is full",
+  "info.goetymech.soul_monument.recording_started": "§aRecording started, sacrifice a villager within 300s",
+  "info.goetymech.soul_monument.recording_timeout": "§eRecording timed out",
+  "info.goetymech.squad_focus.bound_success_monument": "§aBound to Soul Monument"
 }

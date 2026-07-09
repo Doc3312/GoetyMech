@@ -1,11 +1,14 @@
 package com.goetymech.addon.common.magic.spell;
 
+import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
+import com.goetymech.addon.common.data.SoulMonumentDataManager;
 import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.common.utils.MinionSpawnHelper;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.api.magic.SpellType;
+import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -14,6 +17,7 @@ import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -24,6 +28,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -33,6 +38,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class SquadSpell extends Spell {
 
@@ -132,6 +138,11 @@ public class SquadSpell extends Spell {
             blockLevel.getChunkAt(boundPos);
         }
 
+        if ("monument".equals(SquadFocus.getBoundType(focus))) {
+            handleMonumentSummon(player, worldIn, focus, staff, boundPos, blockLevel, useStaffBonus);
+            return;
+        }
+
         if (!(blockLevel.getBlockEntity(boundPos) instanceof SquadBarracksBlockEntity barracks)) {
             player.displayClientMessage(
                     Component.translatable("info.goetymech.squad_focus.block_missing").withStyle(ChatFormatting.RED), true);
@@ -215,6 +226,125 @@ public class SquadSpell extends Spell {
             SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }
         this.playSound(worldIn, caster, SoundEvents.EVOKER_CAST_SPELL);
+    }
+
+    private void handleMonumentSummon(ServerPlayer player, ServerLevel worldIn, ItemStack focus,
+                                       ItemStack staff, BlockPos boundPos, ServerLevel blockLevel, boolean useStaffBonus) {
+        if (!(blockLevel.getBlockEntity(boundPos) instanceof SoulMonumentBlockEntity monument)) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.squad_focus.block_missing").withStyle(ChatFormatting.RED), true);
+            SquadFocus.clearBinding(focus);
+            return;
+        }
+
+        if (!monument.isOwner(player)) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.squad_focus.not_owner").withStyle(ChatFormatting.RED), true);
+            return;
+        }
+
+        List<UUID> savedUUIDs = monument.getSavedEntityUUIDs();
+        if (savedUUIDs.isEmpty()) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.squad_focus.empty_squad").withStyle(ChatFormatting.RED), true);
+            return;
+        }
+
+        int tier = SquadFocus.getCachedTier(focus);
+        double discount = switch (tier) {
+            case 2 -> ModConfig.SQUAD_TIER2_DISCOUNT.get();
+            case 3 -> ModConfig.SQUAD_TIER3_DISCOUNT.get();
+            default -> 1.0;
+        };
+
+        int baseCost = ModConfig.MATURE_EMBRYO_SOUL_COST.get();
+        int unitCost = (int) (baseCost * discount);
+
+        int maxSpawn = savedUUIDs.size();
+        int canSpawn;
+        if (!player.isCreative() && unitCost > 0) {
+            int playerSouls = SEHelper.getSoulAmountInt(player);
+            canSpawn = Math.min(maxSpawn, playerSouls / unitCost);
+        } else {
+            canSpawn = maxSpawn;
+        }
+
+        if (canSpawn == 0) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.squad_focus.insufficient_souls", unitCost)
+                            .withStyle(ChatFormatting.RED), true);
+            return;
+        }
+
+        int actualSoulCost = canSpawn * unitCost;
+        if (!player.isCreative()) {
+            SEHelper.decreaseSouls(player, actualSoulCost);
+        }
+
+        int lifespan = ModConfig.SQUAD_LIFESPAN.get();
+        if (useStaffBonus) {
+            lifespan = (int) (lifespan * 1.5);
+        }
+
+        String summonerKey = SquadFocus.makeSummonerKey(boundPos, blockLevel.dimension().location().toString());
+
+        for (int i = 0; i < canSpawn; i++) {
+            UUID entityUUID = savedUUIDs.get(i);
+            CompoundTag entityData = SoulMonumentDataManager.loadEntityData(blockLevel, entityUUID);
+            if (entityData == null) continue;
+
+            CompoundTag fullData = entityData.getCompound("EntityData");
+            if (fullData.isEmpty()) continue;
+
+            EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityData.getString("id")));
+            if (type == null) continue;
+
+            Mob mob = (Mob) type.create(blockLevel);
+            if (mob == null) continue;
+
+            Vec3 spawnPos = getMonumentSpawnPos(worldIn, player, i, canSpawn);
+            mob.moveTo(spawnPos.x, spawnPos.y, spawnPos.z, player.getYRot(), 0.0F);
+
+            MobUtil.summonTame(mob, player);
+
+            mob.finalizeSpawn(blockLevel, blockLevel.getCurrentDifficultyAt(BlockPos.containing(spawnPos)),
+                    MobSpawnType.MOB_SUMMONED, null, null);
+
+            java.util.UUID newUUID = mob.getUUID();
+            mob.load(fullData);
+            mob.setUUID(newUUID);
+
+            Vec3 restoredPos = getMonumentSpawnPos(worldIn, player, i, canSpawn);
+            mob.setPos(restoredPos.x, restoredPos.y, restoredPos.z);
+
+            if (blockLevel.addFreshEntity(mob)) {
+                if (mob instanceof IOwned owned) {
+                    owned.setTrueOwner(player);
+                    owned.setHasLifespan(true);
+                    owned.setLifespan(lifespan);
+                }
+                mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
+            }
+        }
+
+        if (focus.hasTag()) {
+            focus.getTag().putInt("goetymech.cached_tier", monument.getTier());
+            focus.getTag().putInt("goetymech.cached_count", monument.getUsedSlots());
+        }
+
+        int cooldown = (int) (ModConfig.SQUAD_SUMMON_COOLDOWN.get());
+        if (!focus.isEmpty()) {
+            SEHelper.addCooldown(player, focus.getItem(), cooldown);
+        }
+        this.playSound(worldIn, player, SoundEvents.EVOKER_CAST_SPELL);
+    }
+
+    private Vec3 getMonumentSpawnPos(ServerLevel level, ServerPlayer player, int index, int total) {
+        double radius = Math.min(2.5 + total * 0.15, 6.0);
+        double angle = (double) index / total * Math.PI * 2;
+        double x = player.getX() + Math.cos(angle) * radius;
+        double z = player.getZ() + Math.sin(angle) * radius;
+        return new Vec3(x, z, player.getY());
     }
 
     private void spawnSquad(ServerPlayer player, ServerLevel playerLevel,

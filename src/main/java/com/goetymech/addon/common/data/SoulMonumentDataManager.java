@@ -28,7 +28,7 @@ public class SoulMonumentDataManager {
             Path dir = getDataDir(level);
             Files.createDirectories(dir);
             Path file = dir.resolve(entityUuid.toString() + ".dat");
-            NbtIo.writeCompressed(tag, file);
+            NbtIo.writeCompressed(tag, file.toFile());
         } catch (IOException e) {
             GoetyMechMod.LOGGER.error("Failed to save monument entity data for {}: {}", entityUuid, e.getMessage());
         }
@@ -38,7 +38,7 @@ public class SoulMonumentDataManager {
         try {
             Path file = getEntityFile(level, entityUuid);
             if (Files.exists(file)) {
-                return NbtIo.readCompressed(file);
+                return NbtIo.readCompressed(file.toFile());
             }
         } catch (IOException e) {
             GoetyMechMod.LOGGER.error("Failed to load monument entity data for {}: {}", entityUuid, e.getMessage());

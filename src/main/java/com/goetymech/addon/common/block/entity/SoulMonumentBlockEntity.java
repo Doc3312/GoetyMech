@@ -7,11 +7,13 @@ import com.goetymech.addon.common.block.Tier3SoulMonumentBlock;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
 import com.goetymech.addon.init.ModBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -31,12 +33,14 @@ public class SoulMonumentBlockEntity extends BlockEntity {
     private static final String TAG_RECORDING = "Recording";
     private static final String TAG_RECORDING_TIMER = "RecordingTimer";
     private static final String TAG_TAGGED_ENTITY = "TaggedEntityUUID";
+    private static final String TAG_OWNER_UUID = "OwnerUUID";
 
     public static final int RECORDING_DURATION = 6000;
     public static final int DETECTION_RANGE = 6;
 
     private final List<UUID> savedEntityUUIDs = new ArrayList<>();
     private int maxCapacity;
+    @Nullable private UUID ownerUUID;
 
     private boolean recording = false;
     private int recordingTimer = 0;
@@ -54,11 +58,24 @@ public class SoulMonumentBlockEntity extends BlockEntity {
 
     public int getCapacity() { return maxCapacity; }
 
+    public int getTier() {
+        Block block = getBlockState().getBlock();
+        if (block instanceof Tier3SoulMonumentBlock) return 3;
+        if (block instanceof Tier2SoulMonumentBlock) return 2;
+        return 1;
+    }
+
     public int getUsedSlots() { return savedEntityUUIDs.size(); }
 
     public int getRemainingSlots() { return maxCapacity - savedEntityUUIDs.size(); }
 
     public boolean isFull() { return savedEntityUUIDs.size() >= maxCapacity; }
+
+    public void setOwner(UUID uuid) { this.ownerUUID = uuid; }
+
+    public boolean isOwner(Player player) {
+        return ownerUUID != null && player.getUUID().equals(ownerUUID);
+    }
 
     public boolean isRecording() { return recording; }
 
@@ -72,6 +89,9 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         recording = true;
         recordingTimer = RECORDING_DURATION;
         taggedEntityUUID = targetUUID;
+        if (level != null) {
+            level.playSound(null, worldPosition, SoundEvents.WITHER_SPAWN, SoundSource.BLOCKS, 0.5F, 0.8F);
+        }
         markUpdated();
         return true;
     }
@@ -83,15 +103,34 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         markUpdated();
     }
 
-    public int getTier() {
-        Block block = getBlockState().getBlock();
-        if (block instanceof Tier3SoulMonumentBlock) return 3;
-        if (block instanceof Tier2SoulMonumentBlock) return 2;
-        return 1;
-    }
-
     public static void tick(Level level, BlockPos pos, BlockState state, SoulMonumentBlockEntity be) {
-        if (level.isClientSide) return;
+        if (level.isClientSide) {
+            if (be.recording) {
+                level.addParticle(ParticleTypes.SMOKE,
+                        pos.getX() + level.random.nextDouble(),
+                        pos.getY() + level.random.nextDouble() * 2,
+                        pos.getZ() + level.random.nextDouble(),
+                        0, 0.05, 0);
+                level.addParticle(ParticleTypes.SOUL,
+                        pos.getX() + level.random.nextDouble(),
+                        pos.getY() + level.random.nextDouble() * 2,
+                        pos.getZ() + level.random.nextDouble(),
+                        0, 0.05, 0);
+
+                if (level.getGameTime() % 10 == 0 && be.taggedEntityUUID != null) {
+                    for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,
+                            new AABB(pos).inflate(DETECTION_RANGE))) {
+                        if (e.getUUID().equals(be.taggedEntityUUID)) {
+                            level.addParticle(ParticleTypes.PORTAL,
+                                    e.getX(), e.getY() + e.getBbHeight() / 2, e.getZ(),
+                                    0.2, 0.2, 0.2);
+                            break;
+                        }
+                    }
+                }
+            }
+            return;
+        }
 
         if (be.recording) {
             be.recordingTimer--;
@@ -137,17 +176,22 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         return null;
     }
 
-    public void loadFromData(ServerLevel level) {
+    public void setSavedEntityUUIDs(List<UUID> uuids) {
         savedEntityUUIDs.clear();
-        for (UUID uuid : savedEntityUUIDs) {
-            CompoundTag data = SoulMonumentDataManager.loadEntityData(level, uuid);
-        }
+        savedEntityUUIDs.addAll(uuids);
+        markUpdated();
+    }
+
+    public void clearAllData() {
+        savedEntityUUIDs.clear();
+        markUpdated();
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putInt("MaxCapacity", maxCapacity);
+        if (ownerUUID != null) tag.putUUID(TAG_OWNER_UUID, ownerUUID);
         tag.putBoolean(TAG_RECORDING, recording);
         tag.putInt(TAG_RECORDING_TIMER, recordingTimer);
         if (taggedEntityUUID != null) {
@@ -166,6 +210,7 @@ public class SoulMonumentBlockEntity extends BlockEntity {
     public void load(CompoundTag tag) {
         super.load(tag);
         maxCapacity = tag.getInt("MaxCapacity");
+        ownerUUID = tag.hasUUID(TAG_OWNER_UUID) ? tag.getUUID(TAG_OWNER_UUID) : null;
         recording = tag.getBoolean(TAG_RECORDING);
         recordingTimer = tag.getInt(TAG_RECORDING_TIMER);
         taggedEntityUUID = tag.hasUUID(TAG_TAGGED_ENTITY) ? tag.getUUID(TAG_TAGGED_ENTITY) : null;

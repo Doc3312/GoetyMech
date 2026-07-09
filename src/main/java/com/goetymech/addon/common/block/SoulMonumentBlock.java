@@ -1,9 +1,11 @@
 package com.goetymech.addon.common.block;
 
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
-import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.item.SquadFocus;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -13,10 +15,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,7 +49,20 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
         if (!(be instanceof SoulMonumentBlockEntity monument)) return InteractionResult.PASS;
 
         if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty()) {
-            level.destroyBlock(pos, true);
+            if (!level.isClientSide && monument.getUsedSlots() > 0) {
+                ListTag uuidList = new ListTag();
+                for (java.util.UUID uuid : monument.getSavedEntityUUIDs()) {
+                    CompoundTag entry = new CompoundTag();
+                    entry.putUUID("UUID", uuid);
+                    uuidList.add(entry);
+                }
+                ItemStack dropStack = new ItemStack(this.asItem());
+                dropStack.getOrCreateTag().put("MonumentUUIDs", uuidList);
+                popResource(level, pos, dropStack);
+                level.removeBlock(pos, false);
+            } else {
+                level.destroyBlock(pos, true);
+            }
             return InteractionResult.SUCCESS;
         }
 
@@ -71,11 +84,40 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (placer instanceof Player player) {
-            BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof SoulMonumentBlockEntity monument) {
-                if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
-                    monument.loadFromData(serverLevel);
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof SoulMonumentBlockEntity monument) {
+            if (stack.hasTag() && stack.getTag().contains("MonumentUUIDs")) {
+                ListTag uuidList = stack.getTag().getList("MonumentUUIDs", Tag.TAG_COMPOUND);
+                java.util.List<java.util.UUID> uuids = new java.util.ArrayList<>();
+                for (int i = 0; i < uuidList.size(); i++) {
+                    CompoundTag entry = uuidList.getCompound(i);
+                    if (entry.hasUUID("UUID")) {
+                        uuids.add(entry.getUUID("UUID"));
+                    }
+                }
+                monument.setSavedEntityUUIDs(uuids);
+            }
+        }
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
+        if (!state.is(newState.getBlock())) {
+            if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
+                unbindFoci(serverLevel, pos);
+            }
+            super.onRemove(state, level, pos, newState, moving);
+        }
+    }
+
+    private static void unbindFoci(ServerLevel level, BlockPos pos) {
+        ResourceLocation dimId = level.dimension().location();
+        var server = level.getServer();
+        if (server == null) return;
+        for (var serverLevel : server.getAllLevels()) {
+            for (var player : serverLevel.players()) {
+                for (ItemStack stack : SquadFocus.findAllBoundFoci(player, pos, dimId)) {
+                    SquadFocus.clearBinding(stack);
                 }
             }
         }

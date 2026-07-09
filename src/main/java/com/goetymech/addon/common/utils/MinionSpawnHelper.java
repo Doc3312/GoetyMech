@@ -127,6 +127,34 @@ public class MinionSpawnHelper {
         return mob;
     }
 
+    @Nullable
+    public static Mob spawnTimedMinion(Mob mob, ServerLevel level, Player player, Vec3 spawnPos, int lifespanTicks) {
+        mob.moveTo(spawnPos.x, spawnPos.y, spawnPos.z, player.getYRot(), 0.0F);
+
+        MobUtil.summonTame(mob, player);
+
+        if (mob instanceof Neollager neollager) {
+            neollager.setMagic(false);
+        }
+
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(spawnPos)),
+                MobSpawnType.MOB_SUMMONED, null, null);
+
+        if (mob instanceof Neollager neollager2) {
+            neollager2.setMagic(false);
+        }
+
+        if (level.addFreshEntity(mob)) {
+            playSpawnEffects(level, spawnPos);
+            if (mob instanceof IOwned owned) {
+                owned.setHasLifespan(true);
+                owned.setLifespan(lifespanTicks);
+            }
+            return mob;
+        }
+        return null;
+    }
+
     /**
      * 播放生成音效和粒子
      */

@@ -1,5 +1,6 @@
 package com.goetymech.addon.common.item;
 
+import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.magic.spell.SquadSpell;
 import com.goetymech.addon.config.ModConfig;
@@ -32,14 +33,19 @@ import java.util.Objects;
 public class SquadFocus extends MagicFocus {
 
     private static final String TAG_BOUND = "goetymech.bound";
+    private static final String TAG_BOUND_TYPE = "goetymech.bound_type";
     private static final String TAG_BLOCK_X = "goetymech.bound_x";
     private static final String TAG_BLOCK_Y = "goetymech.bound_y";
     private static final String TAG_BLOCK_Z = "goetymech.bound_z";
     private static final String TAG_DIMENSION = "goetymech.bound_dim";
     private static final String TAG_CACHED_TIER = "goetymech.cached_tier";
     private static final String TAG_CACHED_COUNT = "goetymech.cached_count";
+    private static final String TAG_MONUMENT_CAPACITY = "goetymech.monument_capacity";
+    private static final String TAG_MONUMENT_USED = "goetymech.monument_used";
 
     public static final String TAG_SUMMONER = "goetymech.squad_summoner";
+    public static final String BOUND_TYPE_BARRACKS = "barracks";
+    public static final String BOUND_TYPE_MONUMENT = "monument";
 
     public SquadFocus() {
         super(new SquadSpell());
@@ -48,12 +54,32 @@ public class SquadFocus extends MagicFocus {
     public void bindToBarracks(ItemStack stack, Level level, BlockPos pos, SquadBarracksBlockEntity barracks) {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putBoolean(TAG_BOUND, true);
+        tag.putString(TAG_BOUND_TYPE, BOUND_TYPE_BARRACKS);
         tag.putInt(TAG_BLOCK_X, pos.getX());
         tag.putInt(TAG_BLOCK_Y, pos.getY());
         tag.putInt(TAG_BLOCK_Z, pos.getZ());
         tag.putString(TAG_DIMENSION, level.dimension().location().toString());
         tag.putInt(TAG_CACHED_TIER, barracks.getTier());
         tag.putInt(TAG_CACHED_COUNT, (int) barracks.getConfigSlots().stream().filter(java.util.Objects::nonNull).count());
+    }
+
+    public void bindToMonument(ItemStack stack, Level level, BlockPos pos, SoulMonumentBlockEntity monument) {
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putBoolean(TAG_BOUND, true);
+        tag.putString(TAG_BOUND_TYPE, BOUND_TYPE_MONUMENT);
+        tag.putInt(TAG_BLOCK_X, pos.getX());
+        tag.putInt(TAG_BLOCK_Y, pos.getY());
+        tag.putInt(TAG_BLOCK_Z, pos.getZ());
+        tag.putString(TAG_DIMENSION, level.dimension().location().toString());
+        tag.putInt(TAG_CACHED_TIER, monument.getTier());
+        tag.putInt(TAG_MONUMENT_CAPACITY, monument.getCapacity());
+        tag.putInt(TAG_MONUMENT_USED, monument.getUsedSlots());
+    }
+
+    public static String getBoundType(ItemStack stack) {
+        if (!isBound(stack) || !stack.hasTag()) return "";
+        CompoundTag tag = stack.getTag();
+        return tag.contains(TAG_BOUND_TYPE) ? tag.getString(TAG_BOUND_TYPE) : BOUND_TYPE_BARRACKS;
     }
 
     public static boolean isBound(ItemStack stack) {
@@ -96,12 +122,15 @@ public class SquadFocus extends MagicFocus {
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             tag.remove(TAG_BOUND);
+            tag.remove(TAG_BOUND_TYPE);
             tag.remove(TAG_BLOCK_X);
             tag.remove(TAG_BLOCK_Y);
             tag.remove(TAG_BLOCK_Z);
             tag.remove(TAG_DIMENSION);
             tag.remove(TAG_CACHED_TIER);
             tag.remove(TAG_CACHED_COUNT);
+            tag.remove(TAG_MONUMENT_CAPACITY);
+            tag.remove(TAG_MONUMENT_USED);
         }
     }
 
