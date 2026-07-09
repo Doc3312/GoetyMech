@@ -139,5 +139,8 @@
   "info.goetymech.soul_monument.full": "§cThis monument is full",
   "info.goetymech.soul_monument.recording_started": "§aRecording started, sacrifice a villager within 300s",
   "info.goetymech.soul_monument.recording_timeout": "§eRecording timed out",
-  "info.goetymech.squad_focus.bound_success_monument": "§aBound to Soul Monument"
+  "info.goetymech.squad_focus.bound_success_monument": "§aBound to Soul Monument",
+  "info.goetymech.squad_focus.block_missing_monument": "§cBound Soul Monument was destroyed",
+  "info.goetymech.squad_focus.not_owner_monument": "§cYou are not the owner of this Soul Monument",
+  "info.goetymech.squad_focus.squad_info_monument": "§7Minions: §f%d/%d 路 Tier %d"
 }

@@ -8,3 +8,7 @@
 - **新增**：多饰品独立处理（按装备顺序逐个填充）
 - **新增**：`ChangeSoulEnergyEvent.Gain` 拦截，防止灵魂同时进入原版系统
 - **配置变更**：移除 `soul_catcher` 配置块，新增 `ectoplasm_catcher`（souls_per_ectoplasm=100, sound_cooldown=40）
+- **工具提示修改**："灵质：0/100" → "聚魂：0/100"，英文 "Ectoplasm: 0/100" → "Soul: 0/100"
+- **功能冻结归档**：工具提示文案定型，核心逻辑不再改动
+  - 关联 openspec：`ectoplasm-catcher-redesign`
+  - 关联 incidents：无

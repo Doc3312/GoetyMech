@@ -232,14 +232,14 @@ public class SquadSpell extends Spell {
                                        ItemStack staff, BlockPos boundPos, ServerLevel blockLevel, boolean useStaffBonus) {
         if (!(blockLevel.getBlockEntity(boundPos) instanceof SoulMonumentBlockEntity monument)) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.squad_focus.block_missing").withStyle(ChatFormatting.RED), true);
+                    Component.translatable("info.goetymech.squad_focus.block_missing_monument").withStyle(ChatFormatting.RED), true);
             SquadFocus.clearBinding(focus);
             return;
         }
 
         if (!monument.isOwner(player)) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.squad_focus.not_owner").withStyle(ChatFormatting.RED), true);
+                    Component.translatable("info.goetymech.squad_focus.not_owner_monument").withStyle(ChatFormatting.RED), true);
             return;
         }
 

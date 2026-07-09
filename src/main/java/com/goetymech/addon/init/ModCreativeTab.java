@@ -43,6 +43,9 @@ public class ModCreativeTab {
                         output.accept(ModItems.FLESH_CASKET_1.get());
                         output.accept(ModItems.FLESH_CASKET_2.get());
                         output.accept(ModItems.FLESH_CASKET_3.get());
+                        output.accept(ModItems.TIER1_SOUL_MONUMENT.get());
+                        output.accept(ModItems.TIER2_SOUL_MONUMENT.get());
+                        output.accept(ModItems.TIER3_SOUL_MONUMENT.get());
                         output.accept(ModItems.GATEWAY_FOCUS.get());
                         output.accept(ModItems.GATEWAY_FOCUS_ADVANCED.get());
                         output.accept(ModItems.CHASE_FOCUS.get());

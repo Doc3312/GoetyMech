@@ -86,6 +86,9 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof SoulMonumentBlockEntity monument) {
+            if (placer instanceof Player player) {
+                monument.setOwner(player.getUUID());
+            }
             if (stack.hasTag() && stack.getTag().contains("MonumentUUIDs")) {
                 ListTag uuidList = stack.getTag().getList("MonumentUUIDs", Tag.TAG_COMPOUND);
                 java.util.List<java.util.UUID> uuids = new java.util.ArrayList<>();

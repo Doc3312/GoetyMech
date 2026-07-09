@@ -106,6 +106,9 @@ public class SquadFocus extends MagicFocus {
 
     public static int getCachedCount(ItemStack stack) {
         if (!isBound(stack) || !stack.hasTag()) return 0;
+        if (BOUND_TYPE_MONUMENT.equals(getBoundType(stack))) {
+            return stack.getTag().getInt(TAG_MONUMENT_USED);
+        }
         return stack.getTag().getInt(TAG_CACHED_COUNT);
     }
 
@@ -209,15 +212,27 @@ public class SquadFocus extends MagicFocus {
         if (isBound(stack)) {
             int tier = getCachedTier(stack);
             int count = getCachedCount(stack);
-            double discount = tier == 1 ? 1.0 : tier == 2 ? ModConfig.SQUAD_TIER2_DISCOUNT.get() : ModConfig.SQUAD_TIER3_DISCOUNT.get();
-            int estimatedCost = (int) (count * baseSoulCost * discount);
+            boolean isMonument = BOUND_TYPE_MONUMENT.equals(getBoundType(stack));
 
-            tooltip.add(Component.translatable("info.goetymech.squad_focus.bound")
-                    .withStyle(ChatFormatting.GREEN));
-            tooltip.add(Component.translatable("info.goetymech.squad_focus.squad_info", count, tier)
-                    .withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("info.goetymech.squad_focus.estimated_cost", estimatedCost)
-                    .withStyle(ChatFormatting.AQUA));
+            if (isMonument) {
+                int capacity = stack.getTag().getInt(TAG_MONUMENT_CAPACITY);
+                tooltip.add(Component.translatable("info.goetymech.squad_focus.bound_success_monument")
+                        .withStyle(ChatFormatting.GREEN));
+                tooltip.add(Component.translatable("info.goetymech.squad_focus.squad_info_monument", count, capacity, tier)
+                        .withStyle(ChatFormatting.GRAY));
+                tooltip.add(Component.translatable("info.goetymech.squad_focus.estimated_cost", 0)
+                        .withStyle(ChatFormatting.AQUA));
+            } else {
+                double discount = tier == 1 ? 1.0 : tier == 2 ? ModConfig.SQUAD_TIER2_DISCOUNT.get() : ModConfig.SQUAD_TIER3_DISCOUNT.get();
+                int estimatedCost = (int) (count * baseSoulCost * discount);
+
+                tooltip.add(Component.translatable("info.goetymech.squad_focus.bound")
+                        .withStyle(ChatFormatting.GREEN));
+                tooltip.add(Component.translatable("info.goetymech.squad_focus.squad_info", count, tier)
+                        .withStyle(ChatFormatting.GRAY));
+                tooltip.add(Component.translatable("info.goetymech.squad_focus.estimated_cost", estimatedCost)
+                        .withStyle(ChatFormatting.AQUA));
+            }
         } else {
             tooltip.add(Component.translatable("info.goetymech.squad_focus.not_bound")
                     .withStyle(ChatFormatting.RED));

@@ -6,11 +6,15 @@ import com.goetymech.addon.common.block.Tier2SoulMonumentBlock;
 import com.goetymech.addon.common.block.Tier3SoulMonumentBlock;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
 import com.goetymech.addon.init.ModBlocks;
+import com.Polarice3.Goety.utils.MiscCapHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -117,13 +121,17 @@ public class SoulMonumentBlockEntity extends BlockEntity {
                         pos.getZ() + level.random.nextDouble(),
                         0, 0.05, 0);
 
-                if (level.getGameTime() % 10 == 0 && be.taggedEntityUUID != null) {
+                if (level.getGameTime() % 5 == 0 && be.taggedEntityUUID != null) {
                     for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,
                             new AABB(pos).inflate(DETECTION_RANGE))) {
                         if (e.getUUID().equals(be.taggedEntityUUID)) {
-                            level.addParticle(ParticleTypes.PORTAL,
-                                    e.getX(), e.getY() + e.getBbHeight() / 2, e.getZ(),
-                                    0.2, 0.2, 0.2);
+                            for (int i = 0; i < 5; i++) {
+                                level.addParticle(ParticleTypes.ENCHANT,
+                                        e.getRandomX(1.0D), e.getRandomY() + 0.5D, e.getRandomZ(1.0D),
+                                        level.random.nextGaussian() * 0.02D,
+                                        level.random.nextGaussian() * 0.02D,
+                                        level.random.nextGaussian() * 0.02D);
+                            }
                             break;
                         }
                     }
@@ -134,6 +142,17 @@ public class SoulMonumentBlockEntity extends BlockEntity {
 
         if (be.recording) {
             be.recordingTimer--;
+            if (be.recordingTimer > 0 && be.taggedEntityUUID != null) {
+                for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,
+                        new AABB(pos).inflate(DETECTION_RANGE))) {
+                    if (e.getUUID().equals(be.taggedEntityUUID)) {
+                        if (level.getGameTime() % 20 == 0) {
+                            MiscCapHelper.setShakeTime(e, 20);
+                        }
+                        break;
+                    }
+                }
+            }
             if (be.recordingTimer <= 0) {
                 be.cancelRecording();
             }
@@ -224,6 +243,17 @@ public class SoulMonumentBlockEntity extends BlockEntity {
                 }
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
     }
 
     private void markUpdated() {
