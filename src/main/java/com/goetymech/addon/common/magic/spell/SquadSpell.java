@@ -38,8 +38,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class SquadSpell extends Spell {
@@ -259,15 +261,17 @@ public class SquadSpell extends Spell {
 
         int totalStored = savedUUIDs.size();
         String summonerKey = SquadFocus.makeSummonerKey(boundPos, blockLevel.dimension().location().toString());
+        Set<Integer> aliveSlots = new HashSet<>();
 
-        List<Mob> aliveHere = new ArrayList<>();
         for (ServerLevel dim : player.getServer().getAllLevels()) {
             for (Entity entity : dim.getAllEntities()) {
                 if (entity instanceof Mob mob && mob instanceof IOwned owned) {
                     if (mob.isAlive() && owned.getTrueOwner() == player
                             && summonerKey.equals(mob.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
                         if (dim == worldIn) {
-                            aliveHere.add(mob);
+                            if (mob.getPersistentData().contains("goetymech.monument_slot")) {
+                                aliveSlots.add(mob.getPersistentData().getInt("goetymech.monument_slot"));
+                            }
                         } else {
                             mob.discard();
                         }
@@ -276,12 +280,15 @@ public class SquadSpell extends Spell {
             }
         }
 
-        int aliveCount = aliveHere.size();
-
-        if (aliveCount >= totalStored) {
-            for (int i = 0; i < aliveHere.size(); i++) {
-                Vec3 tpPos = getMonumentSpawnPos(worldIn, player, i, aliveHere.size());
-                aliveHere.get(i).teleportTo(tpPos.x, tpPos.y, tpPos.z);
+        if (aliveSlots.size() >= totalStored) {
+            int tpIndex = 0;
+            for (Entity entity : worldIn.getAllEntities()) {
+                if (entity instanceof Mob mob && mob.isAlive()
+                        && summonerKey.equals(mob.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
+                    Vec3 tpPos = getMonumentSpawnPos(worldIn, player, tpIndex, aliveSlots.size());
+                    entity.teleportTo(tpPos.x, tpPos.y, tpPos.z);
+                    tpIndex++;
+                }
             }
             player.displayClientMessage(
                     Component.translatable("info.goetymech.squad_focus.all_alive").withStyle(ChatFormatting.YELLOW), true);
@@ -292,7 +299,14 @@ public class SquadSpell extends Spell {
             return;
         }
 
-        int needSpawn = totalStored - aliveCount;
+        List<Integer> deadSlots = new ArrayList<>();
+        for (int i = 0; i < totalStored; i++) {
+            if (!aliveSlots.contains(i)) {
+                deadSlots.add(i);
+            }
+        }
+
+        int needSpawn = deadSlots.size();
 
         int tier = SquadFocus.getCachedTier(focus);
         double discount = switch (tier) {
@@ -332,8 +346,9 @@ public class SquadSpell extends Spell {
         List<MobEffectInstance> beaconEffects = BeaconHelper.collectBeaconEffects(blockLevel, boundPos, 64);
 
         int spawned = 0;
-        for (int i = 0; i < canSpawn; i++) {
-            UUID entityUUID = savedUUIDs.get(i);
+        for (int idx = 0; idx < canSpawn; idx++) {
+            int slotIdx = deadSlots.get(idx);
+            UUID entityUUID = savedUUIDs.get(slotIdx);
             CompoundTag entityData = SoulMonumentDataManager.loadEntityData(blockLevel, entityUUID);
             if (entityData == null || entityData.isEmpty()) {
                 continue;
@@ -350,7 +365,7 @@ public class SquadSpell extends Spell {
                 continue;
             }
 
-            Vec3 spawnPos = getMonumentSpawnPos(worldIn, player, i, canSpawn);
+            Vec3 spawnPos = getMonumentSpawnPos(worldIn, player, idx, canSpawn);
             mob.moveTo(spawnPos.x, spawnPos.y, spawnPos.z, player.getYRot(), 0.0F);
 
             MobUtil.summonTame(mob, player);
@@ -372,6 +387,7 @@ public class SquadSpell extends Spell {
                 }
                 mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
                 mob.getPersistentData().putBoolean("goetymech.monument_summoned", true);
+                mob.getPersistentData().putInt("goetymech.monument_slot", slotIdx);
                 for (MobEffectInstance template : beaconEffects) {
                     mob.addEffect(new MobEffectInstance(template.getEffect(), template.getDuration(),
                             template.getAmplifier(), template.isAmbient(), template.isVisible()));
