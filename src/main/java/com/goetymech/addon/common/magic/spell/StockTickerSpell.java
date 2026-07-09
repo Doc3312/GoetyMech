@@ -114,7 +114,14 @@ public class StockTickerSpell extends Spell {
 
         SEHelper.addCooldown(player, focus.getItem(), defaultSpellCooldown());
 
-        StockTickerInteractionHandler.interactWithLogisticsManagerAt(player, targetLevel, boundPos);
+        final ServerLevel finalTargetLevel = targetLevel;
+        final BlockPos finalBoundPos = boundPos;
+        player.getServer().execute(() -> {
+            if (player.containerMenu == player.inventoryMenu) {
+                StockTickerInteractionHandler.interactWithLogisticsManagerAt(
+                        player, finalTargetLevel, finalBoundPos);
+            }
+        });
 
         this.playSound(worldIn, caster, this.CastingSound());
     }
