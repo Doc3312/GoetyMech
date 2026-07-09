@@ -1,6 +1,8 @@
 package com.goetymech.addon.common.magic.spell;
 
 import com.goetymech.addon.common.item.StockTickerFocus;
+import com.goetymech.addon.common.net.ModNetwork;
+import com.goetymech.addon.common.net.s2c.S2CRegisterStockCachePacket;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -124,6 +126,8 @@ public class StockTickerSpell extends Spell {
         boolean showLockOption = stbe.behaviour.mayAdministrate(player)
                 && Create.LOGISTICS.isLockable(stbe.behaviour.freqId);
         boolean isCurrentlyLocked = Create.LOGISTICS.isLocked(stbe.behaviour.freqId);
+
+        ModNetwork.sendTo(player, new S2CRegisterStockCachePacket(boundPos));
 
         final StockTickerBlockEntity finalStbe = stbe;
         final BlockPos finalBoundPos = boundPos;

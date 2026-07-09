@@ -16,6 +16,7 @@ import com.goetymech.addon.common.net.s2c.S2CSlamImpactPacket;
 import com.goetymech.addon.common.net.s2c.S2CSlamStatePacket;
 import com.goetymech.addon.common.net.s2c.S2CStressArkDataPacket;
 import com.goetymech.addon.common.net.s2c.S2CAssimilationDataPacket;
+import com.goetymech.addon.common.net.s2c.S2CRegisterStockCachePacket;
 import com.goetymech.addon.common.net.s2c.S2CSetFreecamPacket;
 import com.goetymech.addon.common.net.s2c.S2CStressShieldUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
@@ -110,6 +111,10 @@ public class ModNetwork {
                 S2CSetFreecamPacket::encode,
                 S2CSetFreecamPacket::decode,
                 S2CSetFreecamPacket::handle);
+        CHANNEL.registerMessage(idx++, S2CRegisterStockCachePacket.class,
+                S2CRegisterStockCachePacket::encode,
+                S2CRegisterStockCachePacket::decode,
+                S2CRegisterStockCachePacket::handle);
     }
 
     public static <MSG> void sendTo(ServerPlayer player, MSG msg) {

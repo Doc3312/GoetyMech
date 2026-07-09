@@ -2,18 +2,22 @@ package com.goetymech.addon.mixin;
 
 import com.goetymech.addon.client.ClientContext;
 import com.goetymech.addon.client.ClientLevelExpandedContext;
+import com.goetymech.addon.client.CrossDimStockCache;
 import com.goetymech.addon.common.LevelEC;
 import com.goetymech.addon.common.time.LevelExpandedContext;
 import com.goetymech.addon.common.time.TimeStopUtils;
+import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.entity.EntityTickList;
 import net.minecraft.world.level.entity.TransientEntitySectionManager;
@@ -25,6 +29,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -70,6 +75,13 @@ public abstract class ClientLevelMixin extends Level implements LevelEC {
                 ci.cancel();
             }
         }
+    }
+
+    @Inject(method = "getBlockEntity", at = @At("RETURN"), cancellable = true)
+    private void gp$onGetBlockEntity(BlockPos pos, CallbackInfoReturnable<BlockEntity> cir) {
+        if (cir.getReturnValue() != null) return;
+        StockTickerBlockEntity cached = CrossDimStockCache.get(pos);
+        if (cached != null) cir.setReturnValue(cached);
     }
 
     @Override
