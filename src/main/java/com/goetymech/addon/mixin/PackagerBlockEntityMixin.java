@@ -33,8 +33,11 @@ public class PackagerBlockEntityMixin {
         ServerPlayer target = serverLevel.getServer().getPlayerList().getPlayerByName(address);
         if (target == null) return;
 
-        ItemHandlerHelper.giveItemToPlayer(target, box.copy());
-
-        self.heldBox = ItemStack.EMPTY;
+        try {
+            ItemHandlerHelper.giveItemToPlayer(target, box.copy());
+            self.heldBox = ItemStack.EMPTY;
+        } catch (Exception e) {
+            self.heldBox = box;
+        }
     }
 }

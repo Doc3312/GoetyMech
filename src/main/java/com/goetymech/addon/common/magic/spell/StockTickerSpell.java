@@ -1,5 +1,6 @@
 package com.goetymech.addon.common.magic.spell;
 
+import com.goetymech.addon.client.CrossDimStockCache;
 import com.goetymech.addon.common.item.StockTickerFocus;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.s2c.S2CRegisterStockCachePacket;
@@ -138,6 +139,8 @@ public class StockTickerSpell extends Spell {
         boolean showLockOption = stbe.behaviour.mayAdministrate(player)
                 && Create.LOGISTICS.isLockable(stbe.behaviour.freqId);
         boolean isCurrentlyLocked = Create.LOGISTICS.isLocked(stbe.behaviour.freqId);
+
+        CrossDimStockCache.registerServer(boundPos, stbe);
 
         ModNetwork.sendTo(player, new S2CRegisterStockCachePacket(boundPos));
 
