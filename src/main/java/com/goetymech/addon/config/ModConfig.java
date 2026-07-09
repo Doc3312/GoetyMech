@@ -64,6 +64,9 @@ public class ModConfig {
     /** 召唤仆从寿命（tick） */
     public static final ForgeConfigSpec.IntValue SQUAD_LIFESPAN;
 
+    /** 丰碑召唤冷却时间（tick） */
+    public static final ForgeConfigSpec.IntValue MONUMENT_SUMMON_COOLDOWN;
+
     // ====== Rift Walk Focus 配置 ======
 
     /** 裂纬聚晶（低级裂隙）灵魂消耗 */
@@ -405,6 +408,10 @@ public class ModConfig {
         SQUAD_LIFESPAN = BUILDER
                 .comment("召唤仆从寿命（tick）", "范围: 20-72000，默认 6000（5分钟）")
                 .defineInRange("squad_lifespan", 6000, 20, 72000);
+
+        MONUMENT_SUMMON_COOLDOWN = BUILDER
+                .comment("魂灵丰碑兵团召唤冷却时间（tick）", "范围: 20-72000，默认 6000（5分钟）")
+                .defineInRange("monument_summon_cooldown", 6000, 20, 72000);
 
         // ====== Rift Walk Focus 配置 ======
         BUILDER.push("rift_walk");

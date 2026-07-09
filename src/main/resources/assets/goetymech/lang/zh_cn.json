@@ -143,6 +143,7 @@
   "info.goetymech.squad_focus.block_missing_monument": "§c绑定的魂灵丰碑已被破坏",
   "info.goetymech.squad_focus.not_owner_monument": "§c你不是此魂灵丰碑的拥有者",
   "info.goetymech.squad_focus.squad_info_monument": "§7已记录仆从：§f%d/%d · %d 阶",
+  "info.goetymech.squad_focus.all_alive": "§e所有仆从仍在服役，已传送至身边",
 
   "item.goetymech.stock_ticker_focus": "仓储聚晶",
   "info.goetymech.stock_ticker_focus.bound": "§a已绑定仓储发报机",

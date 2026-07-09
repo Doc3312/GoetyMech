@@ -4,6 +4,7 @@ import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
 import com.goetymech.addon.common.item.SquadFocus;
+import com.goetymech.addon.common.utils.BeaconHelper;
 import com.goetymech.addon.common.utils.MinionSpawnHelper;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.entities.IOwned;
@@ -24,6 +25,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -94,10 +96,15 @@ public class SquadSpell extends Spell {
             String dim = SquadFocus.getBoundDimension(focus);
             if (pos != null && dim != null) {
                 String key = SquadFocus.makeSummonerKey(pos, dim);
+                boolean isMonument = SquadFocus.BOUND_TYPE_MONUMENT.equals(SquadFocus.getBoundType(focus));
                 for (Entity entity : worldIn.getAllEntities()) {
                     if (entity instanceof IOwned owned && owned.getTrueOwner() == caster) {
                         if (key.equals(entity.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
-                            owned.dismiss();
+                            if (isMonument) {
+                                entity.discard();
+                            } else {
+                                owned.dismiss();
+                            }
                         }
                     }
                 }
@@ -250,6 +257,43 @@ public class SquadSpell extends Spell {
             return;
         }
 
+        int totalStored = savedUUIDs.size();
+        String summonerKey = SquadFocus.makeSummonerKey(boundPos, blockLevel.dimension().location().toString());
+
+        List<Mob> aliveHere = new ArrayList<>();
+        for (ServerLevel dim : player.getServer().getAllLevels()) {
+            for (Entity entity : dim.getAllEntities()) {
+                if (entity instanceof Mob mob && mob instanceof IOwned owned) {
+                    if (owned.getTrueOwner() == player
+                            && summonerKey.equals(mob.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
+                        if (dim == worldIn) {
+                            aliveHere.add(mob);
+                        } else {
+                            mob.discard();
+                        }
+                    }
+                }
+            }
+        }
+
+        int aliveCount = aliveHere.size();
+
+        if (aliveCount >= totalStored) {
+            for (int i = 0; i < aliveHere.size(); i++) {
+                Vec3 tpPos = getMonumentSpawnPos(worldIn, player, i, aliveHere.size());
+                aliveHere.get(i).teleportTo(tpPos.x, tpPos.y, tpPos.z);
+            }
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.squad_focus.all_alive").withStyle(ChatFormatting.YELLOW), true);
+            if (!focus.isEmpty()) {
+                SEHelper.addCooldown(player, focus.getItem(), 20);
+            }
+            this.playSound(worldIn, player, SoundEvents.EVOKER_CAST_SPELL);
+            return;
+        }
+
+        int needSpawn = totalStored - aliveCount;
+
         int tier = SquadFocus.getCachedTier(focus);
         double discount = switch (tier) {
             case 2 -> ModConfig.SQUAD_TIER2_DISCOUNT.get();
@@ -260,13 +304,12 @@ public class SquadSpell extends Spell {
         int baseCost = ModConfig.MATURE_EMBRYO_SOUL_COST.get();
         int unitCost = (int) (baseCost * discount);
 
-        int maxSpawn = savedUUIDs.size();
         int canSpawn;
         if (!player.isCreative() && unitCost > 0) {
             int playerSouls = SEHelper.getSoulAmountInt(player);
-            canSpawn = Math.min(maxSpawn, playerSouls / unitCost);
+            canSpawn = Math.min(needSpawn, playerSouls / unitCost);
         } else {
-            canSpawn = maxSpawn;
+            canSpawn = needSpawn;
         }
 
         if (canSpawn == 0) {
@@ -286,7 +329,7 @@ public class SquadSpell extends Spell {
             lifespan = (int) (lifespan * 1.5);
         }
 
-        String summonerKey = SquadFocus.makeSummonerKey(boundPos, blockLevel.dimension().location().toString());
+        List<MobEffectInstance> beaconEffects = BeaconHelper.collectBeaconEffects(blockLevel, boundPos, 64);
 
         int spawned = 0;
         for (int i = 0; i < canSpawn; i++) {
@@ -328,6 +371,10 @@ public class SquadSpell extends Spell {
                     owned.setLifespan(lifespan);
                 }
                 mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
+                for (MobEffectInstance template : beaconEffects) {
+                    mob.addEffect(new MobEffectInstance(template.getEffect(), template.getDuration(),
+                            template.getAmplifier(), template.isAmbient(), template.isVisible()));
+                }
                 spawned++;
             }
         }
@@ -336,7 +383,7 @@ public class SquadSpell extends Spell {
             focus.getTag().putInt("goetymech.cached_count", monument.getUsedSlots());
         }
 
-        int cooldown = (int) (ModConfig.SQUAD_SUMMON_COOLDOWN.get());
+        int cooldown = (int) (ModConfig.MONUMENT_SUMMON_COOLDOWN.get());
         if (!focus.isEmpty()) {
             SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }

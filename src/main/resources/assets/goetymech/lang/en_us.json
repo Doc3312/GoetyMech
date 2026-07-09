@@ -143,6 +143,7 @@
   "info.goetymech.squad_focus.block_missing_monument": "§cBound Soul Monument was destroyed",
   "info.goetymech.squad_focus.not_owner_monument": "§cYou are not the owner of this Soul Monument",
   "info.goetymech.squad_focus.squad_info_monument": "§7Minions: §f%d/%d  — Tier %d",
+  "info.goetymech.squad_focus.all_alive": "§eAll minions are still in service, teleported to your side",
 
   "item.goetymech.stock_ticker_focus": "Stock Ticker Focus",
   "info.goetymech.stock_ticker_focus.bound": "§aBound to Stock Ticker",
