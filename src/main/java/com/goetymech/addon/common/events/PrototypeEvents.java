@@ -242,12 +242,6 @@ public class PrototypeEvents {
             PrototypeItem.setSlamInvulnTick(player, invuln - 1);
         }
 
-        int freeze = PrototypeItem.getSlamFreezeTick(player);
-        if (freeze > 0) {
-            PrototypeItem.setSlamFreezeTick(player, freeze - 1);
-            player.setDeltaMovement(0, 0, 0);
-        }
-
         PrototypeItem.setKnockbackImmune(player, false);
     }
 
@@ -262,13 +256,6 @@ public class PrototypeEvents {
         boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
         if (event.phase == TickEvent.Phase.START) {
-            if (PrototypeItem.getSlamFreezeTick(player) > 0) {
-                player.xxa = 0;
-                player.yya = 0;
-                player.zza = 0;
-                player.setDeltaMovement(0, 0, 0);
-            }
-
             Vec3 startM = player.getDeltaMovement();
             double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
             GoetyMechMod.LOGGER.debug("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
@@ -739,7 +726,6 @@ public class PrototypeEvents {
         player.fallDistance = 0;
         PrototypeItem.clearSlamState(player);
         PrototypeItem.setSlamInvulnTick(player, 20);
-        PrototypeItem.setSlamFreezeTick(player, 20);
     }
 
     private static void applyAoeDamage(Player player, ServerLevel level, float damage, float radius) {
