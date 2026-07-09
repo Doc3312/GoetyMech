@@ -19,7 +19,7 @@ import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.item.curio.AutoCastDummyWand;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
-import com.goetymech.addon.common.item.curio.SoulCatcherCurio;
+import com.goetymech.addon.common.item.curio.EctoplasmCatcherCurio;
 import com.Polarice3.Goety.api.magic.SpellType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -78,6 +78,26 @@ public class ModItems {
     public static final RegistryObject<Item> TIER3_SQUAD_BARRACKS =
             ITEMS.register("tier3_squad_barracks", () ->
                     new BlockItem(ModBlocks.TIER3_SQUAD_BARRACKS.get(),
+                            new Item.Properties().rarity(Rarity.RARE))
+            );
+
+    // ── 魂灵丰碑三阶 BlockItems ──
+
+    public static final RegistryObject<Item> TIER1_SOUL_MONUMENT =
+            ITEMS.register("tier1_soul_monument", () ->
+                    new BlockItem(ModBlocks.TIER1_SOUL_MONUMENT.get(),
+                            new Item.Properties().rarity(Rarity.RARE))
+            );
+
+    public static final RegistryObject<Item> TIER2_SOUL_MONUMENT =
+            ITEMS.register("tier2_soul_monument", () ->
+                    new BlockItem(ModBlocks.TIER2_SOUL_MONUMENT.get(),
+                            new Item.Properties().rarity(Rarity.RARE))
+            );
+
+    public static final RegistryObject<Item> TIER3_SOUL_MONUMENT =
+            ITEMS.register("tier3_soul_monument", () ->
+                    new BlockItem(ModBlocks.TIER3_SOUL_MONUMENT.get(),
                             new Item.Properties().rarity(Rarity.RARE))
             );
 
@@ -144,8 +164,8 @@ public class ModItems {
                             new Item.Properties().rarity(Rarity.EPIC))
             );
 
-    public static final RegistryObject<Item> SOUL_CATCHER =
-            ITEMS.register("soul_catcher", SoulCatcherCurio::new);
+    public static final RegistryObject<Item> ECTOPLASM_CATCHER =
+            ITEMS.register("ectoplasm_catcher", EctoplasmCatcherCurio::new);
 
     // ── 原型 — 鞘翅类物品，无限耐久，推进 + Slam 技能 ──
 

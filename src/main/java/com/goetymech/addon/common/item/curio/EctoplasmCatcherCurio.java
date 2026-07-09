@@ -1,6 +1,5 @@
 package com.goetymech.addon.common.item.curio;
 
-import com.goetymech.addon.config.ModConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -13,24 +12,30 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SoulCatcherCurio extends Item implements ICurioItem {
+public class EctoplasmCatcherCurio extends Item implements ICurioItem {
 
-    private static final String TAG_KILLS = "soul_catcher_kills";
+    private static final String TAG_SOULS = "ectoplasm_souls";
 
-    public SoulCatcherCurio() {
+    public EctoplasmCatcherCurio() {
         super(new Properties().stacksTo(1));
     }
 
-    public static int getKills(ItemStack stack) {
-        return stack.getOrCreateTag().getInt(TAG_KILLS);
+    public static int getSouls(ItemStack stack) {
+        return stack.getOrCreateTag().getInt(TAG_SOULS);
     }
 
-    public static void addKill(ItemStack stack) {
-        stack.getOrCreateTag().putInt(TAG_KILLS, getKills(stack) + 1);
+    public static void setSouls(ItemStack stack, int souls) {
+        stack.getOrCreateTag().putInt(TAG_SOULS, Math.max(0, souls));
     }
 
-    public static void resetKills(ItemStack stack) {
-        stack.getOrCreateTag().putInt(TAG_KILLS, 0);
+    public static int addSouls(ItemStack stack, int amount) {
+        int current = getSouls(stack);
+        setSouls(stack, current + amount);
+        return current + amount;
+    }
+
+    public static void resetSouls(ItemStack stack) {
+        stack.getOrCreateTag().remove(TAG_SOULS);
     }
 
     @Override
@@ -40,9 +45,8 @@ public class SoulCatcherCurio extends Item implements ICurioItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        int kills = getKills(stack);
-        int threshold = ModConfig.SOUL_CATCHER_KILLS_THRESHOLD.get();
-        tooltip.add(Component.translatable("info.goetymech.soul_catcher.progress", kills, threshold)
+        int souls = getSouls(stack);
+        tooltip.add(Component.translatable("info.goetymech.ectoplasm_catcher.progress", souls)
                 .withStyle(ChatFormatting.DARK_PURPLE));
     }
 }

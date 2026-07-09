@@ -197,13 +197,13 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue SWIM_CHARGE_MIN_SPEED;
     public static final ForgeConfigSpec.DoubleValue SWIM_CHARGE_MAX_SPEED;
 
-    // ====== Soul Catcher 配置 ======
+    // ====== Ectoplasm Catcher 配置 ======
 
-    /** 灵魂捕手击杀阈值 */
-    public static final ForgeConfigSpec.IntValue SOUL_CATCHER_KILLS_THRESHOLD;
+    /** 每灵质所需灵魂数 */
+    public static final ForgeConfigSpec.IntValue ECTOPLASM_CATCHER_SOULS_PER_ECTOPLASM;
 
-    /** 灵魂捕手音效冷却 (tick) */
-    public static final ForgeConfigSpec.IntValue SOUL_CATCHER_SOUND_COOLDOWN;
+    /** 灵质捕手转化音效冷却 (tick) */
+    public static final ForgeConfigSpec.IntValue ECTOPLASM_CATCHER_SOUND_COOLDOWN;
 
     // ====== Void Blink Focus 配置 ======
 
@@ -289,15 +289,15 @@ public class ModConfig {
 
         BUILDER.pop();
 
-        // ====== Soul Catcher 配置 ======
-        BUILDER.push("soul_catcher");
+        // ====== Ectoplasm Catcher 配置 ======
+        BUILDER.push("ectoplasm_catcher");
 
-        SOUL_CATCHER_KILLS_THRESHOLD = BUILDER
-                .comment("灵魂捕手击杀阈值", "每击杀此数量生物即获得一个灵质", "范围: 1-1000，默认 5")
-                .defineInRange("kills_threshold", 5, 1, 1000);
+        ECTOPLASM_CATCHER_SOULS_PER_ECTOPLASM = BUILDER
+                .comment("每灵质所需灵魂数", "击杀获得的灵魂积累到此数量即转化为一个灵质", "范围: 1-10000，默认 100")
+                .defineInRange("souls_per_ectoplasm", 100, 1, 10000);
 
-        SOUL_CATCHER_SOUND_COOLDOWN = BUILDER
-                .comment("灵魂捕手音效冷却 (tick)", "阈值达标后，冷却期内再次达标不播放音效", "范围: 0-1200，默认 40 (2秒)")
+        ECTOPLASM_CATCHER_SOUND_COOLDOWN = BUILDER
+                .comment("灵质捕手转化音效冷却 (tick)", "转化产出时，冷却期内不重复播放音效", "范围: 0-1200，默认 40 (2秒)")
                 .defineInRange("sound_cooldown_ticks", 40, 0, 1200);
 
         BUILDER.pop();

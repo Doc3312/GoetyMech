@@ -4,14 +4,19 @@ import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.BreedingNestBlock;
 import com.goetymech.addon.common.block.FleshFurnaceBlock;
 import com.goetymech.addon.common.block.RemoteEngineBlock;
+import com.goetymech.addon.common.block.SoulMonumentBlock;
 import com.goetymech.addon.common.block.StressArkBlock;
 import com.goetymech.addon.common.block.StressReaderBlock;
+import com.goetymech.addon.common.block.Tier1SoulMonumentBlock;
 import com.goetymech.addon.common.block.Tier1SquadBarracksBlock;
+import com.goetymech.addon.common.block.Tier2SoulMonumentBlock;
 import com.goetymech.addon.common.block.Tier2SquadBarracksBlock;
+import com.goetymech.addon.common.block.Tier3SoulMonumentBlock;
 import com.goetymech.addon.common.block.Tier3SquadBarracksBlock;
 import com.goetymech.addon.common.block.entity.BreedingNestBlockEntity;
 import com.goetymech.addon.common.block.entity.FleshFurnaceBlockEntity;
 import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
+import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.block.CraterBlock;
 import com.goetymech.addon.common.block.entity.CraterBlockEntity;
@@ -69,6 +74,24 @@ public class ModBlocks {
                             TIER1_SQUAD_BARRACKS.get(),
                             TIER2_SQUAD_BARRACKS.get(),
                             TIER3_SQUAD_BARRACKS.get()).build(null));
+
+    // ── 魂灵丰碑三阶方块 ──
+
+    public static final RegistryObject<Block> TIER1_SOUL_MONUMENT =
+            BLOCKS.register("tier1_soul_monument", Tier1SoulMonumentBlock::new);
+
+    public static final RegistryObject<Block> TIER2_SOUL_MONUMENT =
+            BLOCKS.register("tier2_soul_monument", Tier2SoulMonumentBlock::new);
+
+    public static final RegistryObject<Block> TIER3_SOUL_MONUMENT =
+            BLOCKS.register("tier3_soul_monument", Tier3SoulMonumentBlock::new);
+
+    public static final RegistryObject<BlockEntityType<SoulMonumentBlockEntity>> SOUL_MONUMENT_ENTITY =
+            BLOCK_ENTITIES.register("soul_monument",
+                    () -> BlockEntityType.Builder.of(SoulMonumentBlockEntity::new,
+                            TIER1_SOUL_MONUMENT.get(),
+                            TIER2_SOUL_MONUMENT.get(),
+                            TIER3_SOUL_MONUMENT.get()).build(null));
 
     // ── 应力读取器 ──
 

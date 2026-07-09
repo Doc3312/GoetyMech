@@ -37,7 +37,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.UNSTABLE_RIFT_FOCUS.get());
                         output.accept(ModItems.STABLE_RIFT_FOCUS.get());
                         output.accept(ModItems.TIME_FOCUS_POUCH.get());
-                        output.accept(ModItems.SOUL_CATCHER.get());
+                        output.accept(ModItems.ECTOPLASM_CATCHER.get());
                         output.accept(ModItems.PROTOTYPE.get());
                         output.accept(ModItems.STRESS_ARK.get());
                         output.accept(ModItems.FLESH_CASKET_1.get());
