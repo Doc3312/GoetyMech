@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(DarkWand.class)
 public class DarkWandUseMixin {
 
-    @Inject(method = "use", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "use", at = @At(value = "INVOKE", target = "Lcom/Polarice3/Goety/api/items/magic/IWand;getFocus(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;", shift = At.Shift.AFTER), cancellable = true, remap = false)
     private void gp$squadFocusShiftDismiss(Level worldIn, Player playerIn, InteractionHand handIn,
                                            CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         if (!playerIn.isShiftKeyDown()) return;
@@ -31,25 +31,27 @@ public class DarkWandUseMixin {
         if (!(focus.getItem() instanceof SquadFocus)) return;
         if (!SquadFocus.isBound(focus)) return;
 
+        BlockPos pos = SquadFocus.getBoundPos(focus);
+        String dim = SquadFocus.getBoundDimension(focus);
+        if (pos == null || dim == null) return;
+
+        String key = SquadFocus.makeSummonerKey(pos, dim);
+
         if (!worldIn.isClientSide) {
-            BlockPos pos = SquadFocus.getBoundPos(focus);
-            String dim = SquadFocus.getBoundDimension(focus);
-            if (pos != null && dim != null) {
-                String key = SquadFocus.makeSummonerKey(pos, dim);
-                boolean isMonument = SquadFocus.BOUND_TYPE_MONUMENT.equals(SquadFocus.getBoundType(focus));
-                for (Entity entity : ((ServerLevel) worldIn).getAllEntities()) {
-                    if (entity instanceof IOwned owned && owned.getTrueOwner() == playerIn) {
-                        if (key.equals(entity.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
-                            if (isMonument) {
-                                entity.discard();
-                            } else {
-                                owned.dismiss();
-                            }
+            boolean isMonument = SquadFocus.BOUND_TYPE_MONUMENT.equals(SquadFocus.getBoundType(focus));
+            for (Entity entity : ((ServerLevel) worldIn).getAllEntities()) {
+                if (entity instanceof IOwned owned && owned.getTrueOwner() == playerIn) {
+                    if (key.equals(entity.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
+                        if (isMonument) {
+                            entity.discard();
+                        } else {
+                            owned.dismiss();
                         }
                     }
                 }
             }
         }
+
         playerIn.playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0F, 1.0F);
         cir.setReturnValue(InteractionResultHolder.sidedSuccess(stack, worldIn.isClientSide()));
     }
