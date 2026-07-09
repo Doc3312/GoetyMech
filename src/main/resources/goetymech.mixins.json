@@ -35,6 +35,7 @@
     "WandUtilMixin",
     "CastSpellTrapMixin",
     "PackagerBlockEntityMixin",
+    "BlockEntityConfigurationPacketMixin",
     "DarkWandUseMixin"
   ],
   "injectors": {
