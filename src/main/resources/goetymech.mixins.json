@@ -34,7 +34,8 @@
     "EntityOnGroundAccessor",
     "WandUtilMixin",
     "CastSpellTrapMixin",
-    "PackagerBlockEntityMixin"
+    "PackagerBlockEntityMixin",
+    "FocusCooldownMixin"
   ],
   "injectors": {
     "defaultRequire": 1
