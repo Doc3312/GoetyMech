@@ -43,7 +43,7 @@ public abstract class MixinWallRunTravel {
                 ? player.getAttribute(Attributes.MOVEMENT_SPEED).getValue() : 0.1;
         double mvBaseVal = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
                 ? player.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() : 0.1;
-        double sprintMult = Math.min(mvVal / mvBaseVal, 3.0);
+        double sprintMult = mvVal / mvBaseVal;
         speed = speed * sprintMult;
 
         Vec3 climbVec = wallUp.scale(wallFwd * speed);
@@ -83,6 +83,7 @@ public abstract class MixinWallRunTravel {
 
         player.setDeltaMovement(wallMove);
         player.move(MoverType.SELF, wallMove);
+        player.setDeltaMovement(Vec3.ZERO);
 
         ci.cancel();
     }
