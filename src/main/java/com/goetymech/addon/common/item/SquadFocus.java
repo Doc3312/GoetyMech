@@ -207,7 +207,7 @@ public class SquadFocus extends MagicFocus {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-                if (SEHelper.isOnCooldown(player, stack.getItem())) {
+                if (SEHelper.isOnCooldown(player, stack)) {
                     return InteractionResultHolder.pass(stack);
                 }
                 if (isBound(stack)) {
