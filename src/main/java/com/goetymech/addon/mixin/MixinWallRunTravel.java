@@ -43,7 +43,7 @@ public abstract class MixinWallRunTravel {
                 ? player.getAttribute(Attributes.MOVEMENT_SPEED).getValue() : 0.1;
         double mvBaseVal = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
                 ? player.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() : 0.1;
-        double sprintMult = Math.max(1.0, mvVal / mvBaseVal);
+        double sprintMult = Math.min(mvVal / mvBaseVal, 3.0);
         speed = speed * sprintMult;
 
         Vec3 climbVec = wallUp.scale(wallFwd * speed);
