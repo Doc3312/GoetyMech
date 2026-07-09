@@ -28,7 +28,6 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_WALL_STRAFE = "goetymech.wall_strafe";
     private static final String TAG_JUMP_CHARGE_TICK = "goetymech.jump_charge_tick";
     private static final String TAG_SLAM_INVULN_TICK = "goetymech.slam_invuln_tick";
-    private static final String TAG_SLAM_FREEZE_TICK = "goetymech.slam_freeze_tick";
     private static final String TAG_SPRINT_TICK = "goetymech.sprint_tick";
     private static final String TAG_FLIGHT_FORWARD = "goetymech.flight_forward";
     private static final String TAG_SWIM_TICK = "goetymech.swim_tick";
@@ -226,16 +225,6 @@ public class PrototypeItem extends ElytraItem {
 
     public static void setSlamInvulnTick(LivingEntity entity, int tick) {
         entity.getPersistentData().putInt(TAG_SLAM_INVULN_TICK, tick);
-    }
-
-    // ── Slam freeze ──
-
-    public static int getSlamFreezeTick(LivingEntity entity) {
-        return entity.getPersistentData().getInt(TAG_SLAM_FREEZE_TICK);
-    }
-
-    public static void setSlamFreezeTick(LivingEntity entity, int tick) {
-        entity.getPersistentData().putInt(TAG_SLAM_FREEZE_TICK, tick);
     }
 
     // ── Sprint acceleration ──
