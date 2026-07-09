@@ -236,6 +236,14 @@ public class ModConfig {
     /** 神行聚晶冷却时间（tick） */
     public static final ForgeConfigSpec.IntValue GATEWAY_ADV_COOLDOWN;
 
+    // ====== Stock Ticker Focus 配置 ======
+
+    /** 仓储发报机聚晶灵魂消耗 */
+    public static final ForgeConfigSpec.IntValue STOCK_TICKER_FOCUS_COST;
+
+    /** 仓储发报机聚晶冷却时间（tick） */
+    public static final ForgeConfigSpec.IntValue STOCK_TICKER_FOCUS_COOLDOWN;
+
     // ====== Freecam 配置 ======
 
     /** Freecam 持续时间（tick） */
