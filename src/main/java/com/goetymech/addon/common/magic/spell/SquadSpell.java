@@ -1,5 +1,6 @@
 package com.goetymech.addon.common.magic.spell;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
@@ -90,6 +91,10 @@ public class SquadSpell extends Spell {
         if (!(caster instanceof ServerPlayer player)) return;
         ItemStack focus = WandUtil.findFocus(caster);
         if (!(focus.getItem() instanceof SquadFocus)) return;
+
+        boolean onCooldown = SEHelper.getFocusCoolDown(player).isOnCooldown(focus.getItem());
+        GoetyMechMod.LOGGER.debug("SquadSpell.SpellResult entered: isShifting={} onCooldown={} boundType={}",
+                isShifting(caster), onCooldown, SquadFocus.getBoundType(focus));
 
         boolean useStaffBonus = rightStaff(staff);
 
@@ -292,6 +297,7 @@ public class SquadSpell extends Spell {
             }
             player.displayClientMessage(
                     Component.translatable("info.goetymech.squad_focus.all_alive").withStyle(ChatFormatting.YELLOW), true);
+            GoetyMechMod.LOGGER.debug("handleMonumentSummon: all alive teleport, adding 20t cooldown");
             if (!focus.isEmpty()) {
                 SEHelper.addCooldown(player, focus.getItem(), 20);
             }
@@ -400,9 +406,10 @@ public class SquadSpell extends Spell {
             focus.getTag().putInt("goetymech.cached_count", monument.getUsedSlots());
         }
 
-        int cooldown = (int) (ModConfig.MONUMENT_SUMMON_COOLDOWN.get());
+        int cd = (int) (ModConfig.MONUMENT_SUMMON_COOLDOWN.get());
+        GoetyMechMod.LOGGER.debug("handleMonumentSummon: spawned={} applying {}t cooldown", spawned, cd);
         if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), cooldown);
+            SEHelper.addCooldown(player, focus.getItem(), cd);
         }
         this.playSound(worldIn, player, SoundEvents.EVOKER_CAST_SPELL);
     }

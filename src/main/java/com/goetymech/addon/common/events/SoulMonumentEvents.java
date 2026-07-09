@@ -6,12 +6,14 @@ import com.Polarice3.Goety.common.items.magic.TaglockKit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -41,6 +43,16 @@ public class SoulMonumentEvents {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onMonumentServantHurt(LivingHurtEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (!entity.getPersistentData().getBoolean("goetymech.monument_summoned")) return;
+        if (entity.level().isClientSide) return;
+        if (entity.getHealth() - event.getAmount() > 0) return;
+        event.setCanceled(true);
+        entity.discard();
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package com.goetymech.addon.common.item;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.magic.spell.SquadSpell;
@@ -207,7 +208,12 @@ public class SquadFocus extends MagicFocus {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-                if (SEHelper.getFocusCoolDown(player).isOnCooldown(stack.getItem())) {
+                boolean onCooldown = SEHelper.getFocusCoolDown(player).isOnCooldown(stack.getItem());
+                boolean onSpecific = SEHelper.getFocusCoolDown(player).isOnSpecificCooldown(stack);
+                GoetyMechMod.LOGGER.debug("SquadFocus.use shift: onCooldown={} onSpecific={} isBound={}",
+                        onCooldown, onSpecific, isBound(stack));
+                if (onCooldown) {
+                    GoetyMechMod.LOGGER.debug("SquadFocus.use: preventing sneak-right-click due to cooldown");
                     return InteractionResultHolder.pass(stack);
                 }
                 if (isBound(stack)) {
