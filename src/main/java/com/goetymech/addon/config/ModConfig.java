@@ -183,6 +183,7 @@ public class ModConfig {
     // ====== Prototype — Wall-running 配置 ======
 
     public static final ForgeConfigSpec.DoubleValue WALL_RUN_SPEED;
+    public static final ForgeConfigSpec.DoubleValue WALL_RUN_MAX_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue WALL_GRAVITY;
     public static final ForgeConfigSpec.DoubleValue WALL_JUMP_OFF_VELOCITY;
     public static final ForgeConfigSpec.DoubleValue WALL_PULL_SPEED;
@@ -580,6 +581,10 @@ public class ModConfig {
         WALL_RUN_SPEED = BUILDER
                 .comment("墙面移动速度（blocks/tick）", "范围: 0.01-3.0，默认 0.6")
                 .defineInRange("wall_run_speed", 0.6, 0.01, 3.0);
+
+        WALL_RUN_MAX_MULTIPLIER = BUILDER
+                .comment("墙面移动最高倍率（持续加速达到）", "范围: 1.0-10.0，默认 3.0（=1.8 blocks/tick）")
+                .defineInRange("wall_run_max_multiplier", 3.0, 1.0, 10.0);
 
         WALL_GRAVITY = BUILDER
                 .comment("墙面下滑重力（blocks/tick）", "范围: 0.0-1.0，默认 0.03")
