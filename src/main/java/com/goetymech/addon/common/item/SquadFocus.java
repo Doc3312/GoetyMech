@@ -183,6 +183,19 @@ public class SquadFocus extends MagicFocus {
         }
     }
 
+    public static void refreshMonumentFoci(ServerLevel level, BlockPos pos, SoulMonumentBlockEntity monument) {
+        ResourceLocation dimId = level.dimension().location();
+        for (ServerPlayer player : level.players()) {
+            for (ItemStack stack : findAllBoundFoci(player, pos, dimId)) {
+                if (BOUND_TYPE_MONUMENT.equals(getBoundType(stack))) {
+                    stack.getTag().putInt(TAG_CACHED_TIER, monument.getTier());
+                    stack.getTag().putInt(TAG_MONUMENT_USED, monument.getUsedSlots());
+                    stack.getTag().putInt(TAG_MONUMENT_CAPACITY, monument.getCapacity());
+                }
+            }
+        }
+    }
+
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         return true;

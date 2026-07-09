@@ -5,6 +5,7 @@ import com.goetymech.addon.common.block.Tier1SoulMonumentBlock;
 import com.goetymech.addon.common.block.Tier2SoulMonumentBlock;
 import com.goetymech.addon.common.block.Tier3SoulMonumentBlock;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
+import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.init.ModBlocks;
 import com.Polarice3.Goety.utils.MiscCapHelper;
 import net.minecraft.core.BlockPos;
@@ -40,7 +41,7 @@ public class SoulMonumentBlockEntity extends BlockEntity {
     private static final String TAG_OWNER_UUID = "OwnerUUID";
 
     public static final int RECORDING_DURATION = 6000;
-    public static final int DETECTION_RANGE = 6;
+    public static final int DETECTION_RANGE = 10;
 
     private final List<UUID> savedEntityUUIDs = new ArrayList<>();
     private int maxCapacity;
@@ -180,6 +181,7 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         target.getPersistentData().putBoolean("goetymech.recorded", true);
         target.discard();
 
+        SquadFocus.refreshMonumentFoci(level, worldPosition, this);
         cancelRecording();
     }
 

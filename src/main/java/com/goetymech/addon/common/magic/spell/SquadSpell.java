@@ -293,8 +293,7 @@ public class SquadSpell extends Spell {
             CompoundTag entityData = SoulMonumentDataManager.loadEntityData(blockLevel, entityUUID);
             if (entityData == null) continue;
 
-            CompoundTag fullData = entityData.getCompound("EntityData");
-            if (fullData.isEmpty()) continue;
+            if (entityData.isEmpty()) continue;
 
             EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityData.getString("id")));
             if (type == null) continue;
@@ -311,7 +310,7 @@ public class SquadSpell extends Spell {
                     MobSpawnType.MOB_SUMMONED, null, null);
 
             java.util.UUID newUUID = mob.getUUID();
-            mob.load(fullData);
+            mob.load(entityData);
             mob.setUUID(newUUID);
 
             Vec3 restoredPos = getMonumentSpawnPos(worldIn, player, i, canSpawn);
