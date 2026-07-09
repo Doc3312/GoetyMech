@@ -74,7 +74,7 @@
   "block.goetymech.stress_ark": "应力方舟",
   "item.goetymech.stress_ark": "应力方舟",
   "item.goetymech.ectoplasm_catcher": "灵质捕手",
-  "info.goetymech.ectoplasm_catcher.progress": "§5灵质：%d/100",
+  "info.goetymech.ectoplasm_catcher.progress": "§5聚魂：%d/100",
   "info.goetymech.prototype_mimic.source": "§7来源：%s",
   "info.goetymech.prototype_mimic.inherited": "§7继承：%d 属性，%d 附魔",
   "item.goetymech.prototype": "原型",

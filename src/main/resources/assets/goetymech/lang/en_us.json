@@ -74,7 +74,7 @@
   "block.goetymech.stress_ark": "Stress Ark",
   "item.goetymech.stress_ark": "Stress Ark",
   "item.goetymech.ectoplasm_catcher": "Ectoplasm Catcher",
-  "info.goetymech.ectoplasm_catcher.progress": "§5Ectoplasm: %d/100",
+  "info.goetymech.ectoplasm_catcher.progress": "§5Soul: %d/100",
   "info.goetymech.prototype_mimic.source": "§7Source: %s",
   "info.goetymech.prototype_mimic.inherited": "§7Inherited: %d attributes, %d enchantments",
   "item.goetymech.prototype": "Prototype",
