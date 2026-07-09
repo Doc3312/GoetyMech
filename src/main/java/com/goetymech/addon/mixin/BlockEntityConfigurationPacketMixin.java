@@ -30,7 +30,7 @@ public class BlockEntityConfigurationPacketMixin {
             ServerPlayer player = context.getSender();
             if (player == null || player.isSpectator()) return;
             Level world = player.level();
-            if (world == null || !world.isLoaded(pos)) return;
+            if (world == null) return;
             BlockEntity be = world.getBlockEntity(pos);
             if (be instanceof StockTickerBlockEntity stbe) {
                 try {
