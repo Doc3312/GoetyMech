@@ -1,6 +1,5 @@
 package com.goetymech.addon.common.magic.spell;
 
-import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
@@ -18,7 +17,6 @@ import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -233,7 +231,6 @@ public class SquadSpell extends Spell {
     private void handleMonumentSummon(ServerPlayer player, ServerLevel worldIn, ItemStack focus,
                                        ItemStack staff, BlockPos boundPos, ServerLevel blockLevel, boolean useStaffBonus) {
         if (!(blockLevel.getBlockEntity(boundPos) instanceof SoulMonumentBlockEntity monument)) {
-            GoetyMechMod.LOGGER.warn("handleMonumentSummon: BE not found at {}", boundPos);
             player.displayClientMessage(
                     Component.translatable("info.goetymech.squad_focus.block_missing_monument").withStyle(ChatFormatting.RED), true);
             SquadFocus.clearBinding(focus);
@@ -241,14 +238,12 @@ public class SquadSpell extends Spell {
         }
 
         if (!monument.isOwner(player)) {
-            GoetyMechMod.LOGGER.warn("handleMonumentSummon: player {} not owner of monument at {}", player.getName().getString(), boundPos);
             player.displayClientMessage(
                     Component.translatable("info.goetymech.squad_focus.not_owner_monument").withStyle(ChatFormatting.RED), true);
             return;
         }
 
         List<UUID> savedUUIDs = monument.getSavedEntityUUIDs();
-        GoetyMechMod.LOGGER.info("handleMonumentSummon: {} saved UUIDs", savedUUIDs.size());
         if (savedUUIDs.isEmpty()) {
             player.displayClientMessage(
                     Component.translatable("info.goetymech.squad_focus.empty_squad").withStyle(ChatFormatting.RED), true);
@@ -270,10 +265,8 @@ public class SquadSpell extends Spell {
         if (!player.isCreative() && unitCost > 0) {
             int playerSouls = SEHelper.getSoulAmountInt(player);
             canSpawn = Math.min(maxSpawn, playerSouls / unitCost);
-            GoetyMechMod.LOGGER.info("handleMonumentSummon: canSpawn={} (playerSouls={}, unitCost={})", canSpawn, playerSouls, unitCost);
         } else {
             canSpawn = maxSpawn;
-            GoetyMechMod.LOGGER.info("handleMonumentSummon: canSpawn={} (creative or free)", canSpawn);
         }
 
         if (canSpawn == 0) {
@@ -299,25 +292,18 @@ public class SquadSpell extends Spell {
         for (int i = 0; i < canSpawn; i++) {
             UUID entityUUID = savedUUIDs.get(i);
             CompoundTag entityData = SoulMonumentDataManager.loadEntityData(blockLevel, entityUUID);
-            if (entityData == null) {
-                GoetyMechMod.LOGGER.warn("handleMonumentSummon: no .dat file for UUID {}", entityUUID);
-                continue;
-            }
-            if (entityData.isEmpty()) {
-                GoetyMechMod.LOGGER.warn("handleMonumentSummon: empty data for UUID {}", entityUUID);
+            if (entityData == null || entityData.isEmpty()) {
                 continue;
             }
 
             String id = entityData.getString("id");
             EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(id));
             if (type == null) {
-                GoetyMechMod.LOGGER.warn("handleMonumentSummon: unknown entity type '{}'", id);
                 continue;
             }
 
             Entity created = type.create(blockLevel);
             if (!(created instanceof Mob mob)) {
-                GoetyMechMod.LOGGER.warn("handleMonumentSummon: '{}' is not a Mob", id);
                 continue;
             }
 
@@ -336,23 +322,15 @@ public class SquadSpell extends Spell {
             mob.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
 
             if (blockLevel.addFreshEntity(mob)) {
-                GoetyMechMod.LOGGER.info("handleMonumentSummon: added {} at {} {} dim={} playerDim={}",
-                        id, spawnPos, blockLevel.dimension().location(), worldIn.dimension().location());
                 if (mob instanceof IOwned owned) {
                     owned.setTrueOwner(player);
                     owned.setHasLifespan(true);
                     owned.setLifespan(lifespan);
                 }
                 mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
-                blockLevel.sendParticles(ParticleTypes.FLASH, spawnPos.x, spawnPos.y + 1, spawnPos.z, 1, 0, 0, 0, 0);
                 spawned++;
-            } else {
-                GoetyMechMod.LOGGER.warn("handleMonumentSummon: addFreshEntity returned false for {}", id);
             }
         }
-        GoetyMechMod.LOGGER.info("handleMonumentSummon: spawned {}/{} entities in dim={} player in dim={}",
-                spawned, canSpawn, blockLevel.dimension().location(), worldIn.dimension().location());
-
         if (focus.hasTag()) {
             focus.getTag().putInt("goetymech.cached_tier", monument.getTier());
             focus.getTag().putInt("goetymech.cached_count", monument.getUsedSlots());

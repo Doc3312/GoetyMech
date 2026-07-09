@@ -1,87 +1,38 @@
-# 魂灵丰碑 — GoetyMech
+# 魂灵丰碑 (Soul Monument)
 
-## 身份
+三阶方块，存储实体完整 NBT 快照，通过 TaglockKit 标记 + 村民献祭来录入仆从，通过独立 .dat 文件持久化，可与兵团聚晶绑定召唤限时仆从。
 
-- 类型：block
-- 注册名：`soul_monument_1/2/3`
-- Java 类：SoulMonumentBlock (extends BaseEntityBlock)
-- 方块实体：SoulMonumentBlockEntity
-- 首次创建：2026-07-09
+## 等级
 
-## 设计意图
-
-可存储实体完整 NBT 快照（装备、生命值、buff 等）的三阶方块。录入后的实体可通过兵团聚晶反复召唤为限时仆从。
-数据使用独立 `.dat` 文件存储于存档目录，防止因游戏崩溃导致存储数据丢失。
-
-## 方案来源
-
-- 2026-07-09 grill-me 讨论记录
-
-## 规格
-
-### 容量
-
-| 阶数 | 注册名 | 容量 |
+| 等级 | 方块类 | 容量 |
 |------|--------|------|
-| I | `soul_monument_1` | 4 个实体 |
-| II | `soul_monument_2` | 8 个实体 |
-| III | `soul_monument_3` | 12 个实体 |
-
-### 数据存储
-
-- 格式：独立 `.dat` 文件（NbtIo.writeCompressed 压缩 NBT）
-- 路径：`world/data/goetymech/monument/<uuid>.dat`
-- 存储内容：实体的完整 NBT（装备、血量、buff、名称等）
-- 方块物品仅存 UUID 引用，实际数据在磁盘文件
-- 参考实现：TouhouLittleMaid 的 MaidBackupsManager
-
-### 方块属性
-
-- 硬度：与基岩相当（-1.0, 不可挖掘）
-- 爆炸抗性：极高
-- 破坏方式：shift+右键直接掉落为带 NBT 的 ItemStack
-- 掉落物：破坏后 NBT 保留在物品中，下次放置恢复
-- 销毁保护：不会被岩浆、虚空、仙人掌等常规方式销毁
-- 手动清空：连续 3 次法杖 shift+左键点击（间隔 ≥0.5s）清空数据
-
-### 升级路线
-
-参考血肉晶匣的仪式升级方式，通过 Goety 仪式合成：
-- I → II → III 线性升级
-- 升级后保留已存储的实体 NBT 数据
-- 每级升级需献祭村民
-
-### 绑定机制
-
-- 兵团聚晶右键方块绑定（与点将台一致）
-- 绑定数据存于聚晶 NBT（维度、坐标）
-- 破坏时自动解绑所有关联聚晶
-
-### 召唤
-
-- 兵团聚晶施法触发，与点将台召唤流程一致
-- 消耗灵魂
-- 召唤出的仆从为限时存在（默认 6000 ticks = 5min）
-- 死亡使用 `DISMISSED` 伤害源，无任何掉落
+| I | Tier1SoulMonumentBlock | 4 |
+| II | Tier2SoulMonumentBlock | 8 |
+| III | Tier3SoulMonumentBlock | 12 |
 
 ## 录入流程
 
-1. **标记**：TaglockKit 左键仆从 → 记录 UUID
-2. **启动**：手持已标记 TaglockKit 右键丰碑 → 进入录入状态（300s 超时）
-3. **特效**：黑烟 + 灵魂粒子 + WITHER 音效，目标仆从进入范围出现选中特效
-4. **献祭**：村民在丰碑范围内死亡 → 触发处决
-5. **处决**：目标仆从被 `DISMISSED` 伤害源处决（禁止任何复活机制）
-6. **保存**：采集仆从完整 NBT → 写入 `.dat` 文件
-7. **完成**：录入状态结束
+1. TaglockKit 标记已有驯服仆从
+2. 右键丰碑开始（300s 超时，黑烟/灵魂粒子/WITHER 音效）
+3. 村民在范围（10 blocks）被杀触发 DISMISSED 处决
+4. 采集 NBT 写入 `world/data/goetymech/monument/<UUID>.dat`
+5. 仆从不可复活（`goetymech.recorded` + DISMISSED）
 
-### 录入约束
+## 召唤
 
-- 只能录入以玩家为主的生物（Goety 仆从、原版狗等已驯服生物）
-- 一次只能录入一个生物，录入期间不接受新操作
-- 超时（300s）或 shift+右键破坏方块可打断录入
+兵团聚晶绑定丰碑后可召唤限时仆从（复制实体，不消耗数据）。
 
-## 关联系统
+## 关键文件
 
-- 兵团聚晶（SquadFocus）：绑定后召唤存储的实体
-- TaglockKit（巫毒娃娃）：标记目标仆从
-- Goety 仪式系统：升级合成路线
+- `SoulMonumentBlock.java` — 方块基类
+- `SoulMonumentBlockEntity.java` — BE 状态机 + 处决逻辑
+- `SoulMonumentDataManager.java` — .dat 文件读写
+- `SoulMonumentEvents.java` — TaglockKit 交互 + 村民死亡检测
+- `SquadFocus.java` — bound_type 字段 `monument`
+- `SquadSpell.java#handleMonumentSummon()` — 召唤分派
+
+## 注册
+
+- `ModBlocks`: TIER1/2/3_SOUL_MONUMENT + SOUL_MONUMENT_ENTITY
+- `ModItems`: TIER1/2/3_SOUL_MONUMENT (SoulMonumentBlockItem, fireResistant)
+- `ModCreativeTab`: 三个丰碑
