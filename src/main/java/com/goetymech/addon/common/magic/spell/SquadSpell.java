@@ -18,6 +18,7 @@ import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -335,18 +336,22 @@ public class SquadSpell extends Spell {
             mob.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
 
             if (blockLevel.addFreshEntity(mob)) {
+                GoetyMechMod.LOGGER.info("handleMonumentSummon: added {} at {} {} dim={} playerDim={}",
+                        id, spawnPos, blockLevel.dimension().location(), worldIn.dimension().location());
                 if (mob instanceof IOwned owned) {
                     owned.setTrueOwner(player);
                     owned.setHasLifespan(true);
                     owned.setLifespan(lifespan);
                 }
                 mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
+                blockLevel.sendParticles(ParticleTypes.FLASH, spawnPos.x, spawnPos.y + 1, spawnPos.z, 1, 0, 0, 0, 0);
                 spawned++;
             } else {
                 GoetyMechMod.LOGGER.warn("handleMonumentSummon: addFreshEntity returned false for {}", id);
             }
         }
-        GoetyMechMod.LOGGER.info("handleMonumentSummon: spawned {}/{} entities", spawned, canSpawn);
+        GoetyMechMod.LOGGER.info("handleMonumentSummon: spawned {}/{} entities in dim={} player in dim={}",
+                spawned, canSpawn, blockLevel.dimension().location(), worldIn.dimension().location());
 
         if (focus.hasTag()) {
             focus.getTag().putInt("goetymech.cached_tier", monument.getTier());
