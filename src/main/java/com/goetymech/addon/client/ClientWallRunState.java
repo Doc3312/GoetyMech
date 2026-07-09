@@ -13,8 +13,6 @@ public class ClientWallRunState {
 
     public static int sprintRetainTicks = 0;
 
-    public static int wallRunTicks = 0;
-
     public static boolean isActive() {
         return wallNormal.lengthSqr() >= 0.5 || graceTicks > 0;
     }

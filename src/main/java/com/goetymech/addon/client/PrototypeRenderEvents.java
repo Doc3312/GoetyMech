@@ -102,13 +102,11 @@ public class PrototypeRenderEvents {
             } else {
                 ClientWallRunState.wallNormal = Vec3.ZERO;
                 ClientWallRunState.graceTicks = 0;
-                ClientWallRunState.wallRunTicks = 0;
             }
 
             if (ClientWallRunState.isActive() && mc.options.keyShift.isDown()) {
                 ClientWallRunState.wallNormal = Vec3.ZERO;
                 ClientWallRunState.graceTicks = 0;
-                ClientWallRunState.wallRunTicks = 0;
             }
             return;
         }

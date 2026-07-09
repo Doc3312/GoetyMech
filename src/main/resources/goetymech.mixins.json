@@ -33,7 +33,8 @@
     "MixinWallRunTravel",
     "EntityOnGroundAccessor",
     "WandUtilMixin",
-    "CastSpellTrapMixin"
+    "CastSpellTrapMixin",
+    "PackagerBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
