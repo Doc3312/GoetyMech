@@ -32,7 +32,7 @@ public class StockTickerSpell extends Spell {
 
     @Override
     public int defaultCastDuration() {
-        return 20;
+        return 0;
     }
 
     @Override
