@@ -102,7 +102,7 @@ public class StressReaderBlock extends DirectionalKineticBlock
         if (player.isShiftKeyDown() && stack.getItem() instanceof RemoteEngineBlockItem
                 && RemoteEngineBlockItem.isBound(stack)
                 && RemoteEngineBlockItem.getBoundPos(stack).equals(pos)) {
-            LOGGER.debug("[StressReaderBlock] UNBIND at {} | isClient={}", pos, level.isClientSide);
+            //LOGGER.debug("[StressReaderBlock] UNBIND at {} | isClient={}", pos, level.isClientSide);
             if (!level.isClientSide) {
                 RemoteEngineBlockItem.clearBinding(stack);
                 player.displayClientMessage(

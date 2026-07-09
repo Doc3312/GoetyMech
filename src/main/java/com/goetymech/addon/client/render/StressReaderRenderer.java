@@ -30,7 +30,7 @@ public class StressReaderRenderer extends KineticBlockEntityRenderer<StressReade
     @Override
     protected void renderSafe(StressReaderBlockEntity be, float partialTicks, PoseStack ms,
                               MultiBufferSource buffer, int light, int overlay) {
-        LOGGER.debug("[STRESS_READER] renderSafe called at pos={}", be.getBlockPos());
+        //LOGGER.debug("[STRESS_READER] renderSafe called at pos={}", be.getBlockPos());
 
         BlockState state = getRenderedBlockState(be);
         RenderType type = getRenderType(be, state);

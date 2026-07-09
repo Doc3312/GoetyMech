@@ -20,27 +20,27 @@ public abstract class PrototypePlayerMixin extends LivingEntity {
 
     @Inject(method = "aiStep", at = @At("HEAD"))
     private void gp$logAiStepHead(CallbackInfo ci) {
-        GoetyMechMod.LOGGER.debug("MIXIN_AISTEP_HEAD: zza={}, jumping={}, onGround={}, sprint={}",
-                this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
+        //GoetyMechMod.LOGGER.debug("MIXIN_AISTEP_HEAD: zza={}, jumping={}, onGround={}, sprint={}",
+        //        this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
     }
 
     @Inject(method = "aiStep", at = @At("RETURN"))
     private void gp$logAiStepReturn(CallbackInfo ci) {
-        GoetyMechMod.LOGGER.debug("MIXIN_AISTEP_RETURN: zza={}, jumping={}, onGround={}, sprint={}",
-                this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
+        //GoetyMechMod.LOGGER.debug("MIXIN_AISTEP_RETURN: zza={}, jumping={}, onGround={}, sprint={}",
+        //        this.zza, this.jumping, this.onGround(), ((Player)(Object)this).isSprinting());
     }
 
     @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
     private void gp$cancelJumpWhileCharging(CallbackInfo ci) {
         Player player = (Player) (Object) this;
         if (PrototypeItem.getJumpChargeTick(player) > 0) {
-            GoetyMechMod.LOGGER.debug("Prototype Mixin: cancelled jump (charge={})",
-                    PrototypeItem.getJumpChargeTick(player));
+            //GoetyMechMod.LOGGER.debug("Prototype Mixin: cancelled jump (charge={})",
+            //        PrototypeItem.getJumpChargeTick(player));
             ci.cancel();
             return;
         }
         if (this.jumping && PrototypeItem.hasAnyPrototype(player)) {
-            GoetyMechMod.LOGGER.debug("Prototype Mixin: cancelled jump (jumping=true, hasPrototype=true)");
+            //GoetyMechMod.LOGGER.debug("Prototype Mixin: cancelled jump (jumping=true, hasPrototype=true)");
             ci.cancel();
         }
     }

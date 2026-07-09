@@ -50,14 +50,14 @@ public class RemoteEngineBlockItem extends BlockItem {
 
         if (player != null) {
             if (player.isShiftKeyDown()) {
-                LOGGER.debug("[RemoteEngineItem] sneak+right-click at {} | isBound={} isReader={} boundPos={}",
-                        clickedPos, isBound(stack), level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get()),
-                        isBound(stack) ? getBoundPos(stack) : "N/A");
+                //LOGGER.debug("[RemoteEngineItem] sneak+right-click at {} | isBound={} isReader={} boundPos={}",
+                //        clickedPos, isBound(stack), level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get()),
+                //        isBound(stack) ? getBoundPos(stack) : "N/A");
                 if (isBound(stack) && level.getBlockState(clickedPos).is(ModBlocks.STRESS_READER.get())) {
                     BlockPos boundPos = getBoundPos(stack);
                     if (boundPos.equals(clickedPos)) {
                         if (!level.isClientSide) {
-                            LOGGER.debug("[RemoteEngineItem] UNBIND at {}", clickedPos);
+                            //LOGGER.debug("[RemoteEngineItem] UNBIND at {}", clickedPos);
                             BlockEntity be = level.getBlockEntity(clickedPos);
                             if (be instanceof StressReaderBlockEntity reader) {
                                 BlockPos enginePos = getEnginePos(stack);
