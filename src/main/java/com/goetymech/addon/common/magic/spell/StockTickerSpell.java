@@ -7,8 +7,10 @@ import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
+import com.simibubi.create.AllMenuTypes;
+import com.simibubi.create.Create;
+import com.simibubi.create.content.logistics.stockTicker.StockKeeperCategoryMenu;
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
-import com.simibubi.create.content.logistics.stockTicker.StockTickerInteractionHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -18,10 +20,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkHooks;
 
 public class StockTickerSpell extends Spell {
 
@@ -114,14 +121,36 @@ public class StockTickerSpell extends Spell {
 
         SEHelper.addCooldown(player, focus.getItem(), defaultSpellCooldown());
 
-        final ServerLevel finalTargetLevel = targetLevel;
+        boolean showLockOption = stbe.behaviour.mayAdministrate(player)
+                && Create.LOGISTICS.isLockable(stbe.behaviour.freqId);
+        boolean isCurrentlyLocked = Create.LOGISTICS.isLocked(stbe.behaviour.freqId);
+
+        final StockTickerBlockEntity finalStbe = stbe;
         final BlockPos finalBoundPos = boundPos;
-        player.getServer().execute(() -> {
-            if (player.containerMenu == player.inventoryMenu) {
-                StockTickerInteractionHandler.interactWithLogisticsManagerAt(
-                        player, finalTargetLevel, finalBoundPos);
+
+        NetworkHooks.openScreen(player, new MenuProvider() {
+            @Override
+            public AbstractContainerMenu createMenu(int containerId, Inventory inv, Player p) {
+                return new StockKeeperCategoryMenu(
+                        AllMenuTypes.STOCK_KEEPER_REQUEST.get(), containerId, inv, finalStbe) {
+                    @Override
+                    public boolean stillValid(Player p) {
+                        return !contentHolder.isRemoved();
+                    }
+                };
             }
+
+            @Override
+            public Component getDisplayName() {
+                return Component.empty();
+            }
+        }, buf -> {
+            buf.writeBoolean(showLockOption);
+            buf.writeBoolean(isCurrentlyLocked);
+            buf.writeBlockPos(finalBoundPos);
         });
+
+        stbe.getRecentSummary().divideAndSendTo(player, boundPos);
 
         this.playSound(worldIn, caster, this.CastingSound());
     }
