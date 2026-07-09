@@ -35,7 +35,7 @@
     "WandUtilMixin",
     "CastSpellTrapMixin",
     "PackagerBlockEntityMixin",
-    "FocusCooldownMixin"
+    "DarkWandUseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
