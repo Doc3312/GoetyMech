@@ -140,8 +140,6 @@ public class StockTickerSpell extends Spell {
                 && Create.LOGISTICS.isLockable(stbe.behaviour.freqId);
         boolean isCurrentlyLocked = Create.LOGISTICS.isLocked(stbe.behaviour.freqId);
 
-        CrossDimStockCache.registerServer(boundPos, stbe);
-
         ModNetwork.sendTo(player, new S2CRegisterStockCachePacket(boundPos));
 
         final StockTickerBlockEntity finalStbe = stbe;
