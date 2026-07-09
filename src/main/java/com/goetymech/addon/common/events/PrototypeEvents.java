@@ -297,12 +297,18 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
-            // ── Post-travel diagnostic ──
-            //Vec3 postTravelM = player.getDeltaMovement();
-            //GoetyMechMod.LOGGER.debug("D POST_TRAVEL: zza={}, motion=({}, {}, {}), onGround={}",
-            //        player.zza,
-            //        String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
-            //        player.onGround());
+            // ── Post-slam diagnostic ──
+            if (!isSlamming && player.onGround() && player.tickCount % 5 == 0) {
+                Vec3 vel = player.getDeltaMovement();
+                double hSpeed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+                AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                double mvSpeed = attr != null ? attr.getValue() : -1;
+                GoetyMechMod.LOGGER.debug("SLAM_DIAG tick={} zza={} sprint={} onGround={} hSpeed={} mvSpeed={} sprintTick={} hasMod={}",
+                        player.tickCount, player.zza, player.isSprinting(), player.onGround(),
+                        String.format("%.4f", hSpeed), String.format("%.3f", mvSpeed),
+                        PrototypeItem.getSprintTick(player),
+                        attr != null && attr.getModifier(SPRINT_MODIFIER_UUID) != null);
+            }
 
             // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
             double moved = Math.sqrt(
