@@ -7,6 +7,7 @@ import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import com.Polarice3.Goety.utils.ItemHelper;
+import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -205,9 +206,14 @@ public class SquadFocus extends MagicFocus {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            if (!level.isClientSide && isBound(stack)) {
-                clearBinding(stack);
-                player.displayClientMessage(Component.translatable("info.goetymech.squad_focus.unbound"), true);
+            if (!level.isClientSide) {
+                if (SEHelper.isOnCooldown(player, stack.getItem())) {
+                    return InteractionResultHolder.pass(stack);
+                }
+                if (isBound(stack)) {
+                    clearBinding(stack);
+                    player.displayClientMessage(Component.translatable("info.goetymech.squad_focus.unbound"), true);
+                }
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }

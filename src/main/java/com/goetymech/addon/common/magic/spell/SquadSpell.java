@@ -264,7 +264,7 @@ public class SquadSpell extends Spell {
         for (ServerLevel dim : player.getServer().getAllLevels()) {
             for (Entity entity : dim.getAllEntities()) {
                 if (entity instanceof Mob mob && mob instanceof IOwned owned) {
-                    if (owned.getTrueOwner() == player
+                    if (mob.isAlive() && owned.getTrueOwner() == player
                             && summonerKey.equals(mob.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
                         if (dim == worldIn) {
                             aliveHere.add(mob);
@@ -371,6 +371,7 @@ public class SquadSpell extends Spell {
                     owned.setLifespan(lifespan);
                 }
                 mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
+                mob.getPersistentData().putBoolean("goetymech.monument_summoned", true);
                 for (MobEffectInstance template : beaconEffects) {
                     mob.addEffect(new MobEffectInstance(template.getEffect(), template.getDuration(),
                             template.getAmplifier(), template.isAmbient(), template.isVisible()));
