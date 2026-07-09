@@ -15,6 +15,7 @@ import com.goetymech.addon.common.item.TwistedEmbryoItem;
 import com.goetymech.addon.common.item.UnstableRiftFocus;
 import com.goetymech.addon.common.item.GatewayFocus;
 import com.goetymech.addon.common.item.GatewayAdvancedFocus;
+import com.goetymech.addon.common.item.StockTickerFocus;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.item.SoulMonumentBlockItem;
@@ -201,4 +202,8 @@ public class ModItems {
     /** 神行聚晶 — 高级版：跨维度传送至结构附近 */
     public static final RegistryObject<Item> GATEWAY_FOCUS_ADVANCED =
             ITEMS.register("gateway_focus_advanced", GatewayAdvancedFocus::new);
+
+    /** 仓储发报机聚晶 — 右键绑定，远程打开 Create 物流请求菜单 */
+    public static final RegistryObject<Item> STOCK_TICKER_FOCUS =
+            ITEMS.register("stock_ticker_focus", StockTickerFocus::new);
 }

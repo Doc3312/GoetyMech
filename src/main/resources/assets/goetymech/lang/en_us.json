@@ -142,5 +142,18 @@
   "info.goetymech.squad_focus.bound_success_monument": "§aBound to Soul Monument",
   "info.goetymech.squad_focus.block_missing_monument": "§cBound Soul Monument was destroyed",
   "info.goetymech.squad_focus.not_owner_monument": "§cYou are not the owner of this Soul Monument",
-  "info.goetymech.squad_focus.squad_info_monument": "§7Minions: §f%d/%d 路 Tier %d"
+  "info.goetymech.squad_focus.squad_info_monument": "§7Minions: §f%d/%d  — Tier %d",
+
+  "item.goetymech.stock_ticker_focus": "Stock Ticker Focus",
+  "info.goetymech.stock_ticker_focus.bound": "§aBound to Stock Ticker",
+  "info.goetymech.stock_ticker_focus.bound_pos": "§7Pos: %d, %d, %d [%s]",
+  "info.goetymech.stock_ticker_focus.not_bound": "§cNot bound",
+  "info.goetymech.stock_ticker_focus.bound_success": "§aBound to Stock Ticker",
+  "info.goetymech.stock_ticker_focus.unbound": "§eCleared Stock Ticker binding",
+  "info.goetymech.stock_ticker_focus.dimension_unloaded": "§cTarget dimension is not loaded",
+  "info.goetymech.stock_ticker_focus.ticker_lost": "§cStock Ticker missing, binding cleared",
+  "info.goetymech.stock_ticker_focus.no_keeper": "§cStock Ticker has no Keeper nearby",
+  "info.goetymech.stock_ticker_focus.locked": "§cNetwork is locked",
+  "info.goetymech.stock_ticker_focus.shift_bound": "Cast to request items from the bound stock network. Sneak-right-click to unbind.",
+  "info.goetymech.stock_ticker_focus.shift_unbound": "Right-click a Stock Ticker to bind. Sneak-right-click to unbind."
 }

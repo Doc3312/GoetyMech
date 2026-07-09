@@ -669,6 +669,19 @@ public class ModConfig {
                 .comment("神行聚晶冷却时间（tick）", "范围: 100-72000，默认 9600（8分钟）")
                 .defineInRange("advanced_cooldown", 9600, 100, 72000);
 
+BUILDER.pop();
+
+        // ====== Stock Ticker Focus 配置 ======
+        BUILDER.push("stock_ticker_focus");
+
+        STOCK_TICKER_FOCUS_COST = BUILDER
+                .comment("仓储发报机聚晶灵魂消耗", "范围: 0-1000，默认 5")
+                .defineInRange("soul_cost", 5, 0, 1000);
+
+        STOCK_TICKER_FOCUS_COOLDOWN = BUILDER
+                .comment("施法冷却时间（tick）", "范围: 5-1200，默认 100（5秒）")
+                .defineInRange("cooldown", 100, 5, 1200);
+
         BUILDER.pop();
 
         // ====== Freecam 配置 ======
