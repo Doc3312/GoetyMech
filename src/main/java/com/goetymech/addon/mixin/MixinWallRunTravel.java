@@ -4,7 +4,6 @@ import com.goetymech.addon.client.ClientWallRunState;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.config.ModConfig;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -38,14 +37,6 @@ public abstract class MixinWallRunTravel {
         int kills = PrototypeItem.getAssimilationKills(player);
         double tierMult = PrototypeItem.getTierMultiplier(kills);
         double speed = ModConfig.WALL_RUN_SPEED.get() * tierMult;
-
-        double mvVal = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
-                ? player.getAttribute(Attributes.MOVEMENT_SPEED).getValue() : 0.1;
-        double mvBaseVal = player.getAttribute(Attributes.MOVEMENT_SPEED) != null
-                ? player.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() : 0.1;
-        double sprintMult = mvVal / mvBaseVal;
-        speed = speed * sprintMult;
-
         Vec3 climbVec = wallUp.scale(wallFwd * speed);
         Vec3 strafeVec = wallRight.scale(wallStrafe * speed);
         Vec3 wallMove = climbVec
@@ -83,7 +74,6 @@ public abstract class MixinWallRunTravel {
 
         player.setDeltaMovement(wallMove);
         player.move(MoverType.SELF, wallMove);
-        player.setDeltaMovement(Vec3.ZERO);
 
         ci.cancel();
     }
