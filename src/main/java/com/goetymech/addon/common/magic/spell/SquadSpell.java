@@ -370,7 +370,7 @@ public class SquadSpell extends Spell {
         double angle = (double) index / total * Math.PI * 2;
         double x = player.getX() + Math.cos(angle) * radius;
         double z = player.getZ() + Math.sin(angle) * radius;
-        return new Vec3(x, z, player.getY());
+        return new Vec3(x, player.getY(), z);
     }
 
     private void spawnSquad(ServerPlayer player, ServerLevel playerLevel,
