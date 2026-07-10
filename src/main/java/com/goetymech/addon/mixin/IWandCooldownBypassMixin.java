@@ -1,6 +1,7 @@
 package com.goetymech.addon.mixin;
 
 import com.Polarice3.Goety.api.items.magic.IWand;
+import com.Polarice3.Goety.common.items.magic.DarkWand;
 import com.goetymech.addon.common.item.SquadFocus;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -10,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = IWand.class, remap = false)
+@Mixin(value = DarkWand.class, remap = false)
 public class IWandCooldownBypassMixin {
 
     @Inject(method = "isOnCooldown", at = @At("HEAD"), cancellable = true)
