@@ -1,5 +1,6 @@
 package com.goetymech.addon.common.magic.spell;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.StockTickerFocus;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
@@ -139,6 +140,11 @@ public class StockTickerSpell extends Spell {
 
         final StockTickerBlockEntity finalStbe = stbe;
         final BlockPos finalBoundPos = boundPos;
+
+        GoetyMechMod.LOGGER.info("STOCK_DIAG:SPELL player=({}:{},{},{}) → ticker=({}:{},{},{}) shift={}",
+                worldIn.dimension().location(), player.getBlockX(), player.getBlockY(), player.getBlockZ(),
+                boundDim, boundPos.getX(), boundPos.getY(), boundPos.getZ(),
+                isShifting(caster));
 
         NetworkHooks.openScreen(player, new MenuProvider() {
             @Override

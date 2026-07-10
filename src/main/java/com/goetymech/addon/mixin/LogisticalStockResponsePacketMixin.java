@@ -1,5 +1,6 @@
 package com.goetymech.addon.mixin;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.simibubi.create.content.logistics.BigItemStack;
 import com.simibubi.create.content.logistics.stockTicker.LogisticalStockResponsePacket;
 import com.simibubi.create.content.logistics.stockTicker.StockKeeperRequestMenu;
@@ -28,8 +29,11 @@ public class LogisticalStockResponsePacketMixin {
 
     @Inject(method = "handleClient", at = @At("HEAD"), cancellable = true, remap = false)
     private void gp$redirectToRemoteBE(CallbackInfo ci) {
-        if (Minecraft.getInstance().level != null
-                && Minecraft.getInstance().level.getBlockEntity(pos) instanceof StockTickerBlockEntity) {
+        boolean realBE = Minecraft.getInstance().level != null
+                && Minecraft.getInstance().level.getBlockEntity(pos) instanceof StockTickerBlockEntity;
+        if (realBE) {
+            GoetyMechMod.LOGGER.debug("STOCK_DIAG:STOCK pos=({},{},{}) items={} last={} → realBE",
+                    pos.getX(), pos.getY(), pos.getZ(), items.size(), lastPacket);
             return;
         }
 
@@ -37,9 +41,15 @@ public class LogisticalStockResponsePacketMixin {
                 && Minecraft.getInstance().player.containerMenu instanceof StockKeeperRequestMenu menu) {
             StockTickerBlockEntity stbe = menu.contentHolder;
             if (stbe != null && stbe.getBlockPos().equals(pos)) {
+                GoetyMechMod.LOGGER.info("STOCK_DIAG:STOCK pos=({},{},{}) items={} last={} → fakeBE",
+                        pos.getX(), pos.getY(), pos.getZ(), items.size(), lastPacket);
                 stbe.receiveStockPacket(items, lastPacket);
                 ci.cancel();
+                return;
             }
         }
+
+        GoetyMechMod.LOGGER.warn("STOCK_DIAG:STOCK pos=({},{},{}) items={} last={} → DROPPED (no target)",
+                pos.getX(), pos.getY(), pos.getZ(), items.size(), lastPacket);
     }
 }

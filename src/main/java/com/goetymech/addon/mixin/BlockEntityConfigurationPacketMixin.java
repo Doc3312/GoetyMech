@@ -1,5 +1,6 @@
 package com.goetymech.addon.mixin;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.simibubi.create.content.logistics.stockTicker.PackageOrderRequestPacket;
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
 import com.simibubi.create.foundation.networking.BlockEntityConfigurationPacket;
@@ -25,6 +26,14 @@ public class BlockEntityConfigurationPacketMixin {
     @Inject(method = "handle", at = @At("HEAD"), remap = false, cancellable = true)
     private void gp$bypassRangeCheck(NetworkEvent.Context context, CallbackInfoReturnable<Boolean> cir) {
         if (!(((Object) this) instanceof PackageOrderRequestPacket)) return;
+
+        ServerPlayer rawPlayer = context.getSender();
+        GoetyMechMod.LOGGER.info("STOCK_DIAG:ORDER player=({}:{},{},{}) → ticker=({},{},{})",
+                rawPlayer != null ? rawPlayer.level().dimension().location() : "?",
+                rawPlayer != null ? rawPlayer.getBlockX() : 0,
+                rawPlayer != null ? rawPlayer.getBlockY() : 0,
+                rawPlayer != null ? rawPlayer.getBlockZ() : 0,
+                pos.getX(), pos.getY(), pos.getZ());
 
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();

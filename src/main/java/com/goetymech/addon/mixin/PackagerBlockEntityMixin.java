@@ -32,19 +32,24 @@ public class PackagerBlockEntityMixin {
 
         ServerPlayer target = serverLevel.getServer().getPlayerList().getPlayerByName(address);
         if (target == null) {
-            GoetyMechMod.LOGGER.info("PACKAGER_STOCK: wakeTheFrogs intercept, address='{}' → player offline", address);
+            GoetyMechMod.LOGGER.info("STOCK_DIAG:PACK packager=({}:{},{},{}) address='{}' → player offline",
+                    level.dimension().location(), self.getBlockPos().getX(), self.getBlockPos().getY(),
+                    self.getBlockPos().getZ(), address);
             return;
         }
 
-        GoetyMechMod.LOGGER.info("PACKAGER_STOCK: redirecting package to player {} (address='{}')",
-                target.getName().getString(), address);
+        GoetyMechMod.LOGGER.info("STOCK_DIAG:PACK packager=({}:{},{},{}) → player=({}:{},{},{}) address='{}' items={}",
+                level.dimension().location(), self.getBlockPos().getX(), self.getBlockPos().getY(),
+                self.getBlockPos().getZ(),
+                target.level().dimension().location(), target.getBlockX(), target.getBlockY(), target.getBlockZ(),
+                address, box.getCount());
         try {
             ItemHandlerHelper.giveItemToPlayer(target, box.copy());
             self.heldBox = ItemStack.EMPTY;
             ci.cancel();
-            GoetyMechMod.LOGGER.info("PACKAGER_STOCK: delivered + cancelled wakeTheFrogs");
+            GoetyMechMod.LOGGER.info("STOCK_DIAG:PACK delivered OK, wakeTheFrogs cancelled");
         } catch (Exception e) {
-            GoetyMechMod.LOGGER.error("PACKAGER_STOCK: delivery failed", e);
+            GoetyMechMod.LOGGER.error("STOCK_DIAG:PACK delivery FAILED", e);
         }
     }
 }

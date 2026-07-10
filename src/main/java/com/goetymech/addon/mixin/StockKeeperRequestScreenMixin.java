@@ -1,5 +1,6 @@
 package com.goetymech.addon.mixin;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.simibubi.create.content.logistics.AddressEditBox;
 import com.simibubi.create.content.logistics.stockTicker.StockKeeperRequestScreen;
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
@@ -41,6 +42,15 @@ public class StockKeeperRequestScreenMixin {
                 && blockEntity.getLevel().getBlockEntity(blockEntity.getBlockPos()) != blockEntity) {
             goetymech$refreshTick++;
             if (goetymech$refreshTick % 20 == 0) {
+                GoetyMechMod.LOGGER.info("STOCK_DIAG:REFRESH tick={} player=({}:{},{},{}) → fakeBE=({},{},{})",
+                        goetymech$refreshTick,
+                        blockEntity.getLevel().dimension().location(),
+                        Minecraft.getInstance().player.getBlockX(),
+                        Minecraft.getInstance().player.getBlockY(),
+                        Minecraft.getInstance().player.getBlockZ(),
+                        blockEntity.getBlockPos().getX(),
+                        blockEntity.getBlockPos().getY(),
+                        blockEntity.getBlockPos().getZ());
                 blockEntity.refreshClientStockSnapshot();
             }
         }
