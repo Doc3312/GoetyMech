@@ -18,7 +18,8 @@
     "TimerAccessor",
     "TutorialMixin",
     "EntityMixin",
-    "StockKeeperRequestMenuMixin"
+    "StockKeeperRequestMenuMixin",
+    "StockKeeperRequestScreenMixin"
   ],
   "mixins": [
     "CollectingNeighborUpdaterMixin",

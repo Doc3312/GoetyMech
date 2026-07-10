@@ -103,7 +103,7 @@ body {
 /* ── Content ── */
 .content { flex: 1; overflow-y: auto; display: flex; gap: 0; }
 .editor { flex: 0 0 480px; min-width: 380px; display: flex; flex-direction: column; gap: 12px; padding: 16px; overflow-y: auto; }
-.preview-pane { flex: 1; min-width: 340px; padding: 16px; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+.preview-pane { flex: 1; min-width: 580px; padding: 16px; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
 
 /* ── Card ── */
 .card {
@@ -193,48 +193,101 @@ body {
 .with-suffix textarea, .with-suffix input { flex: 1; }
 .with-suffix button { flex-shrink: 0; margin-top: 1px; }
 
-/* ── Preview ── */
+/* ── Preview: Patchouli exact book layout ── */
 .preview-label {
   font-size: 12px; font-weight: 600; color: var(--text-muted);
   text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;
 }
 .preview-book {
-  background: linear-gradient(160deg, #4a3020 0%, #3b2415 30%, #3b2415 70%, #4a3020 100%);
-  border: 3px solid #8B6914; border-radius: 3px;
-  padding: 20px 16px; color: #2C1810; font-size: 13px; line-height: 1.7;
-  min-height: 240px; box-shadow: inset 0 0 30px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.4);
-  position: relative;
+  width: 544px; height: 360px; position: relative;
+  background: #110806;
+  border: 2px solid #1a1008;
+  overflow: hidden;
 }
-.preview-book::after {
-  content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
-  width: 1px; background: rgba(139,105,20,0.3);
+/* Left page - cream parchment */
+.preview-book .page-left {
+  position: absolute; left: 30px; top: 36px; width: 232px; height: 312px;
+  background: linear-gradient(180deg, #EDE8D8 0%, #E8E2D0 50%, #E4DEC8 100%);
+  z-index: 2; padding: 14px 16px; overflow: hidden;
+  color: #1a1008; font-size: 11px; line-height: 9px;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.06);
 }
+/* Right page - cream parchment */
+.preview-book .page-right {
+  position: absolute; left: 282px; top: 36px; width: 232px; height: 312px;
+  background: linear-gradient(180deg, #EDE8D8 0%, #E8E2D0 50%, #E4DEC8 100%);
+  z-index: 2; padding: 14px 16px; overflow: hidden;
+  color: #1a1008; font-size: 11px; line-height: 9px;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.06);
+}
+/* Corner decorations - L-shaped brackets */
+.preview-book .page-left::before,
+.preview-book .page-left::after,
+.preview-book .page-right::before,
+.preview-book .page-right::after {
+  content: ''; position: absolute; width: 12px; height: 12px;
+  border-color: #6b5a3a; border-style: solid; border-width: 0;
+  z-index: 3;
+}
+.preview-book .page-left::before { top: 6px; left: 6px; border-top-width: 2px; border-left-width: 2px; }
+.preview-book .page-left::after  { top: 6px; right: 6px; border-top-width: 2px; border-right-width: 2px; }
+.preview-book .page-right::before { top: 6px; left: 6px; border-top-width: 2px; border-left-width: 2px; }
+.preview-book .page-right::after  { top: 6px; right: 6px; border-top-width: 2px; border-right-width: 2px; }
+/* Bottom corners via additional elements */
+.page-left .corner-bl, .page-left .corner-br,
+.page-right .corner-bl, .page-right .corner-br {
+  position: absolute; width: 12px; height: 12px;
+  border-color: #6b5a3a; border-style: solid; border-width: 0;
+}
+.page-left .corner-bl { bottom: 6px; left: 6px; border-bottom-width: 2px; border-left-width: 2px; }
+.page-left .corner-br { bottom: 6px; right: 6px; border-bottom-width: 2px; border-right-width: 2px; }
+.page-right .corner-bl { bottom: 6px; left: 6px; border-bottom-width: 2px; border-left-width: 2px; }
+.page-right .corner-br { bottom: 6px; right: 6px; border-bottom-width: 2px; border-right-width: 2px; }
+/* Spine/binding - dashed vertical line */
+.preview-book .spine {
+  position: absolute; left: 268px; top: 30px; bottom: 30px; width: 8px;
+  z-index: 5; background: transparent;
+  border-left: 2px dashed #5a4a2a;
+  border-right: 2px dashed #5a4a2a;
+}
+/* Page title */
 .preview-book h5 {
-  text-align: center; border-bottom: 1px solid rgba(139,105,20,0.4);
-  padding-bottom: 6px; margin-bottom: 12px;
-  color: #3a1f0a; font-size: 14px; font-family: var(--font-sans);
+  text-align: center; margin-bottom: 6px;
+  font-size: 12px; font-weight: 600; color: #3a2a10;
+  font-family: var(--font-sans);
+  border: none; padding: 0 0 4px 0;
+  border-bottom: 1px solid rgba(100,80,40,0.2);
 }
+/* Page text */
+.preview-book p {
+  margin: 0 0 3px 0; line-height: 9px; font-size: 11px;
+  color: #1a1008;
+}
+/* Crafting recipe */
 .preview-craft-grid {
-  display: grid; grid-template-columns: repeat(3, 32px);
-  gap: 3px; justify-content: center; margin: 10px 0;
+  display: grid; grid-template-columns: repeat(3, 26px);
+  gap: 2px; justify-content: center; margin: 8px 0;
 }
 .preview-craft-slot {
-  width: 32px; height: 32px; background: #6b6b6b; border: 2px solid #4a4a4a;
-  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; background: #8b8b8b;
+  border: 2px solid #555; border-radius: 1px;
 }
 .preview-craft-slot.result { background: #c8a050; border-color: #8B6914; }
+.preview-craft-arrow { text-align: center; font-size: 12px; color: #666; margin: 3px 0; }
+/* Entity box */
 .preview-entity-box {
-  text-align: center; padding: 12px; border: 1px dashed rgba(139,105,20,0.4);
-  margin: 10px 0; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;
+  text-align: center; padding: 8px; border: 1px dashed #8B6914;
+  margin: 6px 0; font-family: var(--font-mono); font-size: 11px;
 }
-.preview-text { padding-left: 10px; }
+/* Spotlight */
+.preview-spotlight { text-align: center; padding: 6px 0; font-size: 12px; }
+/* Nav */
 .preview-nav {
   display: flex; justify-content: space-between; align-items: center;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 .preview-nav .indicator { font-size: 12px; color: var(--text-dim); font-family: var(--font-mono); }
 .empty-state { text-align: center; color: var(--text-dim); padding: 40px 20px; font-size: 13px; }
-.empty-state-icon { font-size: 32px; margin-bottom: 10px; }
 
 /* ── Modal ── */
 .modal-overlay {
@@ -736,9 +789,10 @@ function renderPreview() {
 
 function renderPage(page) {
   var tzh = (page.text_zh||'').replace(/\n/g,'<br>');
+  var corners = '<span class="corner-bl"></span><span class="corner-br"></span>';
   switch(page.type){
     case 'patchouli:text':
-      return (page.title?'<h5>'+page.title+'</h5>':'')+'<p>'+tzh+'</p>';
+      return (page.title?'<h5>'+page.title+'</h5>':'')+'<p>'+tzh+'</p>'+corners;
     case 'patchouli:crafting':
       return (page.title?'<h5>'+page.title+'</h5>':'<h5>合成配方</h5>')
         +'<div class="preview-craft-grid">'
@@ -748,28 +802,28 @@ function renderPage(page) {
         +'</div>'
         +'<div class="preview-craft-arrow">↓</div>'
         +'<p style="text-align:center;color:#555">'+(page.recipe||'未指定')+'</p>'
-        +(page.text_zh?'<p>'+tzh+'</p>':'');
+        +(page.text_zh?'<p>'+tzh+'</p>':'')+corners;
     case 'patchouli:smelting':
-      return '<h5>熔炼配方</h5><p style="text-align:center;color:#555">'+(page.recipe||'未指定')+'</p>';
+      return '<h5>熔炼配方</h5><p style="text-align:center;color:#555">'+(page.recipe||'未指定')+'</p>'+corners;
     case 'patchouli:entity':
-      return '<h5>实体展示</h5><div class="preview-entity-box">'+(page.entity||'未指定实体')+'</div>'+(page.text_zh?'<p>'+tzh+'</p>':'');
+      return '<h5>实体展示</h5><div class="preview-entity-box">'+(page.entity||'未指定实体')+'</div>'+(page.text_zh?'<p>'+tzh+'</p>':'')+corners;
     case 'patchouli:spotlight':
       return (page.title?'<h5>'+page.title+'</h5>':'')
         +'<div class="preview-spotlight">'+(page.item||'未指定物品')+'</div>'
-        +(tzh?'<p>'+tzh+'</p>':'');
+        +(tzh?'<p>'+tzh+'</p>':'')+corners;
     case 'patchouli:image':
       return (page.title?'<h5>'+page.title+'</h5>':'')
-        +'<p style="text-align:center;color:#555">[图片: '+((page.images||[]).join(',')||'无')+']</p>';
+        +'<p style="text-align:center;color:#555">[图片: '+((page.images||[]).join(',')||'无')+']</p>'+corners;
     case 'patchouli:relations':
       return (page.title?'<h5>'+page.title+'</h5>':'<h5>关联条目</h5>')
-        +'<p>'+(page.entries||[]).join(', ')||'无'+'</p>';
+        +'<p>'+(page.entries||[]).join(', ')||'无'+'</p>'+corners;
     case 'patchouli:quest':
       return (page.title?'<h5>'+page.title+'</h5>':'<h5>任务</h5>')
         +(tzh?'<p>'+tzh+'</p>':'')
-        +(page.turnin?'<p style="color:#555">提交物: '+page.turnin+'</p>':'');
+        +(page.turnin?'<p style="color:#555">提交物: '+page.turnin+'</p>':'')+corners;
     case 'patchouli:link':
-      return '<h5>外部链接</h5><p>'+(page.link_text||page.url||'无')+'</p>';
-    default: return '<p>未知类型</p>';
+      return '<h5>外部链接</h5><p>'+(page.link_text||page.url||'无')+'</p>'+corners;
+    default: return '<p>未知类型</p>'+corners;
   }
 }
 

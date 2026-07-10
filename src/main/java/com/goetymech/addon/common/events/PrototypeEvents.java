@@ -331,9 +331,14 @@ public class PrototypeEvents {
                     player.onGround());
 
             if (PrototypeItem.getSlamDiagTick(player) > 0) {
-                GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=END, dm=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, sprintTick={}, zza={}",
+                Vec3 postTravelM = player.getDeltaMovement();
+                double moved = Math.sqrt(
+                        (player.getX() - player.xo) * (player.getX() - player.xo)
+                        + (player.getZ() - player.zo) * (player.getZ() - player.zo));
+                GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=END, dm=({},{},{}), hSpeed={}, movedXZ={}, onGround={}, isFly={}, isSprint={}, sprintTick={}, zza={}",
                         String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
                         String.format("%.4f", Math.sqrt(postTravelM.x * postTravelM.x + postTravelM.z * postTravelM.z)),
+                        String.format("%.6f", moved),
                         player.onGround(), player.isFallFlying(), player.isSprinting(),
                         PrototypeItem.getSprintTick(player), player.zza);
             }
