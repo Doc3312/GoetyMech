@@ -156,5 +156,10 @@
   "info.goetymech.stock_ticker_focus.locked": "§cNetwork is locked",
   "info.goetymech.stock_ticker_focus.shift_bound": "Cast to request items from the bound stock network. Sneak-right-click to unbind.",
   "info.goetymech.stock_ticker_focus.shift_unbound": "Right-click a Stock Ticker to bind. Sneak-right-click to unbind.",
-  "goetymech.entry.breeding_nest": "Breeding Nest"
+  "goetymech.entry.breeding_nest": "Breeding Nest",
+  "goetymech.category.machines": "GoetyMech Machines",
+  "goetymech.category.focuses": "GoetyMech Focuses",
+  "goetymech.category.rituals": "GoetyMech Rituals",
+  "goetymech.category.crafts": "GoetyMech Crafts",
+  "goetymech.category.exploration": "GoetyMech Exploration"
 }

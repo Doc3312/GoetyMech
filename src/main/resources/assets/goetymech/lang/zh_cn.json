@@ -156,5 +156,10 @@
   "info.goetymech.stock_ticker_focus.locked": "§c物流网络已锁定",
   "info.goetymech.stock_ticker_focus.shift_bound": "施法远程打开绑定网络的库存界面。潜行右键解绑。",
   "info.goetymech.stock_ticker_focus.shift_unbound": "手持聚晶右键仓储发报机绑定。潜行右键解绑。",
-  "goetymech.entry.breeding_nest": "育巢"
+  "goetymech.entry.breeding_nest": "育巢",
+  "goetymech.category.machines": "GoetyMech 机械",
+  "goetymech.category.focuses": "GoetyMech 聚晶",
+  "goetymech.category.rituals": "GoetyMech 仪式",
+  "goetymech.category.crafts": "GoetyMech 工艺",
+  "goetymech.category.exploration": "GoetyMech 探索"
 }
