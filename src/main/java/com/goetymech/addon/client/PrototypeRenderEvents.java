@@ -4,7 +4,7 @@ import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.net.ModNetwork;
-import com.goetymech.addon.common.utils.CuriosHelper;
+
 import com.goetymech.addon.common.utils.WallUtil;
 import com.goetymech.addon.common.net.c2s.C2SCancelSlamPacket;
 import com.goetymech.addon.common.net.c2s.C2SJumpChargePacket;
@@ -92,7 +92,7 @@ public class PrototypeRenderEvents {
             ClientWallRunState.strafeInput = strafe;
 
             boolean sprinting = ClientWallRunState.sprintDown || player.isSprinting() || ClientWallRunState.shouldSprint();
-            boolean hasProto = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+            boolean hasProto = PrototypeItem.isHoldingPrototype(player);
             Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
             if (sprinting && hasProto && !player.isFallFlying() && !player.isInWater() && wallDir != null) {
                 ClientWallRunState.wallNormal = wallDir;
@@ -100,6 +100,15 @@ public class PrototypeRenderEvents {
             } else if (sprinting && hasProto && !player.isFallFlying() && ClientWallRunState.graceTicks > 0) {
                 ClientWallRunState.tickGrace();
             } else {
+                if (player.level().dimension() == net.minecraft.world.level.Level.NETHER && hasProto && player.tickCount % 20 == 0) {
+                    GoetyMechMod.LOGGER.info("NETHER_CLIENT: sprint={}, isFly={}, onGround={}, inWater={}, inLava={}, wallDir={}, wallN=({},{},{}), grace={}",
+                            sprinting, player.isFallFlying(), player.onGround(), player.isInWater(), player.isInLava(),
+                            wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
+                            String.format("%.2f", ClientWallRunState.wallNormal.x),
+                            String.format("%.2f", ClientWallRunState.wallNormal.y),
+                            String.format("%.2f", ClientWallRunState.wallNormal.z),
+                            ClientWallRunState.graceTicks);
+                }
                 ClientWallRunState.wallNormal = Vec3.ZERO;
                 ClientWallRunState.graceTicks = 0;
             }
@@ -152,9 +161,6 @@ public class PrototypeRenderEvents {
         // ── Jump charge C2S ──
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
         boolean hasPrototype = PrototypeItem.isPrototype(chest);
-        if (!hasPrototype) {
-            hasPrototype = CuriosHelper.hasPrototypeInCurios(player);
-        }
 
         boolean inWater = player.isInWater() || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER);
         if (jumpDown && hasPrototype && !player.isFallFlying()) {
@@ -190,9 +196,6 @@ public class PrototypeRenderEvents {
 
         // ── Flight forward input C2S ──
         boolean hasPrototypeForFlight = PrototypeItem.isPrototype(chest);
-        if (!hasPrototypeForFlight) {
-            hasPrototypeForFlight = CuriosHelper.hasPrototypeInCurios(player);
-        }
         if (hasPrototypeForFlight && player.isFallFlying()) {
             int tick = player.tickCount;
             boolean forwardDown = mc.options.keyUp.isDown();
@@ -260,10 +263,6 @@ public class PrototypeRenderEvents {
                 && !PrototypeMimicItem.getSourceStack(chestStack).isEmpty()) return;
 
         boolean hasInChest = PrototypeItem.isPrototype(chestStack);
-
-        if (!hasInChest) {
-            hasInChest = CuriosHelper.hasPrototypeInCurios(player);
-        }
 
         if (!hasInChest) return;
 
