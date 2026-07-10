@@ -256,17 +256,10 @@ public class PrototypeEvents {
             PrototypeItem.setSlamInvulnTick(player, invuln - 1);
         }
 
-        int freeze = PrototypeItem.getSlamFreezeTick(player);
-        if (freeze > 0) {
-            PrototypeItem.setSlamFreezeTick(player, freeze - 1);
-            player.setDeltaMovement(0, 0, 0);
-        }
-
         int diag = PrototypeItem.getSlamDiagTick(player);
         if (diag > 0) {
             PrototypeItem.setSlamDiagTick(player, diag - 1);
-            GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=LivingTick, freeze={}, dm_before=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, zza={}",
-                    freeze,
+            GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=LivingTick, dm_before=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, zza={}",
                     String.format("%.4f", player.getDeltaMovement().x),
                     String.format("%.4f", player.getDeltaMovement().y),
                     String.format("%.4f", player.getDeltaMovement().z),
@@ -288,13 +281,6 @@ public class PrototypeEvents {
         boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
         if (event.phase == TickEvent.Phase.START) {
-            if (PrototypeItem.getSlamFreezeTick(player) > 0) {
-                player.xxa = 0;
-                player.yya = 0;
-                player.zza = 0;
-                player.setDeltaMovement(0, 0, 0);
-            }
-
             Vec3 startM = player.getDeltaMovement();
             double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
             GoetyMechMod.LOGGER.debug("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
@@ -345,11 +331,11 @@ public class PrototypeEvents {
                     player.onGround());
 
             if (PrototypeItem.getSlamDiagTick(player) > 0) {
-                GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=END, dm=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, sprintTick={}, freeze={}, zza={}",
+                GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=END, dm=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, sprintTick={}, zza={}",
                         String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
                         String.format("%.4f", Math.sqrt(postTravelM.x * postTravelM.x + postTravelM.z * postTravelM.z)),
                         player.onGround(), player.isFallFlying(), player.isSprinting(),
-                        PrototypeItem.getSprintTick(player), PrototypeItem.getSlamFreezeTick(player), player.zza);
+                        PrototypeItem.getSprintTick(player), player.zza);
             }
 
             // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
@@ -745,20 +731,18 @@ public class PrototypeEvents {
             ModNetwork.sendTo(sp, new S2CSlamStatePacket(false));
         }
 
-        GoetyMechMod.LOGGER.info("SLAM_IMPACT: fallDist={}, pos=({},{},{}), dm=({},{},{}), freeze={}, invuln={}",
+        GoetyMechMod.LOGGER.info("SLAM_IMPACT: fallDist={}, pos=({},{},{}), dm=({},{},{}), invuln={}",
                 String.format("%.2f", fallDistance),
                 String.format("%.2f", player.getX()), String.format("%.2f", player.getY()), String.format("%.2f", player.getZ()),
                 String.format("%.4f", player.getDeltaMovement().x),
                 String.format("%.4f", player.getDeltaMovement().y),
                 String.format("%.4f", player.getDeltaMovement().z),
-                PrototypeItem.getSlamFreezeTick(player),
                 PrototypeItem.getSlamInvulnTick(player));
         PrototypeItem.setSlamDiagTick(player, 25);
 
         player.fallDistance = 0;
         PrototypeItem.clearSlamState(player);
         PrototypeItem.setSlamInvulnTick(player, 20);
-        PrototypeItem.setSlamFreezeTick(player, 20);
     }
 
     private static void applyAoeDamage(Player player, ServerLevel level, float damage, float radius) {

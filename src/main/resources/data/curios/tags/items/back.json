@@ -1,8 +1,6 @@
 {
   "replace": false,
   "values": [
-    "goetymech:prototype",
-    "goetymech:prototype_mimic",
     "goetymech:flesh_casket_1",
     "goetymech:flesh_casket_2",
     "goetymech:flesh_casket_3"
