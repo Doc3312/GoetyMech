@@ -34,7 +34,6 @@
   "info.goetymech.squad_focus.not_bound": "§c未绑定点将台",
   "info.goetymech.squad_focus.bound": "§a已绑定点将台",
   "info.goetymech.squad_focus.bound_success": "§a已绑定至点将台",
-  "info.goetymech.squad_focus.cooldown": "§c兵团聚晶冷却中……约 %d 秒后可再次召唤",
   "info.goetymech.squad_focus.squad_info": "§7编队：§f%d 单位 · %d 阶",
   "info.goetymech.squad_focus.estimated_cost": "§b预估消耗：%d 灵魂",
   "info.goetymech.squad_focus.unbound": "§e已清除绑定点将台",
