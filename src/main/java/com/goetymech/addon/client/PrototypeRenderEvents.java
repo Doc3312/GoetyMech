@@ -187,8 +187,23 @@ public class PrototypeRenderEvents {
 
         // ── Slam-only particles ──
         if (hasPrototype && clientSlamming) {
-            spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.03f), 0.35f, ParticleTypes.FLAME, -0.5);
+            spawnBodyTrailParticles(player, new Vector3f(0.35f, 0.03f, 0.35f), 0.35f, ParticleTypes.FLAME, -0.5);
             spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null, -0.5);
+        }
+
+        // ── Slam diagnostic (client side) ──
+        if (clientSlamDiagTick > 0) {
+            clientSlamDiagTick--;
+            Vec3 vel = player.getDeltaMovement();
+            double moved = Math.sqrt(
+                    (player.getX() - player.xo) * (player.getX() - player.xo)
+                    + (player.getZ() - player.zo) * (player.getZ() - player.zo));
+            GoetyMechMod.LOGGER.info("SLAM_DIAG_CLIENT: dm=({},{},{}), hSpeed={}, movedXZ={}, onGround={}, input=(fwd={},sprint={},jump={})",
+                    String.format("%.4f", vel.x), String.format("%.4f", vel.y), String.format("%.4f", vel.z),
+                    String.format("%.4f", Math.sqrt(vel.x * vel.x + vel.z * vel.z)),
+                    String.format("%.6f", moved),
+                    player.onGround(),
+                    mc.options.keyUp.isDown(), mc.options.keySprint.isDown(), mc.options.keyJump.isDown());
         }
 
         // ── Flight forward input C2S ──
