@@ -256,21 +256,6 @@ public class PrototypeEvents {
             PrototypeItem.setSlamInvulnTick(player, invuln - 1);
         }
 
-        int diag = PrototypeItem.getSlamDiagTick(player);
-        if (diag > 0) {
-            PrototypeItem.setSlamDiagTick(player, diag - 1);
-            double moved = Math.sqrt(
-                    (player.getX() - player.xo) * (player.getX() - player.xo)
-                    + (player.getZ() - player.zo) * (player.getZ() - player.zo));
-            GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=LivingTick, dm_before=({},{},{}), hSpeed={}, movedXZ={}, onGround={}, isFly={}, isSprint={}, zza={}",
-                    String.format("%.4f", player.getDeltaMovement().x),
-                    String.format("%.4f", player.getDeltaMovement().y),
-                    String.format("%.4f", player.getDeltaMovement().z),
-                    String.format("%.4f", Math.sqrt(player.getDeltaMovement().x * player.getDeltaMovement().x + player.getDeltaMovement().z * player.getDeltaMovement().z)),
-                    String.format("%.6f", moved),
-                    player.onGround(), player.isFallFlying(), player.isSprinting(), player.zza);
-        }
-
         PrototypeItem.setKnockbackImmune(player, false);
     }
 
@@ -286,9 +271,6 @@ public class PrototypeEvents {
 
         if (event.phase == TickEvent.Phase.START) {
             Vec3 startM = player.getDeltaMovement();
-            double startHSpeed = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
-            GoetyMechMod.LOGGER.debug("D START: zza={}, onGround={}, isFly={}, hSpeed={}",
-                    player.zza, player.onGround(), player.isFallFlying(), startHSpeed);
 
             // ── 爬墙检测（放在飞行前面） ──
             if (hasPrototype && !isSlamming) {
@@ -306,19 +288,13 @@ public class PrototypeEvents {
                 int charge = PrototypeItem.getJumpChargeTick(player);
                 boolean isCJ = PrototypeItem.isChargedJumping(player);
                 int kills = PrototypeItem.getAssimilationKills(player);
-                double startHS = Math.sqrt(startM.x * startM.x + startM.z * startM.z);
-                GoetyMechMod.LOGGER.debug("PROTO_DIAG START: isCJ={}, charge={}, onGround={}, zza={}, isSprint={}, isFly={}, hSpeed={}",
-                        isCJ, charge, player.onGround(), player.zza, player.isSprinting(),
-                        player.isFallFlying(), String.format("%.4f", startHS));
                 if (player.onGround() && player.zza > 0.0F && charge == 0 && !player.isSprinting() && !player.isShiftKeyDown()) {
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, 1.5, m.z);
-                    GoetyMechMod.LOGGER.debug("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
                 } else if (PrototypeItem.hasFlight(kills) && !player.onGround() && player.zza > 0.0F && charge == 0 && !isCJ) {
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
-                    GoetyMechMod.LOGGER.debug("Prototype mid-air deployment: motion={}", m);
                 }
             }
 
@@ -327,25 +303,6 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
-            // ── Post-travel diagnostic ──
-            Vec3 postTravelM = player.getDeltaMovement();
-            GoetyMechMod.LOGGER.debug("D POST_TRAVEL: zza={}, motion=({}, {}, {}), onGround={}",
-                    player.zza,
-                    String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
-                    player.onGround());
-
-            if (PrototypeItem.getSlamDiagTick(player) > 0) {
-                double moved = Math.sqrt(
-                        (player.getX() - player.xo) * (player.getX() - player.xo)
-                        + (player.getZ() - player.zo) * (player.getZ() - player.zo));
-                GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=END, dm=({},{},{}), hSpeed={}, movedXZ={}, onGround={}, isFly={}, isSprint={}, sprintTick={}, zza={}",
-                        String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
-                        String.format("%.4f", Math.sqrt(postTravelM.x * postTravelM.x + postTravelM.z * postTravelM.z)),
-                        String.format("%.6f", moved),
-                        player.onGround(), player.isFallFlying(), player.isSprinting(),
-                        PrototypeItem.getSprintTick(player), player.zza);
-            }
-
             // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
             double moved = Math.sqrt(
                     (player.getX() - player.xo) * (player.getX() - player.xo)
@@ -367,11 +324,6 @@ public class PrototypeEvents {
                 PrototypeItem.setSprintTick(player, current);
                 AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (attr != null) {
-                    double attrBefore = attr.getValue();
-                    boolean hadMod = attr.getModifier(SPRINT_MODIFIER_UUID) != null;
-                    GoetyMechMod.LOGGER.debug("SprintTick: current={}, attr={}, hadMod={}, moved={}",
-                            current, String.format("%.4f", attrBefore), hadMod,
-                            String.format("%.8f", moved));
                     attr.removeModifier(SPRINT_MODIFIER_UUID);
                     if (current >= 1) {
                         double t = Math.min((current - 1) / 80.0, 1.0);
@@ -379,11 +331,6 @@ public class PrototypeEvents {
                         attr.addTransientModifier(new AttributeModifier(
                                 SPRINT_MODIFIER_UUID, "prototype_sprint", amount,
                                 AttributeModifier.Operation.MULTIPLY_TOTAL));
-                        double attrAfter = attr.getValue();
-                        GoetyMechMod.LOGGER.debug("SprintMod AFTER: current={}, amount={}, attr {}→{}, hasMod={}",
-                                current, String.format("%.4f", amount),
-                                String.format("%.4f", attrBefore), String.format("%.4f", attrAfter),
-                                attr.getModifier(SPRINT_MODIFIER_UUID) != null);
                     }
                 }
             } else if (!player.isSprinting()) {
@@ -400,37 +347,14 @@ public class PrototypeEvents {
             if (PrototypeItem.isWallRunning(player)) {
                 PrototypeItem.clearChargedJump(player);
             } else if (PrototypeItem.isChargedJumping(player)) {
-                Vec3 beforeCJ = player.getDeltaMovement();
-                double beforeHSpeed = Math.sqrt(beforeCJ.x * beforeCJ.x + beforeCJ.z * beforeCJ.z);
                 double cjHx = PrototypeItem.getCjHx(player);
                 double cjHz = PrototypeItem.getCjHz(player);
-                double targetHSpeed = Math.sqrt(cjHx * cjHx + cjHz * cjHz);
                 if (player.onGround()) {
                     PrototypeItem.clearChargedJump(player);
-                    GoetyMechMod.LOGGER.debug("PROTO_DIAG CJ_CLEAR onGround: beforeHSpeed={}, targetHSpeed={}, isFly={}",
-                            String.format("%.4f", beforeHSpeed), String.format("%.4f", targetHSpeed),
-                            player.isFallFlying());
                 } else {
                     Vec3 cur = player.getDeltaMovement();
                     player.setDeltaMovement(cjHx, cur.y, cjHz);
-                    Vec3 afterCJ = player.getDeltaMovement();
-                    double afterHSpeed = Math.sqrt(afterCJ.x * afterCJ.x + afterCJ.z * afterCJ.z);
-                    GoetyMechMod.LOGGER.debug("PROTO_DIAG CJ_INJECT: beforeHSpeed={}, target=({},{}), afterHSpeed={}, vy={}, isFly={}",
-                            String.format("%.4f", beforeHSpeed),
-                            String.format("%.4f", cjHx), String.format("%.4f", cjHz),
-                            String.format("%.4f", afterHSpeed),
-                            String.format("%.4f", cur.y),
-                            player.isFallFlying());
                 }
-            }
-
-            Vec3 endM = player.getDeltaMovement();
-            double endHSpeed = Math.sqrt(endM.x * endM.x + endM.z * endM.z);
-            if (hasPrototype) {
-                GoetyMechMod.LOGGER.debug("D END: onGround={}, isFly={}, hSpeed={}, sprintTick={}, zza={}",
-                        player.onGround(), player.isFallFlying(), endHSpeed,
-                        PrototypeItem.getSprintTick(player),
-                        player.zza);
             }
 
             // ── Wall movement (server tracks state only; client handles velocity via setDeltaMovement) ──
@@ -575,10 +499,6 @@ public class PrototypeEvents {
             bestSpeed *= 2.5;
             float yaw = player.getYRot() * Mth.DEG_TO_RAD;
             m = new Vec3(-Mth.sin(yaw) * bestSpeed, m.y, Mth.cos(yaw) * bestSpeed);
-            GoetyMechMod.LOGGER.debug("Sprint inertia: hSpeed={}, groundSpeed={}, attrSpeed={}, cjStartSpeed={}, bestSpeed={}",
-                    String.format("%.4f", hSpeed), String.format("%.4f", groundSpeed),
-                    String.format("%.4f", attrSpeed), String.format("%.4f", cjStartSpeed),
-                    String.format("%.4f", bestSpeed));
         }
         PrototypeItem.setCjStartSpeed(player, 0);
         PrototypeItem.setCjHx(player, m.x);
@@ -594,23 +514,10 @@ public class PrototypeEvents {
             double height = minH + t * (maxH * tierMult - minH);
             double jumpPower = velocityForHeight(height);
             player.setDeltaMovement(m.x, Math.max(jumpPower, m.y), m.z);
-            Vec3 after = player.getDeltaMovement();
-            GoetyMechMod.LOGGER.debug("PROTO_DIAG applyChargedJump: charge={}, hSpeed={}, setHSpeed={}, setVY={}, final=({}, {}, {}), isCJ={}",
-                    charge, String.format("%.4f", hSpeed),
-                    String.format("%.4f", setHSpeed),
-                    String.format("%.4f", jumpPower),
-                    String.format("%.4f", after.x), String.format("%.4f", after.y), String.format("%.4f", after.z),
-                    PrototypeItem.isChargedJumping(player));
         } else if (player.onGround()) {
             double tapH = ModConfig.JUMP_TAP_HEIGHT.get();
             double jumpPower = velocityForHeight(tapH);
             player.setDeltaMovement(m.x, jumpPower, m.z);
-            Vec3 after = player.getDeltaMovement();
-            GoetyMechMod.LOGGER.debug("PROTO_DIAG applyTapJump: charge={}, hSpeed={}, setHSpeed={}, final=({}, {}, {}), isCJ={}",
-                    charge, String.format("%.4f", hSpeed),
-                    String.format("%.4f", setHSpeed),
-                    String.format("%.4f", after.x), String.format("%.4f", after.y), String.format("%.4f", after.z),
-                    PrototypeItem.isChargedJumping(player));
         }
         PrototypeItem.setChargedJumping(player, true);
         PrototypeItem.clearJumpCharge(player);
@@ -707,10 +614,6 @@ public class PrototypeEvents {
         int maxRingsByRadius = Math.max(0, (int)Math.floor(radius) - 5);
         rings = Math.min(rings, maxRingsByRadius);
 
-        GoetyMechMod.LOGGER.debug("SlamImpact: startY={}, playerY={}, fallDist={}, radius={}, damage={}, rings={}, multRadius={}, maxRadius={}",
-                startY, player.getY(), fallDistance, radius, damage, rings,
-                ModConfig.SLAM_RADIUS_MULTIPLIER.get(), ModConfig.SLAM_MAX_RADIUS.get());
-
         if (radius > 0) {
             applyAoeDamage(player, serverLevel, damage, radius);
             spawnVisuals(player, serverLevel, radius, (float)fallDistance, rings);
@@ -739,15 +642,6 @@ public class PrototypeEvents {
             ModNetwork.sendTo(sp, new S2CSlamStatePacket(false));
         }
 
-        GoetyMechMod.LOGGER.info("SLAM_IMPACT: fallDist={}, pos=({},{},{}), dm=({},{},{}), invuln={}",
-                String.format("%.2f", fallDistance),
-                String.format("%.2f", player.getX()), String.format("%.2f", player.getY()), String.format("%.2f", player.getZ()),
-                String.format("%.4f", player.getDeltaMovement().x),
-                String.format("%.4f", player.getDeltaMovement().y),
-                String.format("%.4f", player.getDeltaMovement().z),
-                PrototypeItem.getSlamInvulnTick(player));
-        PrototypeItem.setSlamDiagTick(player, 40);
-
         player.hurtMarked = true;
 
         player.fallDistance = 0;
@@ -759,10 +653,6 @@ public class PrototypeEvents {
         double groundY = Math.floor(BlockFinder.moveDownToGround(player) - 0.0625);
         double px = player.getX();
         double pz = player.getZ();
-        GoetyMechMod.LOGGER.debug("AoE damage: radius={}, center=({}, {}, {}), aabbY=[{}, {}]",
-                String.format("%.1f", radius),
-                String.format("%.2f", px), String.format("%.2f", groundY), String.format("%.2f", pz),
-                String.format("%.0f", groundY - 2), String.format("%.0f", groundY + 3));
 
         AABB aoe = new AABB(
                 px - radius, groundY - 2, pz - radius,
@@ -770,27 +660,13 @@ public class PrototypeEvents {
         List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, aoe,
                 e -> e != player && e.isAlive() && !e.isSpectator());
 
-        GoetyMechMod.LOGGER.debug("AoE entities in AABB: {}", targets.size());
-
         DamageSource source = level.damageSources().playerAttack(player);
 
         for (LivingEntity target : targets) {
             double dx = target.getX() - px;
             double dz = target.getZ() - pz;
             double hDist = Math.max(Math.sqrt(dx * dx + dz * dz), 0.01);
-            double ty = target.getY();
-            double vDist = ty - groundY;
-            if (hDist > radius) {
-                GoetyMechMod.LOGGER.debug("  SKIP {} @ hDist={} (>{}) vDist={} targetY={}",
-                        target.getDisplayName().getString(),
-                        String.format("%.2f", hDist), String.format("%.1f", radius),
-                        String.format("%.2f", vDist), String.format("%.2f", ty));
-                continue;
-            }
-            GoetyMechMod.LOGGER.debug("  HIT {} @ hDist={} vDist={} dmg={}",
-                    target.getDisplayName().getString(),
-                    String.format("%.2f", hDist), String.format("%.2f", vDist),
-                    String.format("%.1f", damage));
+            if (hDist > radius) continue;
 
             if (target.hurt(source, damage)) {
                 double nx = dx / hDist;
@@ -905,9 +781,6 @@ public class PrototypeEvents {
         // ── 粒子：AoEParticleOption 地面半透明红色圆形（持续显示伤害范围） ──
         try {
             double aoeGroundY = BlockFinder.moveDownToGround(player) + 0.25;
-            GoetyMechMod.LOGGER.debug("AoE particle: radius={}, pos=({}, {}, {})",
-                    String.format("%.1f", radius),
-                    String.format("%.2f", px), String.format("%.2f", aoeGroundY), String.format("%.2f", pz));
             level.sendParticles(
                     new AoEParticleOption(radius, SLAM_DELAY_TICKS),
                     px, aoeGroundY, pz, 0, 0.8, 0.0, 0.0, 1.0);
@@ -968,11 +841,6 @@ public class PrototypeEvents {
                             dz / len * (0.3 + slam.random.nextDouble() * 0.6));
                     level.addFreshEntity(block);
                     slam.blocks.add(new BlockAnimData(block, slam.animTick, ringIdx));
-                    GoetyMechMod.LOGGER.debug("  ring[{}] MOBILE block @({},{},{})",
-                            ringIdx,
-                            String.format("%.1f", targetPos.getX() + 0.5),
-                            targetPos.getY() + 1,
-                            String.format("%.1f", targetPos.getZ() + 0.5));
                 } else {
                     float desiredHeight = 1.0f + (float)((dist - startDist) / slam.totalRings) * 2.0f + slam.random.nextFloat() * 0.3f;
                     float popUp = (float)Math.sqrt(desiredHeight * 0.2f);
@@ -982,14 +850,6 @@ public class PrototypeEvents {
                             state, popUp);
 
                     int delay = slam.random.nextInt(8);
-                    GoetyMechMod.LOGGER.debug("  ring[{}] block @({},{},{}): height={} popUp={} delay={}",
-                            ringIdx,
-                            String.format("%.1f", targetPos.getX() + 0.5),
-                            targetPos.getY() + 1,
-                            String.format("%.1f", targetPos.getZ() + 0.5),
-                            String.format("%.2f", desiredHeight),
-                            String.format("%.3f", popUp),
-                            delay);
                     if (delay == 0) {
                         level.addFreshEntity(block);
                         slam.blocks.add(new BlockAnimData(block, slam.animTick, ringIdx));
@@ -1000,9 +860,6 @@ public class PrototypeEvents {
                 spawned++;
             }
         }
-        GoetyMechMod.LOGGER.debug("Slam ring {}: {} blocks, dist [{}-{}], radius={}, floorY={}",
-                ringIdx, spawned, String.format("%.1f", ringInner), String.format("%.1f", ringOuter),
-                String.format("%.1f", slam.radius), slam.floorY);
     }
 
     @SubscribeEvent

@@ -66,14 +66,8 @@ public class PrototypeRenderEvents {
     // ── Slam client state (synced via S2CSlamStatePacket) ──
     private static boolean clientSlamming = false;
 
-    // ── Slam diagnostic ──
-    private static int clientSlamDiagTick = 0;
-
     public static void setClientSlamming(boolean slamming) {
         clientSlamming = slamming;
-        if (!slamming) {
-            clientSlamDiagTick = 40;
-        }
     }
 
     // ═══════════════════════════════════════════════════
@@ -191,21 +185,6 @@ public class PrototypeRenderEvents {
             spawnBodyTrailParticles(player, new Vector3f(0.15f, 0.015f, 0.015f), 0.35f, null, -0.5);
         }
 
-        // ── Slam diagnostic (client side) ──
-        if (clientSlamDiagTick > 0) {
-            clientSlamDiagTick--;
-            Vec3 vel = player.getDeltaMovement();
-            double moved = Math.sqrt(
-                    (player.getX() - player.xo) * (player.getX() - player.xo)
-                    + (player.getZ() - player.zo) * (player.getZ() - player.zo));
-            GoetyMechMod.LOGGER.info("SLAM_DIAG_CLIENT: dm=({},{},{}), hSpeed={}, movedXZ={}, onGround={}, input=(fwd={},sprint={},jump={})",
-                    String.format("%.4f", vel.x), String.format("%.4f", vel.y), String.format("%.4f", vel.z),
-                    String.format("%.4f", Math.sqrt(vel.x * vel.x + vel.z * vel.z)),
-                    String.format("%.6f", moved),
-                    player.onGround(),
-                    mc.options.keyUp.isDown(), mc.options.keySprint.isDown(), mc.options.keyJump.isDown());
-        }
-
         // ── Flight forward input C2S ──
         boolean hasPrototypeForFlight = PrototypeItem.isPrototype(chest);
         if (hasPrototypeForFlight && player.isFallFlying()) {
@@ -230,12 +209,6 @@ public class PrototypeRenderEvents {
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         float rollDeg = quatRollDeg(clientWallQuat);
-        //GoetyMechMod.LOGGER.debug("CLIENT_CAMERA: rollDeg={}, wallQuat=({},{},{},{})",
-        //        String.format("%.2f", rollDeg),
-        //        String.format("%.3f", clientWallQuat.x),
-        //        String.format("%.3f", clientWallQuat.y),
-        //        String.format("%.3f", clientWallQuat.z),
-        //        String.format("%.3f", clientWallQuat.w));
         if (Math.abs(rollDeg) < 1.0f) return;
         event.setRoll(event.getRoll() + rollDeg);
     }
@@ -355,9 +328,6 @@ public class PrototypeRenderEvents {
         boolean hasPrototype = PrototypeItem.isHoldingPrototype(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
-        //GoetyMechMod.LOGGER.debug("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
-        //        mc.options.keySprint.isDown(), player.isSprinting(), hasPrototype, wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
-        //        player.isFallFlying());
         boolean onWall = sprinting && hasPrototype && !player.isFallFlying() && !player.isInWater() && wallDir != null;
 
         if (onWall) {

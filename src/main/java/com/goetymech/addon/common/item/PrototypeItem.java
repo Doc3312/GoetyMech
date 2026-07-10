@@ -26,7 +26,6 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_WALL_STRAFE = "goetymech.wall_strafe";
     private static final String TAG_JUMP_CHARGE_TICK = "goetymech.jump_charge_tick";
     private static final String TAG_SLAM_INVULN_TICK = "goetymech.slam_invuln_tick";
-    private static final String TAG_SLAM_DIAG_TICK = "goetymech.slam_diag_tick";
     private static final String TAG_SPRINT_TICK = "goetymech.sprint_tick";
     private static final String TAG_FLIGHT_FORWARD = "goetymech.flight_forward";
     private static final String TAG_SWIM_TICK = "goetymech.swim_tick";
@@ -215,16 +214,6 @@ public class PrototypeItem extends ElytraItem {
         entity.getPersistentData().putInt(TAG_SLAM_INVULN_TICK, tick);
     }
 
-    // ── Slam diagnostic ──
-
-    public static int getSlamDiagTick(LivingEntity entity) {
-        return entity.getPersistentData().getInt(TAG_SLAM_DIAG_TICK);
-    }
-
-    public static void setSlamDiagTick(LivingEntity entity, int tick) {
-        entity.getPersistentData().putInt(TAG_SLAM_DIAG_TICK, tick);
-    }
-
     // ── Sprint acceleration ──
 
     public static int getSprintTick(LivingEntity entity) {
@@ -233,10 +222,6 @@ public class PrototypeItem extends ElytraItem {
 
     public static void setSprintTick(LivingEntity entity, int tick) {
         entity.getPersistentData().putInt(TAG_SPRINT_TICK, tick);
-    }
-
-    public static void clearSprint(LivingEntity entity) {
-        entity.getPersistentData().remove(TAG_SPRINT_TICK);
     }
 
     // ── Flight forward input ──
