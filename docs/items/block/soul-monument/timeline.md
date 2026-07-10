@@ -11,3 +11,12 @@
   - 修复：DETECTION_RANGE 6→10（20×20）
   - 修复：录入后未刷新绑定聚晶缓存（refreshMonumentFoci）
   - 关联 openspec：`add-soul-monument`
+
+- **2026-07-10** — 丰碑召唤 Bug 修复 + 死亡掉落拦截
+  - 修复：补召追踪改用 `monument_slot` 索引，解决重复召唤/跳召问题
+  - 修复：冷却清除改用 `getFocusCoolDown().isOnCooldown(Item)` 直接查 cooldowns map
+  - 修复：`LivingHurtEvent` 致死拦截（`monument_summoned` cancel+discard），防止 `soulJar()` / `tickDeath()` 等绕过 LivingDropsEvent 的特殊掉落
+  - 新增：`LivingDropsEvent` 兜底拦截
+  - 新增：`DarkWandUseMixin` — shift+右键 dismiss 在 `cannotCast()` 前截获，冷却期内可正常遣散
+  - 关联 openspec：`monument-summon-improvements`
+  - 关联 incidents：`_craft.20260710.cooldown-debug.md`

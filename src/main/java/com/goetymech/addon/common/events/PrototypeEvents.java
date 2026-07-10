@@ -246,6 +246,8 @@ public class PrototypeEvents {
         if (freeze > 0) {
             PrototypeItem.setSlamFreezeTick(player, freeze - 1);
             player.setDeltaMovement(0, 0, 0);
+            GoetyMechMod.LOGGER.info("SLAM_FREEZE_LivingTick: freezeTick={}, dm=({},{},{}), onGround={}",
+                    freeze - 1, 0, 0, 0, player.onGround());
         }
 
         PrototypeItem.setKnockbackImmune(player, false);
@@ -267,6 +269,8 @@ public class PrototypeEvents {
                 player.yya = 0;
                 player.zza = 0;
                 player.setDeltaMovement(0, 0, 0);
+                GoetyMechMod.LOGGER.info("SLAM_FREEZE_START: freezeTick={}, dm=({},{},{}), onGround={}",
+                        PrototypeItem.getSlamFreezeTick(player), 0, 0, 0, player.onGround());
             }
 
             Vec3 startM = player.getDeltaMovement();
@@ -279,7 +283,12 @@ public class PrototypeEvents {
                 if (PrototypeItem.isWallRunning(player)) {
                     handleWallRunTick(player);
                 } else if (player.isSprinting() && !player.isFallFlying() && !player.isInWater()) {
+                    GoetyMechMod.LOGGER.info("WALLRUN_BRANCH: isSprint={}, isFly={}, onGround={}, zza={}, inWater={}, inLava={}",
+                            player.isSprinting(), player.isFallFlying(), player.onGround(), player.zza,
+                            player.isInWater(), player.isInLava());
                     tryStartWallRun(player);
+                } else if (player.isSprinting() && player.isFallFlying()) {
+                    GoetyMechMod.LOGGER.info("WALLRUN_SKIP_FLY: isSprint=true but isFly=true → 墙跑被鞘翅阻挡");
                 }
             }
 
@@ -299,6 +308,9 @@ public class PrototypeEvents {
                     player.setDeltaMovement(m.x, 1.5, m.z);
                     GoetyMechMod.LOGGER.debug("Prototype ground takeoff: zza={}, motion={}", player.zza, m);
                 } else if (PrototypeItem.hasFlight(kills) && !player.onGround() && player.zza > 0.0F && charge == 0 && !isCJ) {
+                    GoetyMechMod.LOGGER.info("FLIGHT_AUTO_START: onGround={}, zza={}, charge={}, isCJ={}, isSprint={}, isFly={}, isWallRun={}",
+                            player.onGround(), player.zza, charge, isCJ, player.isSprinting(),
+                            player.isFallFlying(), PrototypeItem.isWallRunning(player));
                     player.startFallFlying();
                     Vec3 m = player.getDeltaMovement();
                     player.setDeltaMovement(m.x, Math.max(m.y, 0.3), m.z);
@@ -313,6 +325,11 @@ public class PrototypeEvents {
         if (event.phase == TickEvent.Phase.END) {
             // ── Post-travel diagnostic ──
             Vec3 postTravelM = player.getDeltaMovement();
+            if (PrototypeItem.getSlamFreezeTick(player) > 0) {
+                GoetyMechMod.LOGGER.info("SLAM_FREEZE_END_postTravel: dm=({},{},{}), onGround={} ← travel()加了重力?",
+                        String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
+                        player.onGround());
+            }
             GoetyMechMod.LOGGER.debug("D POST_TRAVEL: zza={}, motion=({}, {}, {}), onGround={}",
                     player.zza,
                     String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
@@ -430,6 +447,12 @@ public class PrototypeEvents {
     private static void tryStartWallRun(Player player) {
         if (!player.isSprinting()) return;
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
+        float friction = wallDir != null ? WallUtil.getWallFriction(player, wallDir) : -1f;
+        GoetyMechMod.LOGGER.info("WALLRUN_TRY: isSprint={}, isFly={}, onGround={}, zza={}, inWater={}, inLava={}, wallDir={}, friction={}",
+                player.isSprinting(), player.isFallFlying(), player.onGround(), player.zza,
+                player.isInWater(), player.isInLava(),
+                wallDir != null ? String.format("({},{},{})", wallDir.x, wallDir.y, wallDir.z) : "null",
+                String.format("%.2f", friction));
         if (wallDir == null) return;
         if (WallUtil.getWallFriction(player, wallDir) >= 0.8f) return;
         PrototypeItem.setWallRunning(player, true);
@@ -445,12 +468,15 @@ public class PrototypeEvents {
     private static void handleWallRunTick(Player player) {
         Vec3 wallN = PrototypeItem.getWallNormal(player);
         if (wallN.lengthSqr() < 0.5) {
+            GoetyMechMod.LOGGER.info("WALLRUN_TICK_STOP: reason=wallN_zero, onGround={}, isFly={}", player.onGround(), player.isFallFlying());
             stopWallRun(player);
             return;
         }
 
         if (player.isShiftKeyDown()
                 || player.isInWater() || player.isInLava()) {
+            GoetyMechMod.LOGGER.info("WALLRUN_TICK_STOP: reason=shift/water/lava, shift={}, inWater={}, inLava={}",
+                    player.isShiftKeyDown(), player.isInWater(), player.isInLava());
             stopWallRun(player);
             return;
         }

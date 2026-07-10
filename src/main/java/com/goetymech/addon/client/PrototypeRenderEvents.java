@@ -95,11 +95,22 @@ public class PrototypeRenderEvents {
             boolean hasProto = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
             Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
             if (sprinting && hasProto && !player.isFallFlying() && !player.isInWater() && wallDir != null) {
+                if (player.tickCount % 10 == 0) {
+                    GoetyMechMod.LOGGER.info("CLIENT_WALL_START: sprint={}, isFly={}, inWater={}, inLava={}, onGround={}, wallDir={}",
+                            sprinting, player.isFallFlying(), player.isInWater(), player.isInLava(), player.onGround(),
+                            wallDir != null ? String.format("({},{},{})", wallDir.x, wallDir.y, wallDir.z) : "null");
+                }
                 ClientWallRunState.wallNormal = wallDir;
                 ClientWallRunState.graceTicks = 0;
             } else if (sprinting && hasProto && !player.isFallFlying() && ClientWallRunState.graceTicks > 0) {
                 ClientWallRunState.tickGrace();
             } else {
+                if (sprinting && hasProto && player.tickCount % 20 == 0) {
+                    GoetyMechMod.LOGGER.info("CLIENT_WALL_NO_DETECT: sprint={}, isFly={}, inWater={}, inLava={}, onGround={}, wallDir={}, grace={}",
+                            sprinting, player.isFallFlying(), player.isInWater(), player.isInLava(), player.onGround(),
+                            wallDir != null ? String.format("({},{},{})", wallDir.x, wallDir.y, wallDir.z) : "null",
+                            ClientWallRunState.graceTicks);
+                }
                 ClientWallRunState.wallNormal = Vec3.ZERO;
                 ClientWallRunState.graceTicks = 0;
             }
