@@ -46,11 +46,14 @@
   - 这两个文件已无引用，且之前是竞态根因之一（S2C 注册包 vs openScreen 包走不同频道）
 - **编译启动通过**：`gradlew runClient` BUILD SUCCESSFUL，无 crash
 - **预期效果**：同维度远距离应能正常打开面板 + 无假包/延迟
-- **未修复**：跨维度仍不行（client level 维度不匹配目标 BE 维度
+- **未修复**：跨维度仍不行（client level 维度 != 目标 BE 维度）
 
-- **功能冻结归档**
-  - 已实现：瞬间施法、轮盘切换、移动/滑翔保持、stillValid 绕过
-  - 部分实现：3.1 玩家投递（同维度近距离 OK）、3.2 存入仓库（OK）
-  - 修复失败：远距离/跨维度打开 Create GUI + 远程下单
-  - 已知问题：远距离施法 GUI 无法打开；取物品时出现假包（phantom package）和卡顿
-  - 关联 openspec：`stock-ticker-focus`
+## 2026-07-10 (fix3b: 修复远距 GUI 一闪而过)
+
+- **根因**：`StockKeeperRequestScreen.containerTick:439-440` 检查 keeper/blaze 实体是否存活 → 两者均为 null 时调用 `menu.player.closeContainer()`
+  - 远距时区块未加载 → `getEntitiesOfClass` 找不到 SeatEntity/BlazeBurner → stockKeeper + blaze 均为 null → 秒关
+- **修复**：新增 `StockKeeperRequestScreenMixin` → `@Inject` 拦截 `closeContainer()` 调用
+  - 条件：`blockEntity.getLevel().getBlockEntity(pos) != blockEntity` → 说明是 fake BE（远距/区块未加载） → 取消 close
+  - 正常距离：`getBlockEntity(pos)` 返回真 BE → `== blockEntity` → 不取消 → 正常流程
+- **编译**：Mixin 编译通过，PrototypeEvents 存在无关编译错误（skip runClient）
+- **预期**：远距 GUI 不再一闪而过

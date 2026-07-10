@@ -335,7 +335,6 @@ public class PrototypeEvents {
                     player.onGround());
 
             if (PrototypeItem.getSlamDiagTick(player) > 0) {
-                Vec3 postTravelM = player.getDeltaMovement();
                 double moved = Math.sqrt(
                         (player.getX() - player.xo) * (player.getX() - player.xo)
                         + (player.getZ() - player.zo) * (player.getZ() - player.zo));
