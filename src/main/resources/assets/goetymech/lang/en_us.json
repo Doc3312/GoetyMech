@@ -34,6 +34,7 @@
   "info.goetymech.squad_focus.not_bound": "§cNot bound to a Squad Barracks",
   "info.goetymech.squad_focus.bound": "§aBound to Squad Barracks",
   "info.goetymech.squad_focus.bound_success": "§aBound to Squad Barracks",
+  "info.goetymech.squad_focus.cooldown": "§cSquad Focus on cooldown… ~%d seconds until next summon",
   "info.goetymech.squad_focus.squad_info": "§7Squad: §f%d units 路 Tier %d",
   "info.goetymech.squad_focus.estimated_cost": "§bEstimated cost: %d souls",
   "info.goetymech.squad_focus.unbound": "§eCleared Squad Barracks binding",

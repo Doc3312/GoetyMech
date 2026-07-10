@@ -42,6 +42,7 @@ public class SquadFocus extends MagicFocus {
     private static final String TAG_CACHED_COUNT = "goetymech.cached_count";
     private static final String TAG_MONUMENT_CAPACITY = "goetymech.monument_capacity";
     private static final String TAG_MONUMENT_USED = "goetymech.monument_used";
+    private static final String TAG_COOLDOWN_UNTIL = "goetymech.cooldown_until";
 
     public static final String TAG_SUMMONER = "goetymech.squad_summoner";
     public static final String BOUND_TYPE_BARRACKS = "barracks";
@@ -134,7 +135,30 @@ public class SquadFocus extends MagicFocus {
             tag.remove(TAG_CACHED_COUNT);
             tag.remove(TAG_MONUMENT_CAPACITY);
             tag.remove(TAG_MONUMENT_USED);
+            tag.remove(TAG_COOLDOWN_UNTIL);
         }
+    }
+
+    public static void setCooldown(ItemStack stack, Level level, int ticks) {
+        if (level instanceof ServerLevel serverLevel) {
+            stack.getOrCreateTag().putLong(TAG_COOLDOWN_UNTIL, serverLevel.getGameTime() + ticks);
+        }
+    }
+
+    public static boolean isOnCooldown(ItemStack stack, Level level) {
+        if (!stack.hasTag() || !stack.getTag().contains(TAG_COOLDOWN_UNTIL)) return false;
+        if (level instanceof ServerLevel serverLevel) {
+            return serverLevel.getGameTime() < stack.getTag().getLong(TAG_COOLDOWN_UNTIL);
+        }
+        return false;
+    }
+
+    public static int getCooldownRemaining(ItemStack stack, Level level) {
+        if (!isOnCooldown(stack, level)) return 0;
+        if (level instanceof ServerLevel serverLevel) {
+            return (int) (stack.getTag().getLong(TAG_COOLDOWN_UNTIL) - serverLevel.getGameTime());
+        }
+        return 0;
     }
 
     public static String makeSummonerKey(BlockPos pos, String dimension) {

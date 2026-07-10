@@ -69,6 +69,23 @@ public class SquadSpell extends Spell {
     }
 
     @Override
+    public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster) {
+        if (!isShifting(caster)) {
+            ItemStack focus = WandUtil.findFocus(caster);
+            if (focus.getItem() instanceof SquadFocus && SquadFocus.isOnCooldown(focus, worldIn)) {
+                if (caster instanceof Player player) {
+                    int remaining = SquadFocus.getCooldownRemaining(focus, worldIn);
+                    player.displayClientMessage(
+                            Component.translatable("info.goetymech.squad_focus.cooldown", remaining / 20 + 1),
+                            true);
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public SpellType getSpellType() {
         return SpellType.VOID;
     }
@@ -93,7 +110,7 @@ public class SquadSpell extends Spell {
         ItemStack focus = WandUtil.findFocus(caster);
         if (!(focus.getItem() instanceof SquadFocus)) return;
 
-        boolean onCooldown = SEHelper.getFocusCoolDown(player).isOnCooldown(focus.getItem());
+        boolean onCooldown = SquadFocus.isOnCooldown(focus, worldIn);
         GoetyMechMod.LOGGER.debug("SquadSpell.SpellResult entered: isShifting={} onCooldown={} boundType={}",
                 isShifting(caster), onCooldown, SquadFocus.getBoundType(focus));
 
@@ -238,7 +255,7 @@ public class SquadSpell extends Spell {
 
         int cooldown = (int) (ModConfig.SQUAD_SUMMON_COOLDOWN.get());
         if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), cooldown);
+            SquadFocus.setCooldown(focus, worldIn, cooldown);
         }
         this.playSound(worldIn, caster, SoundEvents.EVOKER_CAST_SPELL);
     }
@@ -300,7 +317,7 @@ public class SquadSpell extends Spell {
                     Component.translatable("info.goetymech.squad_focus.all_alive").withStyle(ChatFormatting.YELLOW), true);
             GoetyMechMod.LOGGER.debug("handleMonumentSummon: all alive teleport, adding 20t cooldown");
             if (!focus.isEmpty()) {
-                SEHelper.addCooldown(player, focus.getItem(), 20);
+                SquadFocus.setCooldown(focus, worldIn, 20);
             }
             this.playSound(worldIn, player, SoundEvents.EVOKER_CAST_SPELL);
             return;
@@ -415,7 +432,7 @@ public class SquadSpell extends Spell {
         int cd = (int) (ModConfig.MONUMENT_SUMMON_COOLDOWN.get());
         GoetyMechMod.LOGGER.debug("handleMonumentSummon: spawned={} applying {}t cooldown", spawned, cd);
         if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), cd);
+            SquadFocus.setCooldown(focus, worldIn, cd);
         }
         this.playSound(worldIn, player, SoundEvents.EVOKER_CAST_SPELL);
     }
