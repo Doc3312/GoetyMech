@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,12 +26,23 @@ public class StockKeeperRequestScreenMixin {
     @Shadow(remap = false)
     public AddressEditBox addressBox;
 
+    @Unique
+    private int goetymech$refreshTick = 0;
+
     @Inject(method = "containerTick", at = @At("HEAD"))
-    private void gp$patchRemoteStockKeeper(CallbackInfo ci) {
+    private void gp$patchRemoteStockKeeperAndRefresh(CallbackInfo ci) {
         if (stockKeeper.get() == null
                 && blockEntity.getLevel() != null
                 && blockEntity.getLevel().getBlockEntity(blockEntity.getBlockPos()) != blockEntity) {
             stockKeeper = new WeakReference<>(Minecraft.getInstance().player);
+        }
+
+        if (blockEntity.getLevel() != null
+                && blockEntity.getLevel().getBlockEntity(blockEntity.getBlockPos()) != blockEntity) {
+            goetymech$refreshTick++;
+            if (goetymech$refreshTick % 20 == 0) {
+                blockEntity.refreshClientStockSnapshot();
+            }
         }
     }
 
