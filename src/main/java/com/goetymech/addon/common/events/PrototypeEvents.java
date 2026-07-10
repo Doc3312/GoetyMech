@@ -211,8 +211,7 @@ public class PrototypeEvents {
             return;
         }
 
-        if (kills >= ModConfig.IMMUNITY_FIRE_KILLS.get()
-                && (event.getSource().is(DamageTypeTags.IS_FIRE) || event.getSource().is(DamageTypeTags.IS_HOT))) {
+        if (kills >= ModConfig.IMMUNITY_FIRE_KILLS.get() && event.getSource().is(DamageTypeTags.IS_FIRE)) {
             event.setCanceled(true);
             return;
         }

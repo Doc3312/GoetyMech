@@ -13,7 +13,7 @@ function loadDict() {
   return termDict;
 }
 
-function dictTranslate(text) {
+export function dictTranslate(text) {
   const dict = loadDict();
   let result = text;
   const sorted = Object.entries(dict).sort((a, b) => b[0].length - a[0].length);
@@ -26,18 +26,10 @@ function dictTranslate(text) {
 export async function translateZhToEn(text) {
   const dictResult = dictTranslate(text);
   try {
-    const { default: googleTranslate } = await import('@vitalets/google-translate-api');
-    const { text: apiResult } = await googleTranslate(text, { from: 'zh', to: 'en' });
-
-    for (const [zh, en] of Object.entries(loadDict())) {
-      if (apiResult.toLowerCase().includes(en.toLowerCase())) {
-        continue;
-      }
-    }
+    const { translate } = await import('@vitalets/google-translate-api');
+    const { text: apiResult } = await translate(text, { from: 'zh-CN', to: 'en' });
     return apiResult;
   } catch {
     return dictResult;
   }
 }
-
-export default { translateZhToEn, dictTranslate };

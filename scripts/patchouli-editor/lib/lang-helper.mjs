@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
+const REPO_ROOT = path.resolve(__dirname, '..', '..', '..');
 const ASSETS = path.join(REPO_ROOT, 'src', 'main', 'resources', 'assets', 'goetymech');
 
 function readJson(filePath) {

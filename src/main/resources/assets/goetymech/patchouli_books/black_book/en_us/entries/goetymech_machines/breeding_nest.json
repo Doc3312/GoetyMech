@@ -1,0 +1,17 @@
+{
+  "name": "Breeding Nest",
+  "icon": "goetymech:breeding_nest",
+  "category": "goetymech:goetymech_machines",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A machine that converts food into Twisted Embryos."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "goetymech:breeding_nest",
+      "text": ""
+    }
+  ]
+}

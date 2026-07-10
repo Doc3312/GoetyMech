@@ -127,7 +127,6 @@
   "info.goetymech.gateway.danger_area": "§e目标区域危险，再次施法将强制传送",
   "info.goetymech.gateway.no_marker": "§c地图上无有效标记点",
   "info.goetymech.gateway.map_target_found": "§a已定位地图标记点",
-
   "block.goetymech.tier1_soul_monument": "一阶魂灵丰碑",
   "block.goetymech.tier2_soul_monument": "二阶魂灵丰碑",
   "block.goetymech.tier3_soul_monument": "三阶魂灵丰碑",
@@ -144,7 +143,6 @@
   "info.goetymech.squad_focus.not_owner_monument": "§c你不是此魂灵丰碑的拥有者",
   "info.goetymech.squad_focus.squad_info_monument": "§7已记录仆从：§f%d/%d · %d 阶",
   "info.goetymech.squad_focus.all_alive": "§e所有仆从仍在服役，已传送至身边",
-
   "item.goetymech.stock_ticker_focus": "仓储聚晶",
   "info.goetymech.stock_ticker_focus.bound": "§a已绑定仓储发报机",
   "info.goetymech.stock_ticker_focus.bound_pos": "§7坐标: %d, %d, %d [%s]",
@@ -156,5 +154,6 @@
   "info.goetymech.stock_ticker_focus.no_keeper": "§c仓储发报机附近没有仓库管理员",
   "info.goetymech.stock_ticker_focus.locked": "§c物流网络已锁定",
   "info.goetymech.stock_ticker_focus.shift_bound": "施法远程打开绑定网络的库存界面。潜行右键解绑。",
-  "info.goetymech.stock_ticker_focus.shift_unbound": "手持聚晶右键仓储发报机绑定。潜行右键解绑。"
+  "info.goetymech.stock_ticker_focus.shift_unbound": "手持聚晶右键仓储发报机绑定。潜行右键解绑。",
+  "goetymech.entry.breeding_nest": "育巢"
 }

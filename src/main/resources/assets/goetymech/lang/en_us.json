@@ -127,7 +127,6 @@
   "info.goetymech.gateway.danger_area": "§eTarget area is dangerous, cast again to force teleport",
   "info.goetymech.gateway.no_marker": "§cMap has no valid marker",
   "info.goetymech.gateway.map_target_found": "§aMap marker located",
-
   "block.goetymech.tier1_soul_monument": "Tier 1 Soul Monument",
   "block.goetymech.tier2_soul_monument": "Tier 2 Soul Monument",
   "block.goetymech.tier3_soul_monument": "Tier 3 Soul Monument",
@@ -144,7 +143,6 @@
   "info.goetymech.squad_focus.not_owner_monument": "§cYou are not the owner of this Soul Monument",
   "info.goetymech.squad_focus.squad_info_monument": "§7Minions: §f%d/%d  — Tier %d",
   "info.goetymech.squad_focus.all_alive": "§eAll minions are still in service, teleported to your side",
-
   "item.goetymech.stock_ticker_focus": "Stock Ticker Focus",
   "info.goetymech.stock_ticker_focus.bound": "§aBound to Stock Ticker",
   "info.goetymech.stock_ticker_focus.bound_pos": "§7Pos: %d, %d, %d [%s]",
@@ -156,5 +154,6 @@
   "info.goetymech.stock_ticker_focus.no_keeper": "§cStock Ticker has no Keeper nearby",
   "info.goetymech.stock_ticker_focus.locked": "§cNetwork is locked",
   "info.goetymech.stock_ticker_focus.shift_bound": "Cast to request items from the bound stock network. Sneak-right-click to unbind.",
-  "info.goetymech.stock_ticker_focus.shift_unbound": "Right-click a Stock Ticker to bind. Sneak-right-click to unbind."
+  "info.goetymech.stock_ticker_focus.shift_unbound": "Right-click a Stock Ticker to bind. Sneak-right-click to unbind.",
+  "goetymech.entry.breeding_nest": "Breeding Nest"
 }

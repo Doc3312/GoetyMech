@@ -1,0 +1,17 @@
+{
+  "name": "育巢",
+  "icon": "goetymech:breeding_nest",
+  "category": "goetymech:goetymech_machines",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "这是一台可以将食物转化为扭曲胚胎的机器。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "goetymech:breeding_nest",
+      "text": ""
+    }
+  ]
+}
