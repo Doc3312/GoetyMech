@@ -132,3 +132,39 @@
 - 改动：将 prototype.png 非透明像素在 16×16 帧内下移右移 1px，内容中心从 (6.5, 6.0) 对齐到 (7.5, 7.0)
 - 原因：贴图更新后内容位于帧左上角，`item/generated` 映射后图标在背包中偏左上角显示
 - 关联：commit 4745416
+
+### 2026-07-10 — 墙跑重构：客户端主导运动 + 渐进加速 + 服务端不干预
+
+- 改动：MixinWallRunTravel 分离客户端（完整墙跑运动+渐进加速+Y轴控制+wallN归一化）和服务端（仅cancel travel跳过重力，不设速度不hurtMarked）；渐进加速 `speed = min(base + accelRate×wallTicks, base×maxMultiplier×tierMult)` 像飞行/冲刺；Y轴 W=爬(speed)、S=滑(-speed×0.5)、不按=慢滑(-0.04)；C2SWallInputPacket 加 `wallRunning` flag + `wallNormal` 字段，客户端通知道服务端墙跑状态；服务端 `handleWallRunTick` 简化只保留基本退出条件（shift/water/lava），不再自行检测墙（客户端主导）；新增 Config：`WALL_RUN_ACCEL_RATE`(0.02)、`WALL_RUN_MAX_MULTIPLIER`(3.0)
+- 原因：服务端墙检测 95%+ 失败（服务端 zza 永远为 0，位置与客户端不同步），且 tierMult 两端不同步导致墙跑速度 3 倍差异
+- 关联：diagnose skill；日志分析确认 tierMult desync 为"异常跃起"根因
+
+### 2026-07-10 — 删除 Curios 支持（原型仅限胸甲栏）
+
+- 改动：删除 `PrototypeCurio.java` / `CaelusFlightHandler.java` / `CaelusLoaded.java` / `CuriosHelper.java`；`hasAnyPrototype()` 简化为只查 `EquipmentSlot.CHEST`；从 `data/curios/tags/items/back.json` 移除 `prototype`/`prototype_mimic`，从 `body.json` 移除 `prototype`
+- 原因：原型设计目标为仅胸甲栏使用；Curios 适配引入不必要的复杂度（Caelus 依赖、PersistentData 同步问题）
+- 教训：先差点删了 BODY/BACK 槽位注册（影响其他 Curios 物品），正确方案是仅移除 tag JSON 中的条目；Curios 物品-槽位映射 100% 基于 Item Tag（`curios:*` 命名空间），不是 capability 也不是 ICurioItem
+
+### 2026-07-10 — 游泳加速对标冲刺
+
+- 改动：游泳加速公式从 `1.25 - 0.25 / desiredSpeedMult`（最大值渐进 1.25x）改为 `velocityMult = 1 + t × SWIM_MAX_MULTIPLIER × tierMult`（像冲刺的 MULTIPLY_TOTAL，最大值 9x）
+- 原因：原公式无论 tierMult 多高、SWIM_MAX_MULTIPLIER 多大，速度至多 1.25 倍，实际等于加速没生效
+
+### 2026-07-10 — 免疫系统：冲击/动能 + 灼烧
+
+- 改动：新增 `IMMUNITY_IMPACT_KILLS`(30) / `IMMUNITY_FIRE_KILLS`(200) Config；`onLivingAttack` 中挡 `DamageTypes.FLY_INTO_WALL`（30 击杀解锁）和 `DamageTypeTags.IS_FIRE`（200 击杀解锁）；tooltip 新增"动能吸收"、"烈焰屏障"行
+- 原因：为原型提供与击杀成长挂钩的防御能力
+
+### 2026-07-10 — 下砸冻结彻底修复
+
+- 改动：删除 `slamFreezeTick` 系统（triggerSlamImpact/onLivingTick/onPlayerTick START 三处清零 + NBT tag）；删除 `SLAM_ZERO_H`（加剧问题）；加 `player.hurtMarked = true` 强制同步服务端位置到客户端；CraterBlock.getCollisionShape 返回原始方块的碰撞箱（`orig.getCollisionShape(level, pos, ctx)`），而非 `Shapes.empty()`
+- 根因追踪：CraterBlock 替换客户端地面方块为 `Shapes.empty()` → 客户端站不住往下掉 → 服务端有原始方块拉回 → 原地抽动。飞行能跑因为不依赖地面碰撞
+- 原因：用户报告下砸后原地被困 40+ tick
+- 关联：incidents/craft.20260710.slam-freeze-craterblock.md
+
+### 2026-07-10 — 诊断日志系统
+
+- 改动：新增 SLAM_DIAG（server LivingTick/END phase）、SLAM_DIAG_CLIENT（client tick，含输入检测）、SLAM_IMPACT（冲击瞬间）、movedXZ 实际位移追踪；SetSlamDiagTick 40 tick 窗口
+- 原因：下砸冻结根因无法从代码分析定位，需要每 tick 速度/位置/输入追踪
+- 教训：ServerPlayer.zza 永远为 0，服务端诊断靠服务器自行计算的 movedXZ 不可靠（不反映客户端位置更新），必须加客户端输入检测
+
