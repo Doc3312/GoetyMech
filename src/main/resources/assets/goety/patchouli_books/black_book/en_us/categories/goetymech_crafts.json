@@ -2,5 +2,6 @@
   "name": "GoetyMech Crafts",
   "description": "Items and tools forged through the fusion of magic and machinery.",
   "icon": "goetymech:remote_engine",
-  "sortnum": 11
+  "sortnum": 11,
+  "parent": "goety:goetymech"
 }

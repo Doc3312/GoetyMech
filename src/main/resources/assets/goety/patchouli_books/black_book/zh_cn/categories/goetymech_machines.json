@@ -2,5 +2,6 @@
   "name": "GoetyMech 机械",
   "description": "通过暗黑工程学制作的各种机器与装置。",
   "icon": "goetymech:breeding_nest",
-  "sortnum": 8
+  "sortnum": 8,
+  "parent": "goety:goetymech"
 }

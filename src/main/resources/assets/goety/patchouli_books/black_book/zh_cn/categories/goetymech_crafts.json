@@ -2,5 +2,6 @@
   "name": "GoetyMech 工艺",
   "description": "通过魔法与机械的融合所锻造的物品与工具。",
   "icon": "goetymech:remote_engine",
-  "sortnum": 11
+  "sortnum": 11,
+  "parent": "goety:goetymech"
 }

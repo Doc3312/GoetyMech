@@ -2,5 +2,6 @@
   "name": "GoetyMech 探索",
   "description": "在世界中发现新的结构与遭遇。",
   "icon": "goetymech:stress_reader",
-  "sortnum": 12
+  "sortnum": 12,
+  "parent": "goety:goetymech"
 }
