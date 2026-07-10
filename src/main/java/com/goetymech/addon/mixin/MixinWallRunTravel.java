@@ -1,6 +1,5 @@
 package com.goetymech.addon.mixin;
 
-import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.client.ClientWallRunState;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.config.ModConfig;
@@ -20,78 +19,94 @@ public abstract class MixinWallRunTravel {
     private void gp$onWallRunTravel(Vec3 travelVec, CallbackInfo ci) {
         Player player = (Player) (Object) this;
         boolean isClient = player.level().isClientSide;
-        if (!isClient && !PrototypeItem.isWallRunning(player)) return;
-        if (isClient && !ClientWallRunState.isActive()) return;
-        if (!PrototypeItem.hasAnyPrototype(player)) return;
 
-        Vec3 wallN = isClient ? ClientWallRunState.wallNormal : PrototypeItem.getWallNormal(player);
-        if (wallN.lengthSqr() < 0.5 && (isClient ? ClientWallRunState.graceTicks : 0) <= 0) return;
-        if (wallN.lengthSqr() < 0.5 && isClient) wallN = ClientWallRunState.lastWallNormal;
-        if (wallN.lengthSqr() < 0.5) return;
-        wallN = wallN.normalize();
-        Vec3 wallUp = new Vec3(0, 1, 0);
-        Vec3 wallRight = wallUp.cross(wallN).normalize();
+        if (isClient) {
+            if (!ClientWallRunState.isActive()) return;
+            if (!PrototypeItem.hasAnyPrototype(player)) return;
 
-        float wallFwd = isClient ? ClientWallRunState.forwardInput : PrototypeItem.getWallForward(player);
-        float wallStrafe = isClient ? ClientWallRunState.strafeInput : PrototypeItem.getWallStrafe(player);
+            Vec3 wallN = ClientWallRunState.wallNormal;
+            if (wallN.lengthSqr() < 0.5 && ClientWallRunState.graceTicks > 0) {
+                wallN = ClientWallRunState.lastWallNormal;
+            }
+            if (wallN.lengthSqr() < 0.5) return;
+            wallN = wallN.normalize();
 
-        if (isClient && (ClientWallRunState.sprintDown || player.isSprinting())) {
-            player.setSprinting(true);
-            ClientWallRunState.sprintDown = true;
-        }
+            Vec3 wallUp = new Vec3(0, 1, 0);
+            Vec3 wallRight = wallUp.cross(wallN).normalize();
 
-        int kills = PrototypeItem.getAssimilationKills(player);
-        double tierMult = PrototypeItem.getTierMultiplier(kills);
-        double speed = ModConfig.WALL_RUN_SPEED.get() * tierMult;
-        Vec3 climbVec = wallUp.scale(wallFwd * speed);
-        Vec3 strafeVec = wallRight.scale(wallStrafe * speed);
-        Vec3 wallMove = climbVec
-                .add(strafeVec)
-                .add(wallN.scale(-ModConfig.WALL_GRAVITY.get()))
-                .add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
+            float wallFwd = ClientWallRunState.forwardInput;
+            float wallStrafe = ClientWallRunState.strafeInput;
 
-        if (wallFwd > 0 && isClient) {
-            AABB futureBox = player.getBoundingBox().move(climbVec).inflate(-0.02);
-            if (!player.level().noCollision(futureBox)) {
-                boolean found = false;
-                for (double out : new double[]{2.8, 3.2, 2.5, 2.0}) {
-                    Vec3 outward = wallN.scale(-out);
-                    AABB checkBox = player.getBoundingBox().move(climbVec.add(outward)).inflate(-0.02);
-                    if (player.level().noCollision(checkBox)) {
-                        wallMove = wallMove.add(outward);
-                        ClientWallRunState.applyGrace(15);
-                        ClientWallRunState.sprintRetainTicks = 60;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    for (double side : new double[]{0.6, -0.6, 0.4, -0.4, 0.2, -0.2}) {
-                        Vec3 sideStep = wallRight.scale(side);
-                        AABB checkBox = player.getBoundingBox().move(climbVec.add(sideStep)).inflate(-0.02);
+            if (ClientWallRunState.sprintDown || player.isSprinting()) {
+                player.setSprinting(true);
+                ClientWallRunState.sprintDown = true;
+            }
+
+            int wallTicks = PrototypeItem.getWallRunTicks(player);
+            double base = ModConfig.WALL_RUN_SPEED.get();
+            double accelRate = ModConfig.WALL_RUN_ACCEL_RATE.get();
+            int kills = PrototypeItem.getAssimilationKills(player);
+            double tierMult = PrototypeItem.getTierMultiplier(kills);
+            double maxMultiplier = ModConfig.WALL_RUN_MAX_MULTIPLIER.get() * tierMult;
+            double maxSpeed = base * maxMultiplier;
+            double speed = Math.min(base + accelRate * wallTicks, maxSpeed);
+
+            double vy;
+            if (wallFwd > 0) {
+                vy = speed;
+            } else if (wallFwd < 0) {
+                vy = -speed * 0.5;
+            } else {
+                vy = -0.04;
+            }
+
+            Vec3 climbVec = wallUp.scale(wallFwd * speed);
+            Vec3 strafeVec = wallRight.scale(wallStrafe * speed);
+            Vec3 wallMove = climbVec
+                    .add(strafeVec)
+                    .add(wallN.scale(-ModConfig.WALL_GRAVITY.get()))
+                    .add(wallN.scale(ModConfig.WALL_PULL_SPEED.get()));
+
+            wallMove = new Vec3(wallMove.x, vy, wallMove.z);
+
+            if (wallFwd > 0) {
+                AABB futureBox = player.getBoundingBox().move(climbVec).inflate(-0.02);
+                if (!player.level().noCollision(futureBox)) {
+                    boolean found = false;
+                    for (double out : new double[]{2.8, 3.2, 2.5, 2.0}) {
+                        Vec3 outward = wallN.scale(-out);
+                        AABB checkBox = player.getBoundingBox().move(climbVec.add(outward)).inflate(-0.02);
                         if (player.level().noCollision(checkBox)) {
-                            wallMove = wallMove.add(sideStep);
+                            wallMove = wallMove.add(outward);
+                            ClientWallRunState.applyGrace(15);
+                            ClientWallRunState.sprintRetainTicks = 60;
+                            found = true;
                             break;
+                        }
+                    }
+                    if (!found) {
+                        for (double side : new double[]{0.6, -0.6, 0.4, -0.4, 0.2, -0.2}) {
+                            Vec3 sideStep = wallRight.scale(side);
+                            AABB checkBox = player.getBoundingBox().move(climbVec.add(sideStep)).inflate(-0.02);
+                            if (player.level().noCollision(checkBox)) {
+                                wallMove = wallMove.add(sideStep);
+                                break;
+                            }
                         }
                     }
                 }
             }
+
+            player.setDeltaMovement(wallMove);
+            player.move(MoverType.SELF, wallMove);
+
+            ci.cancel();
+        } else {
+            if (!PrototypeItem.isWallRunning(player)) return;
+            if (!PrototypeItem.hasAnyPrototype(player)) return;
+
+            player.setDeltaMovement(0, -0.04, 0);
+            ci.cancel();
         }
-
-        GoetyMechMod.LOGGER.info("WALLRUN_MIXIN: side={}, wallN=({},{},{}), fwd={}, strafe={}, sprint={}, isFly={}, onGround={}, speed={}, wallMove=({},{},{})",
-                isClient ? "CLIENT" : "SERVER",
-                String.format("%.2f", wallN.x), String.format("%.2f", wallN.y), String.format("%.2f", wallN.z),
-                wallFwd, wallStrafe, player.isSprinting(), player.isFallFlying(), player.onGround(),
-                String.format("%.3f", speed),
-                String.format("%.4f", wallMove.x), String.format("%.4f", wallMove.y), String.format("%.4f", wallMove.z));
-
-        player.setDeltaMovement(wallMove);
-        player.move(MoverType.SELF, wallMove);
-
-        if (!isClient) {
-            player.hurtMarked = true;
-        }
-
-        ci.cancel();
     }
 }
