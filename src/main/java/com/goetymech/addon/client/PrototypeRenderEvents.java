@@ -66,8 +66,14 @@ public class PrototypeRenderEvents {
     // ── Slam client state (synced via S2CSlamStatePacket) ──
     private static boolean clientSlamming = false;
 
+    // ── Slam diagnostic ──
+    private static int clientSlamDiagTick = 0;
+
     public static void setClientSlamming(boolean slamming) {
         clientSlamming = slamming;
+        if (!slamming) {
+            clientSlamDiagTick = 40;
+        }
     }
 
     // ═══════════════════════════════════════════════════

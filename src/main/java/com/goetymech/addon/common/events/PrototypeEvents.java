@@ -259,11 +259,15 @@ public class PrototypeEvents {
         int diag = PrototypeItem.getSlamDiagTick(player);
         if (diag > 0) {
             PrototypeItem.setSlamDiagTick(player, diag - 1);
-            GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=LivingTick, dm_before=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, zza={}",
+            double moved = Math.sqrt(
+                    (player.getX() - player.xo) * (player.getX() - player.xo)
+                    + (player.getZ() - player.zo) * (player.getZ() - player.zo));
+            GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=LivingTick, dm_before=({},{},{}), hSpeed={}, movedXZ={}, onGround={}, isFly={}, isSprint={}, zza={}",
                     String.format("%.4f", player.getDeltaMovement().x),
                     String.format("%.4f", player.getDeltaMovement().y),
                     String.format("%.4f", player.getDeltaMovement().z),
                     String.format("%.4f", Math.sqrt(player.getDeltaMovement().x * player.getDeltaMovement().x + player.getDeltaMovement().z * player.getDeltaMovement().z)),
+                    String.format("%.6f", moved),
                     player.onGround(), player.isFallFlying(), player.isSprinting(), player.zza);
         }
 
@@ -743,7 +747,7 @@ public class PrototypeEvents {
                 String.format("%.4f", player.getDeltaMovement().y),
                 String.format("%.4f", player.getDeltaMovement().z),
                 PrototypeItem.getSlamInvulnTick(player));
-        PrototypeItem.setSlamDiagTick(player, 25);
+        PrototypeItem.setSlamDiagTick(player, 40);
 
         player.fallDistance = 0;
         PrototypeItem.clearSlamState(player);
