@@ -10,7 +10,6 @@ import com.goetymech.addon.common.utils.GatewayMappingLoader;
 import com.goetymech.addon.common.utils.GlobalStressLinkManager;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import com.goetymech.addon.common.net.ModNetwork;
-import com.goetymech.addon.compat.caelus.CaelusLoaded;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
 import com.goetymech.addon.init.ModCreativeTab;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
@@ -95,18 +93,6 @@ public class GoetyMechMod {
                                 new StressShieldProvider());
                     }
                 });
-
-        // 条件注册 Caelus 兼容 — 避免类加载找不到 CaelusApi 导致崩溃
-        if (ModList.get().isLoaded("caelus")) {
-            try {
-                Class<?> handler = Class.forName("com.goetymech.addon.compat.caelus.CaelusFlightHandler");
-                MinecraftForge.EVENT_BUS.register(handler);
-                LOGGER.info("Caelus detected — Prototype Curios flight enabled");
-            } catch (Throwable e) {
-                LOGGER.warn("CaelusFlightHandler not available: {}", e.getMessage());
-            }
-        } else {
-            LOGGER.info("Caelus not detected — Prototype chest slot only");
-        }
+        LOGGER.info("Prototype chest slot only — Curios support removed");
     }
 }

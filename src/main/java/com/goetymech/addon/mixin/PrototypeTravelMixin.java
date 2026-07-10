@@ -141,14 +141,16 @@ public abstract class PrototypeTravelMixin {
 
                 int kills = PrototypeItem.getAssimilationKills(player);
                 double tierMult = PrototypeItem.getTierMultiplier(kills);
-                double desiredSpeedMult = 1.0 + Math.min((tick - 1) / 80.0, 1.0) * ModConfig.SWIM_MAX_MULTIPLIER.get() * tierMult;
-                double velocityMult = 1.25 - 0.25 / desiredSpeedMult;
+                double t = Math.min((tick - 1) / 80.0, 1.0);
+                double amount = t * ModConfig.SWIM_MAX_MULTIPLIER.get() * tierMult;
 
-                if (velocityMult > 1.01) {
+                if (amount > 0.01) {
                     Vec3 motion = player.getDeltaMovement();
                     double hSpeed = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
                     if (hSpeed > 0.001) {
-                        player.setDeltaMovement(motion.x * velocityMult, motion.y * velocityMult, motion.z * velocityMult);
+                        double newHSpeed = hSpeed * (1.0 + amount);
+                        double factor = newHSpeed / hSpeed;
+                        player.setDeltaMovement(motion.x * factor, motion.y, motion.z * factor);
                     }
                 }
             } else {
