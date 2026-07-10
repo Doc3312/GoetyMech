@@ -748,13 +748,7 @@ public class PrototypeEvents {
                 PrototypeItem.getSlamInvulnTick(player));
         PrototypeItem.setSlamDiagTick(player, 40);
 
-        GoetyMechMod.LOGGER.info("SLAM_ZERO_H: before=({},{},{}), hSpeed={}",
-                String.format("%.4f", player.getDeltaMovement().x),
-                String.format("%.4f", player.getDeltaMovement().y),
-                String.format("%.4f", player.getDeltaMovement().z),
-                String.format("%.4f", Math.sqrt(player.getDeltaMovement().x * player.getDeltaMovement().x + player.getDeltaMovement().z * player.getDeltaMovement().z)));
-        Vec3 slamVel = player.getDeltaMovement();
-        player.setDeltaMovement(0, slamVel.y, 0);
+        player.hurtMarked = true;
 
         player.fallDistance = 0;
         PrototypeItem.clearSlamState(player);
