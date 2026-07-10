@@ -8,7 +8,7 @@ import com.Polarice3.Goety.utils.BlockFinder;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.net.ModNetwork;
-import com.goetymech.addon.common.utils.CuriosHelper;
+
 import com.goetymech.addon.common.utils.WallUtil;
 import com.goetymech.addon.common.data.AssimilationSaveManager;
 import com.goetymech.addon.common.net.s2c.S2CAssimilationDataPacket;
@@ -194,7 +194,7 @@ public class PrototypeEvents {
         if (event.getEntity() instanceof Player player
                 && (PrototypeItem.isSlamming(player)
                 || PrototypeItem.isHoldingPrototype(player)
-                || CuriosHelper.hasPrototypeInCurios(player))) {
+                ) {
             event.setCanceled(true);
         }
     }
@@ -258,7 +258,7 @@ public class PrototypeEvents {
         Player player = event.player;
         if (player.level().isClientSide) return;
 
-        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player);
         boolean isSlamming = player.getPersistentData().getBoolean(TAG_SLAMMING);
 
         if (event.phase == TickEvent.Phase.START) {
@@ -285,7 +285,7 @@ public class PrototypeEvents {
 
             // ── Ground takeoff / mid-air flight start ──
             if (!PrototypeItem.isWallRunning(player)
-                    && (PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player))
+                    && PrototypeItem.isHoldingPrototype(player)
                     && !player.isFallFlying()) {
                 int charge = PrototypeItem.getJumpChargeTick(player);
                 boolean isCJ = PrototypeItem.isChargedJumping(player);
@@ -421,8 +421,7 @@ public class PrototypeEvents {
 
     private static boolean isFlyingWithPrototype(Player player) {
         if (!player.isFallFlying()) return false;
-        if (PrototypeItem.isHoldingPrototype(player)) return true;
-        return CuriosHelper.hasPrototypeInCurios(player);
+        return PrototypeItem.isHoldingPrototype(player);
     }
 
     // ── Wall-running detection ──
@@ -454,6 +453,16 @@ public class PrototypeEvents {
         }
 
         PrototypeItem.setWallRunTicks(player, PrototypeItem.getWallRunTicks(player) + 1);
+
+        if (player.level().dimension() == Level.NETHER && player.tickCount % 20 == 0) {
+            Vec3 wd = WallUtil.getWallDirection(player, 0.5);
+            float fric = wd != null ? WallUtil.getWallFriction(player, wd) : -1;
+            GoetyMechMod.LOGGER.info("NETHER_WALL_SERVER: wallN=({},{},{}), onGround={}, isFly={}, isSprint={}, wallDir={}, friction={}",
+                    String.format("%.2f", wallN.x), String.format("%.2f", wallN.y), String.format("%.2f", wallN.z),
+                    player.onGround(), player.isFallFlying(), player.isSprinting(),
+                    wd != null ? String.format("(%.2f,%.2f,%.2f)", wd.x, wd.y, wd.z) : "null",
+                    String.format("%.2f", fric));
+        }
     }
 
     public static void handleWallJumpOff(ServerPlayer player) {
@@ -495,7 +504,7 @@ public class PrototypeEvents {
                 return;
             }
         }
-        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player);
         if (!hasPrototype) return;
 
         player.setPlayerInput(forward, 0, jumping, false);
@@ -1099,7 +1108,7 @@ public class PrototypeEvents {
 
         if (!(event.getSource().getEntity() instanceof Player player)) return;
 
-        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player);
         if (!hasPrototype) return;
 
         LivingEntity killed = event.getEntity();
