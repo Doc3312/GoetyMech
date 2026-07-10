@@ -95,22 +95,11 @@ public class PrototypeRenderEvents {
             boolean hasProto = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
             Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
             if (sprinting && hasProto && !player.isFallFlying() && !player.isInWater() && wallDir != null) {
-                if (player.tickCount % 10 == 0) {
-                    GoetyMechMod.LOGGER.info("CLIENT_WALL_START: sprint={}, isFly={}, inWater={}, inLava={}, onGround={}, wallDir={}",
-                            sprinting, player.isFallFlying(), player.isInWater(), player.isInLava(), player.onGround(),
-                            wallDir != null ? String.format("({},{},{})", wallDir.x, wallDir.y, wallDir.z) : "null");
-                }
                 ClientWallRunState.wallNormal = wallDir;
                 ClientWallRunState.graceTicks = 0;
             } else if (sprinting && hasProto && !player.isFallFlying() && ClientWallRunState.graceTicks > 0) {
                 ClientWallRunState.tickGrace();
             } else {
-                if (sprinting && hasProto && player.tickCount % 20 == 0) {
-                    GoetyMechMod.LOGGER.info("CLIENT_WALL_NO_DETECT: sprint={}, isFly={}, inWater={}, inLava={}, onGround={}, wallDir={}, grace={}",
-                            sprinting, player.isFallFlying(), player.isInWater(), player.isInLava(), player.onGround(),
-                            wallDir != null ? String.format("({},{},{})", wallDir.x, wallDir.y, wallDir.z) : "null",
-                            ClientWallRunState.graceTicks);
-                }
                 ClientWallRunState.wallNormal = Vec3.ZERO;
                 ClientWallRunState.graceTicks = 0;
             }
@@ -141,18 +130,22 @@ public class PrototypeRenderEvents {
             ModNetwork.CHANNEL.sendToServer(new C2SWallJumpOffPacket());
         }
 
-        // ── Wall input C2S (forward + strafe, throttled every 2 ticks) ──
-        if (clientWallNormal.lengthSqr() >= 0.5) {
+        // ── Wall input C2S (forward + strafe + wallRunning flag, throttled every 2 ticks) ──
+        boolean clientWallRunning = ClientWallRunState.isActive();
+        if (clientWallRunning) {
             if (player.tickCount % 2 == 0) {
                 float wallFwd = mc.options.keyUp.isDown() ? 1.0f : (mc.options.keyDown.isDown() ? -1.0f : 0.0f);
                 float wallStrafe = 0.0f;
                 if (mc.options.keyLeft.isDown()) wallStrafe += 1.0f;
                 if (mc.options.keyRight.isDown()) wallStrafe -= 1.0f;
-                ModNetwork.CHANNEL.sendToServer(new C2SWallInputPacket(wallFwd, wallStrafe));
+                Vec3 wn = ClientWallRunState.wallNormal.lengthSqr() >= 0.5
+                        ? ClientWallRunState.wallNormal
+                        : ClientWallRunState.lastWallNormal;
+                ModNetwork.CHANNEL.sendToServer(new C2SWallInputPacket(wallFwd, wallStrafe, true, wn.x, wn.z));
             }
         } else {
             if (player.tickCount % 5 == 0) {
-                ModNetwork.CHANNEL.sendToServer(new C2SWallInputPacket(0.0f, 0.0f));
+                ModNetwork.CHANNEL.sendToServer(new C2SWallInputPacket(0.0f, 0.0f, false, 0, 0));
             }
         }
 
