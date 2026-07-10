@@ -248,6 +248,18 @@ public class PrototypeEvents {
             player.setDeltaMovement(0, 0, 0);
         }
 
+        int diag = PrototypeItem.getSlamDiagTick(player);
+        if (diag > 0) {
+            PrototypeItem.setSlamDiagTick(player, diag - 1);
+            GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=LivingTick, freeze={}, dm_before=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, zza={}",
+                    freeze,
+                    String.format("%.4f", player.getDeltaMovement().x),
+                    String.format("%.4f", player.getDeltaMovement().y),
+                    String.format("%.4f", player.getDeltaMovement().z),
+                    String.format("%.4f", Math.sqrt(player.getDeltaMovement().x * player.getDeltaMovement().x + player.getDeltaMovement().z * player.getDeltaMovement().z)),
+                    player.onGround(), player.isFallFlying(), player.isSprinting(), player.zza);
+        }
+
         PrototypeItem.setKnockbackImmune(player, false);
     }
 
@@ -317,6 +329,14 @@ public class PrototypeEvents {
                     player.zza,
                     String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
                     player.onGround());
+
+            if (PrototypeItem.getSlamDiagTick(player) > 0) {
+                GoetyMechMod.LOGGER.info("SLAM_DIAG: phase=END, dm=({},{},{}), hSpeed={}, onGround={}, isFly={}, isSprint={}, sprintTick={}, freeze={}, zza={}",
+                        String.format("%.4f", postTravelM.x), String.format("%.4f", postTravelM.y), String.format("%.4f", postTravelM.z),
+                        String.format("%.4f", Math.sqrt(postTravelM.x * postTravelM.x + postTravelM.z * postTravelM.z)),
+                        player.onGround(), player.isFallFlying(), player.isSprinting(),
+                        PrototypeItem.getSprintTick(player), PrototypeItem.getSlamFreezeTick(player), player.zza);
+            }
 
             // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
             double moved = Math.sqrt(
@@ -720,6 +740,16 @@ public class PrototypeEvents {
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CSlamStatePacket(false));
         }
+
+        GoetyMechMod.LOGGER.info("SLAM_IMPACT: fallDist={}, pos=({},{},{}), dm=({},{},{}), freeze={}, invuln={}",
+                String.format("%.2f", fallDistance),
+                String.format("%.2f", player.getX()), String.format("%.2f", player.getY()), String.format("%.2f", player.getZ()),
+                String.format("%.4f", player.getDeltaMovement().x),
+                String.format("%.4f", player.getDeltaMovement().y),
+                String.format("%.4f", player.getDeltaMovement().z),
+                PrototypeItem.getSlamFreezeTick(player),
+                PrototypeItem.getSlamInvulnTick(player));
+        PrototypeItem.setSlamDiagTick(player, 25);
 
         player.fallDistance = 0;
         PrototypeItem.clearSlamState(player);
