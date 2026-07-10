@@ -421,8 +421,8 @@ public class ModConfig {
                 .defineInRange("squad_lifespan", 6000, 20, 72000);
 
         MONUMENT_SUMMON_COOLDOWN = BUILDER
-                .comment("魂灵丰碑兵团召唤冷却时间（tick）", "范围: 20-72000，默认 100（5秒）")
-                .defineInRange("monument_summon_cooldown", 100, 20, 72000);
+                .comment("魂灵丰碑兵团召唤冷却时间（tick）", "范围: 20-72000，默认 6000（5分钟）")
+                .defineInRange("monument_summon_cooldown", 6000, 20, 72000);
 
         MONUMENT_SOUL_COST = BUILDER
                 .comment("魂灵丰碑召唤每单位灵魂消耗", "范围: 1-100000，默认 1000")

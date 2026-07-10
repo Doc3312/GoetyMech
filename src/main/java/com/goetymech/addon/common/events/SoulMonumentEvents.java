@@ -78,6 +78,24 @@ public class SoulMonumentEvents {
     }
 
     @SubscribeEvent
+    public static void onMonumentServantDeath(LivingDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (!entity.getPersistentData().getBoolean("goetymech.monument_summoned")) return;
+        if (entity.level().isClientSide) return;
+        double px = entity.getX();
+        double py = entity.getY();
+        double pz = entity.getZ();
+        AreaEffectCloud cloud = new AreaEffectCloud(entity.level(), px, py, pz);
+        cloud.setParticle(ParticleTypes.PORTAL);
+        cloud.setRadius(0.5F);
+        cloud.setDuration(40);
+        cloud.setWaitTime(0);
+        cloud.setRadiusPerTick(0);
+        entity.level().addFreshEntity(cloud);
+        entity.level().playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+    }
+
+    @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
         Level level = event.getLevel();

@@ -335,7 +335,7 @@ public class SquadSpell extends Spell {
             default -> 1.0;
         };
 
-        int baseCost = ModConfig.MATURE_EMBRYO_SOUL_COST.get();
+        int baseCost = ModConfig.MONUMENT_SOUL_COST.get();
         int unitCost = (int) (baseCost * discount);
 
         int canSpawn;
