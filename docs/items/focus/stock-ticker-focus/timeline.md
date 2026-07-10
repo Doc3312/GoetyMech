@@ -33,7 +33,20 @@
 - **距离限制绕过**：`BlockEntityConfigurationPacketMixin` + `StockKeeperRequestMenuMixin` 跳过 createOnClient 的 BE 依赖
   - 问题：网络包竞态（不同频道）导致远距离 GUI 打不开；`StockKeeperRequestMenuMixin` 的假 BE 存在假包/卡顿
 
-## 2026-07-10 (归档冻结)
+
+## 2026-07-10 (fix3: 修复假 BE 远距离 GUI)
+
+- **修复 `StockKeeperRequestMenuMixin`**：fake BE 加 `cached.setLevel(level)` 使 `getLevel()` 可用
+  - 根因：constructor 链已初始化 `behaviour`（`SmartBlockEntity` 构造器调 `addBehaviours`），但缺 `level` → `hasLevel()`=false → Screen 逻辑路径异常
+  - `setLevel()` 后 fake BE 在客户端可被 Screen 正常使用
+- **移除 `LevelMixin.getBlockEntity` 全局拦截**：删 `gp$onGetBlockEntity` 方法
+  - 根因：`CrossDimStockCache` 全局注入所有维度 BE 查询 → 假包/延迟
+  - 现在 fake BE 由 Mixin 直接返回给 Menu，不走 Level 全局拦截
+- **删除死代码**：`S2CRegisterStockCachePacket.java` + `CrossDimStockCache.java`
+  - 这两个文件已无引用，且之前是竞态根因之一（S2C 注册包 vs openScreen 包走不同频道）
+- **编译启动通过**：`gradlew runClient` BUILD SUCCESSFUL，无 crash
+- **预期效果**：同维度远距离应能正常打开面板 + 无假包/延迟
+- **未修复**：跨维度仍不行（client level 维度不匹配目标 BE 维度
 
 - **功能冻结归档**
   - 已实现：瞬间施法、轮盘切换、移动/滑翔保持、stillValid 绕过
