@@ -19,6 +19,7 @@ import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -399,6 +400,11 @@ public class SquadSpell extends Spell {
                             template.getAmplifier(), template.isAmbient(), template.isVisible()));
                 }
                 spawned++;
+                float w = mob.getBbWidth();
+                float h = mob.getBbHeight();
+                worldIn.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                        spawnPos.x, spawnPos.y + h / 2.0, spawnPos.z,
+                        Math.max(5, (int)(w * h * 10)), w / 2.0, h / 2.0, w / 2.0, 0.05);
             }
         }
         if (focus.hasTag()) {
@@ -450,6 +456,11 @@ public class SquadSpell extends Spell {
             Mob mob = MinionSpawnHelper.spawnTimedMinion(spawnQueue.get(i), playerLevel, player, spawnPos, lifespan);
             if (mob != null) {
                 mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
+                float w = mob.getBbWidth();
+                float h = mob.getBbHeight();
+                playerLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                        spawnPos.x, spawnPos.y + h / 2.0, spawnPos.z,
+                        Math.max(5, (int)(w * h * 10)), w / 2.0, h / 2.0, w / 2.0, 0.05);
             }
         }
     }

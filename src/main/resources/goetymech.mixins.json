@@ -38,7 +38,7 @@
     "CastSpellTrapMixin",
     "PackagerBlockEntityMixin",
     "BlockEntityConfigurationPacketMixin",
-    "DarkWandUseMixin"
+    "IWandCooldownBypassMixin"
   ],
   "injectors": {
     "defaultRequire": 1
