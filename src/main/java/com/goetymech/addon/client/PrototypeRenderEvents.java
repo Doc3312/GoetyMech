@@ -337,7 +337,7 @@ public class PrototypeRenderEvents {
     private static void updateClientWallState(Player player) {
         Minecraft mc = Minecraft.getInstance();
         boolean sprinting = mc.options.keySprint.isDown() || player.isSprinting();
-        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player) || CuriosHelper.hasPrototypeInCurios(player);
+        boolean hasPrototype = PrototypeItem.isHoldingPrototype(player);
 
         Vec3 wallDir = WallUtil.getWallDirection(player, 0.5);
         //GoetyMechMod.LOGGER.debug("CLIENT_WALL: sprint={}, isSprintState={}, hasProto={}, wallDir={}, isFly={}",
