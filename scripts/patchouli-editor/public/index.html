@@ -710,38 +710,69 @@ function selectRecipe(id) {
   closeRecipeModal();
 }
 
-// ── Preview ──
+// ── Preview (Patchouli double-page spread) ──
 function renderPreview() {
+  var leftEl = document.getElementById('previewLeft');
+  var rightEl = document.getElementById('previewRight');
   if (!state.current||!state.current.pages||state.current.pages.length===0) {
-    document.getElementById('previewContent').innerHTML = '<div class="empty-state"><div style="font-size:24px;margin-bottom:8px">📖</div>暂无页面</div>';
+    leftEl.innerHTML = '<div style="text-align:center;padding:100px 0;color:#999;font-size:11px">暂无内容</div>';
+    rightEl.innerHTML = '';
     document.getElementById('previewNav').style.display='none';
     return;
   }
-  const idx = Math.min(state.previewIdx, state.current.pages.length-1);
-  const page = state.current.pages[idx];
-  document.getElementById('previewContent').innerHTML = renderPage(page);
-  document.getElementById('pageIndicator').textContent = `${idx+1}/${state.current.pages.length}`;
-  document.getElementById('previewNav').style.display='flex';
+  var spread = Math.floor(state.previewIdx / 2);
+  var leftIdx = spread * 2;
+  var rightIdx = leftIdx + 1;
+  var leftPage = leftIdx < state.current.pages.length ? state.current.pages[leftIdx] : null;
+  var rightPage = rightIdx < state.current.pages.length ? state.current.pages[rightIdx] : null;
+  leftEl.innerHTML = leftPage ? renderPage(leftPage) : '';
+  rightEl.innerHTML = rightPage ? renderPage(rightPage) : '';
+  var totalSpreads = Math.ceil(state.current.pages.length / 2);
+  document.getElementById('pageIndicator').textContent = (spread+1)+'/'+totalSpreads;
+  document.getElementById('previewNav').style.display = totalSpreads > 1 ? 'flex' : 'none';
 }
 
 function renderPage(page) {
-  const tzh = (page.text_zh||'').replace(/\n/g,'<br>');
+  var tzh = (page.text_zh||'').replace(/\n/g,'<br>');
   switch(page.type){
-    case 'patchouli:text':       return `<div class="preview-text">${page.title?`<h5>${page.title}</h5>`:''}<p>${tzh}</p></div>`;
-    case 'patchouli:crafting':   return `<div>${page.title?`<h5>${page.title}</h5>`:'<h5>合成配方</h5>'}<div class="preview-craft-grid">${'<div class="preview-craft-slot"></div>'.repeat(8)}<div class="preview-craft-slot result">+</div></div><p style="text-align:center;font-size:11px;color:#555">${page.recipe||'未指定'}</p>${page.text_zh?`<p class="preview-text">${tzh}</p>`:''}</div>`;
-    case 'patchouli:smelting':   return `<div><h5>熔炼配方</h5><p style="text-align:center;font-size:11px;color:#555">${page.recipe||'未指定'}</p></div>`;
-    case 'patchouli:entity':     return `<div><h5>实体预览</h5><div class="preview-entity-box">${page.entity||'未指定实体'}</div>${page.text_zh?`<p class="preview-text">${tzh}</p>`:''}</div>`;
-    case 'patchouli:spotlight':  return `<div>${page.title?`<h5>${page.title}</h5>`:''}<p style="text-align:center">${page.item||'未指定物品'}</p>${tzh?`<p class="preview-text">${tzh}</p>`:''}</div>`;
-    case 'patchouli:image':      return `<div>${page.title?`<h5>${page.title}</h5>`:''}<p style="text-align:center;font-size:11px;color:#555">[图片: ${(page.images||[]).join(',')||'无'}]</p></div>`;
-    case 'patchouli:relations':  return `<div>${page.title?`<h5>${page.title}</h5>`:'<h5>关联条目</h5>'}<p style="font-size:12px">${(page.entries||[]).join(', ')||'无'}</p></div>`;
-    case 'patchouli:quest':      return `<div>${page.title?`<h5>${page.title}</h5>`:'<h5>任务</h5>'}${tzh?`<p class="preview-text">${tzh}</p>`:''}${page.turnin?`<p style="font-size:11px;color:#555">提交物: ${page.turnin}</p>`:''}</div>`;
-    case 'patchouli:link':       return `<div><h5>外部链接</h5><p style="font-size:12px">${page.link_text||page.url||'无'}</p></div>`;
-    default: return '<p>未知页面类型</p>';
+    case 'patchouli:text':
+      return (page.title?'<h5>'+page.title+'</h5>':'')+'<p>'+tzh+'</p>';
+    case 'patchouli:crafting':
+      return (page.title?'<h5>'+page.title+'</h5>':'<h5>合成配方</h5>')
+        +'<div class="preview-craft-grid">'
+        +'<div class="preview-craft-slot"></div><div class="preview-craft-slot"></div><div class="preview-craft-slot"></div>'
+        +'<div class="preview-craft-slot"></div><div class="preview-craft-slot"></div><div class="preview-craft-slot"></div>'
+        +'<div class="preview-craft-slot"></div><div class="preview-craft-slot"></div><div class="preview-craft-slot result"></div>'
+        +'</div>'
+        +'<div class="preview-craft-arrow">↓</div>'
+        +'<p style="text-align:center;color:#555">'+(page.recipe||'未指定')+'</p>'
+        +(page.text_zh?'<p>'+tzh+'</p>':'');
+    case 'patchouli:smelting':
+      return '<h5>熔炼配方</h5><p style="text-align:center;color:#555">'+(page.recipe||'未指定')+'</p>';
+    case 'patchouli:entity':
+      return '<h5>实体展示</h5><div class="preview-entity-box">'+(page.entity||'未指定实体')+'</div>'+(page.text_zh?'<p>'+tzh+'</p>':'');
+    case 'patchouli:spotlight':
+      return (page.title?'<h5>'+page.title+'</h5>':'')
+        +'<div class="preview-spotlight">'+(page.item||'未指定物品')+'</div>'
+        +(tzh?'<p>'+tzh+'</p>':'');
+    case 'patchouli:image':
+      return (page.title?'<h5>'+page.title+'</h5>':'')
+        +'<p style="text-align:center;color:#555">[图片: '+((page.images||[]).join(',')||'无')+']</p>';
+    case 'patchouli:relations':
+      return (page.title?'<h5>'+page.title+'</h5>':'<h5>关联条目</h5>')
+        +'<p>'+(page.entries||[]).join(', ')||'无'+'</p>';
+    case 'patchouli:quest':
+      return (page.title?'<h5>'+page.title+'</h5>':'<h5>任务</h5>')
+        +(tzh?'<p>'+tzh+'</p>':'')
+        +(page.turnin?'<p style="color:#555">提交物: '+page.turnin+'</p>':'');
+    case 'patchouli:link':
+      return '<h5>外部链接</h5><p>'+(page.link_text||page.url||'无')+'</p>';
+    default: return '<p>未知类型</p>';
   }
 }
 
-function prevPage() { if (state.previewIdx>0) { state.previewIdx--; renderPreview(); } }
-function nextPage() { if (state.previewIdx<state.current.pages.length-1) { state.previewIdx++; renderPreview(); } }
+function prevPage() { if (state.previewIdx>=2) { state.previewIdx-=2; renderPreview(); } }
+function nextPage() { if (state.previewIdx<state.current.pages.length-2) { state.previewIdx+=2; renderPreview(); } }
 
 // ── Save ──
 async function saveEntry() {
