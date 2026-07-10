@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patchouli Editor — GoetyMech</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #1a1a2e; --panel: #16213e; --accent: #0f3460; --gold: #c9a050; --text: #e0ddd5; --muted: #8b8b7b; --border: #2a2a3a; --input-bg: #0d1117; --danger: #c0392b; --success: #27ae60; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+.sidebar { width: 240px; min-width: 240px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 12px; }
+.sidebar h2 { color: var(--gold); font-size: 14px; margin-bottom: 8px; }
+.sidebar .btn { width: 100%; margin-bottom: 4px; }
+.entry-list { flex: 1; overflow-y: auto; }
+.entry-item { padding: 6px 8px; cursor: pointer; border-radius: 4px; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.entry-item:hover { background: var(--accent); }
+.entry-item.active { background: var(--accent); border-left: 3px solid var(--gold); }
+.entry-item .del { color: var(--danger); cursor: pointer; opacity: 0; font-size: 16px; }
+.entry-item:hover .del { opacity: 0.7; }
+.entry-item .del:hover { opacity: 1; }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.toolbar { padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+.toolbar h3 { flex: 1; color: var(--gold); font-size: 15px; }
+.btn { padding: 6px 14px; border: 1px solid var(--border); background: var(--accent); color: var(--text); border-radius: 4px; cursor: pointer; font-size: 13px; }
+.btn:hover { background: #1a4a7a; }
+.btn.primary { background: #2e6b3e; border-color: #3a8a4e; }
+.btn.primary:hover { background: #358040; }
+.btn.danger { background: var(--danger); border-color: #e74c3c; }
+.btn.small { padding: 3px 8px; font-size: 12px; }
+.form-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; gap: 16px; }
+.form-panel { flex: 0 0 460px; display: flex; flex-direction: column; gap: 10px; }
+.preview-panel { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 20px; min-width: 300px; overflow-y: auto; }
+.section { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+.section h4 { color: var(--gold); font-size: 13px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.form-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+.form-row label { width: 60px; font-size: 12px; color: var(--muted); flex-shrink: 0; }
+.form-row input, .form-row select, .form-row textarea { flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 3px; font-size: 13px; }
+.form-row textarea { min-height: 50px; resize: vertical; }
+.form-row input[type="number"] { width: 70px; flex: 0 0 70px; }
+.form-row input[type="checkbox"] { width: auto; flex: 0; }
+.adv-toggle { cursor: pointer; color: var(--gold); font-size: 12px; user-select: none; }
+.adv-section { display: none; }
+.adv-section.open { display: block; }
+.page-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+.page-item { display: flex; align-items: center; gap: 6px; padding: 5px 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 3px; cursor: pointer; font-size: 12px; }
+.page-item.active { border-color: var(--gold); }
+.page-item .type-badge { background: var(--accent); padding: 2px 6px; border-radius: 3px; font-size: 11px; color: var(--gold); }
+.page-item .summary { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.page-item .del { color: var(--danger); cursor: pointer; }
+.page-editor { background: var(--input-bg); border: 1px solid var(--border); border-radius: 4px; padding: 10px; }
+.page-editor .form-row { margin-bottom: 6px; }
+.preview-book { background: linear-gradient(135deg, #3e2a14 0%, #5c3d1e 100%); border: 3px solid #8b6914; border-radius: 2px; padding: 16px; color: #2c1810; font-size: 13px; line-height: 1.6; min-height: 200px; }
+.preview-page { display: none; }
+.preview-page.active { display: block; }
+.preview-page h5 { text-align: center; border-bottom: 1px solid #8b6914; padding-bottom: 4px; margin-bottom: 8px; color: #4a2c0a; }
+.preview-craft { display: grid; grid-template-columns: repeat(3, 36px); gap: 2px; justify-content: center; margin: 12px 0; }
+.preview-craft-slot { width: 36px; height: 36px; background: #8b8b8b; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+.preview-craft-slot.result { background: #c8a050; border-color: #8b6914; }
+.preview-entity { text-align: center; padding: 10px; border: 1px dashed #8b6914; margin: 8px 0; }
+.preview-nav { display: flex; justify-content: space-between; margin-top: 10px; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 16px; min-width: 400px; max-height: 70vh; overflow-y: auto; }
+.modal h3 { color: var(--gold); margin-bottom: 10px; }
+.modal .recipe-item { padding: 6px 8px; cursor: pointer; border-radius: 3px; font-size: 13px; }
+.modal .recipe-item:hover { background: var(--accent); }
+.toast { position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; border-radius: 6px; color: #fff; font-size: 13px; z-index: 200; opacity: 0; transition: opacity 0.3s; }
+.toast.show { opacity: 1; }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.tr-btn { background: none; border: 1px solid var(--border); color: var(--gold); padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 11px; }
+.tr-btn:hover { background: var(--accent); }
+.tr-btn.loading { opacity: 0.5; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Entries</h2>
+  <button class="btn primary" onclick="newEntry()">+ New Entry</button>
+  <div class="entry-list" id="entryList"></div>
+</div>
+
+<div class="main">
+  <div class="toolbar">
+    <h3 id="toolbarTitle">Select or create an entry</h3>
+    <button class="btn primary" onclick="saveEntry()">Save</button>
+  </div>
+  <div class="form-area">
+    <div class="form-panel" id="formPanel">
+      <div class="section" id="metaSection" style="display:none">
+        <h4>Entry Metadata</h4>
+        <div class="form-row">
+          <label>Name ZH</label>
+          <input id="nameZh" onblur="onNameZhBlur()">
+          <button class="tr-btn" onclick="translateField('nameZh', 'nameEn')" title="Translate">A→a</button>
+        </div>
+        <div class="form-row">
+          <label>Name EN</label>
+          <input id="nameEn" onchange="onNameEnChange()">
+        </div>
+        <div class="form-row">
+          <label>Slug</label>
+          <input id="slug" readonly style="color:var(--muted)">
+        </div>
+        <div class="form-row">
+          <label>Icon</label>
+          <input id="icon" placeholder="goetymech:item_name">
+        </div>
+        <div class="form-row">
+          <label>Category</label>
+          <select id="category">
+            <option value="goetymech_machines">机械</option>
+            <option value="goetymech_focuses">聚晶</option>
+            <option value="goetymech_rituals">仪式</option>
+            <option value="goetymech_crafts">工艺</option>
+            <option value="goetymech_exploration">探索</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Sortnum</label>
+          <input id="sortnum" type="number" value="0">
+          <label style="margin-left:10px">Priority</label>
+          <input id="priority" type="number" value="0">
+        </div>
+        <span class="adv-toggle" onclick="toggleAdvanced()">▼ Advanced Options</span>
+        <div class="adv-section" id="advSection">
+          <div class="form-row">
+            <label>Secret</label>
+            <input id="secret" type="checkbox">
+            <label>Read Default</label>
+            <input id="readByDefault" type="checkbox">
+          </div>
+          <div class="form-row">
+            <label>Adv.</label>
+            <input id="advancement" placeholder="goetymech:advancement_id">
+          </div>
+          <div class="form-row">
+            <label>Flag</label>
+            <input id="flag" placeholder="mod:flag_name">
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="pagesSection" style="display:none">
+        <h4>Pages</h4>
+        <div class="form-row">
+          <select id="pageTypeSelect">
+            <option value="patchouli:text">Text</option>
+            <option value="patchouli:crafting">Crafting</option>
+            <option value="patchouli:smelting">Smelting</option>
+            <option value="patchouli:entity">Entity</option>
+            <option value="patchouli:spotlight">Spotlight</option>
+            <option value="patchouli:image">Image</option>
+            <option value="patchouli:relations">Relations</option>
+            <option value="patchouli:quest">Quest</option>
+            <option value="patchouli:link">Link</option>
+          </select>
+          <button class="btn" onclick="addPage()">+ Add Page</button>
+        </div>
+        <div class="page-list" id="pageList"></div>
+        <div class="page-editor" id="pageEditor" style="display:none"></div>
+      </div>
+    </div>
+    <div class="preview-panel" id="previewPanel">
+      <h4 style="color:var(--gold);margin-bottom:10px">Preview</h4>
+      <div class="preview-book" id="previewBook">
+        <div id="previewContent">No page selected</div>
+      </div>
+      <div class="preview-nav" id="previewNav" style="display:none">
+        <button class="btn small" onclick="prevPage()">← Prev</button>
+        <span id="pageIndicator" style="color:var(--muted);font-size:12px"></span>
+        <button class="btn small" onclick="nextPage()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="recipeModal">
+  <div class="modal">
+    <h3>Select Recipe</h3>
+    <input id="recipeSearch" placeholder="Search..." style="width:100%;margin-bottom:8px;padding:5px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);border-radius:3px" oninput="filterRecipes()">
+    <div id="recipeList"></div>
+    <button class="btn" style="margin-top:8px" onclick="closeRecipeModal()">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let state = { entries: [], current: null, currentPageIndex: 0, recipes: [], previewPageIndex: 0 };
+const PAGE_FIELDS = {
+  'patchouli:text': ['title', 'text_zh', 'text_en'],
+  'patchouli:crafting': ['recipe', 'title', 'text_zh', 'text_en', 'anchor'],
+  'patchouli:smelting': ['recipe', 'title', 'text_zh', 'text_en'],
+  'patchouli:entity': ['entity', 'scale', 'offset', 'text_zh', 'text_en'],
+  'patchouli:spotlight': ['item', 'title', 'text_zh', 'text_en', 'link_recipe'],
+  'patchouli:image': ['images', 'title', 'text_zh', 'text_en', 'border'],
+  'patchouli:relations': ['entries', 'title', 'text_zh', 'text_en'],
+  'patchouli:quest': ['title', 'text_zh', 'text_en', 'trigger', 'turnin'],
+  'patchouli:link': ['url', 'link_text', 'text_zh', 'text_en'],
+};
+const PAGE_DEFAULTS = {
+  'patchouli:text': { type: 'patchouli:text', text_zh: '', text_en: '' },
+  'patchouli:crafting': { type: 'patchouli:crafting', recipe: '', text_zh: '', text_en: '' },
+  'patchouli:smelting': { type: 'patchouli:smelting', recipe: '', text_zh: '', text_en: '' },
+  'patchouli:entity': { type: 'patchouli:entity', entity: '', scale: 1, offset: 0, text_zh: '', text_en: '' },
+  'patchouli:spotlight': { type: 'patchouli:spotlight', item: '', text_zh: '', text_en: '' },
+  'patchouli:image': { type: 'patchouli:image', images: [], text_zh: '', text_en: '' },
+  'patchouli:relations': { type: 'patchouli:relations', entries: [], text_zh: '', text_en: '' },
+  'patchouli:quest': { type: 'patchouli:quest', text_zh: '', text_en: '', trigger: '', turnin: '' },
+  'patchouli:link': { type: 'patchouli:link', url: '', link_text: '', text_zh: '', text_en: '' },
+};
+
+async function loadEntries() {
+  const res = await fetch('/api/entries');
+  state.entries = await res.json();
+  renderEntryList();
+}
+async function loadRecipes() {
+  const res = await fetch('/api/recipes');
+  state.recipes = await res.json();
+}
+
+function renderEntryList() {
+  const el = document.getElementById('entryList');
+  el.innerHTML = state.entries.map(e => `
+    <div class="entry-item${state.current && state.current.slug===e.slug && state.current.category===e.category ? ' active' : ''}"
+         onclick="selectEntry('${e.category}','${e.slug}')">
+      <span>${e.name_zh || e.slug}</span>
+      <span class="del" onclick="event.stopPropagation();deleteEntryItem('${e.category}','${e.slug}')">×</span>
+    </div>
+  `).join('');
+}
+
+async function selectEntry(cat, slug) {
+  const res = await fetch(`/api/entries/${cat}/${slug}`);
+  state.current = await res.json();
+  state.current.category = cat;
+  state.current.slug = slug;
+  state.previewPageIndex = 0;
+  bindForm();
+  renderEntryList();
+  renderPageList();
+  renderPreview();
+  document.getElementById('metaSection').style.display = 'block';
+  document.getElementById('pagesSection').style.display = 'block';
+  document.getElementById('toolbarTitle').textContent = state.current.name_zh || slug;
+  document.getElementById('pageEditor').style.display = 'none';
+  state.currentPageIndex = -1;
+}
+
+function newEntry() {
+  state.current = {
+    category: 'goetymech_machines',
+    slug: '',
+    name_zh: '',
+    name_en: '',
+    icon: 'goetymech:',
+    sortnum: 0,
+    priority: 0,
+    secret: false,
+    advancement: '',
+    flag: '',
+    read_by_default: false,
+    pages: [],
+  };
+  state.previewPageIndex = 0;
+  document.getElementById('metaSection').style.display = 'block';
+  document.getElementById('pagesSection').style.display = 'block';
+  document.getElementById('toolbarTitle').textContent = 'New Entry';
+  document.getElementById('pageEditor').style.display = 'none';
+  state.currentPageIndex = -1;
+  bindForm();
+  renderEntryList();
+  renderPageList();
+  renderPreview();
+}
+
+function bindForm() {
+  if (!state.current) return;
+  document.getElementById('nameZh').value = state.current.name_zh || '';
+  document.getElementById('nameEn').value = state.current.name_en || '';
+  document.getElementById('slug').value = state.current.slug || '';
+  document.getElementById('icon').value = state.current.icon || '';
+  document.getElementById('category').value = state.current.category || 'goetymech_machines';
+  document.getElementById('sortnum').value = state.current.sortnum ?? 0;
+  document.getElementById('priority').value = state.current.priority ?? 0;
+  document.getElementById('secret').checked = state.current.secret || false;
+  document.getElementById('advancement').value = state.current.advancement || '';
+  document.getElementById('flag').value = state.current.flag || '';
+  document.getElementById('readByDefault').checked = state.current.read_by_default || false;
+}
+
+function syncForm() {
+  if (!state.current) return;
+  state.current.name_zh = document.getElementById('nameZh').value;
+  state.current.name_en = document.getElementById('nameEn').value;
+  state.current.slug = document.getElementById('slug').value;
+  state.current.icon = document.getElementById('icon').value;
+  state.current.category = document.getElementById('category').value;
+  state.current.sortnum = parseInt(document.getElementById('sortnum').value) || 0;
+  state.current.priority = parseInt(document.getElementById('priority').value) || 0;
+  state.current.secret = document.getElementById('secret').checked;
+  state.current.advancement = document.getElementById('advancement').value;
+  state.current.flag = document.getElementById('flag').value;
+  state.current.read_by_default = document.getElementById('readByDefault').checked;
+}
+
+function onNameEnChange() {
+  const en = document.getElementById('nameEn').value;
+  document.getElementById('slug').value = en.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function onNameZhBlur() {
+  const zh = document.getElementById('nameZh').value;
+  const en = document.getElementById('nameEn').value;
+  if (zh && !en) {
+    translateField('nameZh', 'nameEn');
+  }
+}
+
+async function translateField(fromId, toId) {
+  const text = document.getElementById(fromId).value;
+  if (!text) return;
+  const btn = event?.target;
+  if (btn) btn.classList.add('loading');
+  try {
+    const res = await fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    document.getElementById(toId).value = data.result;
+    if (toId === 'nameEn') onNameEnChange();
+  } catch (e) {
+    toast('Translation failed', 'error');
+  }
+  if (btn) btn.classList.remove('loading');
+}
+
+function toggleAdvanced() {
+  document.getElementById('advSection').classList.toggle('open');
+}
+
+function addPage() {
+  if (!state.current) return;
+  syncForm();
+  const type = document.getElementById('pageTypeSelect').value;
+  const page = JSON.parse(JSON.stringify(PAGE_DEFAULTS[type]));
+  state.current.pages.push(page);
+  state.currentPageIndex = state.current.pages.length - 1;
+  renderPageList();
+  renderPageEditor();
+  renderPreview();
+}
+
+function selectPage(index) {
+  state.currentPageIndex = index;
+  renderPageList();
+  renderPageEditor();
+  state.previewPageIndex = index;
+  renderPreview();
+}
+
+function deletePage(index) {
+  state.current.pages.splice(index, 1);
+  if (state.currentPageIndex >= state.current.pages.length) {
+    state.currentPageIndex = state.current.pages.length - 1;
+  }
+  renderPageList();
+  if (state.currentPageIndex >= 0) {
+    renderPageEditor();
+  } else {
+    document.getElementById('pageEditor').style.display = 'none';
+  }
+  renderPreview();
+}
+
+function renderPageList() {
+  if (!state.current) return;
+  const el = document.getElementById('pageList');
+  el.innerHTML = state.current.pages.map((p, i) => {
+    const typeShort = p.type.replace('patchouli:', '');
+    let summary = '';
+    if (p.type === 'patchouli:text') summary = (p.text_zh || '').substring(0, 40);
+    else if (p.type === 'patchouli:crafting') summary = p.recipe || '';
+    else if (p.type === 'patchouli:entity') summary = p.entity || '';
+    return `<div class="page-item${i === state.currentPageIndex ? ' active' : ''}" onclick="selectPage(${i})">
+      <span class="type-badge">${typeShort}</span>
+      <span class="summary">${summary || '(empty)'}</span>
+      <span class="del" onclick="event.stopPropagation();deletePage(${i})">×</span>
+    </div>`;
+  }).join('');
+}
+
+function renderPageEditor() {
+  if (state.currentPageIndex < 0 || !state.current) return;
+  const page = state.current.pages[state.currentPageIndex];
+  const fields = PAGE_FIELDS[page.type] || [];
+  const editor = document.getElementById('pageEditor');
+  editor.style.display = 'block';
+
+  let html = `<h5 style="color:var(--gold);margin-bottom:6px">${page.type}</h5>`;
+  for (const field of fields) {
+    const val = page[field] !== undefined ? page[field] : '';
+    if (field === 'recipe' && page.type === 'patchouli:crafting') {
+      html += `<div class="form-row">
+        <label>recipe</label>
+        <input id="pe_${field}" value="${String(val)}" onchange="syncPageField('${field}')">
+        <button class="btn small" onclick="openRecipeModal()">Browse</button>
+      </div>`;
+    } else if (field === 'text_zh' || field === 'text_en') {
+      const label = field === 'text_zh' ? 'Text ZH' : 'Text EN';
+      html += `<div class="form-row">
+        <label>${label}</label>
+        <textarea id="pe_${field}" onchange="syncPageField('${field}')">${String(val)}</textarea>`;
+      if (field === 'text_zh') {
+        html += `<button class="tr-btn" onclick="translateTextField(${state.currentPageIndex})">A→a</button>`;
+      }
+      html += `</div>`;
+    } else if (field === 'secret' || field === 'link_recipe' || field === 'border') {
+      html += `<div class="form-row">
+        <label>${field}</label>
+        <input type="checkbox" id="pe_${field}" ${val ? 'checked' : ''} onchange="syncPageFieldCheckbox('${field}')">
+      </div>`;
+    } else {
+      html += `<div class="form-row">
+        <label>${field}</label>
+        <input id="pe_${field}" value="${String(val)}" onchange="syncPageField('${field}')">
+      </div>`;
+    }
+  }
+  editor.innerHTML = html;
+}
+
+function syncPageField(field) {
+  const el = document.getElementById('pe_' + field);
+  if (el && state.currentPageIndex >= 0) {
+    state.current.pages[state.currentPageIndex][field] = el.value;
+    renderPageList();
+    state.previewPageIndex = state.currentPageIndex;
+    renderPreview();
+  }
+}
+
+function syncPageFieldCheckbox(field) {
+  const el = document.getElementById('pe_' + field);
+  if (el && state.currentPageIndex >= 0) {
+    state.current.pages[state.currentPageIndex][field] = el.checked;
+    renderPreview();
+  }
+}
+
+async function translateTextField(pageIndex) {
+  const txt = document.getElementById('pe_text_zh');
+  if (!txt || !txt.value) return;
+  const res = await fetch('/api/translate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: txt.value }),
+  });
+  const data = await res.json();
+  const enEl = document.getElementById('pe_text_en');
+  if (enEl) enEl.value = data.result;
+  if (pageIndex >= 0) state.current.pages[pageIndex].text_en = data.result;
+}
+
+function openRecipeModal() {
+  document.getElementById('recipeModal').classList.add('open');
+  document.getElementById('recipeSearch').value = '';
+  filterRecipes();
+}
+
+function closeRecipeModal() {
+  document.getElementById('recipeModal').classList.remove('open');
+}
+
+function filterRecipes() {
+  const q = document.getElementById('recipeSearch').value.toLowerCase();
+  const list = document.getElementById('recipeList');
+  list.innerHTML = state.recipes
+    .filter(r => !q || r.id.toLowerCase().includes(q) || r.name.toLowerCase().includes(q))
+    .map(r => `<div class="recipe-item" onclick="selectRecipe('${r.id}')">${r.id}</div>`)
+    .join('');
+}
+
+function selectRecipe(id) {
+  const el = document.getElementById('pe_recipe');
+  if (el) {
+    el.value = id;
+    syncPageField('recipe');
+  }
+  closeRecipeModal();
+}
+
+function renderPreview() {
+  if (!state.current || !state.current.pages || state.current.pages.length === 0) {
+    document.getElementById('previewContent').innerHTML = '<p style="color:var(--muted)">No pages to preview</p>';
+    document.getElementById('previewNav').style.display = 'none';
+    return;
+  }
+  const idx = Math.min(state.previewPageIndex, state.current.pages.length - 1);
+  const page = state.current.pages[idx];
+  let html = renderPage(page);
+  document.getElementById('previewContent').innerHTML = html;
+  document.getElementById('pageIndicator').textContent = `${idx + 1} / ${state.current.pages.length}`;
+  document.getElementById('previewNav').style.display = 'flex';
+}
+
+function renderPage(page) {
+  switch (page.type) {
+    case 'patchouli:text':
+      return `<div class="preview-page active">
+        ${page.title ? `<h5>${page.title}</h5>` : ''}
+        <p>${(page.text_zh || page.text_en || '').replace(/\n/g, '<br>')}</p>
+      </div>`;
+    case 'patchouli:crafting':
+      return `<div class="preview-page active">
+        ${page.title ? `<h5>${page.title}</h5>` : '<h5>Crafting</h5>'}
+        <div class="preview-craft">${'<div class="preview-craft-slot"></div>'.repeat(8)}
+        <div class="preview-craft-slot result">+</div></div>
+        <p style="text-align:center;color:var(--muted)">${page.recipe || 'No recipe'}</p>
+        ${page.text_zh ? `<p>${page.text_zh}</p>` : ''}
+      </div>`;
+    case 'patchouli:smelting':
+      return `<div class="preview-page active">
+        <h5>Smelting</h5>
+        <p style="text-align:center;color:var(--muted)">${page.recipe || 'No recipe'}</p>
+      </div>`;
+    case 'patchouli:entity':
+      return `<div class="preview-page active">
+        <h5>Entity</h5>
+        <div class="preview-entity">${page.entity || 'No entity'}</div>
+        ${page.text_zh ? `<p>${page.text_zh}</p>` : ''}
+      </div>`;
+    case 'patchouli:spotlight':
+      return `<div class="preview-page active">
+        ${page.title ? `<h5>${page.title}</h5>` : ''}
+        <p style="text-align:center">${page.item || 'No item'}</p>
+        ${page.text_zh ? `<p>${page.text_zh}</p>` : ''}
+      </div>`;
+    case 'patchouli:image':
+      return `<div class="preview-page active">
+        ${page.title ? `<h5>${page.title}</h5>` : ''}
+        <p style="text-align:center;color:var(--muted)">[Image: ${(page.images||[]).join(', ') || 'none'}]</p>
+      </div>`;
+    case 'patchouli:relations':
+      return `<div class="preview-page active">
+        ${page.title ? `<h5>${page.title}</h5>` : '<h5>Related</h5>'}
+        <p>${(page.entries||[]).join(', ') || 'No entries'}</p>
+      </div>`;
+    case 'patchouli:quest':
+      return `<div class="preview-page active">
+        ${page.title ? `<h5>${page.title}</h5>` : '<h5>Quest</h5>'}
+        ${page.text_zh ? `<p>${page.text_zh}</p>` : ''}
+        ${page.turnin ? `<p>Turn-in: ${page.turnin}</p>` : ''}
+      </div>`;
+    case 'patchouli:link':
+      return `<div class="preview-page active">
+        <h5>Link</h5>
+        <p>${page.link_text || page.url || 'No link'}</p>
+      </div>`;
+    default:
+      return '<p>Unknown page type</p>';
+  }
+}
+
+function prevPage() {
+  if (state.previewPageIndex > 0) {
+    state.previewPageIndex--;
+    renderPreview();
+  }
+}
+
+function nextPage() {
+  if (state.previewPageIndex < state.current.pages.length - 1) {
+    state.previewPageIndex++;
+    renderPreview();
+  }
+}
+
+async function saveEntry() {
+  if (!state.current) return toast('No entry selected', 'error');
+  syncForm();
+
+  const cur = state.current;
+  if (!cur.slug) { toast('Slug is required (enter English name first)', 'error'); return; }
+  if (!cur.name_zh) { toast('Chinese name is required', 'error'); return; }
+  if (!cur.name_en) { toast('English name is required', 'error'); return; }
+  if (!cur.icon) { toast('Icon is required', 'error'); return; }
+
+  try {
+    const res = await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cur),
+    });
+    const data = await res.json();
+    if (data.success) {
+      toast(`Saved: ${cur.slug}`, 'success');
+      await loadEntries();
+      document.getElementById('toolbarTitle').textContent = cur.name_zh || cur.slug;
+    } else {
+      toast(data.error || 'Save failed', 'error');
+    }
+  } catch (e) {
+    toast('Save failed: ' + e.message, 'error');
+  }
+}
+
+async function deleteEntryItem(cat, slug) {
+  if (!confirm(`Delete "${slug}"?`)) return;
+  await fetch(`/api/entries/${cat}/${slug}`, { method: 'DELETE' });
+  if (state.current && state.current.category === cat && state.current.slug === slug) {
+    state.current = null;
+    state.currentPageIndex = -1;
+    document.getElementById('metaSection').style.display = 'none';
+    document.getElementById('pagesSection').style.display = 'none';
+    document.getElementById('pageEditor').style.display = 'none';
+    document.getElementById('toolbarTitle').textContent = 'Select or create an entry';
+    document.getElementById('previewContent').innerHTML = '<p style="color:var(--muted)">No page selected</p>';
+    document.getElementById('previewNav').style.display = 'none';
+  }
+  await loadEntries();
+  toast('Deleted', 'success');
+}
+
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key === 's') { e.preventDefault(); saveEntry(); }
+});
+
+loadEntries();
+loadRecipes();
+</script>
+</body>
+</html>

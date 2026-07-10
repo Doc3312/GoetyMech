@@ -180,6 +180,12 @@ public class ModConfig {
     /** 击杀食物恢复比例 */
     public static final ForgeConfigSpec.DoubleValue KILL_FOOD_RESTORE_RATIO;
 
+    /** 冲击/动能免疫所需击杀数 */
+    public static final ForgeConfigSpec.IntValue IMMUNITY_IMPACT_KILLS;
+
+    /** 灼烧免疫所需击杀数 */
+    public static final ForgeConfigSpec.IntValue IMMUNITY_FIRE_KILLS;
+
     // ====== Prototype — Wall-running 配置 ======
 
     public static final ForgeConfigSpec.DoubleValue WALL_RUN_SPEED;
@@ -573,6 +579,14 @@ public class ModConfig {
         KILL_FOOD_RESTORE_RATIO = BUILDER
                 .comment("击杀食物恢复比例", "被击杀生物 maxHealth × 此值 = 食物恢复量", "范围: 0.0-2.0，默认 0.333")
                 .defineInRange("kill_food_restore_ratio", 0.333, 0.0, 2.0);
+
+        IMMUNITY_IMPACT_KILLS = BUILDER
+                .comment("冲击/动能免疫所需击杀数（鞘翅撞墙）", "范围: 1-9999，默认 30")
+                .defineInRange("immunity_impact_kills", 30, 1, 9999);
+
+        IMMUNITY_FIRE_KILLS = BUILDER
+                .comment("灼烧免疫所需击杀数（火焰/岩浆）", "范围: 1-9999，默认 200")
+                .defineInRange("immunity_fire_kills", 200, 1, 9999);
 
         BUILDER.pop();
 

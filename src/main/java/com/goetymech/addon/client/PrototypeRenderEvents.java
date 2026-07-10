@@ -100,15 +100,6 @@ public class PrototypeRenderEvents {
             } else if (sprinting && hasProto && !player.isFallFlying() && ClientWallRunState.graceTicks > 0) {
                 ClientWallRunState.tickGrace();
             } else {
-                if (player.level().dimension() == net.minecraft.world.level.Level.NETHER && hasProto && player.tickCount % 20 == 0) {
-                    GoetyMechMod.LOGGER.info("NETHER_CLIENT: sprint={}, isFly={}, onGround={}, inWater={}, inLava={}, wallDir={}, wallN=({},{},{}), grace={}",
-                            sprinting, player.isFallFlying(), player.onGround(), player.isInWater(), player.isInLava(),
-                            wallDir != null ? String.format("(%.2f,%.2f,%.2f)", wallDir.x, wallDir.y, wallDir.z) : "null",
-                            String.format("%.2f", ClientWallRunState.wallNormal.x),
-                            String.format("%.2f", ClientWallRunState.wallNormal.y),
-                            String.format("%.2f", ClientWallRunState.wallNormal.z),
-                            ClientWallRunState.graceTicks);
-                }
                 ClientWallRunState.wallNormal = Vec3.ZERO;
                 ClientWallRunState.graceTicks = 0;
             }
@@ -310,6 +301,9 @@ public class PrototypeRenderEvents {
 
             boolean hasSlam = PrototypeItem.hasSlam(kills);
             tooltip.add(Component.literal("子弹俯冲").withStyle(hasSlam ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
+
+            tooltip.add(Component.literal("动能吸收").withStyle(kills >= 30 ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
+            tooltip.add(Component.literal("烈焰屏障").withStyle(kills >= 200 ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
 
             int nextMilestone = PrototypeItem.getNextImmunityMilestone(kills);
             tooltip.add(kills >= 150

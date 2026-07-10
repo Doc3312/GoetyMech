@@ -19,7 +19,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -193,16 +195,29 @@ public class PrototypeEvents {
     public static void onLivingFall(LivingFallEvent event) {
         if (event.getEntity() instanceof Player player
                 && (PrototypeItem.isSlamming(player)
-                || PrototypeItem.isHoldingPrototype(player)
-                ) {
+                || PrototypeItem.isHoldingPrototype(player))) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (event.getEntity() instanceof Player player
-                && PrototypeItem.getSlamInvulnTick(player) > 0) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        int kills = PrototypeItem.getAssimilationKills(player);
+
+        if (kills >= ModConfig.IMMUNITY_IMPACT_KILLS.get() && event.getSource().is(DamageTypes.FLY_INTO_WALL)) {
+            event.setCanceled(true);
+            return;
+        }
+
+        if (kills >= ModConfig.IMMUNITY_FIRE_KILLS.get()
+                && (event.getSource().is(DamageTypeTags.IS_FIRE) || event.getSource().is(DamageTypeTags.IS_HOT))) {
+            event.setCanceled(true);
+            return;
+        }
+
+        if (PrototypeItem.getSlamInvulnTick(player) > 0) {
             event.setCanceled(true);
         }
     }
@@ -473,16 +488,6 @@ public class PrototypeEvents {
         }
 
         PrototypeItem.setWallRunTicks(player, PrototypeItem.getWallRunTicks(player) + 1);
-
-        if (player.level().dimension() == Level.NETHER && player.tickCount % 20 == 0) {
-            Vec3 wd = WallUtil.getWallDirection(player, 0.5);
-            float fric = wd != null ? WallUtil.getWallFriction(player, wd) : -1;
-            GoetyMechMod.LOGGER.info("NETHER_WALL_SERVER: wallN=({},{},{}), onGround={}, isFly={}, isSprint={}, wallDir={}, friction={}",
-                    String.format("%.2f", wallN.x), String.format("%.2f", wallN.y), String.format("%.2f", wallN.z),
-                    player.onGround(), player.isFallFlying(), player.isSprinting(),
-                    wd != null ? String.format("(%.2f,%.2f,%.2f)", wd.x, wd.y, wd.z) : "null",
-                    String.format("%.2f", fric));
-        }
     }
 
     public static void handleWallJumpOff(ServerPlayer player) {
