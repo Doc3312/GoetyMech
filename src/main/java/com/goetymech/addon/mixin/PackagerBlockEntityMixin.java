@@ -1,5 +1,6 @@
 package com.goetymech.addon.mixin;
 
+import com.goetymech.addon.GoetyMechMod;
 import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
 import com.simibubi.create.content.logistics.packager.PackagingRequest;
@@ -25,18 +26,30 @@ public class PackagerBlockEntityMixin {
         if (box.isEmpty()) return;
 
         String address = PackageItem.getAddress(box);
-        if (address == null || address.isEmpty()) return;
+        GoetyMechMod.LOGGER.info("PACKAGER_STOCK: attemptToSend TAIL, address='{}', box={}",
+                address, box.getDisplayName().getString());
+
+        if (address == null || address.isEmpty()) {
+            GoetyMechMod.LOGGER.warn("PACKAGER_STOCK: address empty, skipping player redirect");
+            return;
+        }
 
         Level level = self.getLevel();
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         ServerPlayer target = serverLevel.getServer().getPlayerList().getPlayerByName(address);
-        if (target == null) return;
+        if (target == null) {
+            GoetyMechMod.LOGGER.warn("PACKAGER_STOCK: player '{}' not found online", address);
+            return;
+        }
 
+        GoetyMechMod.LOGGER.info("PACKAGER_STOCK: redirecting box to player {}", target.getName().getString());
         try {
             ItemHandlerHelper.giveItemToPlayer(target, box.copy());
             self.heldBox = ItemStack.EMPTY;
+            GoetyMechMod.LOGGER.info("PACKAGER_STOCK: delivered successfully");
         } catch (Exception e) {
+            GoetyMechMod.LOGGER.error("PACKAGER_STOCK: delivery failed", e);
             self.heldBox = box;
         }
     }

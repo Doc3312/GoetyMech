@@ -1,5 +1,6 @@
 package com.goetymech.addon.mixin;
 
+import com.simibubi.create.content.logistics.AddressEditBox;
 import com.simibubi.create.content.logistics.stockTicker.StockKeeperRequestScreen;
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
 import net.minecraft.client.Minecraft;
@@ -21,12 +22,24 @@ public class StockKeeperRequestScreenMixin {
     @Shadow(remap = false)
     WeakReference<LivingEntity> stockKeeper;
 
+    @Shadow(remap = false)
+    public AddressEditBox addressBox;
+
     @Inject(method = "containerTick", at = @At("HEAD"))
     private void gp$patchRemoteStockKeeper(CallbackInfo ci) {
         if (stockKeeper.get() == null
                 && blockEntity.getLevel() != null
                 && blockEntity.getLevel().getBlockEntity(blockEntity.getBlockPos()) != blockEntity) {
             stockKeeper = new WeakReference<>(Minecraft.getInstance().player);
+        }
+    }
+
+    @Inject(method = "init", at = @At("RETURN"))
+    private void gp$prefillAddress(CallbackInfo ci) {
+        if (blockEntity.getLevel() != null
+                && blockEntity.getLevel().getBlockEntity(blockEntity.getBlockPos()) != blockEntity) {
+            String playerName = Minecraft.getInstance().player.getGameProfile().getName();
+            addressBox.setValue(playerName);
         }
     }
 }

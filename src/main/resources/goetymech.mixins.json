@@ -19,7 +19,8 @@
     "TutorialMixin",
     "EntityMixin",
     "StockKeeperRequestMenuMixin",
-    "StockKeeperRequestScreenMixin"
+    "StockKeeperRequestScreenMixin",
+    "LogisticalStockResponsePacketMixin"
   ],
   "mixins": [
     "CollectingNeighborUpdaterMixin",
