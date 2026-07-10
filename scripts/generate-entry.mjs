@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ASSETS = 'src/main/resources/assets/goetymech';
+const ASSETS = 'src/main/resources/assets/goety';
 const BOOK = 'patchouli_books/black_book';
 
 function readJson(filePath) {

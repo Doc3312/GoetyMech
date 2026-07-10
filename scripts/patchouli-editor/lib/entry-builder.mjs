@@ -2,7 +2,7 @@ export function buildEntry(name, icon, category, sortnum, pages, recipes, extra 
   const entry = {
     name,
     icon,
-    category: `goetymech:${category}`,
+    category: `goety:${category}`,
     sortnum,
     pages: [...pages],
   };

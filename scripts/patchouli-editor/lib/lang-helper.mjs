@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..', '..', '..');
 const ASSETS = path.join(REPO_ROOT, 'src', 'main', 'resources', 'assets', 'goetymech');
+const GOETY_ASSETS = path.join(REPO_ROOT, 'src', 'main', 'resources', 'assets', 'goety');
 
 function readJson(filePath) {
   try {
@@ -43,8 +44,8 @@ export function appendLangKey(lang, key, value) {
 }
 
 export function readEntry(category, slug) {
-  const enPath = path.join(ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries', category, `${slug}.json`);
-  const zhPath = path.join(ASSETS, 'patchouli_books', 'black_book', 'zh_cn', 'entries', category, `${slug}.json`);
+  const enPath = path.join(GOETY_ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries', category, `${slug}.json`);
+  const zhPath = path.join(GOETY_ASSETS, 'patchouli_books', 'black_book', 'zh_cn', 'entries', category, `${slug}.json`);
   return {
     en: readJson(enPath),
     zh: readJson(zhPath),
@@ -52,14 +53,14 @@ export function readEntry(category, slug) {
 }
 
 export function writeEntry(category, slug, enEntry, zhEntry) {
-  const enPath = path.join(ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries', category, `${slug}.json`);
-  const zhPath = path.join(ASSETS, 'patchouli_books', 'black_book', 'zh_cn', 'entries', category, `${slug}.json`);
+  const enPath = path.join(GOETY_ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries', category, `${slug}.json`);
+  const zhPath = path.join(GOETY_ASSETS, 'patchouli_books', 'black_book', 'zh_cn', 'entries', category, `${slug}.json`);
   writeJson(enPath, enEntry);
   writeJson(zhPath, zhEntry);
 }
 
 export function listEntries() {
-  const baseDir = path.join(ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries');
+  const baseDir = path.join(GOETY_ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries');
   if (!fs.existsSync(baseDir)) return [];
 
   const entries = [];
@@ -82,8 +83,8 @@ export function listEntries() {
 }
 
 export function deleteEntry(category, slug) {
-  const enPath = path.join(ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries', category, `${slug}.json`);
-  const zhPath = path.join(ASSETS, 'patchouli_books', 'black_book', 'zh_cn', 'entries', category, `${slug}.json`);
+  const enPath = path.join(GOETY_ASSETS, 'patchouli_books', 'black_book', 'en_us', 'entries', category, `${slug}.json`);
+  const zhPath = path.join(GOETY_ASSETS, 'patchouli_books', 'black_book', 'zh_cn', 'entries', category, `${slug}.json`);
   if (fs.existsSync(enPath)) fs.unlinkSync(enPath);
   if (fs.existsSync(zhPath)) fs.unlinkSync(zhPath);
 }
