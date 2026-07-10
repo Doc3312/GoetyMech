@@ -2,13 +2,11 @@ package com.goetymech.addon.common.item;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.phys.Vec3;
-import top.theillusivec4.curios.api.CuriosApi;
 
 public class PrototypeItem extends ElytraItem {
 
@@ -77,18 +75,7 @@ public class PrototypeItem extends ElytraItem {
     }
 
     public static boolean hasAnyPrototype(LivingEntity entity) {
-        if (isPrototype(entity.getItemBySlot(EquipmentSlot.CHEST)))
-            return true;
-        if (entity instanceof Player player) {
-            try {
-                var inv = CuriosApi.getCuriosInventory(player);
-                return inv.map(i -> i.findFirstCurio(
-                        s -> isPrototype(s)).isPresent()).orElse(false);
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        return false;
+        return isPrototype(entity.getItemBySlot(EquipmentSlot.CHEST));
     }
 
     public static boolean isSlamming(LivingEntity entity) {
