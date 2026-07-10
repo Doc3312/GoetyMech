@@ -1,6 +1,5 @@
 package com.goetymech.addon.mixin;
 
-import com.goetymech.addon.client.CrossDimStockCache;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.logistics.stockTicker.StockKeeperRequestMenu;
@@ -45,7 +44,9 @@ public class StockKeeperRequestMenuMixin {
                 pos,
                 AllBlocks.STOCK_TICKER.get().defaultBlockState()
         );
-        CrossDimStockCache.register(pos, cached);
+        if (level != null) {
+            cached.setLevel(level);
+        }
         cir.setReturnValue(cached);
     }
 }
