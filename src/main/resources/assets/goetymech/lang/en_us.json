@@ -161,7 +161,7 @@
   "goetymech.category.rituals": "GoetyMech Rituals",
   "goetymech.category.crafts": "GoetyMech Crafts",
   "goetymech.category.exploration": "GoetyMech Exploration",
-  "spell.goety.mechanical": "Mechanical",
+  "spell.goety.mechanical": "§7Mechanical§7",
   "container.goetymech.deposit": "Warehouse Depot",
-  "ritual.goety.mechanical": "Mechanical Ritual"
+  "jei.goety.craftType.mechanical": "Mechanical"
 }
