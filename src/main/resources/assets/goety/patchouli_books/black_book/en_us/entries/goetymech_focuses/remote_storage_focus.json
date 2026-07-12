@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "A seasoned dark magus always hoards a multitude of materials, yet carrying them all is far too cumbersome, and retrieving from a distant warehouse is an ordeal. The Ender Chest gave you inspiration — now you may access your stores from afar.$(br2)Simply write your name in the address bar, and the items shall be delivered straight to your side.$(br2)$(4)\"Loot to your heart's content — the backpack shall no longer be a shackle.\"$()"
+      "text": "A seasoned dark magus always hoards a multitude of materials, yet carrying them all is far too cumbersome, and retrieving from a distant warehouse is an ordeal. The Ender Chest gave you inspiration — now you may access your stores from afar.$(br2)Simply write your name in the address bar, and the items shall be delivered straight to your side.$(br)$(4)\"Loot to your heart's content — the backpack shall no longer be a shackle.\"$()"
     },
     {
       "type": "goety:ritual",
