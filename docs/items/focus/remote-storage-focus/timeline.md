@@ -97,3 +97,41 @@
   - 6 个 Mixin 健壮性修复（假包/延迟/跨维度/反射/内存/客户端同步）
 - **未完成**：末地维度施法时主世界 chunk 可能卸载 → `targetLevel.getBlockEntity` 返回 null → 需临时 chunk 加载
 - **关联 incidents**：`_craft.20260710.stock-ticker-remote-order-failed.md`
+
+## 2026-07-13 (重命名 + 配方 + Patchouli + 机械组类型)
+
+- **重命名**：StockTickerFocus → RemoteStorageFocus、StockTickerSpell → RemoteStorageSpell、StockTickerEvents → RemoteStorageEvents
+  - 注册 ID：`stock_ticker_focus` → `remote_storage_focus`
+  - 中文名："仓储聚晶" → "远程仓储聚晶"
+- **机械法术类型**：`SpellType.create("mechanical", "mechanical")` 自建 MECHANICAL 类型
+  - 注意：构造器已拼 `spell.goety.` 前缀，第二个参数只传裸名
+  - lang key: `spell.goety.mechanical` = `"§e机械§e"`（黄色）
+- **机械仪式配方**：`ritual_type: goetymech:mechanical`，`craftType: mechanical`
+  - 材料：末影珍珠×2 + 箱子×2 + `create:stock_link` + `goety:call_focus`
+  - 触发物：`goety:empty_focus`，8秒，灵魂 80
+  - 新增 `MechanicalRitual` 类 + `ModRitualFactory` 注册
+  - lang key: `jei.goety.craftType.mechanical` = `"机械"`（JEI/Patchouli 显示用）
+- **Patchouli 条目**：双语 2 页，`$(br)` 换行，`$(4)` 暗红引号，`category: goety:goetymech_focuses`
+- **Shift+施法 GUI 标题**：DepositProvider → `container.goetymech.deposit` = `"仓库中转站"`
+- **Lang 更新**：shift_bound/shift_unbound 描述修正
+
+## 2026-07-13 — 功能冻结归档
+
+- **已完成功能**：
+  - 远程仓储聚晶（RemoteStorageFocus）
+  - 同维度/跨维度远程打开 Create 物流面板 + 实时库存刷新
+  - 远程下单 + 直接背包交付（`wakeTheFrogs` 拦截）
+  - Shift+施法存入仓库（DepositProvider，标题"仓库中转站"）
+  - 机械仪式合成配方（JEI + Patchouli 双语条目）
+  - 机械法术类型（`SpellType.MECHANICAL`，黄色 `§e`）
+  - 全链路 `STOCK_DIAG` 6 阶段诊断日志
+  - 7 个 Mixin + 1 个 Ritual + 1 个 SpellType 扩展
+- **已知限制**：末地维度目标 chunk 可能卸载 → `targetLevel.getBlockEntity` null（需 force-load）
+- **关联 incidents**：`_craft.20260710.stock-ticker-remote-order-failed.md`
+- **翻译 key 备忘**：
+  | key | 值 | 用途 |
+  |-----|-----|------|
+  | `spell.goety.mechanical` | `§e机械§e` | 法术类型 tooltip |
+  | `jei.goety.craftType.mechanical` | `机械` | JEI/Patchouli 仪式类型名 |
+  | `container.goetymech.deposit` | `仓库中转站` | Shift+施法 GUI 标题 |
+  | `ritual.goety.mechanical` | ❌ 不存在 | 错误 key，Goety 用 `jei.goety.craftType.*` |
