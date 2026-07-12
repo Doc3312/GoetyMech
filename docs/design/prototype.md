@@ -162,6 +162,13 @@
 - 原因：用户报告下砸后原地被困 40+ tick
 - 关联：incidents/craft.20260710.slam-freeze-craterblock.md
 
+### 2026-07-12 — 清理诊断日志残留
+
+- **改动**：移除全部 SLAM_DIAG/PROTO_DIAG/D_START/D_END/SprintTick/AoE 诊断日志（+4 个文件约 200 行）；删除 `TAG_SLAM_DIAG_TICK` NBT tag 和对应 accessor；删除未使用的 `clearSprint()`；删除 `PrototypePlayerMixin` 中的调试空注入桩和注释掉的 debug 日志
+- **原因**：诊断日志在 slam-freeze 根因确认（CraterBlock 碰撞箱）后已完成使命，长期保留污染日志输出和代码可读性
+- **教训**：调试时加的日志应在修复确认后及时清理，否则成为技术债
+- **关联 commit**：`94ec918`
+
 ### 2026-07-10 — 诊断日志系统
 
 - 改动：新增 SLAM_DIAG（server LivingTick/END phase）、SLAM_DIAG_CLIENT（client tick，含输入检测）、SLAM_IMPACT（冲击瞬间）、movedXZ 实际位移追踪；SetSlamDiagTick 40 tick 窗口
