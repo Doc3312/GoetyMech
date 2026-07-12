@@ -1,6 +1,8 @@
 ---
 name: "goety-addon-dev"
 description: "Goety Focus / Spell / servant / soul / 聚晶 / 法术 / 仆从 / 灵魂"
+mandatory: true
+mandatoryRule: "★强制调用★ IF 讨论/开发涉及 Goety 物品/方块/实体注册、Focus/Spell 开发、聚晶合成/配方、Ritual/Focus 开发、法术类型/翻译key、或即将进入 openspec 工作流/制定任何实现计划 THEN 必须先调用此 skill。禁止跳过直接读源码或实施。"
 ---
 
 # Goety Addon Dev — 综合开发指南
@@ -130,4 +132,41 @@ minecraft.runs.configureEach {
 | `entity-render-dev` | 需要为新的仆从/法术实体编写渲染器和模型时 |
 | `goety-block-anim-and-particle` | 添加方块动画、粒子效果或镜头震动时 |
 | `jei-dev` | 为聚晶/方块添加 JEI 配方展示或幽灵拖拽时 |
+| `goety-ritual-dev` | 开发 Goety 仪式配方/JSON 格式/Ritual 子类/ModRitualFactory 时 |
 | `goetymech-architecture` | 不确定新建类的包路径或注册模式时 |
+
+---
+
+## SpellType 扩展 + 翻译 key 规则（★必读★）
+
+### SpellType.create() 用法
+
+```java
+// ✅ 正确 — 构造器自动拼 spell.goety. 前缀
+MECHANICAL = SpellType.create("mechanical", "mechanical");
+// → 翻译 key: spell.goety.mechanical
+
+// ❌ 错误 — 双重前缀
+SpellType.create("mechanical", "spell.goety.mechanical");
+// → 翻译 key: spell.goety.spell.goety.mechanical
+```
+
+**原理**：`SpellType` 构造器内部调用 `Component.translatable("spell.goety." + name)`。
+
+### 翻译 key 对照表
+
+| key 模式 | 用途 | 格式要求 |
+|----------|------|---------|
+| `spell.goety.<name>` | 法术类型 tooltip 名称 | `§<色码>名称§<色码>`，色码参照 Goety 既有风格 |
+| `jei.goety.craftType.<name>` | JEI/Patchouli 仪式类型名 | 纯文本，不要色码 |
+| `container.goetymech.<name>` | 自定义 GUI 标题 | 纯文本 |
+| `ritual.goety.<name>` | ❌ 错误 key，不存在 | Goety 用 `jei.goety.craftType.*`，不是 `ritual.goety.*` |
+
+**MC 色码参考**（Goety 既有风格）：
+- `§2` 暗绿（死灵）、`§4` 暗红（下界）、`§9` 蓝（霜冻）
+- `§5` 暗紫（虚空）、`§6` 金（风暴）、`§e` 黄（机械）
+- 格式：`"§e机械§e"`，首尾相同色码
+
+### 中文译名强制（重申）
+
+所有已注册对象必须在 `zh_cn.json` 写入中文译名。**翻译 key 命名必须遵循 Goety 约定**，禁止自创。不确定时必须查 Goety 源码确认。

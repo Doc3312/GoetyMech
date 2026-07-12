@@ -19,8 +19,9 @@ Single-context repo。参见 `docs/agents/domain.md`。
 | **item-ister-flat-quads** | **★最高优先级★ texture / png / 纹理 / overlay / 叠加层 / quad / 四边面 / ISTER / BEWLR / item/generated / flat item / 物品渲染 / 图标 / scale(1,-1,-1) / UV mapping / vertex / 顶点渲染** |
 | create-dev | Create machines / Ponder / kinetic BE / BESR |
 | entity-render-dev | entity render / collision / invisible |
-| goety-addon-dev | Goety Focus / Spell / servant / soul / 聚晶 / 法术 / 仆从 / 灵魂 |
+| **goety-addon-dev** | **★强制调用★** Goety Focus / Spell / servant / soul / 聚晶 / 法术 / 仆从 / 灵魂 / **任何openspec/实施计划制定前必须先调此skill** |
 | goety-block-anim-and-particle | block anim / particle / camera shake |
+| **goety-ritual-dev** | Ritual / 仪式开发 / ModRitualFactory / IRitualType / recipe JSON / 聚晶合成 / 祭坛 |
 | GoetyMech-architecture | package / convention / register |
 | jei-dev | JEI / recipe display / ghost drag |
 | patchouli-dev | Patchouli / guide book / page |
@@ -52,6 +53,8 @@ IF 已进入实现阶段 THEN 调用 openspec-apply-change skill 走完整 opens
 IF 讨论/开发涉及可用技能表中任一 skill 覆盖的领域（如聚晶/法术、方块动画、JEI 配方等） THEN 必须先调用 `skill` tool 加载对应 skill，再从 skill 文档中确认约定和模式，最后才读源码验证。
 
 禁止跳过 skill 直接读源码。skill 文档是约定层，源码是验证层，两者都要但不允许跳过约定层。
+
+**`goety-addon-dev` / `goety-ritual-dev` 为强制调用 skill**。任何涉及 Goety 物品注册/Spell/Focus/Ritual/配方开发、翻译 key、或 openspec 实施计划制定的任务，必须先调用这两个 skill。
 
 ### 编码安全（📛 硬性阻断，不可绕过）
 
