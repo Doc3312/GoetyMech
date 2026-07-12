@@ -6,7 +6,11 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "DESCRIPTION_PENDING"
+      "text": "一个成熟的黑魔法师总是积攒着许多材料，但随身携带又太过笨重，放在仓库里又不便拿取。末影箱给了你灵感，现在你可以远程访问仓库了。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(#8B0000)尽情搜刮吧，背包将不再是限制。$()"
     },
     {
       "type": "goety:ritual",

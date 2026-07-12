@@ -1,6 +1,6 @@
 {
   "type": "goety:ritual",
-  "ritual_type": "goety:mechanical",
+  "ritual_type": "goetymech:mechanical",
   "activation_item": {
     "item": "goety:empty_focus"
   },
