@@ -4,7 +4,7 @@
   "activation_item": {
     "item": "goety:empty_focus"
   },
-  "craftType": "forge",
+  "craftType": "mechanical",
   "soulCost": 25,
   "duration": 10,
   "ingredients": [
