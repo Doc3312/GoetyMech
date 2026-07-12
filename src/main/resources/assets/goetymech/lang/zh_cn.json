@@ -153,13 +153,14 @@
   "info.goetymech.remote_storage_focus.ticker_lost": "§c仓储发报机丢失，绑定已清除",
   "info.goetymech.remote_storage_focus.no_keeper": "§c仓储发报机附近没有仓库管理员",
   "info.goetymech.remote_storage_focus.locked": "§c物流网络已锁定",
-  "info.goetymech.remote_storage_focus.shift_bound": "施法远程打开绑定网络的库存界面。潜行右键解绑。",
-  "info.goetymech.remote_storage_focus.shift_unbound": "手持聚晶右键仓储发报机绑定。潜行右键解绑。",
+  "info.goetymech.remote_storage_focus.shift_bound": "右键施法即可打开仓库界面。潜行右键解绑。",
+  "info.goetymech.remote_storage_focus.shift_unbound": "手持聚晶右键仓储发报机即可绑定，潜行右键解绑。",
   "goetymech.entry.breeding_nest": "育巢",
   "goetymech.category.machines": "GoetyMech 机械",
   "goetymech.category.focuses": "GoetyMech 聚晶",
   "goetymech.category.rituals": "GoetyMech 仪式",
   "goetymech.category.crafts": "GoetyMech 工艺",
   "goetymech.category.exploration": "GoetyMech 探索",
-  "spell.goety.mechanical": "机械"
+  "spell.goety.mechanical": "机械",
+  "container.goetymech.deposit": "仓库中转站"
 }

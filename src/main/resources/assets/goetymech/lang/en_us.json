@@ -153,7 +153,7 @@
   "info.goetymech.remote_storage_focus.ticker_lost": "§cStock Ticker missing, binding cleared",
   "info.goetymech.remote_storage_focus.no_keeper": "§cStock Ticker has no Keeper nearby",
   "info.goetymech.remote_storage_focus.locked": "§cNetwork is locked",
-  "info.goetymech.remote_storage_focus.shift_bound": "Cast to request items from the bound stock network. Sneak-right-click to unbind.",
+  "info.goetymech.remote_storage_focus.shift_bound": "Right-click cast to open the warehouse. Sneak-right-click to deposit.",
   "info.goetymech.remote_storage_focus.shift_unbound": "Right-click a Stock Ticker to bind. Sneak-right-click to unbind.",
   "goetymech.entry.breeding_nest": "Breeding Nest",
   "goetymech.category.machines": "GoetyMech Machines",
@@ -161,5 +161,6 @@
   "goetymech.category.rituals": "GoetyMech Rituals",
   "goetymech.category.crafts": "GoetyMech Crafts",
   "goetymech.category.exploration": "GoetyMech Exploration",
-  "spell.goety.mechanical": "Mechanical"
+  "spell.goety.mechanical": "Mechanical",
+  "container.goetymech.deposit": "Warehouse Depot"
 }
