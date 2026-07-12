@@ -93,7 +93,12 @@ public class RemoteEngineBlock extends DirectionalKineticBlock
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        return AllShapes.CASING_12PX.get(state.getValue(FACING));
+        return REMOTE_ENGINE_SHAPE.get(state.getValue(FACING));
+    }
+
+    @Override
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
     }
 
     @Override
