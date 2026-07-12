@@ -76,8 +76,8 @@ public class StressArkHUD {
         // 不再重复扣减 engineConsumption
         float fraction = cap <= 0 ? 0 : Math.min(used / cap, 1.125f);
 
-        int barX = width / 2 + 50;
-        int barY = height - 29;
+        int barX = width / 2 + 100;
+        int barY = height - 25;
 
         int fillWidth = (int) (117 * Math.min(1.125f, fraction));
 
