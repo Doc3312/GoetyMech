@@ -48,7 +48,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.TIER3_SOUL_MONUMENT.get());
                         output.accept(ModItems.GATEWAY_FOCUS.get());
                         output.accept(ModItems.GATEWAY_FOCUS_ADVANCED.get());
-                        output.accept(ModItems.STOCK_TICKER_FOCUS.get());
+                        output.accept(ModItems.REMOTE_STORAGE_FOCUS.get());
                         output.accept(ModItems.CHASE_FOCUS.get());
                         output.accept(ModItems.CRAZED_SUMMON_FOCUS.get());
                         output.accept(ModItems.CRAZED_ILLAGER_SPAWN_EGG.get());

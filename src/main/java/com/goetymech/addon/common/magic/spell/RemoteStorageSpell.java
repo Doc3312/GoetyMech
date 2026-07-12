@@ -1,7 +1,7 @@
 package com.goetymech.addon.common.magic.spell;
 
 import com.goetymech.addon.GoetyMechMod;
-import com.goetymech.addon.common.item.StockTickerFocus;
+import com.goetymech.addon.common.item.RemoteStorageFocus;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -32,7 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkHooks;
 
-public class StockTickerSpell extends Spell {
+public class RemoteStorageSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
@@ -62,7 +62,7 @@ public class StockTickerSpell extends Spell {
 
     @Override
     public SpellType getSpellType() {
-        return SpellType.VOID;
+        return GoetyMechMod.MECHANICAL;
     }
 
     @Override
@@ -76,16 +76,16 @@ public class StockTickerSpell extends Spell {
         if (!(caster instanceof ServerPlayer player)) return;
 
         ItemStack focus = WandUtil.findFocus(caster);
-        if (!(focus.getItem() instanceof StockTickerFocus)) return;
+        if (!(focus.getItem() instanceof RemoteStorageFocus)) return;
 
-        if (!StockTickerFocus.isBound(focus)) {
+        if (!RemoteStorageFocus.isBound(focus)) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.stock_ticker_focus.not_bound"), true);
+                    Component.translatable("info.goetymech.remote_storage_focus.not_bound"), true);
             return;
         }
 
-        BlockPos boundPos = StockTickerFocus.getBoundPos(focus);
-        ResourceLocation boundDim = StockTickerFocus.getBoundDimension(focus);
+        BlockPos boundPos = RemoteStorageFocus.getBoundPos(focus);
+        ResourceLocation boundDim = RemoteStorageFocus.getBoundDimension(focus);
         if (boundPos == null || boundDim == null) return;
 
         if (player.getServer() == null) return;
@@ -93,27 +93,27 @@ public class StockTickerSpell extends Spell {
         ServerLevel targetLevel = player.getServer().getLevel(dimKey);
         if (targetLevel == null) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.stock_ticker_focus.dimension_unloaded"), true);
+                    Component.translatable("info.goetymech.remote_storage_focus.dimension_unloaded"), true);
             return;
         }
 
         BlockEntity be = targetLevel.getBlockEntity(boundPos);
         if (!(be instanceof StockTickerBlockEntity stbe)) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.stock_ticker_focus.ticker_lost"), true);
-            StockTickerFocus.clearBinding(focus);
+                    Component.translatable("info.goetymech.remote_storage_focus.ticker_lost"), true);
+            RemoteStorageFocus.clearBinding(focus);
             return;
         }
 
         if (!stbe.isKeeperPresent()) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.stock_ticker_focus.no_keeper"), true);
+                    Component.translatable("info.goetymech.remote_storage_focus.no_keeper"), true);
             return;
         }
 
         if (!stbe.behaviour.mayInteract(player)) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.stock_ticker_focus.locked"), true);
+                    Component.translatable("info.goetymech.remote_storage_focus.locked"), true);
             return;
         }
 

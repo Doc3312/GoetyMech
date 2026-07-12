@@ -1,0 +1,21 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:mechanical",
+  "activation_item": {
+    "item": "goety:empty_focus"
+  },
+  "craftType": "forge",
+  "soulCost": 25,
+  "duration": 10,
+  "ingredients": [
+    { "item": "minecraft:ender_pearl" },
+    { "item": "minecraft:ender_pearl" },
+    { "item": "minecraft:chest" },
+    { "item": "minecraft:chest" },
+    { "item": "create:stock_link" },
+    { "item": "goety:call_focus" }
+  ],
+  "result": {
+    "item": "goetymech:remote_storage_focus"
+  }
+}

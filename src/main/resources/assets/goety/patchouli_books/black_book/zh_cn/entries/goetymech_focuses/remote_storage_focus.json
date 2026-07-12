@@ -1,0 +1,19 @@
+{
+  "name": "远程仓储聚晶",
+  "icon": "goetymech:remote_storage_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "DESCRIPTION_PENDING"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:remote_storage_focus"
+    }
+  ],
+  "extra_recipe_mappings": {
+    "goetymech:remote_storage_focus": 1
+  }
+}

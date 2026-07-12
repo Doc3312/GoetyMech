@@ -5,6 +5,7 @@ import com.goetymech.addon.common.capabilities.StressShieldProvider;
 import com.goetymech.addon.common.events.StressLinkEvents;
 import com.goetymech.addon.common.events.StressShieldEvents;
 import com.goetymech.addon.common.events.VoidBlinkEvents;
+import com.Polarice3.Goety.api.magic.SpellType;
 import com.goetymech.addon.common.menu.ModMenuTypes;
 import com.goetymech.addon.common.utils.GatewayMappingLoader;
 import com.goetymech.addon.common.utils.GlobalStressLinkManager;
@@ -48,6 +49,7 @@ public class GoetyMechMod {
     public static final String MOD_ID = "goetymech";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final GlobalStressLinkManager STRESS_LINK = new GlobalStressLinkManager();
+    public static SpellType MECHANICAL;
 
     public GoetyMechMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -71,6 +73,7 @@ public class GoetyMechMod {
 
         ModNetwork.init();
         modEventBus.addListener((FMLCommonSetupEvent event) -> {
+            MECHANICAL = SpellType.create("mechanical", "spell.goety.mechanical");
             ModRitualTypes.register();
         });
         modEventBus.addListener(ModBlocks::registerStressValues);

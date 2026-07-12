@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.item;
 
-import com.goetymech.addon.common.magic.spell.StockTickerSpell;
+import com.goetymech.addon.common.magic.spell.RemoteStorageSpell;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import com.Polarice3.Goety.utils.ItemHelper;
@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class StockTickerFocus extends MagicFocus {
+public class RemoteStorageFocus extends MagicFocus {
 
     private static final String TAG_BOUND = "goetymech.st_bound";
     private static final String TAG_BLOCK_X = "goetymech.st_bx";
@@ -29,8 +29,8 @@ public class StockTickerFocus extends MagicFocus {
     private static final String TAG_DIMENSION = "goetymech.st_dim";
     private static final String TAG_FREQ_ID = "goetymech.st_freq";
 
-    public StockTickerFocus() {
-        super(new StockTickerSpell());
+    public RemoteStorageFocus() {
+        super(new RemoteStorageSpell());
     }
 
     public static void bindToStockTicker(ItemStack stack, Level level, BlockPos pos, UUID freqId) {
@@ -87,7 +87,7 @@ public class StockTickerFocus extends MagicFocus {
             if (!level.isClientSide && isBound(stack)) {
                 clearBinding(stack);
                 player.displayClientMessage(
-                        Component.translatable("info.goetymech.stock_ticker_focus.unbound"), true);
+                        Component.translatable("info.goetymech.remote_storage_focus.unbound"), true);
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
@@ -108,24 +108,24 @@ public class StockTickerFocus extends MagicFocus {
             BlockPos pos = getBoundPos(stack);
             ResourceLocation dim = getBoundDimension(stack);
             String dimName = dim != null ? dim.toString() : "?";
-            tooltip.add(Component.translatable("info.goetymech.stock_ticker_focus.bound")
+            tooltip.add(Component.translatable("info.goetymech.remote_storage_focus.bound")
                     .withStyle(ChatFormatting.GREEN));
             if (pos != null) {
-                tooltip.add(Component.translatable("info.goetymech.stock_ticker_focus.bound_pos",
+                tooltip.add(Component.translatable("info.goetymech.remote_storage_focus.bound_pos",
                                 pos.getX(), pos.getY(), pos.getZ(), dimName)
                         .withStyle(ChatFormatting.GRAY));
             }
         } else {
-            tooltip.add(Component.translatable("info.goetymech.stock_ticker_focus.not_bound")
+            tooltip.add(Component.translatable("info.goetymech.remote_storage_focus.not_bound")
                     .withStyle(ChatFormatting.RED));
         }
 
         ItemHelper.addOnShift(tooltip, () -> {
             if (isBound(stack)) {
-                tooltip.add(Component.translatable("info.goetymech.stock_ticker_focus.shift_bound")
+                tooltip.add(Component.translatable("info.goetymech.remote_storage_focus.shift_bound")
                         .withStyle(ChatFormatting.GRAY));
             } else {
-                tooltip.add(Component.translatable("info.goetymech.stock_ticker_focus.shift_unbound")
+                tooltip.add(Component.translatable("info.goetymech.remote_storage_focus.shift_unbound")
                         .withStyle(ChatFormatting.GRAY));
             }
         });

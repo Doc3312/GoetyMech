@@ -15,7 +15,7 @@ import com.goetymech.addon.common.item.TwistedEmbryoItem;
 import com.goetymech.addon.common.item.UnstableRiftFocus;
 import com.goetymech.addon.common.item.GatewayFocus;
 import com.goetymech.addon.common.item.GatewayAdvancedFocus;
-import com.goetymech.addon.common.item.StockTickerFocus;
+import com.goetymech.addon.common.item.RemoteStorageFocus;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.item.SoulMonumentBlockItem;
@@ -204,6 +204,6 @@ public class ModItems {
             ITEMS.register("gateway_focus_advanced", GatewayAdvancedFocus::new);
 
     /** 仓储发报机聚晶 — 右键绑定，远程打开 Create 物流请求菜单 */
-    public static final RegistryObject<Item> STOCK_TICKER_FOCUS =
-            ITEMS.register("stock_ticker_focus", StockTickerFocus::new);
+    public static final RegistryObject<Item> REMOTE_STORAGE_FOCUS =
+            ITEMS.register("remote_storage_focus", RemoteStorageFocus::new);
 }
