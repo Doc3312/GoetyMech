@@ -64,4 +64,12 @@ public class StockKeeperRequestScreenMixin {
             addressBox.setValue(playerName);
         }
     }
+
+    @Inject(method = "removed", at = @At("TAIL"), remap = false)
+    private void gp$cleanupRemoteBE() {
+        if (blockEntity != null && blockEntity.getLevel() != null
+                && blockEntity.getLevel().getBlockEntity(blockEntity.getBlockPos()) != blockEntity) {
+            blockEntity.invalidateCaps();
+        }
+    }
 }

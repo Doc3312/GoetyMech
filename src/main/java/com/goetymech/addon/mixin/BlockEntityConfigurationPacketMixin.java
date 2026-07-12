@@ -62,7 +62,8 @@ public class BlockEntityConfigurationPacketMixin {
                     m.invoke(this, player, stbe);
                     stbe.sendData();
                     stbe.setChanged();
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    GoetyMechMod.LOGGER.warn("STOCK_DIAG:ORDER applySettings reflect failed, Create API may have changed", e);
                 }
             } else {
                 GoetyMechMod.LOGGER.warn("STOCK_DIAG:ORDER player=({}:{},{},{}) → ticker=({},{},{}) → BE NOT FOUND in any dimension",

@@ -49,7 +49,7 @@ public class LogisticalStockResponsePacketMixin {
             }
         }
 
-        GoetyMechMod.LOGGER.warn("STOCK_DIAG:STOCK pos=({},{},{}) items={} last={} → DROPPED (no target)",
+        GoetyMechMod.LOGGER.debug("STOCK_DIAG:STOCK pos=({},{},{}) items={} last={} → DROPPED (no target)",
                 pos.getX(), pos.getY(), pos.getZ(), items.size(), lastPacket);
     }
 }

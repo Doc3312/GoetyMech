@@ -46,6 +46,7 @@ public class PackagerBlockEntityMixin {
         try {
             ItemHandlerHelper.giveItemToPlayer(target, box.copy());
             self.heldBox = ItemStack.EMPTY;
+            self.sendData();
             ci.cancel();
             GoetyMechMod.LOGGER.info("STOCK_DIAG:PACK delivered OK, wakeTheFrogs cancelled");
         } catch (Exception e) {
