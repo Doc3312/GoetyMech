@@ -5,6 +5,7 @@ import com.goetymech.addon.common.item.RemoteEngineBlockItem;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
+import net.createmod.catnip.math.VoxelShaper;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,12 +23,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
 public class RemoteEngineBlock extends DirectionalKineticBlock
         implements IBE<RemoteEngineBlockEntity> {
+
+    public static final VoxelShaper REMOTE_ENGINE_SHAPE = VoxelShaper.forDirectional(
+        box(2, 0, 0, 14, 14, 16), Direction.NORTH);
 
     public RemoteEngineBlock() {
         super(Properties.of()
