@@ -57,3 +57,43 @@
   - 正常距离：`getBlockEntity(pos)` 返回真 BE → `== blockEntity` → 不取消 → 正常流程
 - **编译**：Mixin 编译通过，PrototypeEvents 存在无关编译错误（skip runClient）
 - **预期**：远距 GUI 不再一闪而过
+
+## 2026-07-13 (fix3c: 修复库存 stale + 玩家收包 + 诊断体系)
+
+- **修复库存数据不刷新**：`StockKeeperRequestScreenMixin` 加 `@Unique refreshTick` 计数器，每 20 tick 调 `refreshClientStockSnapshot()`
+  - 根因：fake BE 永不被 `tick()` → `ticksSinceLastUpdate` 恒为 15 → containerTick 永不触发 refresh
+- **修复库存包无法送达 fake BE**：新增 `LogisticalStockResponsePacketMixin` 拦截 `handleClient()`
+  - 根因：`getBlockEntity(pos)` 查不到 fake BE → 数据丢弃 → UI 显示"检索中"
+  - 修复：`getBlockEntity` 失败时 → 从 `player.containerMenu.contentHolder` 获取 fake BE → 直接调 `receiveStockPacket()`
+- **修复玩家收不到包**：`StockKeeperRequestScreenMixin.init()` RETURN 注入 → 自动设置 `addressBox` 为玩家名
+  - 根因：client 端 `previouslyUsedAddress` 始终 `""` → address box 为空 → 包无地址 → 无法匹配玩家
+- **重构 PackagerBlockEntityMixin**：注入点从 `attemptToSend TAIL` → `tick() wakeTheFrogs()` 前
+  - 根因：TAIL 注入 + `heldBox=EMPTY` 破坏 `performPackageRequests` 的 100 次循环 → 无限发包/空包
+  - 修复：在动画完成那一刻拦截 + `ci.cancel()` 阻止物理输出，不碰 `heldBox` 自然 flow
+- **全链路诊断体系**：`STOCK_DIAG:SPELL|REFRESH|STOCK|ORDER|PACK` 6 阶段 trace，带维度+坐标
+
+## 2026-07-13 (fix3d: 跨维度订单修复)
+
+- **修复跨维度取不出物品**：`BlockEntityConfigurationPacketMixin` → 遍历 `getAllLevels()` 查找 ticker BE
+  - 根因：`player.level().getBlockEntity(pos)` 只在玩家当前维度查 → 下界玩家查主世界坐标 = 永远 null
+  - 修复：当前维度查不到 → 遍历所有 `ServerLevel` 再查 → `STOCK_DIAG:ORDER` 日志记录找到 BE 的维度
+- **已确认可行**：下界施法 → STOCK(fakeBE) → REFRESH → ORDER(BE found in overworld) → PACK → 玩家收到包
+
+## 2026-07-13 (fix4: 健壮性补强)
+
+- **#7 反射静默吞异常**：`catch (Exception ignored){}` → `LOGGER.warn` + 异常详情
+- **#1 fake BE 资源清理**：`StockKeeperRequestScreenMixin.removed()` TAIL 注入 `invalidateCaps()`
+- **#4 日志降级**：`DROPPED (no target)` 日志从 `warn` → `debug`
+- **假包模型修复**：`heldBox = EMPTY` 后加 `self.sendData()` 同步客户端
+
+## 2026-07-13 — 功能冻结归档
+
+- **已完成功能**：
+  - 同维度/跨维度远程打开 Create 物流面板
+  - 实时库存刷新（每 20t 自动推送）
+  - 远程下单 + 直接交付给玩家背包
+  - Shift+施法存入仓库
+  - 全链路 `STOCK_DIAG` 诊断日志体系
+  - 6 个 Mixin 健壮性修复（假包/延迟/跨维度/反射/内存/客户端同步）
+- **未完成**：末地维度施法时主世界 chunk 可能卸载 → `targetLevel.getBlockEntity` 返回 null → 需临时 chunk 加载
+- **关联 incidents**：`_craft.20260710.stock-ticker-remote-order-failed.md`
