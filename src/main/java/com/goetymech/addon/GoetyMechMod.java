@@ -19,6 +19,7 @@ import com.goetymech.addon.init.ModItems;
 import com.goetymech.addon.init.ModRecipeSerializers;
 import com.goetymech.addon.init.ModFluids;
 import com.goetymech.addon.init.ModRituals;
+import com.goetymech.addon.init.ModRitualTypes;
 import com.goetymech.addon.common.entity.CrazedIllagerEntity;
 import com.goetymech.addon.common.entity.CrazedIllagerServant;
 import net.minecraft.resources.ResourceLocation;
@@ -69,6 +70,9 @@ public class GoetyMechMod {
         ModFluids.ITEMS.register(modEventBus);
 
         ModNetwork.init();
+        modEventBus.addListener((FMLCommonSetupEvent event) -> {
+            ModRitualTypes.register();
+        });
         modEventBus.addListener(ModBlocks::registerStressValues);
         modEventBus.addListener((EntityAttributeCreationEvent event) -> {
             event.put(ModEntities.CRAZED_ILLAGER.get(), CrazedIllagerEntity.createAttributes().build());
