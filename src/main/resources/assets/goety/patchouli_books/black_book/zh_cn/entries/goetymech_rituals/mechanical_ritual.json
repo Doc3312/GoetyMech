@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "需求: $(li)16 个安山机壳 $(li)2 个炼药锅 $(li)1 个动力冲压机 $(li)1 个铁砧 $(li)1 个锻造台 $(li)1 个机械锯或切石机"
+      "text": "需求: $(li)16 个安山机壳 $(li)2 个炼药锅 $(li)1 个动力冲压机 $(li)1 个铁砧 $(li)1 个锻造台 $(li)1 个动力锯或切石机"
     },
     {
       "type": "patchouli:image",
