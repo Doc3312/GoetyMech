@@ -162,5 +162,6 @@
   "goetymech.category.crafts": "GoetyMech 工艺",
   "goetymech.category.exploration": "GoetyMech 探索",
   "spell.goety.mechanical": "机械",
-  "container.goetymech.deposit": "仓库中转站"
+  "container.goetymech.deposit": "仓库中转站",
+  "ritual.goety.mechanical": "机械仪式"
 }
