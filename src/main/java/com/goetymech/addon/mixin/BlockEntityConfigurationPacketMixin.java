@@ -5,8 +5,8 @@ import com.simibubi.create.content.logistics.stockTicker.PackageOrderRequestPack
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
 import com.simibubi.create.foundation.networking.BlockEntityConfigurationPacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,21 +27,34 @@ public class BlockEntityConfigurationPacketMixin {
     private void gp$bypassRangeCheck(NetworkEvent.Context context, CallbackInfoReturnable<Boolean> cir) {
         if (!(((Object) this) instanceof PackageOrderRequestPacket)) return;
 
-        ServerPlayer rawPlayer = context.getSender();
-        GoetyMechMod.LOGGER.info("STOCK_DIAG:ORDER player=({}:{},{},{}) → ticker=({},{},{})",
-                rawPlayer != null ? rawPlayer.level().dimension().location() : "?",
-                rawPlayer != null ? rawPlayer.getBlockX() : 0,
-                rawPlayer != null ? rawPlayer.getBlockY() : 0,
-                rawPlayer != null ? rawPlayer.getBlockZ() : 0,
-                pos.getX(), pos.getY(), pos.getZ());
-
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player == null || player.isSpectator()) return;
-            Level world = player.level();
-            if (world == null) return;
-            BlockEntity be = world.getBlockEntity(pos);
+            if (player.getServer() == null) return;
+
+            BlockEntity be = null;
+            ServerLevel foundInLevel = null;
+
+            be = player.level().getBlockEntity(pos);
+            if (be instanceof StockTickerBlockEntity) {
+                foundInLevel = (ServerLevel) player.level();
+            } else {
+                for (ServerLevel sl : player.getServer().getAllLevels()) {
+                    if (sl == player.level()) continue;
+                    be = sl.getBlockEntity(pos);
+                    if (be instanceof StockTickerBlockEntity) {
+                        foundInLevel = sl;
+                        break;
+                    }
+                }
+            }
+
             if (be instanceof StockTickerBlockEntity stbe) {
+                GoetyMechMod.LOGGER.info("STOCK_DIAG:ORDER player=({}:{},{},{}) → ticker=({},{},{}) → BE found in {}",
+                        player.level().dimension().location(),
+                        player.getBlockX(), player.getBlockY(), player.getBlockZ(),
+                        pos.getX(), pos.getY(), pos.getZ(),
+                        foundInLevel.dimension().location());
                 try {
                     Method m = PackageOrderRequestPacket.class
                             .getDeclaredMethod("applySettings", ServerPlayer.class, StockTickerBlockEntity.class);
@@ -51,6 +64,11 @@ public class BlockEntityConfigurationPacketMixin {
                     stbe.setChanged();
                 } catch (Exception ignored) {
                 }
+            } else {
+                GoetyMechMod.LOGGER.warn("STOCK_DIAG:ORDER player=({}:{},{},{}) → ticker=({},{},{}) → BE NOT FOUND in any dimension",
+                        player.level().dimension().location(),
+                        player.getBlockX(), player.getBlockY(), player.getBlockZ(),
+                        pos.getX(), pos.getY(), pos.getZ());
             }
         });
         cir.setReturnValue(true);
