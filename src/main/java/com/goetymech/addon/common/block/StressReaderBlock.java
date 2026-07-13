@@ -2,7 +2,7 @@ package com.goetymech.addon.common.block;
 
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetymech.addon.common.item.RemoteEngineBlockItem;
-import com.goetymech.addon.common.item.StressFocus;
+import com.goetymech.addon.common.item.CrushingWheelFocus;
 import com.goetymech.addon.common.item.StressShieldFocus;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
@@ -112,17 +112,17 @@ public class StressReaderBlock extends DirectionalKineticBlock
             return InteractionResult.SUCCESS;
         }
 
-        if (stack.getItem() instanceof StressFocus && !player.isShiftKeyDown()) {
+        if (stack.getItem() instanceof CrushingWheelFocus && !player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-                StressFocus.bindToReader(stack, level, pos);
+                CrushingWheelFocus.bindToReader(stack, level, pos);
                 BlockEntity be = level.getBlockEntity(pos);
                 if (be instanceof StressReaderBlockEntity reader) {
                     int capacity = (int) reader.getNetworkCapacity();
                     int damage = Math.max(1, (int) (capacity / ModConfig.STRESS_DAMAGE_DIVISOR.get()));
-                    StressFocus.updateDamageCache(stack, damage);
+                    CrushingWheelFocus.updateDamageCache(stack, damage);
                 }
                 player.displayClientMessage(
-                        Component.translatable("info.goetymech.stress_focus.bound_success"), true);
+                        Component.translatable("info.goetymech.crushing_wheel_focus.bound_success"), true);
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
         }

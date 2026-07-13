@@ -3,7 +3,7 @@ package com.goetymech.addon.common.magic.spell;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.goetymech.addon.common.entity.CrushingWheelEntity;
-import com.goetymech.addon.common.item.StressFocus;
+import com.goetymech.addon.common.item.CrushingWheelFocus;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModEntities;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
@@ -38,7 +38,7 @@ public class CrushingWheelSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return ModConfig.STRESS_FOCUS_COST.get();
+        return ModConfig.CRUSHING_WHEEL_FOCUS_COST.get();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CrushingWheelSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return ModConfig.STRESS_FOCUS_COOLDOWN.get();
+        return ModConfig.CRUSHING_WHEEL_FOCUS_COOLDOWN.get();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class CrushingWheelSpell extends Spell {
         if (!(caster instanceof Player player)) return;
 
         ItemStack focus = WandUtil.findFocus(caster);
-        if (!(focus.getItem() instanceof StressFocus)) return;
+        if (!(focus.getItem() instanceof CrushingWheelFocus)) return;
 
         boolean useStaffBonus = rightStaff(staff);
 
@@ -101,9 +101,9 @@ public class CrushingWheelSpell extends Spell {
         int capacity;
         if (GoetyMechMod.STRESS_LINK.hasArk(playerUUID)) {
             capacity = (int) GoetyMechMod.STRESS_LINK.getAggregatedCapacity(playerUUID);
-        } else if (StressFocus.isBound(focus)) {
-            BlockPos boundPos = StressFocus.getBoundPos(focus);
-            String boundDim = StressFocus.getBoundDimension(focus);
+        } else if (CrushingWheelFocus.isBound(focus)) {
+            BlockPos boundPos = CrushingWheelFocus.getBoundPos(focus);
+            String boundDim = CrushingWheelFocus.getBoundDimension(focus);
             if (boundPos == null || boundDim == null) return;
 
             ResourceKey<Level> dimKey = ResourceKey.create(Registries.DIMENSION,
@@ -114,15 +114,15 @@ public class CrushingWheelSpell extends Spell {
             if (!stressLevel.isLoaded(boundPos) ||
                     !(stressLevel.getBlockEntity(boundPos) instanceof StressReaderBlockEntity reader)) {
                 player.displayClientMessage(
-                        Component.translatable("info.goetymech.stress_focus.reader_lost")
+                        Component.translatable("info.goetymech.crushing_wheel_focus.reader_lost")
                                 .withStyle(ChatFormatting.RED), true);
-                StressFocus.clearBinding(focus);
+                CrushingWheelFocus.clearBinding(focus);
                 return;
             }
             capacity = (int) reader.getNetworkCapacity();
         } else {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.stress_focus.not_bound")
+                    Component.translatable("info.goetymech.crushing_wheel_focus.not_bound")
                             .withStyle(ChatFormatting.RED), true);
             return;
         }
@@ -134,7 +134,7 @@ public class CrushingWheelSpell extends Spell {
         }
         //GoetyMechMod.LOGGER.debug("StressFocus spell → capacity={} divisor={} damage={}",
         //        capacity, divisor, damage);
-        StressFocus.updateDamageCache(focus, damage);
+        CrushingWheelFocus.updateDamageCache(focus, damage);
 
         double baseDistance = ModConfig.CRUSHING_WHEEL_BASE_DISTANCE.get();
         double maxDistance = baseDistance;
@@ -162,12 +162,12 @@ public class CrushingWheelSpell extends Spell {
             worldIn.addFreshEntity(wheel);
         }
 
-        int cooldown = (int) (ModConfig.STRESS_FOCUS_COOLDOWN.get());
+        int cooldown = (int) (ModConfig.CRUSHING_WHEEL_FOCUS_COOLDOWN.get());
         if (!focus.isEmpty()) {
             SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }
         if (!player.isCreative()) {
-            int cost = ModConfig.STRESS_FOCUS_COST.get();
+            int cost = ModConfig.CRUSHING_WHEEL_FOCUS_COST.get();
             if (cost > 0) SEHelper.decreaseSouls(player, cost);
         }
 

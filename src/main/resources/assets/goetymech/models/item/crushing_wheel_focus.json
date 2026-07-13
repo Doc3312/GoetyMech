@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetymech:item/stress_focus"
+    "layer0": "goetymech:item/crushing_wheel_focus"
   }
 }

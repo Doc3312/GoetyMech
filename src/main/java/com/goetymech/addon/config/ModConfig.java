@@ -104,13 +104,13 @@ public class ModConfig {
     /** 轮子上限速度（格/秒） */
     public static final ForgeConfigSpec.DoubleValue CRUSHING_WHEEL_MAX_SPEED;
 
-    // ====== Stress Focus 配置 ======
+    // ====== Crushing Wheel Focus 配置 ======
 
-    /** 应力聚晶的灵魂消耗 */
-    public static final ForgeConfigSpec.IntValue STRESS_FOCUS_COST;
+    /** 粉碎轮聚晶的灵魂消耗 */
+    public static final ForgeConfigSpec.IntValue CRUSHING_WHEEL_FOCUS_COST;
 
     /** 施法冷却时间（tick） */
-    public static final ForgeConfigSpec.IntValue STRESS_FOCUS_COOLDOWN;
+    public static final ForgeConfigSpec.IntValue CRUSHING_WHEEL_FOCUS_COOLDOWN;
 
     /** 应力伤害除数（network capacity / 此值 = 基础伤害） */
     public static final ForgeConfigSpec.IntValue STRESS_DAMAGE_DIVISOR;
@@ -478,14 +478,14 @@ public class ModConfig {
 
         BUILDER.pop();
 
-        // ====== Stress Focus 配置 ======
-        BUILDER.push("stress_focus");
+        // ====== Crushing Wheel Focus 配置 ======
+        BUILDER.push("crushing_wheel_focus");
 
-        STRESS_FOCUS_COST = BUILDER
-                .comment("应力聚晶的灵魂消耗", "范围: 0-1000，默认 0")
+        CRUSHING_WHEEL_FOCUS_COST = BUILDER
+                .comment("粉碎轮聚晶的灵魂消耗", "范围: 0-1000，默认 0")
                 .defineInRange("soul_cost", 0, 0, 1000);
 
-        STRESS_FOCUS_COOLDOWN = BUILDER
+        CRUSHING_WHEEL_FOCUS_COOLDOWN = BUILDER
                 .comment("施法冷却时间（tick）", "范围: 5-200，默认 20")
                 .defineInRange("cooldown", 20, 5, 200);
 

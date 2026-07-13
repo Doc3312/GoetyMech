@@ -6,7 +6,7 @@ import com.goetymech.addon.common.item.RemoteEngineBlockItem;
 import com.goetymech.addon.common.item.SculkBindFocus;
 import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.common.item.StableRiftFocus;
-import com.goetymech.addon.common.item.StressFocus;
+import com.goetymech.addon.common.item.CrushingWheelFocus;
 import com.goetymech.addon.common.item.StressShieldFocus;
 import com.goetymech.addon.common.item.TimeFocusPouch;
 import com.goetymech.addon.common.item.ChaseFocus;
@@ -115,9 +115,9 @@ public class ModItems {
     public static final RegistryObject<Item> STABLE_RIFT_FOCUS =
             ITEMS.register("stable_rift_focus", StableRiftFocus::new);
 
-    /** 应力聚晶 — 绑定应力读取器，施放碾压飞轮法术 */
-    public static final RegistryObject<Item> STRESS_FOCUS =
-            ITEMS.register("stress_focus", StressFocus::new);
+    /** 粉碎轮聚晶 — 绑定应力读取器，施放碾压飞轮法术 */
+    public static final RegistryObject<Item> CRUSHING_WHEEL_FOCUS =
+            ITEMS.register("crushing_wheel_focus", CrushingWheelFocus::new);
 
     /** 应力护盾聚晶 — 绑定应力读取器或方舟，施放护盾 */
     public static final RegistryObject<Item> STRESS_SHIELD_FOCUS =

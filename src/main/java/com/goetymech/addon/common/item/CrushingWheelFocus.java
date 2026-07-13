@@ -19,7 +19,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class StressFocus extends MagicFocus {
+public class CrushingWheelFocus extends MagicFocus {
 
     private static final String TAG_BOUND = "goetymech.bound";
     private static final String TAG_BLOCK_X = "goetymech.bound_x";
@@ -28,7 +28,7 @@ public class StressFocus extends MagicFocus {
     private static final String TAG_DIMENSION = "goetymech.bound_dim";
     private static final String TAG_CACHED_DAMAGE = "goetymech.cached_damage";
 
-    public StressFocus() {
+    public CrushingWheelFocus() {
         super(new CrushingWheelSpell());
     }
 
@@ -81,7 +81,7 @@ public class StressFocus extends MagicFocus {
             if (!level.isClientSide && isBound(stack)) {
                 clearBinding(stack);
                 player.displayClientMessage(
-                        Component.translatable("info.goetymech.stress_focus.unbound"), true);
+                        Component.translatable("info.goetymech.crushing_wheel_focus.unbound"), true);
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
@@ -92,7 +92,7 @@ public class StressFocus extends MagicFocus {
     public void appendHoverText(ItemStack stack, @Nullable Level level,
                                 List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("info.goety.focus.cost",
-                ModConfig.STRESS_FOCUS_COST.get()));
+                ModConfig.CRUSHING_WHEEL_FOCUS_COST.get()));
         tooltip.add(Component.translatable("info.goety.focus.spellType",
                 this.spell.getSpellType().getName()));
         tooltip.add(Component.translatable("item.goety.focus.info")
@@ -102,19 +102,19 @@ public class StressFocus extends MagicFocus {
         if (hasArk) {
             float cap = StressArkHUD.getTotalCapacity();
             int damage = Math.max(1, (int) (cap / ModConfig.STRESS_DAMAGE_DIVISOR.get()));
-            tooltip.add(Component.translatable("info.goetymech.stress_focus.cached_damage", damage)
+            tooltip.add(Component.translatable("info.goetymech.crushing_wheel_focus.cached_damage", damage)
                     .withStyle(ChatFormatting.GREEN));
         } else if (isBound(stack)) {
             int damage = stack.hasTag() ? stack.getTag().getInt(TAG_CACHED_DAMAGE) : 0;
-            tooltip.add(Component.translatable("info.goetymech.stress_focus.cached_damage", damage)
+            tooltip.add(Component.translatable("info.goetymech.crushing_wheel_focus.cached_damage", damage)
                     .withStyle(ChatFormatting.GREEN));
         } else {
-            tooltip.add(Component.translatable("info.goetymech.stress_focus.not_bound")
+            tooltip.add(Component.translatable("info.goetymech.crushing_wheel_focus.not_bound")
                     .withStyle(ChatFormatting.RED));
         }
 
         ItemHelper.addOnShift(tooltip, () -> {
-            tooltip.add(Component.translatable("info.goetymech.stress_focus.shift_info")
+            tooltip.add(Component.translatable("info.goetymech.crushing_wheel_focus.shift_info")
                     .withStyle(ChatFormatting.GRAY));
         });
     }
