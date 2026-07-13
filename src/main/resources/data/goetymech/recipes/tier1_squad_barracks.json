@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goetymech:mechanical",
   "activation_item": {
-    "item": "goetymech:squad_focus"
+    "item": "goety:troop_focus"
   },
   "craftType": "mechanical",
   "soulCost": 400,
