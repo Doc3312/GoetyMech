@@ -486,8 +486,8 @@ public class ModConfig {
                 .defineInRange("soul_cost", 0, 0, 1000);
 
         CRUSHING_WHEEL_FOCUS_COOLDOWN = BUILDER
-                .comment("施法冷却时间（tick）", "范围: 5-200，默认 20")
-                .defineInRange("cooldown", 20, 5, 200);
+                .comment("施法冷却时间（tick）", "范围: 5-1200，默认 400（=20秒）")
+                .defineInRange("cooldown", 400, 5, 1200);
 
         STRESS_DAMAGE_DIVISOR = BUILDER
                 .comment("应力伤害除数", "绑定的应力读取器的网络容量 / 此值 = 基础伤害", "范围: 100-10000，默认 2000")
@@ -725,8 +725,8 @@ BUILDER.pop();
                 .defineInRange("soul_cost", 5, 0, 1000);
 
         STOCK_TICKER_FOCUS_COOLDOWN = BUILDER
-                .comment("施法冷却时间（tick）", "范围: 5-1200，默认 100（5秒）")
-                .defineInRange("cooldown", 100, 5, 1200);
+                .comment("施法冷却时间（tick）", "范围: 5-1200，默认 60（3秒）")
+                .defineInRange("cooldown", 60, 5, 1200);
 
         BUILDER.pop();
 
