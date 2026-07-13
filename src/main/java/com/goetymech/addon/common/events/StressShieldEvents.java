@@ -41,6 +41,7 @@ public class StressShieldEvents {
         if (gameTime - shield.getLastHurtTick() < 5) {
             GoetyMechMod.LOGGER.info("DBG STRESS: onAttack SKIP {} tick={} cooldownGuard shield={}",
                     player.getScoreboardName(), gameTime, shield.getShield());
+            event.setCanceled(true);
             return;
         }
 
