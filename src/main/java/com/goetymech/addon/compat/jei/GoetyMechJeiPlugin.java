@@ -10,6 +10,7 @@ import com.goetymech.addon.common.item.curio.TriggerType;
 import com.goetymech.addon.init.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -57,10 +58,11 @@ public class GoetyMechJeiPlugin implements IModPlugin {
                 List.of(new MimicCombinationRecipe(allChestplates)));
 
         registration.addRecipes(GoetyMechRecipeTypes.MIMIC_DECONSTRUCTION,
-                List.of(new MimicDeconstructionRecipe()));
+                List.of(new MimicDeconstructionRecipe(allChestplates)));
 
         registration.addIngredientInfo(
-                PrototypeMimicItem.createFrom(new ItemStack(Items.IRON_CHESTPLATE)),
+                allChestplates.stream().map(PrototypeMimicItem::createFrom).toList(),
+                VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.goetymech.info.prototype_mimic")
         );
 

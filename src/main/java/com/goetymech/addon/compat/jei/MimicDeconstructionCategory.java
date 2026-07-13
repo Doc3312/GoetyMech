@@ -1,5 +1,6 @@
 package com.goetymech.addon.compat.jei;
 
+import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.init.ModItems;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -9,6 +10,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class MimicDeconstructionCategory extends AbstractRecipeCategory<MimicDeconstructionRecipe> {
 
@@ -18,7 +20,7 @@ public class MimicDeconstructionCategory extends AbstractRecipeCategory<MimicDec
         super(
                 GoetyMechRecipeTypes.MIMIC_DECONSTRUCTION,
                 Component.translatable("jei.goetymech.category.mimic_deconstruction"),
-                guiHelper.createDrawableItemStack(new ItemStack(ModItems.PROTOTYPE_MIMIC.get())),
+                guiHelper.createDrawableItemStack(PrototypeMimicItem.createFrom(new ItemStack(Items.IRON_CHESTPLATE))),
                 120, 60
         );
         this.background = guiHelper.createBlankDrawable(120, 60);
@@ -33,7 +35,7 @@ public class MimicDeconstructionCategory extends AbstractRecipeCategory<MimicDec
     public void setRecipe(IRecipeLayoutBuilder builder, MimicDeconstructionRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 26, 3)
                 .setStandardSlotBackground()
-                .addItemStack(recipe.getInput());
+                .addItemStacks(recipe.getInputs());
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 22)
                 .setOutputSlotBackground()

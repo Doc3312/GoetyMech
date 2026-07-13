@@ -1,14 +1,20 @@
 package com.goetymech.addon.compat.jei;
 
+import com.goetymech.addon.common.item.PrototypeMimicItem;
+import com.goetymech.addon.init.ModItems;
 import net.minecraft.world.item.ItemStack;
 
-public record MimicDeconstructionRecipe() {
+import java.util.List;
 
-    public ItemStack getInput() {
-        return new ItemStack(com.goetymech.addon.init.ModItems.PROTOTYPE_MIMIC.get());
+public record MimicDeconstructionRecipe(List<ItemStack> chestplateCandidates) {
+
+    public List<ItemStack> getInputs() {
+        return chestplateCandidates.stream()
+                .map(PrototypeMimicItem::createFrom)
+                .toList();
     }
 
     public ItemStack getOutput() {
-        return new ItemStack(com.goetymech.addon.init.ModItems.PROTOTYPE.get());
+        return new ItemStack(ModItems.PROTOTYPE.get());
     }
 }
