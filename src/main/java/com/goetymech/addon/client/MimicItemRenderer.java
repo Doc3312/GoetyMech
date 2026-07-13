@@ -3,12 +3,10 @@ package com.goetymech.addon.client;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
@@ -41,11 +39,6 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
         Minecraft mc = Minecraft.getInstance();
         ItemRenderer itemRenderer = mc.getItemRenderer();
         BakedModel sourceModel = itemRenderer.getModel(sourceStack, null, null, 0);
-
-        ItemTransform sourceTransform = sourceModel.getTransforms().getTransform(transformType);
-        boolean leftHand = transformType == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
-        new ItemTransform(sourceTransform.rotation, new Vector3f(), sourceTransform.scale)
-                .apply(leftHand, poseStack);
 
         for (BakedModel pass : sourceModel.getRenderPasses(sourceStack, true)) {
             for (RenderType rt : pass.getRenderTypes(sourceStack, true)) {

@@ -139,6 +139,12 @@ public abstract class PrototypeTravelMixin {
                 int tick = PrototypeItem.getSwimTick(player) + 1;
                 PrototypeItem.setSwimTick(player, tick);
 
+                if (tick == 1) {
+                    Vec3 m = player.getDeltaMovement();
+                    double initHSpeed = Math.sqrt(m.x * m.x + m.z * m.z);
+                    PrototypeItem.setSwimBaseSpeed(player, initHSpeed);
+                }
+
                 int kills = PrototypeItem.getAssimilationKills(player);
                 double tierMult = PrototypeItem.getTierMultiplier(kills);
                 double t = Math.min((tick - 1) / 80.0, 1.0);
@@ -148,16 +154,19 @@ public abstract class PrototypeTravelMixin {
                     Vec3 motion = player.getDeltaMovement();
                     double hSpeed = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
                     if (hSpeed > 0.001) {
-                        double newHSpeed = hSpeed * (1.0 + amount);
+                        double baseHSpeed = PrototypeItem.getSwimBaseSpeed(player);
+                        double newHSpeed = hSpeed + baseHSpeed * amount;
                         double factor = newHSpeed / hSpeed;
                         player.setDeltaMovement(motion.x * factor, motion.y, motion.z * factor);
                     }
                 }
             } else {
                 PrototypeItem.setSwimTick(player, 0);
+                PrototypeItem.clearSwimBaseSpeed(player);
             }
         } else {
             PrototypeItem.setSwimTick(player, 0);
+            PrototypeItem.clearSwimBaseSpeed(player);
         }
     }
 }
