@@ -101,6 +101,8 @@ public class StressShieldEvents {
             StressShieldHelper.sendUpdatePacket(sp);
         }
 
+        player.hurtTime = 10;
+        player.hurtDuration = 10;
         event.setCanceled(true);
         GoetyMechMod.LOGGER.info("DBG STRESS: onAttack CANCEL {} tick={}",
                 player.getScoreboardName(), gameTime);
