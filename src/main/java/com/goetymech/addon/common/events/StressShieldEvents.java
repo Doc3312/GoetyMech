@@ -26,8 +26,6 @@ public class StressShieldEvents {
     private static final long NO_HURT_TICKS = 100;
     private static final float RECOVERY_RATE = 0.01f;
 
-    private static long lastProcessedGameTime = -1;
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
@@ -40,10 +38,15 @@ public class StressShieldEvents {
         if (shield == null || !shield.isActive()) return;
 
         long gameTime = player.level().getGameTime();
-        if (gameTime <= lastProcessedGameTime) return;
-        lastProcessedGameTime = gameTime;
+        if (gameTime <= shield.getLastHurtTick()) {
+            GoetyMechMod.LOGGER.info("DBG STRESS: onAttack SKIP {} tick={} sameTickGuard shield={}",
+                    player.getScoreboardName(), gameTime, shield.getShield());
+            return;
+        }
 
         if (gameTime > shield.getExpireTick()) {
+            GoetyMechMod.LOGGER.info("DBG STRESS: onAttack EXPIRE {} tick={}",
+                    player.getScoreboardName(), gameTime);
             shield.clear();
             return;
         }
@@ -56,6 +59,10 @@ public class StressShieldEvents {
             shield.setShield(currentShield - damage);
             shield.setLastHurtTick(gameTime);
 
+            GoetyMechMod.LOGGER.info("DBG STRESS: onAttack ABSORB {} tick={} dmg={} shield={}->{} src={}",
+                    player.getScoreboardName(), gameTime, damage, currentShield, shield.getShield(),
+                    event.getSource().getMsgId());
+
             serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
                     ModSounds.SHIELD_DEBRIS_IMPACT.get(), SoundSource.PLAYERS,
                     1.0F, player.getRandom().nextFloat() * 0.2F + 0.9F);
@@ -65,6 +72,10 @@ public class StressShieldEvents {
         } else {
             float overshoot = damage - currentShield;
             shield.clear();
+
+            GoetyMechMod.LOGGER.info("DBG STRESS: onAttack BREAK {} tick={} dmg={} shield={} overshoot={} src={}",
+                    player.getScoreboardName(), gameTime, damage, currentShield, overshoot,
+                    event.getSource().getMsgId());
 
             serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
                     ModSounds.WILDFIRE_SHIELD_BREAK.get(), SoundSource.PLAYERS,
@@ -91,9 +102,11 @@ public class StressShieldEvents {
         }
 
         event.setCanceled(true);
+        GoetyMechMod.LOGGER.info("DBG STRESS: onAttack CANCEL {} tick={}",
+                player.getScoreboardName(), gameTime);
     }
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (player.level().isClientSide) return;
@@ -102,6 +115,11 @@ public class StressShieldEvents {
 
         IStressShield shield = StressShieldHelper.getShield(player);
         if (shield == null || !shield.isActive()) return;
+
+        long gameTime = player.level().getGameTime();
+        GoetyMechMod.LOGGER.info("DBG STRESS: onHurt FALLBACK {} tick={} amount={} shield={} src={}",
+                player.getScoreboardName(), gameTime, event.getAmount(), shield.getShield(),
+                event.getSource().getMsgId());
 
         event.setCanceled(true);
         event.setAmount(0);
@@ -117,6 +135,8 @@ public class StressShieldEvents {
 
         long gameTime = player.level().getGameTime();
         if (gameTime > shield.getExpireTick()) {
+            GoetyMechMod.LOGGER.info("DBG STRESS: recover EXPIRE {} tick={}",
+                    player.getScoreboardName(), gameTime);
             shield.clear();
             StressShieldHelper.sendUpdatePacket(player);
             return;
@@ -133,12 +153,17 @@ public class StressShieldEvents {
         float max = shield.getMaxShield();
         if (current >= max) return;
 
+        float recovery = max * RECOVERY_RATE;
+        shield.setShield(Math.min(current + recovery, max));
+
+        GoetyMechMod.LOGGER.info("DBG STRESS: recover TICK {} tick={} lastHurt={} shield={}->{} max={} recovery={}",
+                player.getScoreboardName(), gameTime, shield.getLastHurtTick(),
+                current, shield.getShield(), max, recovery);
+
         if (gameTime - shield.getLastHurtTick() == NO_HURT_TICKS) {
             player.playSound(ModSounds.SHIELD_UP.get(), 1.0F, 1.0F);
         }
 
-        float recovery = max * RECOVERY_RATE;
-        shield.setShield(Math.min(current + recovery, max));
         StressShieldHelper.sendUpdatePacket(player);
     }
 }
