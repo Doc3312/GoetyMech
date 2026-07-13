@@ -1,0 +1,21 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goetymech:mechanical",
+  "activation_item": {
+    "item": "goety:empty_focus"
+  },
+  "craftType": "mechanical",
+  "soulCost": 1000,
+  "duration": 10,
+  "ingredients": [
+    { "item": "goetymech:tier2_squad_barracks" },
+    { "item": "goety:ominous_idol" },
+    { "item": "minecraft:nether_star" },
+    { "item": "minecraft:netherite_ingot" },
+    { "item": "goety:pure_unholy_blood" },
+    { "item": "goety:pure_unholy_blood" }
+  ],
+  "result": {
+    "item": "goetymech:tier3_squad_barracks"
+  }
+}

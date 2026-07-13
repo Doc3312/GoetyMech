@@ -1,0 +1,21 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goetymech:mechanical",
+  "activation_item": {
+    "item": "goety:empty_focus"
+  },
+  "craftType": "mechanical",
+  "soulCost": 800,
+  "duration": 8,
+  "ingredients": [
+    { "item": "goetymech:tier1_squad_barracks" },
+    { "item": "goety:waystone" },
+    { "item": "goety:unholy_blood" },
+    { "item": "minecraft:gold_ingot" },
+    { "item": "minecraft:gold_ingot" },
+    { "item": "minecraft:diamond" }
+  ],
+  "result": {
+    "item": "goetymech:tier2_squad_barracks"
+  }
+}
