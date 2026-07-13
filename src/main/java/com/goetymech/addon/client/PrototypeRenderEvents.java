@@ -12,6 +12,7 @@ import com.goetymech.addon.common.net.c2s.C2SWallInputPacket;
 import com.goetymech.addon.common.net.c2s.C2SWallJumpOffPacket;
 import com.goetymech.addon.common.net.c2s.C2SFlightInputPacket;
 import com.goetymech.addon.config.ModConfig;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.tags.FluidTags;
@@ -66,6 +67,9 @@ public class PrototypeRenderEvents {
     // ── Slam client state (synced via S2CSlamStatePacket) ──
     private static boolean clientSlamming = false;
 
+    // ── Auto-sprint cooldown ──
+    private static int autoSprintCooldown = 0;
+
     public static void setClientSlamming(boolean slamming) {
         clientSlamming = slamming;
     }
@@ -90,6 +94,23 @@ public class PrototypeRenderEvents {
             if (mc.options.keyRight.isDown()) strafe -= 1.0f;
             ClientWallRunState.forwardInput = fwd;
             ClientWallRunState.strafeInput = strafe;
+
+            if (PrototypeItem.isHoldingPrototype(player) && fwd > 0
+                    && !mc.options.keySprint.isDown()
+                    && !player.isSprinting() && player.onGround()
+                    && !mc.options.keyShift.isDown() && !player.isFallFlying()
+                    && !ClientWallRunState.isActive()
+                    && autoSprintCooldown <= 0
+                    && player.getFoodData().getFoodLevel() > 6) {
+                var conn = mc.getConnection();
+                if (conn != null) {
+                    conn.send(new ServerboundPlayerCommandPacket(mc.player,
+                            ServerboundPlayerCommandPacket.Action.START_SPRINTING));
+                }
+                player.setSprinting(true);
+                autoSprintCooldown = 10;
+            }
+            if (autoSprintCooldown > 0) autoSprintCooldown--;
 
             boolean sprinting = ClientWallRunState.sprintDown || player.isSprinting() || ClientWallRunState.shouldSprint();
             boolean hasProto = PrototypeItem.isHoldingPrototype(player);
