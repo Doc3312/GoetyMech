@@ -1,0 +1,21 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goetymech:mechanical",
+  "activation_item": {
+    "item": "goety:heart_of_the_night"
+  },
+  "craftType": "magic",
+  "soulCost": 160,
+  "duration": 8,
+  "ingredients": [
+    { "item": "minecraft:ender_pearl" },
+    { "item": "minecraft:ender_pearl" },
+    { "item": "goety:waystone" },
+    { "item": "minecraft:ender_eye" },
+    { "item": "goety:ectoplasm" },
+    { "item": "minecraft:amethyst_shard" }
+  ],
+  "result": {
+    "item": "goetymech:gateway_focus"
+  }
+}
