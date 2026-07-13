@@ -2,13 +2,12 @@
   "type": "goety:ritual",
   "ritual_type": "goetymech:mechanical",
   "activation_item": {
-    "item": "goety:empty_focus"
+    "item": "goetymech:tier2_squad_barracks"
   },
   "craftType": "mechanical",
   "soulCost": 1000,
   "duration": 10,
   "ingredients": [
-    { "item": "goetymech:tier2_squad_barracks" },
     { "item": "goety:ominous_idol" },
     { "item": "minecraft:nether_star" },
     { "item": "minecraft:netherite_ingot" },
