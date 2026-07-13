@@ -21,10 +21,12 @@ public class StressShieldEvents {
     private static final long NO_HURT_TICKS = 100;
     private static final float RECOVERY_RATE = 0.01f;
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (player.level().isClientSide) return;
+        if (event.isCanceled()) return;
+        if (event.getAmount() <= 0) return;
 
         IStressShield shield = StressShieldHelper.getShield(player);
         if (shield == null || !shield.isActive()) return;
