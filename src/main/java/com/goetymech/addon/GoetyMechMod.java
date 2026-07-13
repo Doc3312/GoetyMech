@@ -82,7 +82,6 @@ public class GoetyMechMod {
             event.put(ModEntities.CRAZED_ILLAGER_SERVANT.get(), CrazedIllagerServant.setCustomAttributes().build());
         });
 
-        MinecraftForge.EVENT_BUS.register(StressShieldEvents.class);
         MinecraftForge.EVENT_BUS.register(VoidBlinkEvents.class);
         MinecraftForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> {
             event.addListener(new GatewayMappingLoader());
