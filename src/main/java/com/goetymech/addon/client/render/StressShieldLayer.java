@@ -2,6 +2,8 @@ package com.goetymech.addon.client.render;
 
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -21,7 +23,6 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
@@ -30,19 +31,35 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
 
     private static final ResourceLocation ENERGY_TEXTURE = new ResourceLocation("textures/entity/wither/wither_armor.png");
 
+    private static final RenderStateShard.TransparencyStateShard CUSTOM_TRANSLUCENT =
+            new RenderStateShard.TransparencyStateShard(
+                    "stress_shield_translucent",
+                    () -> {
+                        RenderSystem.enableBlend();
+                        RenderSystem.blendFuncSeparate(
+                                GlStateManager.SourceFactor.SRC_ALPHA,
+                                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                                GlStateManager.SourceFactor.ONE,
+                                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                    },
+                    () -> {
+                        RenderSystem.disableBlend();
+                        RenderSystem.defaultBlendFunc();
+                    });
+
     private static final RenderType SHIELD_GLOW = RenderType.create(
             "stress_shield_glow",
             DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS,
             256, false, true,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEyesShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEnergySwirlShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(ENERGY_TEXTURE, false, false))
-                    .setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
-                    .setCullState(RenderStateShard.NO_CULL)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setOverlayState(RenderStateShard.OVERLAY)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .setTransparencyState(CUSTOM_TRANSLUCENT)
+                    .setCullState(new RenderStateShard.CullStateShard(false))
+                    .setLightmapState(new RenderStateShard.LightmapStateShard(true))
+                    .setOverlayState(new RenderStateShard.OverlayStateShard(true))
+                    .setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, false))
                     .createCompositeState(false));
 
     private final PlayerModel<T> model;
@@ -66,7 +83,6 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
         long gameTime = living.level().getGameTime();
         if (cap.getExpireTick() > 0 && gameTime > cap.getExpireTick()) return;
 
-        float age = living.tickCount + partialTicks;
         float shieldRatio = cap.getMaxShield() > 0 ? Math.min(cap.getShield() / cap.getMaxShield(), 1.0f) : 0;
 
         this.model.prepareMobModel(living, limbSwing, limbSwingAmount, partialTicks);

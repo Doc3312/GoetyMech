@@ -2,6 +2,8 @@ package com.goetymech.addon.client;
 
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -27,19 +29,35 @@ public class StressShieldWorldRenderer {
 
     private static final ResourceLocation SHARD_TEXTURE = new ResourceLocation("textures/entity/wither/wither_armor.png");
 
+    private static final RenderStateShard.TransparencyStateShard CUSTOM_TRANSLUCENT =
+            new RenderStateShard.TransparencyStateShard(
+                    "stress_shard_translucent",
+                    () -> {
+                        RenderSystem.enableBlend();
+                        RenderSystem.blendFuncSeparate(
+                                GlStateManager.SourceFactor.SRC_ALPHA,
+                                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                                GlStateManager.SourceFactor.ONE,
+                                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                    },
+                    () -> {
+                        RenderSystem.disableBlend();
+                        RenderSystem.defaultBlendFunc();
+                    });
+
     private static final RenderType SHARD_GLOW = RenderType.create(
             "stress_shard_glow",
             DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS,
             256, false, true,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEyesShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEnergySwirlShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(SHARD_TEXTURE, false, false))
-                    .setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
-                    .setCullState(RenderStateShard.NO_CULL)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setOverlayState(RenderStateShard.OVERLAY)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .setTransparencyState(CUSTOM_TRANSLUCENT)
+                    .setCullState(new RenderStateShard.CullStateShard(false))
+                    .setLightmapState(new RenderStateShard.LightmapStateShard(true))
+                    .setOverlayState(new RenderStateShard.OverlayStateShard(true))
+                    .setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, false))
                     .createCompositeState(false));
 
     private static final float HALF_SIZE = 0.3f;
