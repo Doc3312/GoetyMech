@@ -1,11 +1,11 @@
 package com.goetymech.addon.client;
 
-import com.Polarice3.Goety.Goety;
 import com.goetymech.addon.GoetyMechMod;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -17,7 +17,9 @@ public class StressArkHUD {
 
     private static final int BAR_WIDTH = 128;
     private static final int BAR_HEIGHT = 9;
-    private static final int ENERGY_BAR_HEIGHT = 5;
+
+    private static final ResourceLocation ENGINE_TEXTURE =
+            new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/engine_energy.png");
 
     private static float totalCapacity;
     private static float totalStress;
@@ -71,29 +73,29 @@ public class StressArkHUD {
         float cap = totalCapacity;
         float stress = totalStress;
         float used = Math.max(stress, 0);
-        float available = Math.max(0, cap - used);
         // totalStress（used）已含远程引擎消耗（Reader.calculateStressApplied 注入 Create 网络），
         // 不再重复扣减 engineConsumption
-        float fraction = cap <= 0 ? 0 : Math.min(used / cap, 1.125f);
 
         int barX = width / 2 + 100;
         int barY = height - 25;
 
-        int fillWidth = (int) (117 * Math.min(1.125f, fraction));
+        int redWidth = cap <= 0 ? 0 : (int) (117 * Math.min(1.0f, used / cap));
 
-        RenderSystem.setShaderTexture(0, Goety.location("textures/gui/soul_energy.png"));
-        gui.blit(Goety.location("textures/gui/soul_energy.png"),
+        RenderSystem.setShaderTexture(0, ENGINE_TEXTURE);
+
+        // 1. 棕色背景条
+        gui.blit(ENGINE_TEXTURE,
                 barX, barY, 0, 9, BAR_WIDTH, BAR_HEIGHT, 128, 90);
 
         if (cap > 0) {
-            gui.blit(Goety.location("textures/gui/soul_energy.png"),
-                    barX + 9, barY, 9, 18, fillWidth, BAR_HEIGHT, 128, 90);
-        }
+            // 2. 绿色底条（始终全满）
+            gui.blit(ENGINE_TEXTURE,
+                    barX + 9, barY + 2, 0, 21, 117, 5, 128, 90);
 
-        int offset = (int) ((Minecraft.getInstance().player.tickCount + Minecraft.getInstance().getPartialTick()) % 234);
-        RenderSystem.setShaderTexture(0, Goety.location("textures/gui/soul_energy_bar.png"));
-        gui.blit(Goety.location("textures/gui/soul_energy_bar.png"),
-                barX + 9, barY + 2, offset, 0, fillWidth, ENERGY_BAR_HEIGHT, 234, ENERGY_BAR_HEIGHT);
+            // 3. 红色覆盖条（按 used/cap 比例）
+            gui.blit(ENGINE_TEXTURE,
+                    barX + 9, barY + 2, 0, 29, redWidth, 5, 128, 90);
+        }
 
         // 显示「已用/容量」，与引擎 Goggle 显示格式一致
         String text = (int) used + "/" + (int) cap + " SU";
