@@ -8,14 +8,14 @@
   "soulCost": 50,
   "duration": 5,
   "ingredients": [
-    { "item": "create:crushing_wheel" },
-    { "item": "minecraft:iron_block" },
-    { "item": "goety:waystone" },
+    { "item": "minecraft:shield" },
+    { "item": "minecraft:shield" },
     { "item": "create:shaft" },
     { "item": "create:shaft" },
-    { "item": "goety:ectoplasm" }
+    { "item": "goety:ectoplasm" },
+    { "item": "goety:waystone" }
   ],
   "result": {
-    "item": "goetymech:crushing_wheel_focus"
+    "item": "goetymech:stress_shield_focus"
   }
 }
