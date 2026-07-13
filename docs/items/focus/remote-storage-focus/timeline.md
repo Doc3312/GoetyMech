@@ -135,3 +135,17 @@
   | `jei.goety.craftType.mechanical` | `机械` | JEI/Patchouli 仪式类型名 |
   | `container.goetymech.deposit` | `仓库中转站` | Shift+施法 GUI 标题 |
   | `ritual.goety.mechanical` | ❌ 不存在 | 错误 key，Goety 用 `jei.goety.craftType.*` |
+
+## 2026-07-13 — 配方补充归档
+
+- **全模组配方补全**：为 8 个聚晶 + 6 个方块 + 1 个饰品创建配方（JSON 仪式 + 有序合成）
+  - chase_focus（追猎）、sculk_bind_focus（幽匿）、squad_focus（兵团）
+  - unstable_rift_focus（裂纬）、stable_rift_focus（界旅）、crushing_wheel_focus（粉碎轮）
+  - stress_shield_focus（应力护盾）、gateway_focus（定点）、gateway_focus_advanced（神行）
+  - tier1/2/3_squad_barracks（点将台×3）、flesh_furnace（血肉熔炉）、breeding_nest（育巢）
+  - stress_reader（应力读取器）、remote_engine（远程引擎）、stress_ark（应力方舟）
+  - ectoplasm_catcher（灵质捕手·有序合成）
+- **JEI 胚胎转化**：新增 EmbryoConversionCategory + Recipe，展示育巢/血肉熔炉转化链
+- **skill 体系更新**：goety-addon-dev（SpellType+翻译key+强制调用）、goety-ritual-dev（仪式速查）、patchouli（br/color警告）
+- **教训**：Goety 的 `pure_unholy_blood` 不是独立注册 ID（NBT 属性），翻译 key ≠ register ID，需查 `ModItems.java` 确认
+- **关联 incidents**：`_craft.20260713.recipe-pure-unholy-blood.md`
