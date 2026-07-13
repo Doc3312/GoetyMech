@@ -43,6 +43,6 @@ public class MimicCombinationCategory extends AbstractRecipeCategory<MimicCombin
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 116, 22)
                 .setOutputSlotBackground()
-                .addItemStack(recipe.getOutput());
+                .addItemStacks(recipe.getOutputs());
     }
 }

@@ -16,4 +16,10 @@ public record MimicCombinationRecipe(List<ItemStack> chestplateCandidates) {
     public ItemStack getOutput() {
         return PrototypeMimicItem.createFrom(new ItemStack(Items.IRON_CHESTPLATE));
     }
+
+    public List<ItemStack> getOutputs() {
+        return chestplateCandidates.stream()
+                .map(PrototypeMimicItem::createFrom)
+                .toList();
+    }
 }

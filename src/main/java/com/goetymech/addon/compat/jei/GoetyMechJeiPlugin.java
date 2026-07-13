@@ -4,6 +4,7 @@ import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
 import com.Polarice3.Goety.compat.jei.JeiRecipeTypes;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.PrototypeItem;
+import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.TriggerType;
 import com.goetymech.addon.init.ModItems;
@@ -17,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ public class GoetyMechJeiPlugin implements IModPlugin {
                 List.of(new MimicDeconstructionRecipe()));
 
         registration.addIngredientInfo(
-                ModItems.PROTOTYPE_MIMIC.get(),
+                PrototypeMimicItem.createFrom(new ItemStack(Items.IRON_CHESTPLATE)),
                 Component.translatable("jei.goetymech.info.prototype_mimic")
         );
 

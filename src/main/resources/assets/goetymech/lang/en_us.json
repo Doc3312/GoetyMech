@@ -113,7 +113,7 @@
   "entity.goetymech.crazed_illager_servant": "Crazed Illager",
   "item.goetymech.crazed_illager_spawn_egg": "Crazed Illager Spawn Egg",
   "info.goetymech.crazed_summon.limit": "§cYou have reached the summon limit for Crazed Illagers!",
-  "jei.goetymech.info.prototype_mimic": "A Prototype Mimic is crafted by combining a Prototype with any chestplate in the 2脳2 crafting grid.\n\nIt inherits all attributes, enchantments, and modifiers from the chestplate.\n\nCombine a Prototype Mimic back into a crafting grid to retrieve the Prototype.",
+  "jei.goetymech.info.prototype_mimic": "A Prototype Mimic is crafted by combining a Prototype with any chestplate in a crafting grid.\nIt inherits all attributes, enchantments, and modifiers from the chestplate.\nCombine a Prototype Mimic back into a crafting grid to retrieve the Prototype.\n§cNote: The original chestplate is not preserved on deconstruction.",
   "jei.goetymech.category.mimic_combination": "Prototype Mimic Combination",
   "jei.goetymech.category.mimic_deconstruction": "Prototype Mimic Deconstruction",
   "jei.goetymech.category.embryo_conversion": "Embryo Conversion",

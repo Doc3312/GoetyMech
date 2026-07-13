@@ -113,7 +113,7 @@
   "entity.goetymech.crazed_illager_servant": "改造失败的刌民",
   "item.goetymech.crazed_illager_spawn_egg": "改造失败的刌民刷怪蛋",
   "info.goetymech.crazed_summon.limit": "§c你已经达到了改造失败的刌民的召唤上限！",
-  "jei.goetymech.info.prototype_mimic": "原型·拟态是由原型与任意胸甲在 2×2 合成格中合成获得。\n\n它会继承胸甲的所有属性、附魔和修饰符。\n\n将原型·拟态放回合成格即可还原出原型。",
+  "jei.goetymech.info.prototype_mimic": "原型·拟态是由原型与任意胸甲合成获得。\n它会继承胸甲的所有属性、附魔和修饰符。\n将原型·拟态放回合成格即可还原出原型。\n§c注意：还原后原胸甲不保留。",
   "jei.goetymech.category.mimic_combination": "原型拟态组合",
   "jei.goetymech.category.mimic_deconstruction": "原型拟态还原",
   "jei.goetymech.category.embryo_conversion": "胚胎转化",
