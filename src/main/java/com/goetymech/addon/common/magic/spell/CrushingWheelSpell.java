@@ -132,7 +132,7 @@ public class CrushingWheelSpell extends Spell {
         if (useStaffBonus) {
             damage = (int) (damage * 1.5);
         }
-        //GoetyMechMod.LOGGER.debug("StressFocus spell → capacity={} divisor={} damage={}",
+        //GoetyMechMod.LOGGER.debug("CrushingWheelFocus spell → capacity={} divisor={} damage={}",
         //        capacity, divisor, damage);
         CrushingWheelFocus.updateDamageCache(focus, damage);
 
