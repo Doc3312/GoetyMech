@@ -476,7 +476,7 @@ else (水平/抬头):
 | `slam_max_damage` | 1200.0 | 1~9999 | 伤害上限 |
 | `slam_max_radius` | 100.0 | 1~200 | 半径上限 |
 | `slam_hover_ticks` | 5 | 0~100 | 下落前悬停 tick 数 |
-| `slam_ground_deform_radius` | 6.0 | 6.0~12.0 | 地面变形最大半径，同倍率增长 clamp[6, config] |
+| `slam_ground_deform_radius` | 12.0 | 6.0~12.0 | 地面变形最大半径，阶梯增长 6+floor(fallDist/20) |
 | `flight_target_speed` | 0.5 | 0.1~2.0 | 唯一速度配置（驱动 lift×0.16, drift×0.04, noW×0.8） |
 
 #### Wall Run 段

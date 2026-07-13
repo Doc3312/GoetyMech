@@ -553,8 +553,8 @@ public class ModConfig {
                 .defineInRange("slam_hover_ticks", 5, 0, 100);
 
         SLAM_GROUND_DEFORM_RADIUS = BUILDER
-                .comment("地面变形最大半径（格）", "参考环动画的 fallDistance × SLAM_RADIUS_MULTIPLIER 公式增长，但独立 clamp[6.0, 此值]", "范围: 6.0-12.0，默认 6.0")
-                .defineInRange("slam_ground_deform_radius", 6.0, 6.0, 12.0);
+                .comment("地面变形最大半径（格）", "阶梯增长：6 + floor(fallDist / 20)，参考环动画每 20 格 +1 的步进模式", "范围: 6.0-12.0，默认 12.0")
+                .defineInRange("slam_ground_deform_radius", 12.0, 6.0, 12.0);
 
         FLIGHT_TARGET_SPEED = BUILDER
                 .comment("按住 W 时沿视线方向飞行的基础速度（blocks/tick）", "按住W会从该速度开始逐渐加速到 FLIGHT_TARGET_SPEED * FLIGHT_MAX_MULTIPLIER", "范围: 0.1-2.0，默认 0.5（=10 blocks/s）")
