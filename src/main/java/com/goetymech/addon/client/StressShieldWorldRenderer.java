@@ -45,6 +45,9 @@ public class StressShieldWorldRenderer {
                         RenderSystem.defaultBlendFunc();
                     });
 
+    private static final RenderStateShard.DepthTestStateShard ALWAYS_DEPTH =
+            new RenderStateShard.DepthTestStateShard("always", 519);
+
     private static final RenderType SHARD_GLOW = RenderType.create(
             "stress_shard_glow",
             DefaultVertexFormat.NEW_ENTITY,
@@ -55,6 +58,7 @@ public class StressShieldWorldRenderer {
                     .setTextureState(new RenderStateShard.TextureStateShard(SHARD_TEXTURE, false, false))
                     .setTransparencyState(CUSTOM_TRANSLUCENT)
                     .setCullState(new RenderStateShard.CullStateShard(false))
+                    .setDepthTestState(ALWAYS_DEPTH)
                     .setLightmapState(new RenderStateShard.LightmapStateShard(true))
                     .setOverlayState(new RenderStateShard.OverlayStateShard(true))
                     .setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, false))

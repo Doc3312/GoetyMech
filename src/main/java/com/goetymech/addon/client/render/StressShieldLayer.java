@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
@@ -47,20 +48,26 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
                         RenderSystem.defaultBlendFunc();
                     });
 
-    private static final RenderType SHIELD_GLOW = RenderType.create(
-            "stress_shield_glow",
-            DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS,
-            256, false, true,
-            RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEnergySwirlShader))
-                    .setTextureState(new RenderStateShard.TextureStateShard(ENERGY_TEXTURE, false, false))
-                    .setTransparencyState(CUSTOM_TRANSLUCENT)
-                    .setCullState(new RenderStateShard.CullStateShard(false))
-                    .setLightmapState(new RenderStateShard.LightmapStateShard(true))
-                    .setOverlayState(new RenderStateShard.OverlayStateShard(true))
-                    .setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, false))
-                    .createCompositeState(false));
+    private static final RenderStateShard.DepthTestStateShard ALWAYS_DEPTH =
+            new RenderStateShard.DepthTestStateShard("always", 519);
+
+    private static RenderType createShieldGlowRenderType(float uOffset, float vOffset) {
+        return RenderType.create(
+                "stress_shield_glow",
+                DefaultVertexFormat.NEW_ENTITY,
+                VertexFormat.Mode.QUADS,
+                256, false, true,
+                RenderType.CompositeState.builder()
+                        .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEnergySwirlShader))
+                        .setTextureState(new RenderStateShard.TextureStateShard(ENERGY_TEXTURE, false, false))
+                        .setTexturingState(new RenderStateShard.OffsetTexturingStateShard(uOffset, vOffset))
+                        .setTransparencyState(CUSTOM_TRANSLUCENT)
+                        .setCullState(new RenderStateShard.CullStateShard(false))
+                        .setDepthTestState(ALWAYS_DEPTH)
+                        .setLightmapState(new RenderStateShard.LightmapStateShard(true))
+                        .setOverlayState(new RenderStateShard.OverlayStateShard(true))
+                        .createCompositeState(false));
+    }
 
     private final PlayerModel<T> model;
 
@@ -91,8 +98,12 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
         }
         this.model.setupAnim(living, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
+        float age = living.tickCount + partialTicks;
+        float uOff = (Mth.cos(age * 0.02F) * 3.0F) % 1.0F;
+        float vOff = (age * 0.01F) % 1.0F;
+
         float alpha = 0.5f + shieldRatio * 0.5f;
-        VertexConsumer vc = buffer.getBuffer(SHIELD_GLOW);
+        VertexConsumer vc = buffer.getBuffer(createShieldGlowRenderType(uOff, vOff));
         this.model.renderToBuffer(poseStack, vc, 0xF000F0,
                 OverlayTexture.NO_OVERLAY, 0.3F, 0.7F, 1.0F, alpha);
     }
