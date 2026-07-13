@@ -76,8 +76,12 @@ public class StressShieldSpell extends Spell {
 
     @Override
     public void useParticle(Level worldIn, LivingEntity caster, ItemStack stack) {
-        if (worldIn instanceof ServerLevel server && caster.tickCount % 5 == 0) {
+        if (worldIn instanceof ServerLevel server && caster.tickCount % 3 == 0) {
             ServerParticleUtil.addParticlesAroundMiddleSelf(server, ParticleTypes.ENCHANTED_HIT, caster);
+            ServerParticleUtil.addAuraParticles(server, ParticleTypes.END_ROD, caster, 1.2f);
+            server.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                    caster.getX(), caster.getY() + 0.5, caster.getZ(),
+                    2, 0.5, 0.5, 0.5, 0.02);
         }
     }
 

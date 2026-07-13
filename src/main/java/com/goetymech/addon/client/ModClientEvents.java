@@ -10,6 +10,7 @@ import com.goetymech.addon.client.render.CrushingWheelRenderer;
 import com.goetymech.addon.client.render.RemoteEngineRenderer;
 import com.goetymech.addon.client.render.SculkBidingModel;
 import com.goetymech.addon.client.render.SculkBidingRenderer;
+import com.goetymech.addon.client.render.StressShieldLayer;
 import com.goetymech.addon.client.render.StressReaderRenderer;
 import com.goetymech.addon.common.menu.ModMenuTypes;
 import com.goetymech.addon.init.ModBlocks;
@@ -104,6 +105,23 @@ public class ModClientEvents {
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SculkBidingRenderer.LAYER, SculkBidingModel::createBodyLayer);
         event.registerLayerDefinition(CrazedIllagerModel.LAYER, CrazedIllagerModel::createBodyLayer);
+        event.registerLayerDefinition(StressShieldLayer.LAYER, StressShieldLayer::createBodyLayer);
+    }
+
+    @SubscribeEvent
+    public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
+        event.getSkins().forEach(skin -> {
+            var renderer = event.getSkin(skin);
+            if (renderer != null) {
+                addStressShieldLayer(renderer, event.getEntityModels());
+            }
+        });
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void addStressShieldLayer(net.minecraft.client.renderer.entity.LivingEntityRenderer renderer,
+                                              net.minecraft.client.model.geom.EntityModelSet models) {
+        renderer.addLayer(new StressShieldLayer<>(renderer, models));
     }
 
     @SubscribeEvent
@@ -129,6 +147,7 @@ public class ModClientEvents {
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "stress_ark_hud", StressArkHUD.OVERLAY);
         event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "freecam_hud", FreecamHUD.OVERLAY);
+        event.registerAboveAll("stress_shield_overlay", StressShieldOverlay.OVERLAY);
     }
 
     @SubscribeEvent
