@@ -1,0 +1,22 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goetymech:mechanical",
+  "activation_item": {
+    "item": "create:steam_engine"
+  },
+  "craftType": "mechanical",
+  "soulCost": 160,
+  "duration": 8,
+  "ingredients": [
+    { "item": "goety:pale_steel_ingot" },
+    { "item": "goety:pale_steel_ingot" },
+    { "item": "create:speedometer" },
+    { "item": "goety:waystone" },
+    { "item": "minecraft:ender_pearl" },
+    { "item": "create:shaft" },
+    { "item": "goety:ectoplasm" }
+  ],
+  "result": {
+    "item": "goetymech:remote_engine"
+  }
+}
