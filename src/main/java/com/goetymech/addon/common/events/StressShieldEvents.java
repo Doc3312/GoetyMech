@@ -26,7 +26,7 @@ public class StressShieldEvents {
     private static final long NO_HURT_TICKS = 100;
     private static final float RECOVERY_RATE = 0.01f;
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (player.level().isClientSide) return;
@@ -38,8 +38,8 @@ public class StressShieldEvents {
         if (shield == null || !shield.isActive()) return;
 
         long gameTime = player.level().getGameTime();
-        if (gameTime <= shield.getLastHurtTick()) {
-            GoetyMechMod.LOGGER.info("DBG STRESS: onAttack SKIP {} tick={} sameTickGuard shield={}",
+        if (gameTime - shield.getLastHurtTick() < 5) {
+            GoetyMechMod.LOGGER.info("DBG STRESS: onAttack SKIP {} tick={} cooldownGuard shield={}",
                     player.getScoreboardName(), gameTime, shield.getShield());
             return;
         }
@@ -101,8 +101,6 @@ public class StressShieldEvents {
             StressShieldHelper.sendUpdatePacket(sp);
         }
 
-        player.hurtTime = 10;
-        player.hurtDuration = 10;
         event.setCanceled(true);
         GoetyMechMod.LOGGER.info("DBG STRESS: onAttack CANCEL {} tick={}",
                 player.getScoreboardName(), gameTime);
