@@ -45,7 +45,6 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -152,20 +151,6 @@ public class PrototypeEvents {
         LivingEntity victim = event.getEntity();
         DamageSource source = event.getSource();
 
-        if (victim instanceof Player player && source.getEntity() != null) {
-            if (PrototypeItem.hasAnyPrototype(player)) {
-                int kills = PrototypeItem.getAssimilationKills(player);
-                int threshold = PrototypeItem.getDamageImmunityThreshold(kills);
-                if (threshold > 0 && event.getAmount() <= threshold) {
-                    event.setCanceled(true);
-                    PrototypeItem.setKnockbackImmune(player, true);
-                    player.level().playSound(null, player.blockPosition(),
-                            SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4F, 1.8F);
-                    return;
-                }
-            }
-        }
-
         if (!(source.getEntity() instanceof Player player)) return;
         if (!PrototypeItem.hasAnyPrototype(player)) return;
 
@@ -206,6 +191,16 @@ public class PrototypeEvents {
 
         int kills = PrototypeItem.getAssimilationKills(player);
 
+        if (event.getSource().getEntity() != null) {
+            int threshold = PrototypeItem.getDamageImmunityThreshold(kills);
+            if (threshold > 0 && event.getAmount() <= threshold) {
+                event.setCanceled(true);
+                player.level().playSound(null, player.blockPosition(),
+                        SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4F, 1.8F);
+                return;
+            }
+        }
+
         if (kills >= ModConfig.IMMUNITY_IMPACT_KILLS.get() && event.getSource().is(DamageTypes.FLY_INTO_WALL)) {
             event.setCanceled(true);
             return;
@@ -217,17 +212,6 @@ public class PrototypeEvents {
         }
 
         if (PrototypeItem.getSlamInvulnTick(player) > 0) {
-            event.setCanceled(true);
-        }
-    }
-
-    // ── 击退免疫（配合免伤阈值：伤害 ≤ 阈值时免疫击退） ──
-
-    @SubscribeEvent
-    public static void onLivingKnockBack(LivingKnockBackEvent event) {
-        if (event.getEntity() instanceof Player player
-                && PrototypeItem.isKnockbackImmune(player)) {
-            PrototypeItem.setKnockbackImmune(player, false);
             event.setCanceled(true);
         }
     }
@@ -256,7 +240,6 @@ public class PrototypeEvents {
             PrototypeItem.setSlamInvulnTick(player, invuln - 1);
         }
 
-        PrototypeItem.setKnockbackImmune(player, false);
     }
 
     // ── PlayerTick (END): 推进 + 抗 drag（fires after travel → 修饰持久到下一 tick） ──

@@ -11,8 +11,8 @@
     { "item": "goety:ominous_idol" },
     { "item": "minecraft:nether_star" },
     { "item": "minecraft:netherite_ingot" },
-    { "item": "goety:unholy_blood" },
-    { "item": "goety:unholy_blood" }
+    { "item": "goety:pure_unholy_blood" },
+    { "item": "goety:pure_unholy_blood" }
   ],
   "result": {
     "item": "goetymech:tier3_squad_barracks"

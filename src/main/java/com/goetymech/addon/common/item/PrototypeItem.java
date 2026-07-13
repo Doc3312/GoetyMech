@@ -37,7 +37,7 @@ public class PrototypeItem extends ElytraItem {
     private static final String TAG_CHARGE_START_Y = "goetymech.charge_start_y";
 
     private static final String TAG_ASSIMILATION_KILLS = "goetymech.assimilation_kills";
-    private static final String TAG_KNOCKBACK_IMMUNE = "goetymech.knockback_immune";
+
 
     public PrototypeItem() {
         super(new Properties()
@@ -311,20 +311,6 @@ public class PrototypeItem extends ElytraItem {
 
     public static void clearChargeStartY(LivingEntity entity) {
         entity.getPersistentData().remove(TAG_CHARGE_START_Y);
-    }
-
-    // ── Knockback immunity ──
-
-    public static boolean isKnockbackImmune(LivingEntity entity) {
-        return entity.getPersistentData().getBoolean(TAG_KNOCKBACK_IMMUNE);
-    }
-
-    public static void setKnockbackImmune(LivingEntity entity, boolean immune) {
-        if (immune) {
-            entity.getPersistentData().putBoolean(TAG_KNOCKBACK_IMMUNE, true);
-        } else {
-            entity.getPersistentData().remove(TAG_KNOCKBACK_IMMUNE);
-        }
     }
 
     // ── Assimilation kill count ──
