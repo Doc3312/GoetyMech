@@ -11,5 +11,8 @@ public class GoetyMechRecipeTypes {
     public static final RecipeType<MimicDeconstructionRecipe> MIMIC_DECONSTRUCTION =
             RecipeType.create(GoetyMechMod.MOD_ID, "mimic_deconstruction", MimicDeconstructionRecipe.class);
 
+    public static final RecipeType<EmbryoConversionRecipe> EMBRYO_CONVERSION =
+            RecipeType.create(GoetyMechMod.MOD_ID, "embryo_conversion", EmbryoConversionRecipe.class);
+
     private GoetyMechRecipeTypes() {}
 }
