@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goetymech:mechanical",
   "activation_item": {
-    "item": "goety:totem_of_souls"
+    "item": "goety:hunger_core"
   },
   "craftType": "mechanical",
   "entity_to_sacrifice": {
@@ -11,7 +11,6 @@
   },
   "soulCost": 1000,
   "duration": 10,
-  "sacrifice_count": 2,
   "ingredients": [
     { "item": "minecraft:rotten_flesh" },
     { "item": "minecraft:rotten_flesh" },
