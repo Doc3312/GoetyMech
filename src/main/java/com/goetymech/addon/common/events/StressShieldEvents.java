@@ -59,7 +59,6 @@ public class StressShieldEvents {
             serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
                     player.getX(), player.getY() + 1, player.getZ(),
                     20, 1.5, 1.5, 1.5, 0.3);
-            ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.SONIC_BOOM, player);
 
             float aoeDamage = Math.max(overshoot, 3.0f);
             AABB aabb = player.getBoundingBox().inflate(3);
