@@ -43,7 +43,7 @@ public class VoidBlinkSpell extends Spell {
         Vec3 lookVec = caster.getViewVector(1.0F);
         Vec3 destVec = srcVec.add(lookVec.x * range, lookVec.y * range, lookVec.z * range);
         AABB aabb = caster.getBoundingBox().expandTowards(lookVec.scale(range)).inflate(3.0, 3.0, 3.0);
-        EntityHitResult hitResult = ProjectileUtil.getEntityHitResult(caster.level, caster, srcVec, destVec, aabb,
+        EntityHitResult hitResult = ProjectileUtil.getEntityHitResult(caster.level(), caster, srcVec, destVec, aabb,
                 entity -> (entity instanceof LivingEntity && !entity.isSpectator() && entity.isPickable())
                         || entity instanceof PartEntity<?>);
         if (hitResult != null) {
