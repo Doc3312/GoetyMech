@@ -5,6 +5,7 @@ import com.goetymech.addon.common.capabilities.StressShieldProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -49,6 +50,9 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
         float shieldRatio = cap.getMaxShield() > 0 ? Math.min(cap.getShield() / cap.getMaxShield(), 1.0f) : 0;
 
         this.model.prepareMobModel(living, limbSwing, limbSwingAmount, partialTicks);
+        if (this.getParentModel() instanceof HumanoidModel<T> parent) {
+            parent.copyPropertiesTo(this.model);
+        }
         this.model.setupAnim(living, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
         float alpha = 0.5f + shieldRatio * 0.5f;

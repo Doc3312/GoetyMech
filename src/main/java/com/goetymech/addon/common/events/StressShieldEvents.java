@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -76,6 +77,20 @@ public class StressShieldEvents {
         if (player instanceof ServerPlayer sp) {
             StressShieldHelper.sendUpdatePacket(sp);
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onKnockBack(LivingKnockBackEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (player.level().isClientSide) return;
+        IStressShield shield = StressShieldHelper.getShield(player);
+        if (shield == null || !shield.isActive()) return;
+        long gameTime = player.level().getGameTime();
+        if (gameTime > shield.getExpireTick()) {
+            shield.clear();
+            return;
+        }
+        event.setCanceled(true);
     }
 
     @SubscribeEvent
