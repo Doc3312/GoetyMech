@@ -44,6 +44,7 @@ public class VoidBlinkEvents {
             data.remove(VoidMarkEffect.TAG_TARGET);
             data.remove(VoidMarkEffect.TAG_REMAINING);
             data.remove(VoidMarkEffect.TAG_WINDOW_END);
+            data.remove(VoidMarkEffect.TAG_WINDOW_DURATION);
             player.removeEffect(ModEffects.VOID_MARK.get());
         }
     }
@@ -60,6 +61,7 @@ public class VoidBlinkEvents {
                 data.remove(VoidMarkEffect.TAG_TARGET);
                 data.remove(VoidMarkEffect.TAG_REMAINING);
                 data.remove(VoidMarkEffect.TAG_WINDOW_END);
+                data.remove(VoidMarkEffect.TAG_WINDOW_DURATION);
                 player.removeEffect(ModEffects.VOID_MARK.get());
             }
         }

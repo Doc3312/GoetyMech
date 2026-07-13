@@ -129,6 +129,7 @@ public class VoidBlinkSpell extends Spell {
         var data = caster.getPersistentData();
         data.putUUID(VoidMarkEffect.TAG_TARGET, target.getUUID());
         data.putInt(VoidMarkEffect.TAG_REMAINING, uses);
+        data.putInt(VoidMarkEffect.TAG_WINDOW_DURATION, effectDuration);
         data.putLong(VoidMarkEffect.TAG_WINDOW_END, worldIn.getGameTime() + effectDuration);
 
         if (caster instanceof Player player) {

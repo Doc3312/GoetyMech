@@ -1,6 +1,7 @@
 package com.goetymech.addon.common.net.c2s;
 
 import com.goetymech.addon.common.magic.effect.VoidMarkEffect;
+import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -55,14 +56,12 @@ public class C2SVoidBlinkPacket {
             remaining--;
             data.putInt(VoidMarkEffect.TAG_REMAINING, remaining);
 
-            int windowSec = 10;
-            MobEffectInstance effect = player.getEffect(ModEffects.VOID_MARK.get());
-            if (effect != null) {
-                windowSec = effect.getDuration() / 20;
+            int fullDuration = data.getInt(VoidMarkEffect.TAG_WINDOW_DURATION);
+            if (fullDuration <= 0) {
+                fullDuration = ModConfig.VOID_BLINK_WINDOW_SECONDS.get() * 20;
             }
-            int refreshedTicks = windowSec * 20;
-            player.addEffect(new MobEffectInstance(ModEffects.VOID_MARK.get(), refreshedTicks, 0, false, true, true));
-            data.putLong(VoidMarkEffect.TAG_WINDOW_END, level.getGameTime() + refreshedTicks);
+            player.addEffect(new MobEffectInstance(ModEffects.VOID_MARK.get(), fullDuration, 0, false, true, true));
+            data.putLong(VoidMarkEffect.TAG_WINDOW_END, level.getGameTime() + fullDuration);
 
             if (remaining <= 0) {
                 cleanup(player);
@@ -92,6 +91,7 @@ public class C2SVoidBlinkPacket {
         data.remove(VoidMarkEffect.TAG_TARGET);
         data.remove(VoidMarkEffect.TAG_REMAINING);
         data.remove(VoidMarkEffect.TAG_WINDOW_END);
+        data.remove(VoidMarkEffect.TAG_WINDOW_DURATION);
         player.removeEffect(ModEffects.VOID_MARK.get());
     }
 }
