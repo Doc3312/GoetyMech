@@ -2,30 +2,19 @@
   "type": "goety:ritual",
   "ritual_type": "goetymech:mechanical",
   "activation_item": {
-    "item": "minecraft:beacon"
+    "item": "create:stressometer"
   },
   "craftType": "mechanical",
   "soulCost": 16,
   "duration": 8,
   "ingredients": [
-    {
-      "item": "create:cogwheel"
-    },
-    {
-      "item": "create:stressometer"
-    },
-    {
-      "item": "create:speedometer"
-    },
-    {
-      "item": "goety:dark_ingot"
-    },
-    {
-      "item": "goety:dark_ingot"
-    },
-    {
-      "item": "goety:dark_ingot"
-    }
+    { "item": "minecraft:obsidian" },
+    { "item": "minecraft:obsidian" },
+    { "item": "create:cogwheel" },
+    { "item": "create:cogwheel" },
+    { "item": "create:large_cogwheel" },
+    { "item": "create:large_cogwheel" },
+    { "item": "goety:ectoplasm" }
   ],
   "result": {
     "item": "goetymech:stress_ark"
