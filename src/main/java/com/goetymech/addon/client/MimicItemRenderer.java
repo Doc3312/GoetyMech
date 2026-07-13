@@ -2,9 +2,14 @@ package com.goetymech.addon.client;
 
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,7 +25,7 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
         return INSTANCE;
     }
 
-    private MimicItemRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher dispatcher, net.minecraft.client.model.geom.EntityModelSet modelSet) {
+    private MimicItemRenderer(BlockEntityRenderDispatcher dispatcher, net.minecraft.client.model.geom.EntityModelSet modelSet) {
         super(dispatcher, modelSet);
     }
 
@@ -32,6 +37,14 @@ public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
         if (sourceStack.isEmpty()) return;
 
         Minecraft mc = Minecraft.getInstance();
-        mc.getItemRenderer().renderStatic(sourceStack, transformType, combinedLight, combinedOverlay, poseStack, buffer, mc.level, 0);
+        ItemRenderer itemRenderer = mc.getItemRenderer();
+        BakedModel sourceModel = itemRenderer.getModel(sourceStack, null, null, 0);
+
+        for (BakedModel pass : sourceModel.getRenderPasses(sourceStack, true)) {
+            for (RenderType rt : pass.getRenderTypes(sourceStack, true)) {
+                VertexConsumer vc = ItemRenderer.getFoilBuffer(buffer, rt, true, sourceStack.hasFoil());
+                itemRenderer.renderModelLists(pass, sourceStack, combinedLight, combinedOverlay, poseStack, vc);
+            }
+        }
     }
 }
