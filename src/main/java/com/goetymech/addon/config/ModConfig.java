@@ -219,12 +219,12 @@ public class ModConfig {
     /** 灵质捕手转化音效冷却 (tick) */
     public static final ForgeConfigSpec.IntValue ECTOPLASM_CATCHER_SOUND_COOLDOWN;
 
-    // ====== Void Blink Focus 配置 ======
+    // ====== Chase Focus 配置 ======
 
-    /** 虚空闪现聚晶灵魂消耗 */
+    /** 追猎聚晶灵魂消耗 */
     public static final ForgeConfigSpec.IntValue VOID_BLINK_COST;
 
-    /** 虚空闪现聚晶冷却时间（tick） */
+    /** 追猎聚晶冷却时间（tick） */
     public static final ForgeConfigSpec.IntValue VOID_BLINK_COOLDOWN;
 
     /** 基础锁定距离（格） */
@@ -675,12 +675,12 @@ public class ModConfig {
         BUILDER.push("chase_focus");
 
         VOID_BLINK_COST = BUILDER
-                .comment("追猎聚晶的灵魂消耗", "范围: 1-1000，默认 140")
-                .defineInRange("soul_cost", 140, 1, 1000);
+                .comment("追猎聚晶的灵魂消耗", "范围: 1-1000，默认 100")
+                .defineInRange("soul_cost", 100, 1, 1000);
 
         VOID_BLINK_COOLDOWN = BUILDER
-                .comment("追猎聚晶冷却时间（tick）", "范围: 100-72000，默认 3600（3分钟）")
-                .defineInRange("cooldown", 3600, 100, 72000);
+                .comment("追猎聚晶冷却时间（tick）", "范围: 100-72000，默认 160（8秒）")
+                .defineInRange("cooldown", 160, 100, 72000);
 
         VOID_BLINK_RANGE = BUILDER
                 .comment("基础锁定距离（格）", "范围: 5-64，默认 20")
