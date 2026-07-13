@@ -112,6 +112,8 @@ public class StressShieldEvents {
         if (player.level().isClientSide) return;
         if (event.isCanceled()) return;
         if (event.getAmount() <= 0) return;
+        if (event.getSource().is(DamageTypeTags.BYPASSES_EFFECTS)
+                || event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
 
         IStressShield shield = StressShieldHelper.getShield(player);
         if (shield == null || !shield.isActive()) return;
