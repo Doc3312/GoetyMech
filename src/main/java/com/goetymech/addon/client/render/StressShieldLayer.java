@@ -77,7 +77,7 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
     }
 
     public static LayerDefinition createBodyLayer() {
-        return LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.5F), false), 64, 64);
+        return LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.65F), false), 64, 64);
     }
 
     @Override
@@ -102,9 +102,9 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
         float uOff = (Mth.cos(age * 0.02F) * 3.0F) % 1.0F;
         float vOff = (age * 0.01F) % 1.0F;
 
-        float alpha = 0.5f + shieldRatio * 0.5f;
+        float alpha = 0.75f + shieldRatio * 0.25f;
         VertexConsumer vc = buffer.getBuffer(createShieldGlowRenderType(uOff, vOff));
         this.model.renderToBuffer(poseStack, vc, 0xF000F0,
-                OverlayTexture.NO_OVERLAY, 0.3F, 0.7F, 1.0F, alpha);
+                OverlayTexture.NO_OVERLAY, 0.6F, 0.85F, 1.0F, alpha);
     }
 }

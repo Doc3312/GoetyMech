@@ -26,7 +26,9 @@ public class StressShieldEvents {
     private static final long NO_HURT_TICKS = 100;
     private static final float RECOVERY_RATE = 0.01f;
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    private static long lastProcessedGameTime = -1;
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (player.level().isClientSide) return;
@@ -38,6 +40,9 @@ public class StressShieldEvents {
         if (shield == null || !shield.isActive()) return;
 
         long gameTime = player.level().getGameTime();
+        if (gameTime <= lastProcessedGameTime) return;
+        lastProcessedGameTime = gameTime;
+
         if (gameTime > shield.getExpireTick()) {
             shield.clear();
             return;
@@ -88,7 +93,7 @@ public class StressShieldEvents {
         event.setCanceled(true);
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onLivingHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (player.level().isClientSide) return;
