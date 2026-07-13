@@ -6,3 +6,7 @@
   - 改动：`readStress` 改为 Ark 优先 → bound 回退；数据源从 `stress` 修正为 `capacity`；tooltip 从客户端 Ark HUD 动态计算护盾值
   - 原因：与应力聚晶统一行为，有 Ark 时无需绑定
   - 关联：StressShieldSpell, StressShieldFocus, StressShieldHelper
+
+\n## 2026-07-13\n
+- **2026-07-13** — 添加合成配方 (stress_shield_focus.json)
+  - 原因：补全生存获取途径

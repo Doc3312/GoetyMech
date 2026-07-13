@@ -149,3 +149,7 @@
 - **skill 体系更新**：goety-addon-dev（SpellType+翻译key+强制调用）、goety-ritual-dev（仪式速查）、patchouli（br/color警告）
 - **教训**：Goety 的 `pure_unholy_blood` 不是独立注册 ID（NBT 属性），翻译 key ≠ register ID，需查 `ModItems.java` 确认
 - **关联 incidents**：`_craft.20260713.recipe-pure-unholy-blood.md`
+
+\n## 2026-07-13\n
+- **2026-07-13** — 添加合成配方 (remote_storage_focus.json)
+  - 原因：补全生存获取途径

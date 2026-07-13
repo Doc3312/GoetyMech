@@ -14,3 +14,7 @@
 - **2026-07-13** — 碰撞箱修复
   - 碰撞箱从 `AllShapes.CASING_12PX` 改为 `Shapes.block()` 匹配模型实际范围（模型有四角柱和侧面板覆盖方块边界）
   - 新增 `getOcclusionShape` 保留原有 `CASING_12PX` 遮挡形状防止 z-fighting
+
+\n## 2026-07-13\n
+- **2026-07-13** — 添加合成配方 (stress_reader.json)
+  - 原因：补全生存获取途径

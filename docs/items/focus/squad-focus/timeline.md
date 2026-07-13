@@ -28,3 +28,7 @@
 - 原因：冷却被清除、补召逻辑错误、绑定物掉落绕过 LivingDropsEvent、高温却中无法 dismiss
 - 关联：openspec monument-summon-improvements
 - 关联 incidents：`_craft.20260710.cooldown-debug.md`
+
+\n## 2026-07-13\n
+- **2026-07-13** — 添加合成配方 (squad_focus.json)
+  - 原因：补全生存获取途径

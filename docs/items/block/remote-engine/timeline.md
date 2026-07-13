@@ -17,3 +17,7 @@
   - 碰撞箱从 `AllShapes.CASING_12PX` 改为 `VoxelShaper.forDirectional(box(2,0,0,14,14,16), NORTH)` 匹配模型实际范围
   - 新增 `getOcclusionShape` 返回 `Shapes.empty()` 修复背后方块连接面材质丢失
   - 关联 incidents：`_craft.20260713.occlusion-shape-pattern.md`
+
+\n## 2026-07-13\n
+- **2026-07-13** — 添加合成配方 (remote_engine.json)
+  - 原因：补全生存获取途径

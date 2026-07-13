@@ -10,3 +10,7 @@
 - **2026-07-08** — 存档加载修复：GlobalStressLinkManager 添加 loadTickDelay 延迟初始化机制；存档加载后等待10tick再填充 readerCache 和触发 distributeBudget()；修复重进存档后绑定关系丢失问题
 - **2026-07-08** — HUD 持久化修复：添加 PlayerLoggedInEvent 监听；玩家登录时检查是否有活动 Ark，若无则发送清除包；修复破坏 Ark 后 HUD 不消失问题
 - **2026-07-09** — 存档保存/加载深度修复：添加 shuttingDown 标志和 ServerStoppingEvent 监听；服务器关闭期间阻止 markDirty() 执行，防止第二次 save(File) 覆盖第一次保存的正确数据；添加 loading 标志，加载期间阻止 unbind() 删除绑定关系；修复重进存档后绑定关系丢失和 Ark 显示 0/0 的问题
+
+\n## 2026-07-13\n
+- **2026-07-13** — 添加合成配方 (stress_ark.json)
+  - 原因：补全生存获取途径
