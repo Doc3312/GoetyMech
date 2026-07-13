@@ -3,6 +3,7 @@ package com.goetymech.addon.compat.jei;
 import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
 import com.Polarice3.Goety.compat.jei.JeiRecipeTypes;
 import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.TriggerType;
 import com.goetymech.addon.init.ModItems;
@@ -46,6 +47,7 @@ public class GoetyMechJeiPlugin implements IModPlugin {
         List<ItemStack> allChestplates = BuiltInRegistries.ITEM.stream()
                 .map(ItemStack::new)
                 .filter(stack -> LivingEntity.getEquipmentSlotForItem(stack) == EquipmentSlot.CHEST)
+                .filter(stack -> !PrototypeItem.isPrototypeItem(stack.getItem()))
                 .toList();
 
         registration.addRecipes(GoetyMechRecipeTypes.MIMIC_COMBINATION,
