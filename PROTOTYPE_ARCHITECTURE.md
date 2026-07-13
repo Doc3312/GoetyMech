@@ -476,6 +476,7 @@ else (水平/抬头):
 | `slam_max_damage` | 1200.0 | 1~9999 | 伤害上限 |
 | `slam_max_radius` | 100.0 | 1~200 | 半径上限 |
 | `slam_hover_ticks` | 5 | 0~100 | 下落前悬停 tick 数 |
+| `slam_ground_deform_radius` | 6.0 | 6.0~12.0 | 地面变形最大半径，同倍率增长 clamp[6, config] |
 | `flight_target_speed` | 0.5 | 0.1~2.0 | 唯一速度配置（驱动 lift×0.16, drift×0.04, noW×0.8） |
 
 #### Wall Run 段
@@ -501,7 +502,7 @@ else (水平/抬头):
 | 决策 | 原因 |
 |------|------|
 | 状态存 PersistentData 而非物品 NBT | 玩家切换 Curios 槽位后 ItemStack 改变，但状态应跟玩家走 |
-| 环起始半径 5 格 | 避免冲击中心正下方方块被挖空，保留站脚位置 |
+| 环起始半径 3 格 | 避免冲击中心正下方方块被挖空，保留站脚位置 |
 | `ConcurrentHashMap` + `synchronized` | ACTIVE_SLAMS/PENDING_DAMAGES 可能被多线程访问 |
 | `indirectMagic` 二次伤害 | 无视护甲和附魔，与冲击的 `playerAttack` 形成互补 |
 | `findGroundPos` 找地面方块 | 允许环动画在悬空洞穴中找到下方可用方块 |

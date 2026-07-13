@@ -165,6 +165,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue SLAM_MAX_RADIUS;
     public static final ForgeConfigSpec.IntValue SLAM_HOVER_TICKS;
+    public static final ForgeConfigSpec.DoubleValue SLAM_GROUND_DEFORM_RADIUS;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_TARGET_SPEED;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_ACCEL_RATE;
     public static final ForgeConfigSpec.DoubleValue FLIGHT_MAX_MULTIPLIER;
@@ -550,6 +551,10 @@ public class ModConfig {
         SLAM_HOVER_TICKS = BUILDER
                 .comment("Slam 滞空 tick 数（越长则坠落前升得越高）", "范围: 0-100，默认 5")
                 .defineInRange("slam_hover_ticks", 5, 0, 100);
+
+        SLAM_GROUND_DEFORM_RADIUS = BUILDER
+                .comment("地面变形最大半径（格）", "参考环动画的 fallDistance × SLAM_RADIUS_MULTIPLIER 公式增长，但独立 clamp[6.0, 此值]", "范围: 6.0-12.0，默认 6.0")
+                .defineInRange("slam_ground_deform_radius", 6.0, 6.0, 12.0);
 
         FLIGHT_TARGET_SPEED = BUILDER
                 .comment("按住 W 时沿视线方向飞行的基础速度（blocks/tick）", "按住W会从该速度开始逐渐加速到 FLIGHT_TARGET_SPEED * FLIGHT_MAX_MULTIPLIER", "范围: 0.1-2.0，默认 0.5（=10 blocks/s）")

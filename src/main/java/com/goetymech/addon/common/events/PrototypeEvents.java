@@ -607,6 +607,7 @@ public class PrototypeEvents {
 
         float damage = (float) Math.max(ModConfig.SLAM_MIN_DAMAGE.get(), Math.min(ModConfig.SLAM_MAX_DAMAGE.get() * tierMult, fallDistance * ModConfig.SLAM_DAMAGE_MULTIPLIER.get()));
         float radius = (float) Math.min(ModConfig.SLAM_MAX_RADIUS.get(), Math.max(8.0, fallDistance * ModConfig.SLAM_RADIUS_MULTIPLIER.get()));
+        float groundDeformRadius = (float) Math.min(ModConfig.SLAM_GROUND_DEFORM_RADIUS.get(), Math.max(6.0, fallDistance * ModConfig.SLAM_RADIUS_MULTIPLIER.get()));
 
         int rings = 4 + Math.max(0, (int)((fallDistance - 10.0f) / 20.0f));
         if (rings > 9) rings = 9;
@@ -635,7 +636,7 @@ public class PrototypeEvents {
                                     64, level.dimension())),
                     new S2CSlamImpactPacket(
                             player.getX(), player.getY(), player.getZ(),
-                            radius, damage));
+                            radius, damage, groundDeformRadius));
         }
 
         if (player instanceof ServerPlayer sp) {

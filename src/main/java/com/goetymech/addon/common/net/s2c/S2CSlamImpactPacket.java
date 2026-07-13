@@ -16,13 +16,15 @@ public class S2CSlamImpactPacket {
     private final double z;
     private final float radius;
     private final float damage;
+    private final float groundDeformRadius;
 
-    public S2CSlamImpactPacket(double x, double y, double z, float radius, float damage) {
+    public S2CSlamImpactPacket(double x, double y, double z, float radius, float damage, float groundDeformRadius) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.radius = radius;
         this.damage = damage;
+        this.groundDeformRadius = groundDeformRadius;
     }
 
     public static void encode(S2CSlamImpactPacket packet, FriendlyByteBuf buf) {
@@ -31,6 +33,7 @@ public class S2CSlamImpactPacket {
         buf.writeDouble(packet.z);
         buf.writeFloat(packet.radius);
         buf.writeFloat(packet.damage);
+        buf.writeFloat(packet.groundDeformRadius);
     }
 
     public static S2CSlamImpactPacket decode(FriendlyByteBuf buf) {
@@ -38,6 +41,7 @@ public class S2CSlamImpactPacket {
                 buf.readDouble(),
                 buf.readDouble(),
                 buf.readDouble(),
+                buf.readFloat(),
                 buf.readFloat(),
                 buf.readFloat()
         );
@@ -50,7 +54,7 @@ public class S2CSlamImpactPacket {
 
             Vec3 pos = new Vec3(packet.x, packet.y, packet.z);
 
-            SlamGroundTiltHandler.startEffect(pos);
+            SlamGroundTiltHandler.startEffect(pos, packet.groundDeformRadius);
 
             // 播放冲击音效
             level.playLocalSound(
@@ -87,4 +91,5 @@ public class S2CSlamImpactPacket {
     public double getZ() { return z; }
     public float getRadius() { return radius; }
     public float getDamage() { return damage; }
+    public float getGroundDeformRadius() { return groundDeformRadius; }
 }
