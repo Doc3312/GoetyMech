@@ -2,8 +2,10 @@ package com.goetymech.addon.client.render;
 
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -11,7 +13,9 @@ import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -25,6 +29,22 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
             new ResourceLocation(GoetyMechMod.MOD_ID, "stress_shield"), "main");
 
     private static final ResourceLocation ENERGY_TEXTURE = new ResourceLocation("textures/entity/wither/wither_armor.png");
+
+    private static final RenderType SHIELD_GLOW = RenderType.create(
+            "stress_shield_glow",
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS,
+            256, false, true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEyesShader))
+                    .setTextureState(new RenderStateShard.TextureStateShard(ENERGY_TEXTURE, false, false))
+                    .setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setOverlayState(RenderStateShard.OVERLAY)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .createCompositeState(false));
+
     private final PlayerModel<T> model;
 
     public StressShieldLayer(RenderLayerParent<T, M> renderer, EntityModelSet models) {
@@ -56,11 +76,8 @@ public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>>
         this.model.setupAnim(living, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
         float alpha = 0.5f + shieldRatio * 0.5f;
-        float uOffset = Math.abs(Mth.cos(age * 0.02F) * 3.0F) % 1.0F;
-        float vOffset = age * 0.01F % 1.0F;
-        VertexConsumer vc = buffer.getBuffer(
-                RenderType.energySwirl(ENERGY_TEXTURE, uOffset, vOffset));
-        this.model.renderToBuffer(poseStack, vc, packedLight,
+        VertexConsumer vc = buffer.getBuffer(SHIELD_GLOW);
+        this.model.renderToBuffer(poseStack, vc, 0xF000F0,
                 OverlayTexture.NO_OVERLAY, 0.3F, 0.7F, 1.0F, alpha);
     }
 }

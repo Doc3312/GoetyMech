@@ -7,12 +7,13 @@ import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,11 +25,12 @@ public class StressShieldEvents {
     private static final float RECOVERY_RATE = 0.01f;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onLivingHurt(LivingHurtEvent event) {
+    public static void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (player.level().isClientSide) return;
         if (event.isCanceled()) return;
-        if (event.getAmount() <= 0) return;
+        if (event.getSource().is(DamageTypeTags.BYPASSES_EFFECTS)
+                || event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
 
         IStressShield shield = StressShieldHelper.getShield(player);
         if (shield == null || !shield.isActive()) return;
@@ -41,20 +43,17 @@ public class StressShieldEvents {
 
         float damage = event.getAmount();
         float currentShield = shield.getShield();
-
         ServerLevel serverLevel = (ServerLevel) player.level();
 
         if (damage <= currentShield) {
             shield.setShield(currentShield - damage);
             shield.setLastHurtTick(gameTime);
-            event.setAmount(0);
 
             ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.CRIT, player);
             serverLevel.sendParticles(ParticleTypes.CRIT, player.getX(), player.getY() + 1, player.getZ(),
                     8, 0.5, 0.5, 0.5, 0.1);
         } else {
             float overshoot = damage - currentShield;
-            event.setAmount(0);
             shield.clear();
 
             serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
@@ -77,20 +76,22 @@ public class StressShieldEvents {
         if (player instanceof ServerPlayer sp) {
             StressShieldHelper.sendUpdatePacket(sp);
         }
+
+        event.setCanceled(true);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onKnockBack(LivingKnockBackEvent event) {
+    public static void onLivingHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (player.level().isClientSide) return;
+        if (event.isCanceled()) return;
+        if (event.getAmount() <= 0) return;
+
         IStressShield shield = StressShieldHelper.getShield(player);
         if (shield == null || !shield.isActive()) return;
-        long gameTime = player.level().getGameTime();
-        if (gameTime > shield.getExpireTick()) {
-            shield.clear();
-            return;
-        }
+
         event.setCanceled(true);
+        event.setAmount(0);
     }
 
     @SubscribeEvent
