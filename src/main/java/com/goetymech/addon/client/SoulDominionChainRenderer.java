@@ -87,10 +87,11 @@ public class SoulDominionChainRenderer {
         float uOffset = -age * 0.06f;
 
         PoseStack.Pose pose = poseStack.last();
-        vertex(vertexConsumer, pose, start.add(sideOffset), uOffset, 0);
-        vertex(vertexConsumer, pose, start.add(sideOffset.scale(-1)), uOffset, 1);
-        vertex(vertexConsumer, pose, end.add(sideOffset.scale(-1)), (float) (offset.length() * 2) + uOffset, 1);
-        vertex(vertexConsumer, pose, end.add(sideOffset), (float) (offset.length() * 2) + uOffset, 0);
+        float lengthUv = (float) (offset.length() * 2);
+        vertex(vertexConsumer, pose, start.add(sideOffset), 0, uOffset);
+        vertex(vertexConsumer, pose, start.add(sideOffset.scale(-1)), 1, uOffset);
+        vertex(vertexConsumer, pose, end.add(sideOffset.scale(-1)), 1, lengthUv + uOffset);
+        vertex(vertexConsumer, pose, end.add(sideOffset), 0, lengthUv + uOffset);
 
         poseStack.popPose();
     }
