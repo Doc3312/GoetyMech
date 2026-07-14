@@ -148,7 +148,8 @@ public class SquadSpell extends Spell {
         }
 
         int tier = SquadFocus.getCachedTier(focus);
-        if (tier < 3 && blockLevel != worldIn) {
+        boolean isMonument = "monument".equals(SquadFocus.getBoundType(focus));
+        if (!isMonument && tier < 3 && blockLevel != worldIn) {
             player.displayClientMessage(
                     Component.translatable("info.goetymech.squad_focus.wrong_dimension").withStyle(ChatFormatting.RED), true);
             return;
@@ -158,7 +159,7 @@ public class SquadSpell extends Spell {
             blockLevel.getChunkAt(boundPos);
         }
 
-        if ("monument".equals(SquadFocus.getBoundType(focus))) {
+        if (isMonument) {
             handleMonumentSummon(player, worldIn, focus, staff, boundPos, blockLevel, useStaffBonus);
             return;
         }
