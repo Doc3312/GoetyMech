@@ -331,13 +331,11 @@ public class SquadSpell extends Spell {
 
         int baseCost = ModConfig.MONUMENT_SOUL_COST.get();
         int unitCost = (int) (baseCost * discount);
-        GoetyMechMod.LOGGER.debug("SQUAD_MONUMENT tier={} discount={} baseCost={} unitCost={} needSpawn={}", tier, discount, baseCost, unitCost, needSpawn);
 
         int canSpawn;
         if (!player.isCreative() && unitCost > 0) {
             int playerSouls = SEHelper.getSoulAmountInt(player);
             canSpawn = Math.min(needSpawn, playerSouls / unitCost);
-            GoetyMechMod.LOGGER.debug("SQUAD_MONUMENT playerSouls={} canSpawn={}", playerSouls, canSpawn);
         } else {
             canSpawn = needSpawn;
         }
@@ -350,15 +348,10 @@ public class SquadSpell extends Spell {
         }
         int actualSoulCost = canSpawn * unitCost;
 
-        int beforeSouls = SEHelper.getSoulAmountInt(player);
         if (!player.isCreative()) {
-            GoetyMechMod.LOGGER.debug("SQUAD_MONUMENT discount={} seActive={}",
-                    SEHelper.soulDiscount(player), SEHelper.getSEActive(player));
             SEHelper.decreaseSouls(player, actualSoulCost);
             SEHelper.sendSEUpdatePacket(player);
         }
-        int afterSouls = SEHelper.getSoulAmountInt(player);
-        GoetyMechMod.LOGGER.debug("SQUAD_MONUMENT spawned={} cost={} before={} after={}", canSpawn, actualSoulCost, beforeSouls, afterSouls);
 
         int lifespan = ModConfig.SQUAD_LIFESPAN.get();
         if (useStaffBonus) {
@@ -430,10 +423,8 @@ public class SquadSpell extends Spell {
                         Math.max(5, (int)(w * h * 10)), w / 2.0, h / 2.0, w / 2.0, 0.05);
             }
         }
-        if (focus.hasTag()) {
-            focus.getTag().putInt("goetymech.cached_tier", monument.getTier());
-            focus.getTag().putInt("goetymech.cached_count", monument.getUsedSlots());
-        }
+        focus.getOrCreateTag().putInt("goetymech.cached_tier", monument.getTier());
+        focus.getTag().putInt("goetymech.monument_used", monument.getUsedSlots());
 
         int cd = (int) (ModConfig.MONUMENT_SUMMON_COOLDOWN.get());
         GoetyMechMod.LOGGER.debug("handleMonumentSummon: spawned={} applying {}t cooldown", spawned, cd);
