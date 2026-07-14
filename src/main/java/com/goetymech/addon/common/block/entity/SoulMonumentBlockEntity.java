@@ -44,6 +44,7 @@ public class SoulMonumentBlockEntity extends BlockEntity {
     public static final int DETECTION_RANGE = 10;
 
     private final List<UUID> savedEntityUUIDs = new ArrayList<>();
+    private final List<String> savedEntityNames = new ArrayList<>();
     private int maxCapacity;
     @Nullable private UUID ownerUUID;
 
@@ -88,6 +89,8 @@ public class SoulMonumentBlockEntity extends BlockEntity {
     public UUID getTaggedEntityUUID() { return taggedEntityUUID; }
 
     public List<UUID> getSavedEntityUUIDs() { return new ArrayList<>(savedEntityUUIDs); }
+
+    public List<String> getSavedEntityNames() { return new ArrayList<>(savedEntityNames); }
 
     public boolean tryStartRecording(Player player, UUID targetUUID) {
         if (recording || isFull()) return false;
@@ -177,6 +180,7 @@ public class SoulMonumentBlockEntity extends BlockEntity {
 
         SoulMonumentDataManager.saveEntityData(level, taggedEntityUUID, entityData);
         savedEntityUUIDs.add(taggedEntityUUID);
+        savedEntityNames.add(target.getDisplayName().getString());
 
         target.getPersistentData().putBoolean("goetymech.recorded", true);
         target.discard();
@@ -205,6 +209,7 @@ public class SoulMonumentBlockEntity extends BlockEntity {
 
     public void clearAllData() {
         savedEntityUUIDs.clear();
+        savedEntityNames.clear();
         markUpdated();
     }
 
@@ -225,6 +230,13 @@ public class SoulMonumentBlockEntity extends BlockEntity {
             uuidList.add(entry);
         }
         tag.put(TAG_SAVED_UUIDS, uuidList);
+        ListTag nameList = new ListTag();
+        for (String name : savedEntityNames) {
+            CompoundTag entry = new CompoundTag();
+            entry.putString("Name", name);
+            nameList.add(entry);
+        }
+        tag.put("SavedEntityNames", nameList);
     }
 
     @Override
@@ -243,6 +255,13 @@ public class SoulMonumentBlockEntity extends BlockEntity {
                 if (entry.hasUUID("UUID")) {
                     savedEntityUUIDs.add(entry.getUUID("UUID"));
                 }
+            }
+        }
+        savedEntityNames.clear();
+        if (tag.contains("SavedEntityNames")) {
+            ListTag nameList = tag.getList("SavedEntityNames", Tag.TAG_COMPOUND);
+            for (int i = 0; i < nameList.size(); i++) {
+                savedEntityNames.add(nameList.getCompound(i).getString("Name"));
             }
         }
     }

@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.npc.Villager;
@@ -58,13 +57,7 @@ public class SoulMonumentEvents {
         double px = entity.getX();
         double py = entity.getY();
         double pz = entity.getZ();
-        AreaEffectCloud cloud = new AreaEffectCloud(entity.level(), px, py, pz);
-        cloud.setParticle(ParticleTypes.PORTAL);
-        cloud.setRadius(0.5F);
-        cloud.setDuration(40);
-        cloud.setWaitTime(0);
-        cloud.setRadiusPerTick(0);
-        entity.level().addFreshEntity(cloud);
+        entity.level().sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
         entity.level().playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
         event.setCanceled(true);
         entity.discard();
@@ -85,13 +78,7 @@ public class SoulMonumentEvents {
         double px = entity.getX();
         double py = entity.getY();
         double pz = entity.getZ();
-        AreaEffectCloud cloud = new AreaEffectCloud(entity.level(), px, py, pz);
-        cloud.setParticle(ParticleTypes.PORTAL);
-        cloud.setRadius(0.5F);
-        cloud.setDuration(40);
-        cloud.setWaitTime(0);
-        cloud.setRadiusPerTick(0);
-        entity.level().addFreshEntity(cloud);
+        entity.level().sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
         entity.level().playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
     }
 

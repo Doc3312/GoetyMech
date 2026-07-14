@@ -52,6 +52,16 @@ public class SoulMonumentHUD {
         int textWidth = font.width(text);
         gui.drawString(font, text, (width - textWidth) / 2, height - 86, 0xAAAAAA);
 
+        java.util.List<String> names = monument.getSavedEntityNames();
+        if (names != null && !names.isEmpty()) {
+            int y = height - 76;
+            for (String name : names) {
+                int nameWidth = font.width(name);
+                gui.drawString(font, name, (width - nameWidth) / 2, y, 0xCCAAFF);
+                y -= 10;
+            }
+        }
+
         if (monument.isRecording()) {
             String recordingText = Component.translatable("info.goetymech.soul_monument.already_recording").getString();
             int recWidth = font.width(recordingText);

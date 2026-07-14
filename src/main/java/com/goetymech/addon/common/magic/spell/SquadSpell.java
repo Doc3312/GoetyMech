@@ -29,7 +29,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -114,13 +113,7 @@ public class SquadSpell extends Spell {
                                 double px = entity.getX();
                                 double py = entity.getY();
                                 double pz = entity.getZ();
-                                AreaEffectCloud cloud = new AreaEffectCloud(worldIn, px, py, pz);
-                                cloud.setParticle(ParticleTypes.PORTAL);
-                                cloud.setRadius(0.5F);
-                                cloud.setDuration(40);
-                                cloud.setWaitTime(0);
-                                cloud.setRadiusPerTick(0);
-                                worldIn.addFreshEntity(cloud);
+                                worldIn.sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
                                 worldIn.playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
                                 entity.discard();
                             } else {
