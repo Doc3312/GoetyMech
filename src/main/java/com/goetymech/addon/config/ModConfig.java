@@ -299,6 +299,41 @@ public class ModConfig {
 
         BUILDER.pop();
 
+    // ====== Soul Dominion Focus 配置 ======
+
+    /** 灵魂统御聚晶的灵魂消耗 */
+    public static final ForgeConfigSpec.IntValue SOUL_DOMINION_COST;
+
+    /** 施法冷却时间（tick） */
+    public static final ForgeConfigSpec.IntValue SOUL_DOMINION_COOLDOWN;
+
+    /** 基础持续时间（秒） */
+    public static final ForgeConfigSpec.IntValue SOUL_DOMINION_BASE_DURATION;
+
+    /** 基础范围（格） */
+    public static final ForgeConfigSpec.IntValue SOUL_DOMINION_BASE_RANGE;
+
+        // ====== Soul Dominion Focus 配置 ======
+        BUILDER.push("soul_dominion_focus");
+
+        SOUL_DOMINION_COST = BUILDER
+                .comment("灵魂统御聚晶的灵魂消耗", "范围: 0-10000，默认 2000")
+                .defineInRange("soul_cost", 2000, 0, 10000);
+
+        SOUL_DOMINION_COOLDOWN = BUILDER
+                .comment("施法冷却时间（tick）", "范围: 100-72000，默认 2400（=120秒）")
+                .defineInRange("cooldown", 2400, 100, 72000);
+
+        SOUL_DOMINION_BASE_DURATION = BUILDER
+                .comment("基础持续时间（秒）", "范围: 10-600，默认 90")
+                .defineInRange("base_duration", 90, 10, 600);
+
+        SOUL_DOMINION_BASE_RANGE = BUILDER
+                .comment("基础生效范围（格）", "范围: 16-512，默认 100")
+                .defineInRange("base_range", 100, 16, 512);
+
+        BUILDER.pop();
+
         // ====== Flesh Casket 配置 ======
         BUILDER.push("flesh_casket");
 

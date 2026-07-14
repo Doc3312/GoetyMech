@@ -2,6 +2,9 @@ package com.goetymech.addon;
 
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
+import com.goetymech.addon.common.capabilities.ISoulDominion;
+import com.goetymech.addon.common.capabilities.SoulDominionProvider;
+import com.goetymech.addon.common.events.SoulDominionEvents;
 import com.goetymech.addon.common.events.StressLinkEvents;
 import com.goetymech.addon.common.events.StressShieldEvents;
 import com.goetymech.addon.common.events.VoidBlinkEvents;
@@ -85,12 +88,14 @@ public class GoetyMechMod {
         });
 
         MinecraftForge.EVENT_BUS.register(VoidBlinkEvents.class);
+        MinecraftForge.EVENT_BUS.register(SoulDominionEvents.class);
         MinecraftForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> {
             event.addListener(new GatewayMappingLoader());
         });
 
         modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.register(IStressShield.class);
+            event.register(ISoulDominion.class);
         });
 
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class,
@@ -99,6 +104,9 @@ public class GoetyMechMod {
                         event.addCapability(
                                 new ResourceLocation(MOD_ID, "stress_shield"),
                                 new StressShieldProvider());
+                        event.addCapability(
+                                new ResourceLocation(MOD_ID, "soul_dominion"),
+                                new SoulDominionProvider());
                     }
                 });
         LOGGER.info("Prototype chest slot only — Curios support removed");

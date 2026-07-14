@@ -18,6 +18,7 @@ import com.goetymech.addon.common.net.s2c.S2CStressArkDataPacket;
 import com.goetymech.addon.common.net.s2c.S2CAssimilationDataPacket;
 import com.goetymech.addon.common.net.s2c.S2CSetFreecamPacket;
 import com.goetymech.addon.common.net.s2c.S2CStressShieldUpdatePacket;
+import com.goetymech.addon.common.net.s2c.S2CSoulDominionSyncPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkRegistry;
@@ -110,6 +111,10 @@ public class ModNetwork {
                 S2CSetFreecamPacket::encode,
                 S2CSetFreecamPacket::decode,
                 S2CSetFreecamPacket::handle);
+        CHANNEL.registerMessage(idx++, S2CSoulDominionSyncPacket.class,
+                S2CSoulDominionSyncPacket::encode,
+                S2CSoulDominionSyncPacket::decode,
+                S2CSoulDominionSyncPacket::handle);
     }
 
     public static <MSG> void sendTo(ServerPlayer player, MSG msg) {

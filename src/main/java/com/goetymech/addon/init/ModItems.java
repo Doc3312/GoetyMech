@@ -16,6 +16,7 @@ import com.goetymech.addon.common.item.UnstableRiftFocus;
 import com.goetymech.addon.common.item.GatewayFocus;
 import com.goetymech.addon.common.item.GatewayAdvancedFocus;
 import com.goetymech.addon.common.item.RemoteStorageFocus;
+import com.goetymech.addon.common.item.SoulDominionFocus;
 import com.goetymech.addon.common.item.PrototypeItem;
 import com.goetymech.addon.common.item.PrototypeMimicItem;
 import com.goetymech.addon.common.item.SoulMonumentBlockItem;
@@ -206,4 +207,8 @@ public class ModItems {
     /** 仓储发报机聚晶 — 右键绑定，远程打开 Create 物流请求菜单 */
     public static final RegistryObject<Item> REMOTE_STORAGE_FOCUS =
             ITEMS.register("remote_storage_focus", RemoteStorageFocus::new);
+
+    /** 灵魂统御聚晶 — 连接范围内仆从，伤害转移给仆从 */
+    public static final RegistryObject<Item> SOUL_DOMINION_FOCUS =
+            ITEMS.register("soul_dominion_focus", SoulDominionFocus::new);
 }
