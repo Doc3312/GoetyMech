@@ -137,34 +137,11 @@ public class SoulMonumentBlockEntity extends BlockEntity {
                                         level.random.nextGaussian() * 0.02D,
                                         level.random.nextGaussian() * 0.02D,
                                         level.random.nextGaussian() * 0.02D);
-                            }
-                            break;
-            }
-        }
-        if (savedEntityNames.size() < savedEntityUUIDs.size() && level instanceof ServerLevel serverLevel) {
-            savedEntityNames.clear();
-            for (UUID uuid : savedEntityUUIDs) {
-                CompoundTag data = SoulMonumentDataManager.loadEntityData(serverLevel, uuid);
-                if (data != null && data.contains("id")) {
-                    String id = data.getString("id");
-                    ResourceLocation rl = ResourceLocation.tryParse(id);
-                    if (rl != null) {
-                        EntityType<?> type = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getValue(rl);
-                        if (type != null) {
-                            savedEntityNames.add(type.getDescription().getString());
-                        } else {
-                            savedEntityNames.add(id);
                         }
-                    } else {
-                        savedEntityNames.add(id);
                     }
-                } else {
-                    savedEntityNames.add("Unknown");
                 }
             }
         }
-    }
-            }
             return;
         }
 
@@ -286,6 +263,24 @@ public class SoulMonumentBlockEntity extends BlockEntity {
             ListTag nameList = tag.getList("SavedEntityNames", Tag.TAG_COMPOUND);
             for (int i = 0; i < nameList.size(); i++) {
                 savedEntityNames.add(nameList.getCompound(i).getString("Name"));
+            }
+        }
+        if (savedEntityNames.size() < savedEntityUUIDs.size() && level instanceof ServerLevel serverLevel) {
+            savedEntityNames.clear();
+            for (UUID uuid : savedEntityUUIDs) {
+                CompoundTag data = SoulMonumentDataManager.loadEntityData(serverLevel, uuid);
+                if (data != null && data.contains("id")) {
+                    String id = data.getString("id");
+                    ResourceLocation rl = ResourceLocation.tryParse(id);
+                    if (rl != null) {
+                        EntityType<?> type = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getValue(rl);
+                        savedEntityNames.add(type != null ? type.getDescription().getString() : id);
+                    } else {
+                        savedEntityNames.add(id);
+                    }
+                } else {
+                    savedEntityNames.add("Unknown");
+                }
             }
         }
     }
