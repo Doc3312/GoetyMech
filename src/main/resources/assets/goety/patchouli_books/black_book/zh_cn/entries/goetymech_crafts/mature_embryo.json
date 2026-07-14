@@ -1,0 +1,12 @@
+{
+  "name": "成熟胚胎",
+  "icon": "goetymech:mature_embryo",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l:goetymech_crafts/twisted_embryo)扭曲胚胎$(/l)经$(l:goetymech_machines/flesh_furnace)血肉熔炉$(/l)转化后的产物，消耗一点灵魂即可转化为士兵，灵魂不足也可以半血状态强制转化。$(br)通过$(l:goetymech_machines/squad_barracks)点将台$(/l)与$(l:goetymech_focuses/squad_focus)兵团聚晶$(/l)，可以更方便的使用它们。$(br)$(4)\"起来，士兵。\"$()"
+    }
+  ]
+}
