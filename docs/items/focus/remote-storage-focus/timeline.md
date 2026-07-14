@@ -150,6 +150,14 @@
 - **教训**：Goety 的 `pure_unholy_blood` 不是独立注册 ID（NBT 属性），翻译 key ≠ register ID，需查 `ModItems.java` 确认
 - **关联 incidents**：`_craft.20260713.recipe-pure-unholy-blood.md`
 
-\n## 2026-07-13\n
+
+## 2026-07-13
+
 - **2026-07-13** — 添加合成配方 (remote_storage_focus.json)
   - 原因：补全生存获取途径
+
+## 2026-07-15
+
+- **纹理 + 冷却**：
+  - 纹理：`remote_storage_focus.png` 从 Desktop `create_item_vault.png` 重新覆盖
+  - 默认冷却：`100t (5s)` → `60t (3s)`

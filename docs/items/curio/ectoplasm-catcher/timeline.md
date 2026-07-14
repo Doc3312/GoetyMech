@@ -12,6 +12,12 @@
 - **功能冻结归档**：工具提示文案定型，核心逻辑不再改动
   - 关联 openspec：`ectoplasm-catcher-redesign`
   - 关联 incidents：无
-\n## 2026-07-13\n
+
+## 2026-07-13
+
 - **2026-07-13** — 添加合成配方 (ectoplasm_catcher.json)
   - 原因：补全生存获取途径
+
+## 2026-07-15
+
+- **纹理替换**：`ectoplasm_catcher.png` 从 Desktop `soul_catcher_necklace.png` 覆盖

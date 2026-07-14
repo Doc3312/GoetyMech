@@ -12,6 +12,12 @@
 | 2026-07-07 | deferred deactivate + abilities 强制重置；F5/旁观者菜单吞噬 | spectator 退出后玩家飘在空中/无法跳跃；掉帧 | FreecamSpectatorHandler / ModClientForgeEvents / CameraMixin |
 | 2026-07-09 | 属性冻结归档 | 5秒施法 + VOID粒子 + heightmap贴地安全搜索 + 地图定位 + 创造模式标签页 | GatewaySpell/GatewayUtil/ModConfig/GatewayFocus/ModCreativeTab |
 
-\n## 2026-07-13\n
+
+## 2026-07-13
+
 - **2026-07-13** — 添加合成配方 (gateway_focus.json)
   - 原因：补全生存获取途径
+
+## 2026-07-15
+
+- **纹理替换**：`gateway_focus.png` 从 Desktop `teleport_anchor.png` 覆盖

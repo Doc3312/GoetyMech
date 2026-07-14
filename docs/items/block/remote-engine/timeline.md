@@ -18,6 +18,8 @@
   - 新增 `getOcclusionShape` 返回 `Shapes.empty()` 修复背后方块连接面材质丢失
   - 关联 incidents：`_craft.20260713.occlusion-shape-pattern.md`
 
-\n## 2026-07-13\n
+
+## 2026-07-13
+
 - **2026-07-13** — 添加合成配方 (remote_engine.json)
   - 原因：补全生存获取途径

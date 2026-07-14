@@ -26,3 +26,9 @@
 - **优先级交换**: `onLivingAttack` 从 HIGHEST 降为 NORMAL（PrototypeEvents 升至 HIGHEST 先跑小伤害免疫）
 - **移除 hurtTime 方案**: `player.hurtTime` 在 Player 实体上不可靠，改用盾内置冷却
 - **关联**: `StressShieldEvents.java`, `StressShieldLayer.java`, `StressShieldWorldRenderer.java`, `StressShieldOverlay.java`, `GoetyMechMod.java`
+
+## 2026-07-15
+
+- **纹理 + 本地冷却**：
+  - 纹理：`stress_shield_focus.png` 从 Desktop `create_gear_shield.png` 重新覆盖
+  - 本地配置（run/config/goetymech-common.toml）`stress_shield_focus.cooldown` 改为 200t (10s)（源码默认 12000t/10min 不变）
