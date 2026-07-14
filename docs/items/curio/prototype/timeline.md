@@ -1,5 +1,13 @@
 # Prototype Timeline
 
+## 2026-07-14 — Auto-sprint：客户端 START_SPRINTING 包注入修复冲刺断连
+
+- **改动**: `PrototypeRenderEvents.onClientTick()` START 阶段新增 auto-sprint 逻辑：检测到持有原型 + 按住 W + 未按冲刺键时，发送 vanilla `ServerboundPlayerCommandPacket(Action.START_SPRINTING)` 到服务端，并立即设本地 `player.setSprinting(true)`
+- **原因**: 冲刺和跑墙在地形小凸起（`horizontalCollision`）后容易断连。服务端 `player.zza` 恒为 0 无法检测前进意图，`movedXZ` 在位置不同步时也不可靠。客户端直接注入 vanilla sprint 包是最可靠的方式
+- **节能策略**: 仅状态转换时发送，10 tick cooldown 防止震荡
+- **关联**: `PrototypeRenderEvents.java`, commit `8a06a7c`
+- **关联 incidents**: `_meta/20260714.auto-sprint-client-packet.md`
+
 ## 2026-07-13 — 受击免疫移至 LivingAttackEvent
 
 - **改动**: 低伤害阈值免疫检查从 `LivingHurtEvent` 移至 `LivingAttackEvent`
