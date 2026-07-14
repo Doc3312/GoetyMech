@@ -22,7 +22,7 @@
 
 ### 灵魂拦截阻断
 
-同样以 `EventPriority.HIGHEST` 监听 `ChangeSoulEnergyEvent.Gain`，捕获到玩家有灵质捕手吸收标记时取消事件，使 Goety 原版的图腾/Arca 不会重复获得灵魂。
+同样以 `EventPriority.HIGHEST` 监听 `ChangeSoulEnergyEvent.Gain`，实时检测捕手是否仍在 Curios 槽位中，若在则取消事件，使 Goety 原版的图腾/Arca 不会重复获得灵魂。脱下捕手后不残留任何状态，下次击杀即自动恢复灵魂正常获取。
 
 ## 配置项
 

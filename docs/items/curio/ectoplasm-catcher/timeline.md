@@ -21,3 +21,7 @@
 ## 2026-07-15
 
 - **纹理替换**：`ectoplasm_catcher.png` 从 Desktop `soul_catcher_necklace.png` 覆盖
+- **机制修复**：移除 `TAG_SKIP_SOULS` 标记机制，`onSoulEnergyGain` 改为实时 `findCurios` 检测
+  - 原因：`TAG_SKIP_SOULS` 在非 RaiderServant 仆从击杀时泄漏（Goety 条件不满足时不发 Gain 事件），导致脱下捕手后灵魂获取被静默取消
+  - 修复：不再依赖持久化标记，每次 `ChangeSoulEnergyEvent.Gain` 触发时实时查捕手装备状态
+  - 关联 issue：用户报告仆从击杀仍产生灵质效果

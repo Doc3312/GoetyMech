@@ -26,8 +26,6 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EctoplasmCatcherEvents {
 
-    private static final String TAG_SKIP_SOULS = "goetymech.ectoplasm_catcher_absorbed";
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide) return;
@@ -82,17 +80,16 @@ public class EctoplasmCatcherEvents {
                 serverPlayer.drop(ectoplasmStack, false);
             }
         }
-
-        serverPlayer.getPersistentData().putBoolean(TAG_SKIP_SOULS, true);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onSoulEnergyGain(ChangeSoulEnergyEvent.Gain event) {
         Player player = event.getEntity();
         if (player.level().isClientSide) return;
-        if (player.getPersistentData().getBoolean(TAG_SKIP_SOULS)) {
+        var curios = CuriosApi.getCuriosInventory(player).orElse(null);
+        if (curios == null) return;
+        if (!curios.findCurios(s -> s.getItem() instanceof EctoplasmCatcherCurio).isEmpty()) {
             event.setCanceled(true);
-            player.getPersistentData().remove(TAG_SKIP_SOULS);
         }
     }
 
