@@ -289,16 +289,6 @@ public class ModConfig {
     /** 晶匣自动施法冷却覆盖（tick），0 = 使用法术原始冷却 */
     public static final ForgeConfigSpec.IntValue FLESH_CASKET_COOLDOWN;
 
-    static {
-        // ====== 开发者模式 ======
-        BUILDER.push("dev");
-
-        DEV_MODE = BUILDER
-                .comment("开发者模式", "开启后输出 [TEST] 结构化日志用于游戏内验证", "范围: true/false，默认 false")
-                .define("dev_mode", false);
-
-        BUILDER.pop();
-
     // ====== Soul Dominion Focus 配置 ======
 
     /** 灵魂统御聚晶的灵魂消耗 */
@@ -312,6 +302,16 @@ public class ModConfig {
 
     /** 基础范围（格） */
     public static final ForgeConfigSpec.IntValue SOUL_DOMINION_BASE_RANGE;
+
+    static {
+        // ====== 开发者模式 ======
+        BUILDER.push("dev");
+
+        DEV_MODE = BUILDER
+                .comment("开发者模式", "开启后输出 [TEST] 结构化日志用于游戏内验证", "范围: true/false，默认 false")
+                .define("dev_mode", false);
+
+        BUILDER.pop();
 
         // ====== Soul Dominion Focus 配置 ======
         BUILDER.push("soul_dominion_focus");

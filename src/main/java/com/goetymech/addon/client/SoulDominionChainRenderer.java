@@ -10,18 +10,18 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.Level;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
 public class SoulDominionChainRenderer {
@@ -32,7 +32,7 @@ public class SoulDominionChainRenderer {
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITY) return;
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -45,16 +45,17 @@ public class SoulDominionChainRenderer {
             Vec3 camPos = camera.getPosition();
 
             PoseStack poseStack = event.getPoseStack();
-            MultiBufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             VertexConsumer vertexConsumer = bufferSource.getBuffer(RENDER_TYPE);
 
             float partialTick = event.getPartialTick();
-            long gameTime = player.level.getGameTime();
+            Level level = player.level();
+            long gameTime = level.getGameTime();
 
-            for (UUID uuid : dom.getLinkedServants()) {
-                if (player.level.getEntity(uuid) instanceof LivingEntity servant && servant.isAlive()) {
-                    drawChain(poseStack, vertexConsumer, camPos, player, servant, partialTick, gameTime);
-                }
+            AABB searchBox = player.getBoundingBox().inflate(dom.getRange());
+            for (LivingEntity servant : level.getEntitiesOfClass(LivingEntity.class, searchBox,
+                    e -> e.isAlive() && dom.getLinkedServants().contains(e.getUUID()))) {
+                drawChain(poseStack, vertexConsumer, camPos, player, servant, partialTick, gameTime);
             }
 
             bufferSource.endBatch(RENDER_TYPE);
