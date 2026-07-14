@@ -7,6 +7,7 @@ import com.Polarice3.Goety.common.items.magic.TaglockKit;
 import com.Polarice3.Goety.utils.ColorUtil;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -98,6 +99,12 @@ public class SoulMonumentEvents {
     public static void spawnMonumentDeathParticles(ServerLevel level, Entity entity) {
         ColorUtil color = new ColorUtil(0xcc00fa);
         ServerParticleUtil.summonUndeadParticles(level, entity, color, 0xcc00fa, 0xe079fa);
+        float w = entity.getBbWidth();
+        float h = entity.getBbHeight();
+        int count = Math.max(20, (int)(w * h * 15));
+        level.sendParticles(ParticleTypes.SOUL,
+                entity.getX(), entity.getY() + h / 2.0, entity.getZ(),
+                count, w / 2.0, h / 2.0, w / 2.0, 0.15);
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 2.0F, 1.0F);
     }
 
