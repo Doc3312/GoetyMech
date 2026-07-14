@@ -4,7 +4,7 @@
 
 - 类型：pouch
 - 注册类：ModItems.TIME_FOCUS_POUCH
-- Java 类：TimeFocusPouch (extends FocusPack)
+- Java 类：NeuroStasisFocusPouch (extends FocusPack)
 - 首次创建：2026-06-14
 
 ## 设计意图

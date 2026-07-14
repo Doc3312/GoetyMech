@@ -3,8 +3,8 @@ package com.goetymech.addon.common.events;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.Polarice3.Goety.api.entities.IOwned;
+import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.items.magic.TaglockKit;
-import com.Polarice3.Goety.utils.ColorUtil;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -97,15 +97,21 @@ public class SoulMonumentEvents {
     }
 
     public static void spawnMonumentDeathParticles(ServerLevel level, Entity entity) {
-        ColorUtil color = new ColorUtil(0xcc00fa);
-        ServerParticleUtil.summonUndeadParticles(level, entity, color, 0xcc00fa, 0xe079fa);
         float w = entity.getBbWidth();
         float h = entity.getBbHeight();
-        int count = Math.max(20, (int)(w * h * 15));
+        int rayCount = Math.max(3, (int)(w * 3));
+        for (int i = 0; i < rayCount; i++) {
+            ServerParticleUtil.sendAlwaysVisibleParticles(level,
+                    ModParticleTypes.GOD_RAY.get(),
+                    entity.getRandomX(w), entity.getBlockY() + level.random.nextDouble() * h,
+                    entity.getRandomZ(w),
+                    0, 0xcc, 0x00, 0xfa, 1.0F);
+        }
+        int count = Math.max(30, (int)(w * h * 25));
         level.sendParticles(ParticleTypes.SOUL,
                 entity.getX(), entity.getY() + h / 2.0, entity.getZ(),
-                count, w / 2.0, h / 2.0, w / 2.0, 0.15);
-        level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 2.0F, 1.0F);
+                count, w / 2.0, h / 2.0, w / 2.0, 0.2);
+        level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.WITHER_DEATH, SoundSource.NEUTRAL, 2.0F, 1.0F);
     }
 
     @SubscribeEvent

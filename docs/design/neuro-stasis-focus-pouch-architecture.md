@@ -1,4 +1,4 @@
-﻿# 时间聚晶袋（Time Focus Pouch）架构说明
+﻿# 凝神聚晶袋（Neuro Stasis Focus Pouch）架构说明
 
 > **本物品的时停代码参考自 [EndLibrary](https://github.com/meglevel/ending_library) 和梦幻终焉。**  
 > 服务器端时停引擎（`TimeStopUtils`、`TimeStopSavedData`、S2C 广播协议）、  
@@ -12,9 +12,9 @@
 
 | 物品 | 类 | 触发方式 |
 |------|-----|---------|
-| 时间聚晶袋 | `TimeFocusPouch extends FocusPack` | 打开 `FocusRadialMenuScreen`（径向菜单） |
-| 时间聚晶袋 | `TimeFocusPouch extends FocusPack` | 打开 `FocusPackScreen`（聚晶袋） |
-| 时间聚晶袋 | `TimeFocusPouch extends FocusPack` | 打开 `FocusBagScreen`（聚晶包） |
+| 时间聚晶袋 | `NeuroStasisFocusPouch extends FocusPack` | 打开 `FocusRadialMenuScreen`（径向菜单） |
+| 时间聚晶袋 | `NeuroStasisFocusPouch extends FocusPack` | 打开 `FocusPackScreen`（聚晶袋） |
+| 时间聚晶袋 | `NeuroStasisFocusPouch extends FocusPack` | 打开 `FocusBagScreen`（聚晶包） |
 
 **核心需求**：
 - 打开 GUI 时冻结所有实体/粒子/声音/时间
@@ -28,7 +28,7 @@
 
 ### 1. 物品层（Item）
 
-**`TimeFocusPouch.java`** — 最简单的类，仅继承 `FocusPack` 并重写名字。全部逻辑在事件系统中。
+**`NeuroStasisFocusPouch.java`** — 最简单的类，仅继承 `FocusPack` 并重写名字。全部逻辑在事件系统中。
 
 ### 2. 客户端事件层（Forge Event Bus）
 
@@ -38,7 +38,7 @@
 
 ```
 玩家打开 GUI
-  ├─ hasTimeFocusPouch()?    → 检查背包/主手/副手/Curios 腰带槽
+  ├─ hasNeuroStasisFocusPouch()?    → 检查背包/主手/副手/Curios 腰带槽
   │   └─ 缓存 20 ticks，避免高频遍历
   ├─ FocusRadialMenuScreen?  → radMenuOpen=true, freezePacketDelay=3
   └─ FocusPack/BagScreen?    → anyPouchOpen=true, C2S冻结包立即发送
@@ -90,7 +90,7 @@ X 键释放
 #### 2.5 杂项
 
 - **`onScreenRenderPre`** — 在径向菜单打开时渲染半透明遮罩（`0xBB333333`）
-- **`hasTimeFocusPouch()`** — 缓存 20 ticks 的背包检测，遍历背包 + 主副手 + Curios。
+- **`hasNeuroStasisFocusPouch()`** — 缓存 20 ticks 的背包检测，遍历背包 + 主副手 + Curios。
 
 ### 3. 客户端冻结管理
 
@@ -287,7 +287,7 @@ LONG PRESS 时在 `InputEvent.Key` 中先调 `disable()` 再等 `screen.tick()` 
 
 | 路径 | 作用 |
 |------|------|
-| `common/item/TimeFocusPouch.java` | 物品定义（继承 FocusPack） |
+| `common/item/NeuroStasisFocusPouch.java` | 物品定义（继承 FocusPack） |
 | `client/ModClientForgeEvents.java` | 客户端事件协调器 |
 | `client/TimeStopUtilsWrapped.java` | 客户端冻结/解冻 |
 | `client/ClientContext.java` | `isTimeStop_andSameDimension` |

@@ -65,7 +65,7 @@
   "info.goetymech.remote_engine.unbound": "§eUnbound",
   "info.goetymech.remote_engine.bound_to": "§7Linked: %d, %d, %d",
   "info.goetymech.remote_engine.not_bound_here": "§cNot bound to this Stress Reader",
-  "item.goetymech.time_focus_pouch": "Temporal Focus Pouch",
+  "item.goetymech.neuro_stasis_focus_pouch": "Neuro Stasis Focus Pouch",
   "info.goetymech.time_frozen": "⏸ TIME FROZEN",
   "item.goetymech.unstable_rift_focus": "Unstable Rift Focus",
   "item.goetymech.stable_rift_focus": "Stable Rift Focus",

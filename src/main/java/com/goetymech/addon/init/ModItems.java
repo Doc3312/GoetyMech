@@ -8,7 +8,7 @@ import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.common.item.StableRiftFocus;
 import com.goetymech.addon.common.item.CrushingWheelFocus;
 import com.goetymech.addon.common.item.StressShieldFocus;
-import com.goetymech.addon.common.item.TimeFocusPouch;
+import com.goetymech.addon.common.item.NeuroStasisFocusPouch;
 import com.goetymech.addon.common.item.ChaseFocus;
 import com.goetymech.addon.common.item.CrazedSummonFocus;
 import com.goetymech.addon.common.item.TwistedEmbryoItem;
@@ -137,10 +137,10 @@ public class ModItems {
                     () -> new ForgeSpawnEggItem(ModEntities.CRAZED_ILLAGER,
                             0x3D3D3D, 0xCC3333, new Item.Properties()));
 
-    // ── 时空聚晶袋 — 继承 FocusPack（21 格），打开时冻结时间 ──
+    // ── 凝神聚晶袋 — 继承 FocusPack（21 格），打开时冻结时间 ──
 
-    public static final RegistryObject<Item> TIME_FOCUS_POUCH =
-            ITEMS.register("time_focus_pouch", TimeFocusPouch::new);
+    public static final RegistryObject<Item> NEURO_STASIS_FOCUS_POUCH =
+            ITEMS.register("neuro_stasis_focus_pouch", NeuroStasisFocusPouch::new);
 
     // ── 应力读取器 BlockItem ──
 

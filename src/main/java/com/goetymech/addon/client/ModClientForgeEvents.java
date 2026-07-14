@@ -7,7 +7,7 @@ import com.Polarice3.Goety.init.ModKeybindings;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.item.RemoteEngineBlockItem;
 import com.goetymech.addon.client.TimeStopUtilsWrapped;
-import com.goetymech.addon.common.item.TimeFocusPouch;
+import com.goetymech.addon.common.item.NeuroStasisFocusPouch;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.c2s.C2SOpenFleshCasketPacket;
@@ -86,7 +86,7 @@ public class ModClientForgeEvents {
         // === Freeze packet delay countdown ===
         if (freezePacketDelay > 0) {
             freezePacketDelay--;
-            if (freezePacketDelay == 0 && hasTimeFocusPouch()) {
+            if (freezePacketDelay == 0 && hasNeuroStasisFocusPouch()) {
                 //LOGGER.debug("freezePacketDelay reached 0, sending freeze packet");
                 anyPouchOpen = true;
                 ModNetwork.CHANNEL.sendToServer(new C2STimeStopPacket(true));
@@ -116,7 +116,7 @@ public class ModClientForgeEvents {
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {
         Screen screen = event.getScreen();
-        if (!hasTimeFocusPouch()) return;
+        if (!hasNeuroStasisFocusPouch()) return;
         boolean isFreezeScreen = screen instanceof FocusRadialMenuScreen
                 || screen instanceof FocusPackScreen
                 || screen instanceof FocusBagScreen;
@@ -161,7 +161,7 @@ public class ModClientForgeEvents {
         graphics.fill(0, 0, w, h, 0xBB333333);
     }
 
-    private static boolean hasTimeFocusPouch() {
+    private static boolean hasNeuroStasisFocusPouch() {
         Level level = Minecraft.getInstance().level;
         if (level == null) return false;
         long now = level.getGameTime();
@@ -172,23 +172,23 @@ public class ModClientForgeEvents {
         if (player == null) return false;
 
         for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof TimeFocusPouch) {
+            if (stack.getItem() instanceof NeuroStasisFocusPouch) {
                 cachedPouchResult = true;
                 return true;
             }
         }
-        if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() instanceof TimeFocusPouch) {
+        if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() instanceof NeuroStasisFocusPouch) {
             cachedPouchResult = true;
             return true;
         }
-        if (!player.getOffhandItem().isEmpty() && player.getOffhandItem().getItem() instanceof TimeFocusPouch) {
+        if (!player.getOffhandItem().isEmpty() && player.getOffhandItem().getItem() instanceof NeuroStasisFocusPouch) {
             cachedPouchResult = true;
             return true;
         }
 
         if (ModList.get().isLoaded("curios")) {
             Optional<SlotResult> found = CuriosApi.getCuriosInventory(player)
-                    .map(inv -> inv.findFirstCurio(s -> s.getItem() instanceof TimeFocusPouch))
+                    .map(inv -> inv.findFirstCurio(s -> s.getItem() instanceof NeuroStasisFocusPouch))
                     .orElse(Optional.empty());
             if (found.isPresent()) {
                 cachedPouchResult = true;
