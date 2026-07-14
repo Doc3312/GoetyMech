@@ -125,10 +125,8 @@ public class SoulMonumentEvents {
         event.setCanceled(true);
 
         int result = monument.handleClearClick(level.getGameTime());
-        if (result == -1) {
-            player.displayClientMessage(
-                    net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.clear_too_fast"), true);
-        } else if (result == 0) {
+        if (result == -1) return;
+        if (result == 0) {
             player.displayClientMessage(
                     net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.clear_done"), true);
         } else if (result == 1) {
