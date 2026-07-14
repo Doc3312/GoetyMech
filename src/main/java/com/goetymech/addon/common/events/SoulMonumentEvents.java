@@ -2,16 +2,18 @@ package com.goetymech.addon.common.events;
 
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.common.items.magic.TaglockKit;
+import com.Polarice3.Goety.utils.ColorUtil;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
@@ -76,13 +78,27 @@ public class SoulMonumentEvents {
         spawnMonumentDeathParticles((ServerLevel) entity.level(), entity);
     }
 
+    @SubscribeEvent
+    public static void onMonumentOwnerAttack(LivingHurtEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
+        LivingEntity target = event.getEntity();
+        ServerLevel level = (ServerLevel) player.level();
+        for (Entity entity : level.getAllEntities()) {
+            if (entity instanceof Mob mob
+                    && mob instanceof IOwned owned
+                    && mob.getPersistentData().getBoolean("goetymech.monument_summoned")
+                    && owned.getTrueOwner() == player
+                    && mob.getTarget() == null
+                    && mob.isAlive()) {
+                mob.setTarget(target);
+            }
+        }
+    }
+
     public static void spawnMonumentDeathParticles(ServerLevel level, Entity entity) {
-        double px = entity.getX();
-        double py = entity.getY() + entity.getBbHeight() / 4.0F;
-        double pz = entity.getZ();
-        ServerParticleUtil.surroundCloudParticles(ParticleTypes.PORTAL, px, py, pz, level, 40, 0.15F);
-        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, px, entity.getY() + entity.getBbHeight() / 2.0, pz, 12, 0.4, 0.4, 0.4, 0.2);
-        level.playSound(null, px, entity.getY(), pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 2.0F, 1.0F);
+        ColorUtil color = new ColorUtil(0xcc00fa);
+        ServerParticleUtil.summonUndeadParticles(level, entity, color, 0xcc00fa, 0xe079fa);
+        level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 2.0F, 1.0F);
     }
 
     @SubscribeEvent

@@ -54,8 +54,9 @@ public class SoulMonumentHUD {
 
         java.util.List<String> names = monument.getSavedEntityNames();
         if (names != null && !names.isEmpty()) {
-            int y = height - 76;
-            for (String name : names) {
+            int y = height - 100;
+            for (int i = names.size() - 1; i >= 0; i--) {
+                String name = names.get(i);
                 int nameWidth = font.width(name);
                 gui.drawString(font, name, (width - nameWidth) / 2, y, 0xCCAAFF);
                 y -= 10;

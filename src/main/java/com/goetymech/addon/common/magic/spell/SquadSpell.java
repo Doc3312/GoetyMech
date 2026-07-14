@@ -8,8 +8,10 @@ import com.goetymech.addon.common.events.SoulMonumentEvents;
 import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.common.utils.BeaconHelper;
 import com.goetymech.addon.common.utils.MinionSpawnHelper;
+import com.goetymech.addon.common.utils.MonumentFollowGoal;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.entities.IOwned;
+import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.core.registries.Registries;
@@ -387,6 +389,11 @@ public class SquadSpell extends Spell {
             mob.load(entityData);
             mob.setUUID(newUUID);
 
+            if (mob instanceof IServant servant) {
+                servant.setWandering(false);
+                servant.setStaying(false);
+            }
+
             mob.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
 
             if (blockLevel.addFreshEntity(mob)) {
@@ -394,6 +401,9 @@ public class SquadSpell extends Spell {
                     owned.setTrueOwner(player);
                     owned.setHasLifespan(true);
                     owned.setLifespan(lifespan);
+                }
+                if (!(mob instanceof IServant)) {
+                    mob.goalSelector.addGoal(3, new MonumentFollowGoal(mob, 1.0D, 10.0F, 2.0F));
                 }
                 mob.getPersistentData().putString(SquadFocus.TAG_SUMMONER, summonerKey);
                 mob.getPersistentData().putBoolean("goetymech.monument_summoned", true);
