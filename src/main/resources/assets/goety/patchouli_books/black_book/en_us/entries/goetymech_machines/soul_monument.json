@@ -1,0 +1,24 @@
+{
+  "name": "Soul Monument",
+  "icon": "goetymech:tier1_soul_monument",
+  "category": "goety:goetymech_machines",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Compared to those weak cannon fodder, there are always some servants you are unwilling to lose — you want them to serve you better.$(br)So you came up with a new idea: extract their souls, seal their bodies into the monument, and with the help of versatile and efficient dark magic, you now have servants that are always on call and never truly die.$(br)After placing the monument, use a $(l:goety:crafts/taglock_kit)Taglock Kit$(/l) to bind a servant, then right-click the monument with the kit to enter the binding ritual.$(br)Once in the ritual, you must kill a villager within 10 blocks of the monument — they will die in the servant's place. After the villager dies, the servant will vanish and the ritual is complete.$(br)Note: you cannot leave the ritual once it has started — you can only exit by breaking the monument or waiting for the ritual to time out.$(br)Monument servants cannot be unbound once bound. The only way to clear all servants from the monument is to repeatedly shift + left-click. Bind carefully.$(br)Monument servants can be summoned from any dimension. Each servant costs 1000 soul energy. Upgrading the monument increases capacity while reducing soul consumption.$(br)$(4)\"Why do I have to spend a fortune to keep these guys around? Why do I have to waste time reviving them every time they die? I've had enough! I'll make you serve me for eternity!\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:soul_monument_1"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:soul_monument_1_to_2"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:soul_monument_2_to_3"
+    }
+  ]
+}
