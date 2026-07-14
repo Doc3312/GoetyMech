@@ -28,7 +28,7 @@ public class SoulDominionChainRenderer {
 
     private static final ResourceLocation CHAIN_TEXTURE =
             new ResourceLocation(GoetyMechMod.MOD_ID, "textures/entity/soul_dominion/chain.png");
-    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(CHAIN_TEXTURE, false);
+    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(CHAIN_TEXTURE, false);
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {

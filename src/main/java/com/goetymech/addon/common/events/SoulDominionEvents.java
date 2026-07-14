@@ -1,8 +1,10 @@
 package com.goetymech.addon.common.events;
 
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.capabilities.ISoulDominion;
 import com.goetymech.addon.common.utils.SoulDominionHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
@@ -17,6 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SoulDominionEvents {
@@ -83,19 +86,29 @@ public class SoulDominionEvents {
 
         if (player.tickCount % 20 == 0) {
             ServerLevel serverLevel = (ServerLevel) player.level();
-            boolean anyAlive = false;
-            for (UUID uuid : dom.getLinkedServants()) {
-                if (serverLevel.getEntity(uuid) instanceof LivingEntity living && living.isAlive()) {
-                    anyAlive = true;
-                    break;
-                }
-            }
-            if (!anyAlive) {
+            int range = dom.getRange();
+
+            List<LivingEntity> currentServants = serverLevel.getEntitiesOfClass(LivingEntity.class,
+                    player.getBoundingBox().inflate(range),
+                    e -> e != player && e.isAlive() && e instanceof IOwned owned
+                            && owned.getTrueOwner() == player);
+
+            if (currentServants.isEmpty()) {
                 dom.clear();
                 SoulDominionHelper.sendSyncPacket(player);
                 player.displayClientMessage(
-                        net.minecraft.network.chat.Component.translatable("info.goetymech.soul_dominion.all_servants_dead"),
+                        Component.translatable("info.goetymech.soul_dominion.all_servants_dead"),
                         true);
+                return;
+            }
+
+            List<UUID> newServants = currentServants.stream()
+                    .map(LivingEntity::getUUID)
+                    .collect(Collectors.toList());
+
+            if (!newServants.equals(dom.getLinkedServants())) {
+                dom.setLinkedServants(newServants);
+                SoulDominionHelper.sendSyncPacket(player);
             }
         }
     }
