@@ -13,6 +13,14 @@
 - **关联**: `ModConfig.java` `SlamGroundTiltHandler.java` `S2CSlamImpactPacket.java` `PrototypeEvents.java`, commit `c459622` `18e867e`
 - **关联 incidents**: `_meta/20260713.config-cache-pitfall.md`
 
+## 2026-07-14 — 游泳速度叠乘 bug 修复
+
+- **改动**: `gp$onTravelWater` 从倍率叠乘改为加法累加；新增 `swim_base_speed` NBT 跟踪
+- **原因**: `newHSpeed = hSpeed * (1.0 + amount)` 每 tick 对已含历史加成速度做乘法，形成指数叠乘爆炸（实际 ∏(1.0 + k/10) for k=1..79 ≈ 10^51 倍）
+- **修复**: 记录首次游泳基准速度，改为 `newHSpeed = hSpeed + baseSpeed * amount` 线性累加
+- **关联**: `PrototypeTravelMixin.java` `PrototypeItem.java`, commit `93780d4`
+- **关联 incidents**: `_prototype/20260714.swim-speed-compounding.md`
+
 ## 2026-07-13 — 优先级提升 + 脱原型检查修复
 
 - **改动**: `onLivingAttack` 优先级从 NORMAL 升至 HIGHEST；新增 `hasAnyPrototype` 检查

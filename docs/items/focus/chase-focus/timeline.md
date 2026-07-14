@@ -10,3 +10,8 @@
 \n## 2026-07-13\n
 - **2026-07-13** — 添加合成配方 (chase_focus.json)
   - 原因：补全生存获取途径
+- **2026-07-14** — 功能冻结归档
+  - 已完成功能：修复 buff 刷新失效
+  - 根因：C2SVoidBlinkPacket 中 `effect.getDuration() / 20 * 20` 整数除法截断 → 新时长 ≤ 原时长 →  MC `addEffect` 内部 `MobEffectInstance.update()` 静默忽略
+  - 修复：SpellResult 保存 `TAG_WINDOW_DURATION`（满窗口时长），闪现时读取并重置到满时长
+  - 关联 incidents：chase-focus/20260714.buff-refresh-silent-fail
