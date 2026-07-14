@@ -54,11 +54,12 @@ public class SoulMonumentEvents {
         if (!entity.getPersistentData().getBoolean("goetymech.monument_summoned")) return;
         if (entity.level().isClientSide) return;
         if (entity.getHealth() - event.getAmount() > 0) return;
+        ServerLevel level = (ServerLevel) entity.level();
         double px = entity.getX();
         double py = entity.getY();
         double pz = entity.getZ();
-        entity.level().sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
-        entity.level().playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        level.sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
+        level.playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
         event.setCanceled(true);
         entity.discard();
     }
@@ -75,11 +76,12 @@ public class SoulMonumentEvents {
         LivingEntity entity = event.getEntity();
         if (!entity.getPersistentData().getBoolean("goetymech.monument_summoned")) return;
         if (entity.level().isClientSide) return;
+        ServerLevel level = (ServerLevel) entity.level();
         double px = entity.getX();
         double py = entity.getY();
         double pz = entity.getZ();
-        entity.level().sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
-        entity.level().playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        level.sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
+        level.playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
     }
 
     @SubscribeEvent
