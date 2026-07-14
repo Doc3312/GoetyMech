@@ -225,6 +225,7 @@ public class SquadSpell extends Spell {
 
         if (!player.isCreative()) {
             SEHelper.decreaseSouls(player, actualSoulCost);
+            SEHelper.sendSEUpdatePacket(player);
         }
 
         int lifespan = ModConfig.SQUAD_LIFESPAN.get();
@@ -349,6 +350,7 @@ public class SquadSpell extends Spell {
         int actualSoulCost = canSpawn * unitCost;
         if (!player.isCreative()) {
             SEHelper.decreaseSouls(player, actualSoulCost);
+            SEHelper.sendSEUpdatePacket(player);
         }
 
         int lifespan = ModConfig.SQUAD_LIFESPAN.get();
