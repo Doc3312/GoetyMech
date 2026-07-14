@@ -3,6 +3,7 @@ package com.goetymech.addon.client;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.client.gui.FleshCasketScreen;
 import com.goetymech.addon.client.gui.SquadBarracksScreen;
+import com.goetymech.addon.client.particles.ScaledGodRayParticle;
 import com.goetymech.addon.client.render.CraterBlockRenderer;
 import com.goetymech.addon.client.render.CrazedIllagerModel;
 import com.goetymech.addon.client.render.CrazedIllagerRenderer;
@@ -10,6 +11,7 @@ import com.goetymech.addon.client.render.CrushingWheelRenderer;
 import com.goetymech.addon.client.render.RemoteEngineRenderer;
 import com.goetymech.addon.client.render.SculkBidingModel;
 import com.goetymech.addon.client.render.SculkBidingRenderer;
+import com.goetymech.addon.client.particles.ScaledGodRayParticle;
 import com.goetymech.addon.client.render.StressShieldLayer;
 import com.goetymech.addon.client.render.StressReaderRenderer;
 import com.goetymech.addon.common.menu.ModMenuTypes;
@@ -17,6 +19,7 @@ import com.goetymech.addon.init.ModBlocks;
 import com.goetymech.addon.init.ModEntities;
 import com.goetymech.addon.init.ModFluids;
 import com.goetymech.addon.init.ModItems;
+import com.goetymech.addon.init.ModParticleTypes;
 import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import net.minecraft.client.KeyMapping;
@@ -27,6 +30,7 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -148,6 +152,11 @@ public class ModClientEvents {
         event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "stress_ark_hud", StressArkHUD.OVERLAY);
         event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "freecam_hud", FreecamHUD.OVERLAY);
         event.registerAboveAll("stress_shield_overlay", StressShieldOverlay.OVERLAY);
+    }
+
+    @SubscribeEvent
+    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(ModParticleTypes.SCALED_GOD_RAY.get(), ScaledGodRayParticle.Provider::new);
     }
 
     @SubscribeEvent

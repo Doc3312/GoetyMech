@@ -2,8 +2,8 @@ package com.goetymech.addon.common.events;
 
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
+import com.goetymech.addon.init.ModParticleTypes;
 import com.Polarice3.Goety.api.entities.IOwned;
-import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.items.magic.TaglockKit;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -99,14 +99,10 @@ public class SoulMonumentEvents {
     public static void spawnMonumentDeathParticles(ServerLevel level, Entity entity) {
         float w = entity.getBbWidth();
         float h = entity.getBbHeight();
-        int rayCount = Math.max(3, (int)(w * 3));
-        for (int i = 0; i < rayCount; i++) {
-            ServerParticleUtil.sendAlwaysVisibleParticles(level,
-                    ModParticleTypes.GOD_RAY.get(),
-                    entity.getRandomX(w), entity.getBlockY() + level.random.nextDouble() * h,
-                    entity.getRandomZ(w),
-                    0, 0xcc, 0x00, 0xfa, 1.0F);
-        }
+        ServerParticleUtil.sendAlwaysVisibleParticles(level,
+                ModParticleTypes.SCALED_GOD_RAY.get(),
+                entity.getX(), entity.getY(), entity.getZ(),
+                0, w, h, 0, 1.0F);
         int count = Math.max(30, (int)(w * h * 25));
         level.sendParticles(ParticleTypes.SOUL,
                 entity.getX(), entity.getY() + h / 2.0, entity.getZ(),

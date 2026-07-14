@@ -17,6 +17,7 @@ import com.goetymech.addon.init.ModCreativeTab;
 import com.goetymech.addon.init.ModEffects;
 import com.goetymech.addon.init.ModEntities;
 import com.goetymech.addon.init.ModItems;
+import com.goetymech.addon.init.ModParticleTypes;
 import com.goetymech.addon.init.ModRecipeSerializers;
 import com.goetymech.addon.init.ModFluids;
 import com.goetymech.addon.init.ModRituals;
@@ -61,6 +62,7 @@ public class GoetyMechMod {
         ModBlocks.BLOCK_ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
+        ModParticleTypes.PARTICLE_TYPES.register(modEventBus);
         ModEffects.EFFECTS.register(modEventBus);
         ModCreativeTab.TABS.register(modEventBus);
         ModMenuTypes.CONTAINER_TYPE.register(modEventBus);
