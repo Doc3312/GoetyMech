@@ -193,7 +193,6 @@ public class SquadSpell extends Spell {
 
         int baseCost = ModConfig.MATURE_EMBRYO_SOUL_COST.get();
         int unitCost = (int) (baseCost * discount);
-        GoetyMechMod.LOGGER.debug("SQUAD_BARRACKS tier={} discount={} baseCost={} unitCost={}", tier, discount, baseCost, unitCost);
 
         int availableUnits = barracks.countAvailableUnits();
         if (availableUnits == 0) {
@@ -207,7 +206,6 @@ public class SquadSpell extends Spell {
         if (!player.isCreative() && unitCost > 0) {
             int playerSouls = SEHelper.getSoulAmountInt(player);
             canSpawn = Math.min(availableUnits, playerSouls / unitCost);
-            GoetyMechMod.LOGGER.debug("SQUAD_BARRACKS available={} playerSouls={} canSpawn={}", availableUnits, playerSouls, canSpawn);
         } else {
             canSpawn = availableUnits;
         }
@@ -225,15 +223,10 @@ public class SquadSpell extends Spell {
         int consumedUnits = consumedSquad.stream().mapToInt(Map.Entry::getValue).sum();
         int actualSoulCost = consumedUnits * unitCost;
 
-        int beforeSouls = SEHelper.getSoulAmountInt(player);
         if (!player.isCreative()) {
-            GoetyMechMod.LOGGER.debug("SQUAD_BARRACKS discount={} seActive={}",
-                    SEHelper.soulDiscount(player), SEHelper.getSEActive(player));
             SEHelper.decreaseSouls(player, actualSoulCost);
             SEHelper.sendSEUpdatePacket(player);
         }
-        int afterSouls = SEHelper.getSoulAmountInt(player);
-        GoetyMechMod.LOGGER.debug("SQUAD_BARRACKS consumed={} cost={} before={} after={}", consumedUnits, actualSoulCost, beforeSouls, afterSouls);
 
         int lifespan = ModConfig.SQUAD_LIFESPAN.get();
         if (useStaffBonus) {
