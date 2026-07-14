@@ -21,6 +21,14 @@
   - 关联 openspec：`monument-summon-improvements`
   - 关联 incidents：`_craft.20260710.cooldown-debug.md`
 
+- **2026-07-15** — Bug 修复：冷却无效 + 三连击清除
+  - 修复：移除 `handleMonumentSummon` 中 5 分钟冷却应用代码（`MONUMENT_SUMMON_COOLDOWN`），丰碑召唤不再有长冷却
+  - 保留：全存活→传送的 20t 短冷却（防刷屏）
+  - 新增：`PlayerInteractEvent.LeftClickBlock` — shift+左键空手三连击清除内部实体
+  - 新增：`SoulMonumentBlockEntity.handleClearClick()` — 防连点冷却 20t（1s）+ 超时重置 100t（5s）
+  - 新增 lang keys：`clear_step1/2`、`clear_done`、`clear_too_fast`
+  - 关联：用户报告 bug
+
 - **2026-07-14** — 大规模功能对接
   - 新增：丰碑 HUD 显示已录入仆从名字（`savedEntityNames` + 向后兼容 .dat 回填）
   - 新增：丰碑召唤每单位 `MONUMENT_SOUL_COST=1000`（独立于 points 台）

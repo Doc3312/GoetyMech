@@ -226,6 +226,9 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         if (gameTime - lastClearClickTime > CLEAR_TIMEOUT_TICKS) {
             clearClickCount = 0;
         }
+        if (gameTime == lastClearClickTime) {
+            return clearClickCount == 0 ? -1 : clearClickCount;
+        }
         if (gameTime - lastClearClickTime < CLEAR_COOLDOWN_TICKS) {
             return -1;
         }
