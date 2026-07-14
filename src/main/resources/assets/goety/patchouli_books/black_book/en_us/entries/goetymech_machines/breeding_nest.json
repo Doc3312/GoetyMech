@@ -6,12 +6,11 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "A machine that converts food into Twisted Embryos."
+      "text": "Compared to the bloody products recorded in ancient texts, you used magic to create a more modular and elegant machine.$(br)This machine will become the starting point of your calamity army.$(br)Input any food that restores hunger to convert it into Twisted Embryos.$(br)$(4)\"Sometimes I have to admit, these Illagers are far more talented in cruelty than I am, even when facing their own kind.\"$()"
     },
     {
-      "type": "patchouli:crafting",
-      "recipe": "goetymech:breeding_nest",
-      "text": ""
+      "type": "goety:ritual",
+      "recipe": "goetymech:breeding_nest"
     }
   ]
 }
