@@ -1,0 +1,16 @@
+{
+  "name": "兵团聚晶",
+  "icon": "goetymech:squad_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "由$(l:goety:focuses/void/troop_focus)军团聚晶$(/l)进化而来，可以更为方便的配置你的军队。$(br)手持聚晶右键可以绑定$(l:goetymech_machines/squad_barracks)点将台$(/l)或$(l:goetymech_machines/soul_monument)魂灵丰碑$(/l)，蹲下右键则解除绑定。$(br)绑定点将台与绑定魂灵丰碑的施法操作逻辑不同，详情在绑定后的聚晶上按shift查看。$(br)$(4)\"为我而战，奴仆们！\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:squad_focus"
+    }
+  ]
+}
