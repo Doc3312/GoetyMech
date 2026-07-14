@@ -410,12 +410,12 @@ public class ModConfig {
                 .defineInRange("squad_summon_cooldown", 200, 20, 12000);
 
         SQUAD_TIER2_DISCOUNT = BUILDER
-                .comment("二阶点将台灵魂折扣倍率", "范围: 0.0-1.0，默认 0.5")
-                .defineInRange("tier2_discount", 0.5, 0.0, 1.0);
+                .comment("二阶点将台灵魂折扣倍率", "范围: 0.0-1.0，默认 0.8")
+                .defineInRange("tier2_discount", 0.8, 0.0, 1.0);
 
         SQUAD_TIER3_DISCOUNT = BUILDER
-                .comment("三阶点将台灵魂折扣倍率", "范围: 0.0-1.0，默认 0.1")
-                .defineInRange("tier3_discount", 0.1, 0.0, 1.0);
+                .comment("三阶点将台灵魂折扣倍率", "范围: 0.0-1.0，默认 0.5")
+                .defineInRange("tier3_discount", 0.5, 0.0, 1.0);
 
         SQUAD_LIFESPAN = BUILDER
                 .comment("召唤仆从寿命（tick）", "范围: 20-72000，默认 6000（5分钟）")
