@@ -227,6 +227,8 @@ public class SquadSpell extends Spell {
 
         int beforeSouls = SEHelper.getSoulAmountInt(player);
         if (!player.isCreative()) {
+            GoetyMechMod.LOGGER.debug("SQUAD_BARRACKS discount={} seActive={}",
+                    SEHelper.soulDiscount(player), SEHelper.getSEActive(player));
             SEHelper.decreaseSouls(player, actualSoulCost);
             SEHelper.sendSEUpdatePacket(player);
         }
@@ -357,6 +359,8 @@ public class SquadSpell extends Spell {
 
         int beforeSouls = SEHelper.getSoulAmountInt(player);
         if (!player.isCreative()) {
+            GoetyMechMod.LOGGER.debug("SQUAD_MONUMENT discount={} seActive={}",
+                    SEHelper.soulDiscount(player), SEHelper.getSEActive(player));
             SEHelper.decreaseSouls(player, actualSoulCost);
             SEHelper.sendSEUpdatePacket(player);
         }
