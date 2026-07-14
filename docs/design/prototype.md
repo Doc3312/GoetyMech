@@ -162,6 +162,14 @@
 - 原因：用户报告下砸后原地被困 40+ tick
 - 关联：incidents/craft.20260710.slam-freeze-craterblock.md
 
+### 2026-07-14 — Auto-sprint：客户端 START_SPRINTING 包注入
+
+- **改动**: `PrototypeRenderEvents.onClientTick()` START 阶段新增 auto-sprint：持有原型 + 按住 W + 未按冲刺键时，发送 vanilla `ServerboundPlayerCommandPacket(Action.START_SPRINTING)` 到服务端并设本地 `setSprinting(true)`。10 tick cooldown 防震荡
+- **原因**: 冲刺因 `horizontalCollision` 被 vanilla 取消后无法恢复。服务端 `player.zza` 恒为 0（仅骑乘时写入），`getX()-xo` 在位置不同步时不可靠。客户端直接注入 sprint 包绕过这两项服务端限制
+- **教训**: 任何需要检测玩家前进意图的服务端逻辑都应考虑 `zza` 在服务端为 0 的约束。客户端发包 + 本地同步是最可靠的方案
+- **关联 commit**: `8a06a7c`
+- **关联 incidents**: `_meta/20260714.auto-sprint-client-packet.md`
+
 ### 2026-07-12 — 清理诊断日志残留
 
 - **改动**：移除全部 SLAM_DIAG/PROTO_DIAG/D_START/D_END/SprintTick/AoE 诊断日志（+4 个文件约 200 行）；删除 `TAG_SLAM_DIAG_TICK` NBT tag 和对应 accessor；删除未使用的 `clearSprint()`；删除 `PrototypePlayerMixin` 中的调试空注入桩和注释掉的 debug 日志
