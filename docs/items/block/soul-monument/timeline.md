@@ -20,3 +20,13 @@
   - 新增：`DarkWandUseMixin` — shift+右键 dismiss 在 `cannotCast()` 前截获，冷却期内可正常遣散
   - 关联 openspec：`monument-summon-improvements`
   - 关联 incidents：`_craft.20260710.cooldown-debug.md`
+
+- **2026-07-14** — 大规模功能对接
+  - 新增：丰碑 HUD 显示已录入仆从名字（`savedEntityNames` + 向后兼容 .dat 回填）
+  - 新增：丰碑召唤每单位 `MONUMENT_SOUL_COST=1000`（独立于 points 台）
+  - 修复：丰碑跨维度召唤（解除了 monument 的 dimension check 限制）
+  - 修复：跨维度实体不出现（entity 创建/添加改用 `worldIn` 而非 `blockLevel`）
+  - 新增：召唤/死亡 Goety 风格特效（`ScaledGodRayParticle` + `SOUL` 爆发 + `WITHER_DEATH`）
+  - 新增：仆从默认跟随模式 + 攻击目标重定向
+  - 关联 openspec：`monument-summon-improvements`
+  - 关联 incidents：`_craft.20260714.squad-monument-architecture.md`
