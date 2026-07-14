@@ -3,12 +3,14 @@ package com.goetymech.addon.common.events;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.Polarice3.Goety.common.items.magic.TaglockKit;
+import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.npc.Villager;
@@ -54,12 +56,7 @@ public class SoulMonumentEvents {
         if (!entity.getPersistentData().getBoolean("goetymech.monument_summoned")) return;
         if (entity.level().isClientSide) return;
         if (entity.getHealth() - event.getAmount() > 0) return;
-        ServerLevel level = (ServerLevel) entity.level();
-        double px = entity.getX();
-        double py = entity.getY();
-        double pz = entity.getZ();
-        level.sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
-        level.playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        spawnMonumentDeathParticles((ServerLevel) entity.level(), entity);
         event.setCanceled(true);
         entity.discard();
     }
@@ -76,12 +73,16 @@ public class SoulMonumentEvents {
         LivingEntity entity = event.getEntity();
         if (!entity.getPersistentData().getBoolean("goetymech.monument_summoned")) return;
         if (entity.level().isClientSide) return;
-        ServerLevel level = (ServerLevel) entity.level();
+        spawnMonumentDeathParticles((ServerLevel) entity.level(), entity);
+    }
+
+    public static void spawnMonumentDeathParticles(ServerLevel level, Entity entity) {
         double px = entity.getX();
-        double py = entity.getY();
+        double py = entity.getY() + entity.getBbHeight() / 4.0F;
         double pz = entity.getZ();
-        level.sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
-        level.playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        ServerParticleUtil.surroundCloudParticles(ParticleTypes.PORTAL, px, py, pz, level, 40, 0.15F);
+        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, px, entity.getY() + entity.getBbHeight() / 2.0, pz, 12, 0.4, 0.4, 0.4, 0.2);
+        level.playSound(null, px, entity.getY(), pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 2.0F, 1.0F);
     }
 
     @SubscribeEvent

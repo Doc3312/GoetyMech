@@ -4,6 +4,7 @@ import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
+import com.goetymech.addon.common.events.SoulMonumentEvents;
 import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.common.utils.BeaconHelper;
 import com.goetymech.addon.common.utils.MinionSpawnHelper;
@@ -110,11 +111,7 @@ public class SquadSpell extends Spell {
                     if (entity instanceof IOwned owned && owned.getTrueOwner() == caster) {
                         if (key.equals(entity.getPersistentData().getString(SquadFocus.TAG_SUMMONER))) {
                             if (isMonument) {
-                                double px = entity.getX();
-                                double py = entity.getY();
-                                double pz = entity.getZ();
-                                worldIn.sendParticles(ParticleTypes.PORTAL, px, py, pz, 30, 0.5, 0.5, 0.5, 0.05);
-                                worldIn.playSound(null, px, py, pz, SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                                SoulMonumentEvents.spawnMonumentDeathParticles(worldIn, entity);
                                 entity.discard();
                             } else {
                                 owned.dismiss();

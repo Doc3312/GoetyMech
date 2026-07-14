@@ -19,6 +19,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -137,9 +139,31 @@ public class SoulMonumentBlockEntity extends BlockEntity {
                                         level.random.nextGaussian() * 0.02D);
                             }
                             break;
+            }
+        }
+        if (savedEntityNames.size() < savedEntityUUIDs.size() && level instanceof ServerLevel serverLevel) {
+            savedEntityNames.clear();
+            for (UUID uuid : savedEntityUUIDs) {
+                CompoundTag data = SoulMonumentDataManager.loadEntityData(serverLevel, uuid);
+                if (data != null && data.contains("id")) {
+                    String id = data.getString("id");
+                    ResourceLocation rl = ResourceLocation.tryParse(id);
+                    if (rl != null) {
+                        EntityType<?> type = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getValue(rl);
+                        if (type != null) {
+                            savedEntityNames.add(type.getDescription().getString());
+                        } else {
+                            savedEntityNames.add(id);
                         }
+                    } else {
+                        savedEntityNames.add(id);
                     }
+                } else {
+                    savedEntityNames.add("Unknown");
                 }
+            }
+        }
+    }
             }
             return;
         }
