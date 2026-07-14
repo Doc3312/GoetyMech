@@ -28,7 +28,7 @@ public class SoulDominionChainRenderer {
 
     private static final ResourceLocation CHAIN_TEXTURE =
             new ResourceLocation(GoetyMechMod.MOD_ID, "textures/entity/soul_dominion/chain.png");
-    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(CHAIN_TEXTURE, false);
+    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(CHAIN_TEXTURE, false);
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
@@ -81,17 +81,16 @@ public class SoulDominionChainRenderer {
 
         Vec3 offset = end.subtract(start);
         Vec3 sight = camPos.subtract(start).scale(-1);
-        Vec3 sideOffset = offset.cross(sight).normalize().scale(1.0);
+        Vec3 sideOffset = offset.cross(sight).normalize().scale(0.75);
 
         float age = gameTime + partialTick;
         float uOffset = -age * 0.06f;
 
         PoseStack.Pose pose = poseStack.last();
-        float lengthUv = (float) (offset.length() * 2);
-        vertex(vertexConsumer, pose, start.add(sideOffset), 0, uOffset);
-        vertex(vertexConsumer, pose, start.add(sideOffset.scale(-1)), 1, uOffset);
-        vertex(vertexConsumer, pose, end.add(sideOffset.scale(-1)), 1, lengthUv + uOffset);
-        vertex(vertexConsumer, pose, end.add(sideOffset), 0, lengthUv + uOffset);
+        vertex(vertexConsumer, pose, start.add(sideOffset), uOffset, 0);
+        vertex(vertexConsumer, pose, start.add(sideOffset.scale(-1)), uOffset, 1);
+        vertex(vertexConsumer, pose, end.add(sideOffset.scale(-1)), (float) (offset.length() * 2) + uOffset, 1);
+        vertex(vertexConsumer, pose, end.add(sideOffset), (float) (offset.length() * 2) + uOffset, 0);
 
         poseStack.popPose();
     }
