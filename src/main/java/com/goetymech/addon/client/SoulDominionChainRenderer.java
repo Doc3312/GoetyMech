@@ -81,7 +81,7 @@ public class SoulDominionChainRenderer {
 
         Vec3 offset = end.subtract(start);
         Vec3 sight = camPos.subtract(start).scale(-1);
-        Vec3 sideOffset = offset.cross(sight).normalize().scale(0.75);
+        Vec3 sideOffset = offset.cross(sight).normalize().scale(0.25);
 
         float age = gameTime + partialTick;
         float uOffset = -age * 0.06f;
