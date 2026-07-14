@@ -267,7 +267,7 @@ public class SquadSpell extends Spell {
         List<UUID> savedUUIDs = monument.getSavedEntityUUIDs();
         if (savedUUIDs.isEmpty()) {
             player.displayClientMessage(
-                    Component.translatable("info.goetymech.squad_focus.empty_squad").withStyle(ChatFormatting.RED), true);
+                    Component.translatable("info.goetymech.squad_focus.empty_squad_monument").withStyle(ChatFormatting.RED), true);
             return;
         }
 
@@ -373,7 +373,7 @@ public class SquadSpell extends Spell {
                 continue;
             }
 
-            Entity created = type.create(blockLevel);
+            Entity created = type.create(worldIn);
             if (!(created instanceof Mob mob)) {
                 continue;
             }
@@ -383,7 +383,7 @@ public class SquadSpell extends Spell {
 
             MobUtil.summonTame(mob, player);
 
-            mob.finalizeSpawn(blockLevel, blockLevel.getCurrentDifficultyAt(BlockPos.containing(spawnPos)),
+            mob.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(BlockPos.containing(spawnPos)),
                     MobSpawnType.MOB_SUMMONED, null, null);
 
             java.util.UUID newUUID = mob.getUUID();
@@ -397,7 +397,7 @@ public class SquadSpell extends Spell {
 
             mob.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
 
-            if (blockLevel.addFreshEntity(mob)) {
+            if (worldIn.addFreshEntity(mob)) {
                 if (mob instanceof IOwned owned) {
                     owned.setTrueOwner(player);
                     owned.setHasLifespan(true);

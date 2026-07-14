@@ -208,7 +208,10 @@ public class SquadFocus extends MagicFocus {
             if (!level.isClientSide) {
                 if (isBound(stack)) {
                     clearBinding(stack);
-                    player.displayClientMessage(Component.translatable("info.goetymech.squad_focus.unbound"), true);
+                    player.displayClientMessage(Component.translatable(
+                            BOUND_TYPE_MONUMENT.equals(getBoundType(stack))
+                                    ? "info.goetymech.squad_focus.unbound_monument"
+                                    : "info.goetymech.squad_focus.unbound"), true);
                 }
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
@@ -231,11 +234,14 @@ public class SquadFocus extends MagicFocus {
 
             if (isMonument) {
                 int capacity = stack.getTag().getInt(TAG_MONUMENT_CAPACITY);
+                double monumentDiscount = tier == 1 ? 1.0 : tier == 2 ? ModConfig.SQUAD_TIER2_DISCOUNT.get() : ModConfig.SQUAD_TIER3_DISCOUNT.get();
+                int monumentCost = ModConfig.MONUMENT_SOUL_COST.get();
+                int estimatedMonumentCost = (int) (count * monumentCost * monumentDiscount);
                 tooltip.add(Component.translatable("info.goetymech.squad_focus.bound_success_monument")
                         .withStyle(ChatFormatting.GREEN));
                 tooltip.add(Component.translatable("info.goetymech.squad_focus.squad_info_monument", count, capacity, tier)
                         .withStyle(ChatFormatting.GRAY));
-                tooltip.add(Component.translatable("info.goetymech.squad_focus.estimated_cost", 0)
+                tooltip.add(Component.translatable("info.goetymech.squad_focus.estimated_cost", estimatedMonumentCost)
                         .withStyle(ChatFormatting.AQUA));
             } else {
                 double discount = tier == 1 ? 1.0 : tier == 2 ? ModConfig.SQUAD_TIER2_DISCOUNT.get() : ModConfig.SQUAD_TIER3_DISCOUNT.get();
