@@ -1,0 +1,16 @@
+{
+  "name": "幽匿束缚聚晶",
+  "icon": "goetymech:sculk_bind_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "使用荆棘束缚目标，随后在其身边强行召唤出愤怒的监守者。$(br)消耗极低，连空中的目标亦可束缚。$(br)但当监守者消灭目标后，同样会对施法者紧追不舍。$(br)$(4)\"只要你能从监守者手里逃掉，那它就是你最好的打手！\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:sculk_bind_focus"
+    }
+  ]
+}
