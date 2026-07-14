@@ -111,6 +111,36 @@ public class SoulMonumentEvents {
     }
 
     @SubscribeEvent
+    public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        if (level.isClientSide) return;
+        if (!player.isShiftKeyDown()) return;
+        if (!player.getMainHandItem().isEmpty()) return;
+
+        var blockEntity = level.getBlockEntity(event.getPos());
+        if (!(blockEntity instanceof SoulMonumentBlockEntity monument)) return;
+        if (!monument.isOwner(player)) return;
+
+        event.setCanceled(true);
+
+        int result = monument.handleClearClick(level.getGameTime());
+        if (result == -1) {
+            player.displayClientMessage(
+                    net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.clear_too_fast"), true);
+        } else if (result == 0) {
+            player.displayClientMessage(
+                    net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.clear_done"), true);
+        } else if (result == 1) {
+            player.displayClientMessage(
+                    net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.clear_step1"), true);
+        } else if (result == 2) {
+            player.displayClientMessage(
+                    net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.clear_step2"), true);
+        }
+    }
+
+    @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
         Level level = event.getLevel();

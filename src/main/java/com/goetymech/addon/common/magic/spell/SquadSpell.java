@@ -426,11 +426,6 @@ public class SquadSpell extends Spell {
         focus.getOrCreateTag().putInt("goetymech.cached_tier", monument.getTier());
         focus.getTag().putInt("goetymech.monument_used", monument.getUsedSlots());
 
-        int cd = (int) (ModConfig.MONUMENT_SUMMON_COOLDOWN.get());
-        GoetyMechMod.LOGGER.debug("handleMonumentSummon: spawned={} applying {}t cooldown", spawned, cd);
-        if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), cd);
-        }
         this.playSound(worldIn, player, SoundEvents.EVOKER_CAST_SPELL);
     }
 

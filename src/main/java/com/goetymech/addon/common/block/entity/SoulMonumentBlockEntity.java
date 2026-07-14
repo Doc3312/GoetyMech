@@ -45,6 +45,8 @@ public class SoulMonumentBlockEntity extends BlockEntity {
     public static final int RECORDING_DURATION = 6000;
     public static final int DETECTION_RANGE = 10;
 
+    public static final int CLEAR_CLICKS_REQUIRED = 3;
+
     private final List<UUID> savedEntityUUIDs = new ArrayList<>();
     private final List<String> savedEntityNames = new ArrayList<>();
     private int maxCapacity;
@@ -53,6 +55,9 @@ public class SoulMonumentBlockEntity extends BlockEntity {
     private boolean recording = false;
     private int recordingTimer = 0;
     @Nullable private UUID taggedEntityUUID = null;
+
+    private int clearClickCount = 0;
+    private long lastClearClickTime = 0;
 
     public SoulMonumentBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.SOUL_MONUMENT_ENTITY.get(), pos, state);
@@ -212,6 +217,26 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         savedEntityUUIDs.clear();
         savedEntityNames.clear();
         markUpdated();
+    }
+
+    private static final int CLEAR_COOLDOWN_TICKS = 20;
+    private static final int CLEAR_TIMEOUT_TICKS = 100;
+
+    public int handleClearClick(long gameTime) {
+        if (gameTime - lastClearClickTime > CLEAR_TIMEOUT_TICKS) {
+            clearClickCount = 0;
+        }
+        if (gameTime - lastClearClickTime < CLEAR_COOLDOWN_TICKS) {
+            return -1;
+        }
+        lastClearClickTime = gameTime;
+        clearClickCount++;
+        if (clearClickCount >= CLEAR_CLICKS_REQUIRED) {
+            clearAllData();
+            clearClickCount = 0;
+            return 0;
+        }
+        return clearClickCount;
     }
 
     @Override
