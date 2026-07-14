@@ -1,0 +1,12 @@
+{
+  "name": "Twisted Embryo",
+  "icon": "goetymech:twisted_embryo",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A product born from the $(l:goetymech_machines/breeding_nest)Breeding Nest$(/l) — twisted flesh fused with dark magic.$(br)With negligible soul cost, it can be transformed into loyal new Illager servants; if soul energy is insufficient, it can be forcibly converted at half health.$(br)Alternatively, place it into the $(l:goetymech_machines/flesh_furnace)Flesh Furnace$(/l) to convert it into a more powerful warrior.$(br)But note: servants converted from Twisted Embryos cannot learn magic.$(br)$(4)\"We have taken the first step — the foundation of the legion is established.\"$()"
+    }
+  ]
+}
