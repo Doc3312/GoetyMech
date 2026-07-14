@@ -1,0 +1,20 @@
+{
+  "name": "Flesh Furnace",
+  "icon": "goetymech:flesh_furnace",
+  "category": "goety:goetymech_machines",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "After obtaining Twisted Embryos, you began exploring ways to convert them into combat power more efficiently.$(br)Eventually, you found inspiration in the traditional training methods of the illagers, and through dark magic, you established a connection between this furnace and an Ominous Pyre."
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:flesh_furnace"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Once placed, the furnace will automatically bind to any Ominous Pyre within 8 blocks. After binding, Twisted Embryos can be input through hoppers.$(br)After a period of cooking, the embryo will transform into a Mature Embryo matching the entity type set on the bound Pyre.$(br)Spend a bit of soul energy to convert the embryo into your soldier.$(br)Used together with the Squad Barracks and Squad Focus, you can organize an army more efficiently.$(br)$(4)\"Twisted flesh creations... I can vaguely sense that these remains hold deeper secrets waiting to be explored, but that has strayed beyond the realm of magic.\"$()"
+    }
+  ]
+}
