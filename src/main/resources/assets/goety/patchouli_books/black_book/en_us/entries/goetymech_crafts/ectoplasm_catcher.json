@@ -1,0 +1,16 @@
+{
+  "name": "Ectoplasm Catcher",
+  "icon": "goetymech:ectoplasm_catcher",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upgraded from the most primitive of totems, this crude yet powerful accessory exists to satisfy a novice's craving for ectoplasm.$(br)While worn, any soul energy you gain will be converted into ectoplasm — 100 soul energy per ectoplasm.$(br)$(4)\"I feel like I've seen something like this in the hands of a certain little white bug...\"$()"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "goetymech:ectoplasm_catcher"
+    }
+  ]
+}

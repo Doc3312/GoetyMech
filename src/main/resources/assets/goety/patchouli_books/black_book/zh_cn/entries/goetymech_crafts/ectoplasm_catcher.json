@@ -1,0 +1,16 @@
+{
+  "name": "灵质捕手",
+  "icon": "goetymech:ectoplasm_catcher",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "由最原始的图腾升级而来，一个粗糙而又强大的饰品，为了满足初学者渴求灵质的欲望而存。$(br)佩戴后获得的灵魂将被转化成灵质，每100灵魂可转化为一份灵质。$(br)$(4)\"我似乎曾在某个白色小虫的手里见过类似的东西。\"$()"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "goetymech:ectoplasm_catcher"
+    }
+  ]
+}
