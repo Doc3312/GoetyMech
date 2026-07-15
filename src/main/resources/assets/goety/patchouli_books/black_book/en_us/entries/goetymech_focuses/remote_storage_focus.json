@@ -2,7 +2,7 @@
   "name": "Remote Storage Focus",
   "icon": "goetymech:remote_storage_focus",
   "category": "goety:goetymech_focuses",
-  "sortnum": 5,
+  "sortnum": 4,
   "pages": [
     {
       "type": "patchouli:text",

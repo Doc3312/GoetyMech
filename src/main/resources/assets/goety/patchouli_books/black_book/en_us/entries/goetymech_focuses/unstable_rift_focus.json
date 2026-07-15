@@ -2,7 +2,7 @@
   "name": "Unstable Rift Focus",
   "icon": "goetymech:unstable_rift_focus",
   "category": "goety:goetymech_focuses",
-  "sortnum": 4,
+  "sortnum": 5,
   "pages": [
     {
       "type": "patchouli:text",
