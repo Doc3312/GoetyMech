@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Used to configure your calamity army. Must be used together with the $(l:goetymech_focuses/squad_focus)Squad Focus$(/l).$(br)The Squad Barracks has three tiers. Tier 1 and 2 can only be used within the same dimension; Tier 3 can be used across dimensions.$(br)Each soldier configured through the Squad Barracks consumes 100 soul energy when summoned — the more you configure, the more it costs.$(br)Tier 2 Squad Barracks consumes only 80 percent soul energy, and Tier 3 only 50 percent.$(br)The left side of the interface is for formation configuration, the right side is for storing $(l:goetymech_crafts/mature_embryo)embryos$(/l) — each summon consumes a Mature Embryo.$(br)Embryos can be inserted into the Squad Barracks through hoppers.$(br)$(4)\"Reasonable unit planning is far more important than quantity.\"$()"
+      "text": "Used to configure your calamity army. Must be used together with the $(l:goetymech_focuses/squad_focus)Squad Focus$(/l).$(br)The Squad Barracks has three tiers. Tier 1 and 2 can only be used within the same dimension; Tier 3 can be used across dimensions.$(br)Each soldier configured through the Squad Barracks consumes 100 soul energy when summoned — the more you configure, the more it costs.$(br)Tier 2 Squad Barracks consumes only 80%% soul energy, and Tier 3 only 50%%.$(br)The left side of the interface is for formation configuration, the right side is for storing $(l:goetymech_crafts/mature_embryo)embryos$(/l) — each summon consumes a Mature Embryo.$(br)Embryos can be inserted into the Squad Barracks through hoppers.$(br)$(4)\"Reasonable unit planning is far more important than quantity.\"$()"
     },
     {
       "type": "goety:ritual",

@@ -87,7 +87,7 @@ node .opencode/scripts/encoding-check.mjs
 2. `JSON.parse()` 通过
 3. 所有 key 在 `en_us.json` 中有对应翻译值且非空
 
-**IF Patchouli 条目文本包含 `%` 字符 THEN 必须替换为 `percent`（英文）或 `百分之`（中文），否则 Minecraft 的 String.format() 会将其解析为格式符并显示 "Format error"。**
+**IF Patchouli 条目文本包含 `%` 字符 THEN 必须替换为 `%%`（Java String.format 的转义序列），否则 Minecraft 的 I18n.get() → String.format() 会将其解析为格式符并显示 "Format error"。**
 
 **修复损坏文件的标准方法：**
 ```bash
