@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Converts total stress of the bound network into a shield that absorbs damage. When the shield breaks, it deals small-area knockback damage. If no damage is taken for 5 seconds, the shield gradually recovers 20% of its max capacity per second. Every 5000 points of stress grants 1 shield point."
+      "text": "Converts total stress of the bound network into a shield that absorbs damage. When the shield breaks, it deals small-area knockback damage. If no damage is taken for 5 seconds, the shield gradually recovers 20  of its max capacity per second. Every 5000 points of stress grants 1 shield point."
     }
   ]
 }
