@@ -165,3 +165,9 @@ Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储
 - 移除 `FleshCasketEvents` 中旧的实体打补丁代码（`CastSpellTrap.setActivated(true)` + `broadcastEntityEvent`）及其 import
 - 日志确认 Mixin 在崩溃前正常工作了 4 tick，证明 Mixin 方案有效
 
+- **2026-07-16** — 配方 craftType 改为 mechanical + Patchouli 条目创建
+  - `flesh_casket_1.json`：craftType forge → mechanical（机械仪式）
+  - Patchouli 条目（goetymech_focuses sortnum 11，3页：lore + 三阶触发条件 + 仪式配方）
+  - extra_recipe_mappings：flesh_casket_2/3 → 第2页
+  - 关联：20260716.patchouli-percent-format-error（20%% 正确转义）
+

@@ -25,3 +25,7 @@
   - 原因：`TAG_SKIP_SOULS` 在非 RaiderServant 仆从击杀时泄漏（Goety 条件不满足时不发 Gain 事件），导致脱下捕手后灵魂获取被静默取消
   - 修复：不再依赖持久化标记，每次 `ChangeSoulEnergyEvent.Gain` 触发时实时查捕手装备状态
   - 关联 issue：用户报告仆从击杀仍产生灵质效果
+
+- **2026-07-16** — Patchouli 条目创建
+  - 新建 goetymech_crafts sortnum 2 条目，2页（正文+合成配方）
+  - 配方为 minecraft:crafting_shaped，使用 patchouli:crafting 页面类型
