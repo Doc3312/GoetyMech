@@ -7,5 +7,5 @@
 | 2026-07-15 | 修复：onPlayerTick 从"检查存活"改为"全量重扫 IOwned"，新召唤仆从自动纳入链接。 |
 | 2026-07-15 | 锁链渲染迭代：uniform 红→prisoner_chain 图案→链环纹理→方尖碑 8×8 链。最终方案：entityCutoutNoCull + 8×8 红链纹理 + 原始 UV（U=长度,V=宽度）。 |
 | 2026-07-15 | **功能冻结归档** |
-| | 关联 openspec：soul-dominion |
+| 2026-07-15 | 删除 3 条状态栏提示（already_active / activated / all_servants_dead），静默返回。中英文 lang key 和对应代码一并清理。 |
 | | 关联 incidents：`_craft/20260715.soul-dominion-chain-rendering.md` |
