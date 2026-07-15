@@ -88,12 +88,12 @@ public class StressArkHUD {
         if (cap > 0) {
             // 2. 绿色底条（始终全满）
             gui.blit(ENGINE_TEXTURE,
-                    barX + 9, barY + 2, 0, 21, 117, 5, 128, 90);
+                    barX + 9, barY + 2, 9, 21, 117, 5, 128, 90);
 
             // 3. 红色覆盖条（按 used/cap 比例）
             int redWidth = (int) (117 * Math.min(1.0f, used / cap));
             gui.blit(ENGINE_TEXTURE,
-                    barX + 9, barY + 2, 0, 29, redWidth, 5, 128, 90);
+                    barX + 9, barY + 2, 9, 29, redWidth, 5, 128, 90);
         }
 
         // 文字水平居中
