@@ -1,6 +1,6 @@
 {
   "type": "goety:ritual",
-  "ritual_type": "goetymech:upgrade_monument",
+  "ritual_type": "goetymech:upgrade",
   "activation_item": {
     "item": "goetymech:tier1_soul_monument"
   },

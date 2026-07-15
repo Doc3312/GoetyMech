@@ -1,6 +1,6 @@
 {
   "type": "goety:ritual",
-  "ritual_type": "goetymech:upgrade_casket",
+  "ritual_type": "goetymech:upgrade",
   "activation_item": {
     "item": "goetymech:flesh_casket_2"
   },

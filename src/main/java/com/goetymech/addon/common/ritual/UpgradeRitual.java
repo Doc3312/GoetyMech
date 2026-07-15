@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 
-public class UpgradeMonumentRitual extends Ritual {
-    public UpgradeMonumentRitual(RitualRecipe recipe) {
+public class UpgradeRitual extends Ritual {
+    public UpgradeRitual(RitualRecipe recipe) {
         super(recipe);
     }
 
