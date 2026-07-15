@@ -1,0 +1,16 @@
+{
+  "name": "追猎聚晶",
+  "icon": "goetymech:chase_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "诞生于虚空，仿照末影人的传送方式制作出的聚晶。$(br)将准星对准目标施法，即可锁定目标。$(br)锁定后10秒内按shift即可传送至目标身后，传送后10秒内按shift即可再次传送至目标身后，默认最多传送五次。$(br)$(4)\"一旦盯上猎物，就要咬死不放，但注意，猎人与猎物的关系随时可能反转。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:chase_focus"
+    }
+  ]
+}

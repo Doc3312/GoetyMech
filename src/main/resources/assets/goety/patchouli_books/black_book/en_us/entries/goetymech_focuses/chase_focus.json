@@ -1,0 +1,16 @@
+{
+  "name": "Chase Focus",
+  "icon": "goetymech:chase_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A focus born from the Void, crafted to mimic the Enderman's teleportation ability.$(br)Aim your crosshair at a target and cast to lock on.$(br)Within 10 seconds of locking on, press shift to teleport behind the target. After teleporting, you have another 10 seconds to shift-teleport again — up to five consecutive teleports by default.$(br)$(4)\"Once you've locked onto your prey, never let go — but remember, the roles of hunter and hunted can reverse at any moment.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:chase_focus"
+    }
+  ]
+}
