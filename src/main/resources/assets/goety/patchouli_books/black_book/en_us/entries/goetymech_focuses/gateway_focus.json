@@ -1,0 +1,16 @@
+{
+  "name": "Gateway Focus",
+  "icon": "goetymech:gateway_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A focus brimming with spatial energy, capable of teleporting the caster to a designated location.$(br)When casting with a Structure Eye or a map containing coordinates (such as a treasure map, woodland mansion map, etc.) in the off-hand, the caster will be teleported to the vicinity of the corresponding structure.$(br)Note: the Gateway Focus can only search for structures within the same dimension.$(br)$(4)\"Tired of wasting precious time traveling on every expedition? Give this a try.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:gateway_focus"
+    }
+  ]
+}

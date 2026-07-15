@@ -1,0 +1,16 @@
+{
+  "name": "定点聚晶",
+  "icon": "goetymech:gateway_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "凝聚着空间波动的聚晶，可将施法者传送到某个指定位置。$(br)当副手持有结构之眼或某个蕴含坐标的地图（如藏宝图、林地府邸地图等）时施法，即可将施法者传送至对应结构附近。$(br)注意，定点聚晶仅能搜索同一维度的结构。$(br)$(4)\"受够了每次探险都要浪费大量时间赶路吗？试试这个吧。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:gateway_focus"
+    }
+  ]
+}
