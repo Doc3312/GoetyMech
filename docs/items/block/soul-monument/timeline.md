@@ -37,4 +37,17 @@
   - 新增：召唤/死亡 Goety 风格特效（`ScaledGodRayParticle` + `SOUL` 爆发 + `WITHER_DEATH`）
   - 新增：仆从默认跟随模式 + 攻击目标重定向
   - 关联 openspec：`monument-summon-improvements`
-  - 关联 incidents：`_craft.20260714.squad-monument-architecture.md`
+   - 关联 incidents：`_craft.20260714.squad-monument-architecture.md`
+
+- **2026-07-16** — 配方重做：机械仪式 + 新材料
+  - 修改：一阶合成配方（`soul_monument_1.json`）
+    - 激活物：暗影墓碑（`goety:shade_gravestone`）
+    - 材料：黑暗金属锭×2, 指路石, 军团聚晶, 不洁之血, 灵质, 奥术方匣
+  - 修改：二阶升级配方（`soul_monument_1_to_2.json`）
+    - 材料：不洁之血, 神秘核心, 灵魂红宝石, 不祥核心, 奥术方匣
+  - 修改：三阶升级配方（`soul_monument_2_to_3.json`）
+    - 材料：暗夜信标, 贤者之石, 奥术方匣, 下界合金锭×2, 禁书碎片
+  - 统一：所有配方 `craftType` → `mechanical`（机械仪式）
+  - 统一：献祭村民不变，`ritual_type` 不变
+  - 灵魂消耗：一阶 3000/6s, 二阶 4000/8s, 三阶 5000/10s（500/s）
+  - Patchouli 条目未调整（配方页自动跟随 JSON）
