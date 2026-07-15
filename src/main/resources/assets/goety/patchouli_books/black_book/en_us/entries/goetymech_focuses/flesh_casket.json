@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Spellcasting requires preparation — most foci need time to cast, but unexpected situations leave no room for that, filling you with deep anxiety.$(br)Fortunately, these records of flesh magic and machinery gave you an idea: why not embed foci directly into the body? And so the Flesh Casket was born.$(br)Foci placed inside a Casket will auto-cast when the wearer takes damage, and do not share cooldowns with other foci of the same type."
+      "text": "Spellcasting takes time in most cases, but on adventures you'll always encounter emergencies where there's no time to cast, filling you with deep anxiety.$(br)Fortunately, these records of flesh magic and machinery gave you an idea: why not embed foci directly into the body? And so the Flesh Casket was born.$(br)Foci placed inside a Casket will auto-cast when the wearer takes damage, and do not share cooldowns with other foci of the same type."
     },
     {
       "type": "patchouli:text",
