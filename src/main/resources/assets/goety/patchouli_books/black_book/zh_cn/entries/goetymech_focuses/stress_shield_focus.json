@@ -1,12 +1,16 @@
 {
   "name": "应力护盾聚晶",
-  "icon": "goety:empty_focus",
+  "icon": "goetymech:stress_shield_focus",
   "category": "goety:goetymech_focuses",
   "sortnum": 3,
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "将网络中的总应力转化为可抵挡伤害的护盾，护盾破裂后会造成小范围的击退伤害。若5秒未受到伤害，护盾会逐渐恢复，每秒恢复护盾总量的20 ，每5000点应力可转化为1点护盾值。"
+      "text": "将网络中的总应力转化为可抵挡伤害的护盾，护盾破裂后会造成小范围的击退伤害。$(br)若5秒未受到伤害，护盾会逐渐恢复，每秒恢复护盾总量的百分之二十，每5000点应力可转化为1点护盾值。$(br)默认需手持聚晶右键$(l:goetymech_machines/stress_reader)应力读取器$(/l)进行网络绑定，蹲下右键解绑；若存在$(l:goetymech_machines/stress_ark)应力方舟$(/l)则无需手动绑定。$(br)$(4)\"应力越多，就越安全。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:stress_shield_focus"
     }
   ]
 }
