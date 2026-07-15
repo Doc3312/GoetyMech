@@ -68,6 +68,10 @@ node -e "fs.writeFileSync('f', fs.readFileSync('f','utf8').replace(/x/g,'y'), 'u
 # git show cb142cd:file | Set-Content file -Encoding UTF8
 # git show cb142cd:file > file
 # (Get-Content file) -replace 'x','y' | Set-Content file
+
+# ❌ 禁止 — node -e 内联代码中包含 Patchouli $(br)/$(4)/$(l:...) 语法时，
+#     PowerShell 会将其解析为子表达式并吃掉 $() 内容，导致文件损坏
+# node -e "fs.writeFileSync('f', JSON.stringify({text:'$(br)test'}))"
 ```
 
 **IF 修改了含中文的文件（`.java` / `.json` / `.properties` / `.toml` / `.cfg`）THEN 提交前必须先执行编码 roundtrip 校验：**
