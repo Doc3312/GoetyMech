@@ -4,7 +4,7 @@
   "activation_item": {
     "item": "goety:dark_wand"
   },
-  "craftType": "forge",
+  "craftType": "mechanical",
   "entity_to_sacrifice": {
     "tag": "goety:villagers",
     "display_name": "entity.minecraft.villager"
