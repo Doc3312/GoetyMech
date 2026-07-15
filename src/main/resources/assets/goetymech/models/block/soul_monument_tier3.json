@@ -145,8 +145,7 @@
                         16,
                         16
                     ],
-                    "texture": "#1",
-                    "cullface": "down"
+                    "texture": "#1"
                 }
             }
         },
@@ -215,8 +214,7 @@
                         16,
                         16
                     ],
-                    "texture": "#1",
-                    "cullface": "down"
+                    "texture": "#1"
                 }
             }
         },
@@ -285,8 +283,7 @@
                         16,
                         16
                     ],
-                    "texture": "#1",
-                    "cullface": "down"
+                    "texture": "#1"
                 }
             }
         },
@@ -355,8 +352,7 @@
                         16,
                         16
                     ],
-                    "texture": "#2",
-                    "cullface": "down"
+                    "texture": "#2"
                 }
             }
         },
@@ -425,8 +421,7 @@
                         16,
                         16
                     ],
-                    "texture": "#4",
-                    "cullface": "down"
+                    "texture": "#4"
                 }
             }
         },
@@ -495,8 +490,7 @@
                         16,
                         16
                     ],
-                    "texture": "#3",
-                    "cullface": "down"
+                    "texture": "#3"
                 }
             }
         },
@@ -565,8 +559,7 @@
                         16,
                         16
                     ],
-                    "texture": "#4",
-                    "cullface": "down"
+                    "texture": "#4"
                 }
             }
         },
@@ -923,9 +916,9 @@
                 0
             ],
             "scale": [
-                0.625,
-                0.625,
-                0.625
+                0.35,
+                0.35,
+                0.35
             ]
         },
         "ground": {
