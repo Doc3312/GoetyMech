@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Converts total stress of the bound network into a shield that absorbs damage. When the shield breaks, it deals small-area knockback damage.$(br)If no damage is taken for 5 seconds, the shield gradually recovers 20% of its max capacity per second. Every 5000 points of stress grants 1 shield point.$(br)Right-click a $(l:goetymech_machines/stress_reader)Stress Reader$(/l) to bind; sneak + right-click to unbind. If a $(l:goetymech_machines/stress_ark)Stress Ark$(/l) exists, manual binding is not required.$(br)$(4)“The more stress, the safer you are.”$()"
+      "text": "Converts total stress of the bound network into a shield that absorbs damage. When the shield breaks, it deals small-area knockback damage.$(br)If no damage is taken for 5 seconds, the shield gradually recovers 20% of its max capacity per second. Every 5000 points of stress grants 1 shield point.$(br)Right-click a $(l:goetymech_machines/stress_reader)Stress Reader$(/l) to bind; sneak + right-click to unbind. If a $(l:goetymech_machines/stress_ark)Stress Ark$(/l) exists, manual binding is not required.$(br)$(4)\"The more stress, the safer you are.\"$()"
     },
     {
       "type": "goety:ritual",
