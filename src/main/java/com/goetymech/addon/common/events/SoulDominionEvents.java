@@ -4,7 +4,7 @@ import com.Polarice3.Goety.api.entities.IOwned;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.capabilities.ISoulDominion;
 import com.goetymech.addon.common.utils.SoulDominionHelper;
-import net.minecraft.network.chat.Component;
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
@@ -96,9 +96,7 @@ public class SoulDominionEvents {
             if (currentServants.isEmpty()) {
                 dom.clear();
                 SoulDominionHelper.sendSyncPacket(player);
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.soul_dominion.all_servants_dead"),
-                        true);
+
                 return;
             }
 

@@ -86,12 +86,7 @@ public class SoulDominionSpell extends Spell {
         ISoulDominion dom = SoulDominionHelper.getDominion(player);
         if (dom == null) return;
 
-        if (dom.isActive()) {
-            player.displayClientMessage(
-                    Component.translatable("info.goetymech.soul_dominion.already_active")
-                            .withStyle(ChatFormatting.RED), true);
-            return;
-        }
+        if (dom.isActive()) return;
 
         int durationSec = ModConfig.SOUL_DOMINION_BASE_DURATION.get();
         int range = ModConfig.SOUL_DOMINION_BASE_RANGE.get();
@@ -140,10 +135,6 @@ public class SoulDominionSpell extends Spell {
             if (cost > 0) SEHelper.decreaseSouls(player, cost);
         }
 
-        player.displayClientMessage(
-                Component.translatable("info.goetymech.soul_dominion.activated",
-                                servants.size(), durationSec)
-                        .withStyle(ChatFormatting.DARK_PURPLE), true);
 
         this.playSound(worldIn, caster, this.CastingSound());
     }

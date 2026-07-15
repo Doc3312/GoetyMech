@@ -173,9 +173,6 @@
   "jei.goety.craftType.mechanical": "Mechanical",
   "item.goetymech.soul_dominion_focus": "Focus of Soul Dominion",
   "spell.goety.soul_dominion": "§5Soul Dominion§5",
-  "info.goetymech.soul_dominion.already_active": "§5Soul Dominion is already active!",
   "info.goetymech.soul_dominion.no_servants": "§cNo servants in range!",
-  "info.goetymech.soul_dominion.activated": "§5Soul Dominion active! Linked to %s servants for %s seconds.",
-  "info.goetymech.soul_dominion.all_servants_dead": "§cAll linked servants have fallen! Soul Dominion ends.",
   "info.goetymech.soul_dominion.shift_info": "Links to all owned servants within range, transferring all incoming damage to them."
 }

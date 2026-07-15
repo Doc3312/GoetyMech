@@ -173,9 +173,6 @@
   "jei.goety.craftType.mechanical": "机械",
   "item.goetymech.soul_dominion_focus": "灵魂统御聚晶",
   "spell.goety.soul_dominion": "§5灵魂统御§5",
-  "info.goetymech.soul_dominion.already_active": "§5灵魂统御已激活！",
   "info.goetymech.soul_dominion.no_servants": "§c范围内没有仆从！",
-  "info.goetymech.soul_dominion.activated": "§5灵魂统御已激活！已链接 %s 个仆从，持续 %s 秒。",
-  "info.goetymech.soul_dominion.all_servants_dead": "§c所有链接仆从已阵亡！灵魂统御结束。",
   "info.goetymech.soul_dominion.shift_info": "链接范围内所有属于你的仆从，将你受到的所有伤害转移给它们。"
 }
