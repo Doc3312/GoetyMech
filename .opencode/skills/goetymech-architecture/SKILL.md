@@ -7,7 +7,7 @@ description: "package / convention / register"
 
 # GoetyMech 项目架构规范
 
-> ⚠ 本技能最后更新于 2026-06。部分包结构和注册模式可能与当前代码存在偏差。
+> ⚠ 本技能最后更新于 2026-07（ritual 架构重构）。部分包结构和注册模式可能与当前代码存在偏差。
 > 前置模组源码路径见 `.opencode/skills/_shared/libcode-paths.md`。
 > 快速排除：当前任务如果不涉及新建类、决定包路径、理解注册模式或评估架构设计，请跳过本 skill。
 
@@ -45,8 +45,14 @@ com.GoetyMech.addon/
 │   ├── ModItems.java              # 物品 + Focus
 │   ├── ModEntities.java           # 实体类型
 │   ├── ModCreativeTab.java        # 创造标签页
+│   ├── ModRituals.java            # ritual_type 注册（逻辑层）
+│   ├── ModRitualTypes.java        # craftType 注册（结构层）
 │   └── ModTags.java               # 自定义标签
 ├── common/                        # 逻辑层
+│   ├── ritual/
+│   │   ├── UpgradeRitual.java     # NBT 保留升级仪式
+│   │   └── type/
+│   │       └── MechanicalRitualType.java  # 机械类 craftType 结构要求
 │   ├── item/
 │   │   ├── SculkBindFocus.java
 │   │   ├── TwistedEmbryoItem.java
@@ -274,6 +280,60 @@ public abstract class PrototypeStepHeightMixin {
 - Mixin 注册在 `mixins` 数组（服务端+客户端），因为 `maxUpStep()` 在两侧都使用
 - `PrototypeItem.hasAnyPrototype()` 检查胸甲格 + Curios 槽，纳入热路径性能可接受
 - 若其他模组同时注入 `maxUpStep()`，按 Mixin 优先级执行；`cancellable=true` 保证不被覆盖
+
+---
+
+---
+
+### 4.8 仪式系统架构（ritual_type vs craftType）
+
+#### 4.8.1 两个正交维度
+
+| 维度 | 字段 | 注册 | 控制什么 | 示例 |
+|------|------|------|---------|------|
+| **逻辑层** | `ritual_type` | `ModRituals.java` → `DeferredRegister<ModRitualFactory>` | `finish()` 产出逻辑 | `goety:craft`（标准）、`goetymech:upgrade`（保留 NBT） |
+| **结构层** | `craftType` | `ModRitualTypes.java` → `RitualType.addRitualType()` | 祭坛周围方块要求 | `forge`、`magic`、`mechanical`（需要 Create 机械） |
+
+**关键规则：不需要为每个 `craftType` 都注册一个对应的 `ritual_type`。** 标准 `goety:craft` 可用于任意 `craftType`。
+
+#### 4.8.2 何时需要自定义 `ritual_type`
+
+- **需要保留激活物品 NBT** — 如升级类仪式（`UpgradeRitual`）
+- **需要特殊产出逻辑** — 如判断条件、多物品合成
+- 否则直接用 `ritual_type: "goety:craft"`
+
+#### 4.8.3 当前注册（2026-07 重构后）
+
+```java
+// ModRituals.java — 仅 1 个自定义 ritual_type
+RITUALS.register("upgrade", () -> new ModRitualFactory(UpgradeRitual::new));
+```
+
+```java
+// ModRitualTypes.java — 2 个自定义 craftType
+RitualType.addRitualType("mechanical", new MechanicalRitualType());
+RitualType.addRitualType("upgrade", new UpgradeRitualType());
+```
+
+#### 4.8.4 配方 JSON 对应关系
+
+```json
+{
+  "ritual_type": "goety:craft",       // 标准逻辑（不保留 NBT）
+  "craftType": "mechanical"           // 机械结构要求
+}
+```
+
+```json
+{
+  "ritual_type": "goetymech:upgrade", // 自定义逻辑（保留 NBT）
+  "craftType": "forge"                // 锻造结构要求
+}
+```
+
+#### 4.8.5 重构历史
+
+2026-07-15：`MechanicalRitual` → 删除（等价于 `goety:craft`），`UpgradeCasketRitual` + `UpgradeMonumentRitual` → 合并为 `UpgradeRitual`。详情见 `docs/incidents/_craft/20260715.ritual-consolidation.md`。
 
 ---
 
