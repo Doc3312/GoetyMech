@@ -186,3 +186,12 @@ Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储
 - 已完成功能：三阶独立GUI纹理（flesh_casket_1/2/3.png）、tier-based纹理选择、聚晶槽Y=35
 - 关联 incidents：无（GUI纹理调整属常规开发，无需记录incident）
 
+### 2026-07-17 — 多通道蓄力法术死锁修复 + 幻影法杖生命周期修正
+- 问题：电涌/流星雨完全无效果（castUp=80/60 > maxShots=60，通道在蓄力完成前终止）；撕裂裂隙召唤后消失（ChannelTask.stop 清除共享 PhantomWand → CastSpellTrapMixin 失效）
+- 修复：
+  1. `return castTicks < (maxShots + castUp)` — 通道总时长 = 开火窗口 + 蓄力窗口
+  2. 删除 `ChannelTask.stop()` 中的 `PhantomWandManager.clear(player)` — 不再由单个通道清除共享法杖
+  3. `onServerTick` 中 tasks 清空后 `PhantomWandManager.scheduleClear(uuid, 400)` — 所有通道结束后统一延迟清除
+- 影响：全部 17 个 IChargingSpell 蓄力法术 + 所有 CastSpellTrap 实体（裂隙/陷阱类）
+- 关联 incidents：`flesh-casket/20260717.charging-channel-deadlock.md`
+
