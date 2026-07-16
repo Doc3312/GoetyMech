@@ -1,6 +1,6 @@
 {
   "name": "工艺",
-  "description": "通过魔法与机械的融合所锻造的物品与工具。",
+  "description": "不同道路的碰撞总会诞生些新的东西，它们各自都拥有着奇妙的效果。",
   "icon": "goetymech:remote_engine",
   "sortnum": 11,
   "parent": "goety:goetymech"

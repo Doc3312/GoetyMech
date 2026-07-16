@@ -1,6 +1,6 @@
 {
   "name": "Rituals",
-  "description": "Dark rituals enhanced by mechanical ingenuity.",
+  "description": "To avoid swinging hammers and tuning machines, dark mages began a small experiment of their own — replacing mechanical processing with magic.",
   "icon": "goetymech:stress_ark",
   "sortnum": 10,
   "parent": "goety:goetymech"

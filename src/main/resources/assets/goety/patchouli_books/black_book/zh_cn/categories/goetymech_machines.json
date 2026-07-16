@@ -1,6 +1,6 @@
 {
   "name": "机械",
-  "description": "通过暗黑工程学制作的各种机器与装置。",
+  "description": "流派的核心，机械与魔法的交织产物，也有一些离经叛道的诡异器物，但它们都有一个共同点——高效。",
   "icon": "goetymech:breeding_nest",
   "sortnum": 8,
   "parent": "goety:goetymech"
