@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class CastSpellTrapMixin {
 
     @Redirect(
-        method = "tick",
+        method = "m_8119_",
         at = @At(value = "INVOKE", target = "Lcom/Polarice3/Goety/utils/MobUtil;isSpellCasting(Lnet/minecraft/world/entity/LivingEntity;)Z"),
         remap = false
     )

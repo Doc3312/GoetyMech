@@ -58,7 +58,7 @@ public abstract class MinecraftMixin {
         }
     }
 
-    @Inject(method = "getPartialTick", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "getFrameTime", at = @At("HEAD"), cancellable = true)
     private void gp$getPartialTick(CallbackInfoReturnable<Float> cir) {
         if (TimeStopUtils.isTimeStop && ClientContext.isTimeStop_andSameDimension)
             cir.setReturnValue(timer.partialTick);

@@ -65,7 +65,7 @@ public class StockKeeperRequestScreenMixin {
         }
     }
 
-    @Inject(method = "removed", at = @At("TAIL"), remap = false)
+    @Inject(method = "removed", at = @At("TAIL"))
     private void gp$cleanupRemoteBE(CallbackInfo ci) {
         if (blockEntity != null && blockEntity.getLevel() != null
                 && blockEntity.getLevel().getBlockEntity(blockEntity.getBlockPos()) != blockEntity) {
