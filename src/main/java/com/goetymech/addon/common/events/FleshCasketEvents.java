@@ -268,10 +268,8 @@ public class FleshCasketEvents {
 
         if (anyFired) {
             player.getPersistentData().putLong(TAG_LAST_CAST_TICK, gameTime);
-            int configCd = ModConfig.FLESH_CASKET_COOLDOWN.get();
-            int finalCd = configCd > 0 ? configCd : maxCooldown;
-            player.getCooldowns().addCooldown(casketStack.getItem(), finalCd);
-            FleshCasketItem.setCooldown(casketStack, finalCd);
+            player.getCooldowns().addCooldown(casketStack.getItem(), maxCooldown);
+            FleshCasketItem.setCooldown(casketStack, maxCooldown);
         }
     }
 

@@ -286,9 +286,6 @@ public class ModConfig {
     /** Type C 自动施法触发阈值百分比 */
     public static final ForgeConfigSpec.IntValue FLESH_CASKET_THRESHOLD;
 
-    /** 晶匣自动施法冷却覆盖（tick），0 = 使用法术原始冷却 */
-    public static final ForgeConfigSpec.IntValue FLESH_CASKET_COOLDOWN;
-
     // ====== Soul Dominion Focus 配置 ======
 
     /** 灵魂统御聚晶的灵魂消耗 */
@@ -340,10 +337,6 @@ public class ModConfig {
         FLESH_CASKET_THRESHOLD = BUILDER
                 .comment("Type C 血肉晶匣自动施法触发阈值（百分比）", "玩家血量低于此百分比时触发", "范围: 1-100，默认 20")
                 .defineInRange("threshold", 20, 1, 100);
-
-        FLESH_CASKET_COOLDOWN = BUILDER
-                .comment("晶匣自动施法冷却覆盖（tick）", "设为 0 则使用晶匣内法术的原始冷却", "范围: 0-1200，默认 60（3秒）")
-                .defineInRange("cooldown_override", 60, 0, 1200);
 
         BUILDER.pop();
 
