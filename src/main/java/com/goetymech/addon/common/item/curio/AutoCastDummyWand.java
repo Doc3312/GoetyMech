@@ -23,8 +23,7 @@ public class AutoCastDummyWand extends Item implements IWand {
     private final List<SpellType> spellTypes;
 
     public AutoCastDummyWand() {
-        this(SpellType.VOID, SpellType.NONE, SpellType.NECROMANCY,
-                SpellType.ILL, SpellType.GEOMANCY, SpellType.WIND);
+        this(SpellType.VOID, SpellType.values());
     }
 
     public AutoCastDummyWand(SpellType primary, SpellType... additional) {

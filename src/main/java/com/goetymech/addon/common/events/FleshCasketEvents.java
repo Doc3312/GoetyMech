@@ -1,8 +1,10 @@
 package com.goetymech.addon.common.events;
 
 import com.Polarice3.Goety.api.items.magic.IFocus;
+import com.Polarice3.Goety.api.magic.IBlockSpell;
 import com.Polarice3.Goety.api.magic.IChargingSpell;
 import com.Polarice3.Goety.api.magic.ISpell;
+import com.Polarice3.Goety.api.magic.ITouchSpell;
 import com.Polarice3.Goety.common.entities.projectiles.AbstractBeam;
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.common.magic.SpellStat;
@@ -17,7 +19,9 @@ import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModItems;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -35,7 +39,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FleshCasketEvents {
     private static final String TAG_LAST_CAST_TICK = "goetymech.flesh_casket_last_cast";
 
-    private static final Map<UUID, ChannelTask> ACTIVE_CHANNELS = new ConcurrentHashMap<>();
+    private static final Map<UUID, List<ChannelTask>> ACTIVE_CHANNELS = new ConcurrentHashMap<>();
+
+    private static boolean hasActiveChannels(UUID uuid) {
+        List<ChannelTask> tasks = ACTIVE_CHANNELS.get(uuid);
+        return tasks != null && !tasks.isEmpty();
+    }
 
     private static class ChannelTask {
         final ServerPlayer player;
@@ -111,12 +120,15 @@ public class FleshCasketEvents {
         if (event.phase != TickEvent.Phase.END) return;
         PhantomWandManager.tick();
         ACTIVE_CHANNELS.entrySet().removeIf(entry -> {
-            ChannelTask task = entry.getValue();
-            if (!task.tick()) {
-                task.stop();
-                return true;
-            }
-            return false;
+            List<ChannelTask> tasks = entry.getValue();
+            tasks.removeIf(task -> {
+                if (!task.tick()) {
+                    task.stop();
+                    return true;
+                }
+                return false;
+            });
+            return tasks.isEmpty();
         });
     }
 
@@ -160,7 +172,6 @@ public class FleshCasketEvents {
         if (gameTime - lastCast < 5) return;
 
         if (player.getCooldowns().isOnCooldown(casketStack.getItem())) return;
-        if (ACTIVE_CHANNELS.containsKey(player.getUUID())) return;
 
         var handler = casketStack.getCapability(
                 net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER).resolve();
@@ -169,6 +180,7 @@ public class FleshCasketEvents {
         IItemHandler inv = handler.get();
         boolean anyFired = false;
         int maxCooldown = 0;
+        ServerLevel serverLevel = (ServerLevel) player.level();
 
         for (int i = 0; i < inv.getSlots(); i++) {
             ItemStack focusStack = inv.getStackInSlot(i);
@@ -183,33 +195,53 @@ public class FleshCasketEvents {
             if (tier == 3) halfCost = (int)(halfCost * 0.1);
             if (!player.isCreative() && SEHelper.getSoulAmountInt(player) < halfCost) continue;
 
-            ServerLevel serverLevel = (ServerLevel) player.level();
-            if (!spell.conditionsMet(serverLevel, player)) continue;
-
-            var spellStat = WandUtil.getStats(player, spell);
-            if (tier >= 2) spellStat.potency += 2;
-            if (tier >= 3) { spellStat.potency += 2; }
+            // Create staff + set phantom wand BEFORE conditionsMet() so WandUtil.findFocus() works
             ItemStack staffStack = new ItemStack(
                     tier >= 2 ? ModItems.AUTO_CAST_DUMMY_WAND.get()
                               : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
             SoulUsingItemHandler.get(staffStack).setStackInSlot(0, focusStack);
-
             PhantomWandManager.set(player, staffStack);
+
             try {
+                if (!spell.conditionsMet(serverLevel, player)) continue;
+
+                var spellStat = WandUtil.getStats(player, spell);
+                if (tier >= 2) spellStat.potency += 2;
+                if (tier >= 3) spellStat.potency += 2;
+
                 spell.startSpell(serverLevel, player, staffStack, spellStat);
                 spell.useSpell(serverLevel, player, staffStack, 60, spellStat);
 
-                if (spell instanceof IChargingSpell && !ACTIVE_CHANNELS.containsKey(player.getUUID())) {
-                    ACTIVE_CHANNELS.put(player.getUUID(), new ChannelTask(
-                            player, spell, staffStack, spellStat, focusStack));
+                if (spell instanceof IChargingSpell) {
+                    ACTIVE_CHANNELS.computeIfAbsent(player.getUUID(), k -> new ArrayList<>())
+                            .add(new ChannelTask(player, spell, staffStack, spellStat, focusStack));
                 } else {
                     spell.SpellResult(serverLevel, player, staffStack, spellStat);
+
+                    // ITouchSpell — ray trace for entity target
+                    if (spell instanceof ITouchSpell touchSpell) {
+                        LivingEntity target = spell.getTarget(player);
+                        if (target != null && touchSpell.targetConditions(serverLevel, player, target, staffStack, spellStat)) {
+                            touchSpell.touchResult(serverLevel, player, target, staffStack, spellStat);
+                        }
+                    }
+
+                    // IBlockSpell — ray trace for block target
+                    if (spell instanceof IBlockSpell blockSpell) {
+                        int range = spellStat.getRange();
+                        if (range <= 0) range = 16;
+                        BlockHitResult hit = spell.blockResult(serverLevel, player, range);
+                        if (blockSpell.rightBlock(serverLevel, player, hit.getBlockPos(), hit.getDirection(), spellStat)) {
+                            blockSpell.blockResult(serverLevel, player, staffStack, hit.getBlockPos(), hit.getDirection(), spellStat);
+                        }
+                    }
+
                     spell.stopSpell(serverLevel, player, staffStack,
                             focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
                             60, spellStat);
                 }
             } finally {
-                if (!ACTIVE_CHANNELS.containsKey(player.getUUID())) {
+                if (!hasActiveChannels(player.getUUID())) {
                     PhantomWandManager.scheduleClear(player.getUUID(), 400);
                 }
             }
@@ -223,8 +255,6 @@ public class FleshCasketEvents {
             if (tier == 3) cd = (int)(cd * 0.4);
             if (cd > maxCooldown) maxCooldown = cd;
             anyFired = true;
-
-            if (ACTIVE_CHANNELS.containsKey(player.getUUID())) break;
         }
 
         if (anyFired) {
