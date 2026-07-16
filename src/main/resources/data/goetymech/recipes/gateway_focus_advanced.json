@@ -2,13 +2,13 @@
   "type": "goety:ritual",
   "ritual_type": "goety:craft",
   "activation_item": {
-    "item": "goety:heart_of_the_night"
+    "item": "goetymech:gateway_focus"
   },
   "craftType": "magic",
   "soulCost": 200,
   "duration": 10,
   "ingredients": [
-    { "item": "goetymech:gateway_focus" },
+    { "item": "goety:heart_of_the_night" },
     { "item": "goety:banish_focus" },
     { "item": "minecraft:crying_obsidian" },
     { "item": "goety:ectoplasm" },

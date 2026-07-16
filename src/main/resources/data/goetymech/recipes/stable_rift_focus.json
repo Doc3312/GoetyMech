@@ -2,13 +2,12 @@
   "type": "goety:ritual",
   "ritual_type": "goety:craft",
   "activation_item": {
-    "item": "goety:empty_focus"
+    "item": "goetymech:unstable_rift_focus"
   },
   "craftType": "magic",
   "soulCost": 200,
   "duration": 10,
   "ingredients": [
-    { "item": "goetymech:unstable_rift_focus" },
     { "item": "minecraft:crying_obsidian" },
     { "item": "minecraft:ender_eye" },
     { "item": "goety:ectoplasm" },
