@@ -8,3 +8,7 @@
 - **2026-07-16** — Patchouli 条目创建
   - 改动：新建 goetymech_crafts 条目，1页，链接育巢/血肉熔炉，深红引语
   - 关联：20260716.patchouli-percent-format-error
+
+- **2026-07-17** — JEI 配方页改为信息页
+  - 改动：删除 EmbryoConversionCategory/Recipe，改用 addIngredientInfo 展示获取方式说明
+  - 原因：胚胎的获取流程不适合用配方页展示，改为文字说明更直观
