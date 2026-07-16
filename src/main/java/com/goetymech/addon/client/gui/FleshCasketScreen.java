@@ -25,10 +25,8 @@ public class FleshCasketScreen extends AbstractContainerScreen<FleshCasketContai
 
     @Override
     protected void init() {
-        this.imageHeight = 140;
         super.init();
         this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
-        this.inventoryLabelY = this.imageHeight - 92;
     }
 
     @Override
@@ -45,7 +43,7 @@ public class FleshCasketScreen extends AbstractContainerScreen<FleshCasketContai
             int i = (this.width - this.imageWidth) / 2;
             int j = (this.height - this.imageHeight) / 2;
             int idx = Math.max(0, Math.min(tier - 1, GUI_TEXTURES.length - 1));
-            guiGraphics.blit(GUI_TEXTURES[idx], i, j, 0, 0, this.imageWidth, this.imageHeight, 176, 140);
+            guiGraphics.blit(GUI_TEXTURES[idx], i, j, 0, 0, this.imageWidth, this.imageHeight);
         }
     }
 }
