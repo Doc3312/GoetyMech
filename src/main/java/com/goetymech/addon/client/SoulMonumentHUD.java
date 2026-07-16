@@ -47,26 +47,39 @@ public class SoulMonumentHUD {
         int width = event.getWindow().getGuiScaledWidth();
         int height = event.getWindow().getGuiScaledHeight();
 
-        String text = Component.translatable("info.goetymech.soul_monument.capacity",
-                monument.getUsedSlots(), monument.getCapacity()).getString();
-        int textWidth = font.width(text);
-        gui.drawString(font, text, (width - textWidth) / 2, height - 86, 0xAAAAAA);
-
         java.util.List<String> names = monument.getSavedEntityNames();
+        int nameCount = names != null ? names.size() : 0;
+        boolean recording = monument.isRecording();
+
+        int lineHeight = 10;
+        int totalHeight = nameCount * lineHeight + lineHeight;
+        if (recording) totalHeight += lineHeight;
+
+        int topY = (height - totalHeight) / 2;
+        topY = Math.max(topY, 5);
+        if (topY + totalHeight > height - 5) {
+            topY = height - 5 - totalHeight;
+        }
+
+        int currentY = topY;
         if (names != null && !names.isEmpty()) {
-            int y = height - 100;
-            for (int i = names.size() - 1; i >= 0; i--) {
-                String name = names.get(i);
+            for (String name : names) {
                 int nameWidth = font.width(name);
-                gui.drawString(font, name, (width - nameWidth) / 2, y, 0xCCAAFF);
-                y -= 10;
+                gui.drawString(font, name, (width - nameWidth) / 2, currentY, 0xCCAAFF);
+                currentY += lineHeight;
             }
         }
 
-        if (monument.isRecording()) {
+        String text = Component.translatable("info.goetymech.soul_monument.capacity",
+                monument.getUsedSlots(), monument.getCapacity()).getString();
+        int textWidth = font.width(text);
+        gui.drawString(font, text, (width - textWidth) / 2, currentY, 0xAAAAAA);
+        currentY += lineHeight;
+
+        if (recording) {
             String recordingText = Component.translatable("info.goetymech.soul_monument.already_recording").getString();
             int recWidth = font.width(recordingText);
-            gui.drawString(font, recordingText, (width - recWidth) / 2, height - 100, 0xFFAA44);
+            gui.drawString(font, recordingText, (width - recWidth) / 2, currentY, 0xFFAA44);
         }
     }
 }
