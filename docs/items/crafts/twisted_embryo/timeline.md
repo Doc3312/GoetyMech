@@ -12,3 +12,7 @@
 - **2026-07-17** — JEI 配方页改为信息页
   - 改动：删除 EmbryoConversionCategory/Recipe，改用 addIngredientInfo 展示获取方式说明
   - 原因：胚胎的获取流程不适合用配方页展示，改为文字说明更直观
+
+- **2026-07-17** — 功能冻结归档
+  - 已完成：JEI 信息页 + Patchouli 条目 + JEI info 翻译
+  - 关联 incidents：无

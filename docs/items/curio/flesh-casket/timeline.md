@@ -193,5 +193,9 @@ Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储
   2. 删除 `ChannelTask.stop()` 中的 `PhantomWandManager.clear(player)` — 不再由单个通道清除共享法杖
   3. `onServerTick` 中 tasks 清空后 `PhantomWandManager.scheduleClear(uuid, 400)` — 所有通道结束后统一延迟清除
 - 影响：全部 17 个 IChargingSpell 蓄力法术 + 所有 CastSpellTrap 实体（裂隙/陷阱类）
-- 关联 incidents：`flesh-casket/20260717.charging-channel-deadlock.md`
+  - 关联 incidents：`flesh-casket/20260717.charging-channel-deadlock.md`
+
+- **2026-07-17** — 冷却配置默认值修改
+  - 改动：flesh_casket.cooldown_override 默认值 60 → 0
+  - 原因：始终走等级倍率（T1 100% / T2 80% / T3 40%），去除全局配置覆盖
 

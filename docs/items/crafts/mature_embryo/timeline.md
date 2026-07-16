@@ -16,3 +16,10 @@
 - **2026-07-17** — JEI 配方页改为信息页
   - 改动：删除 EmbryoConversionCategory/Recipe，改用 addIngredientInfo 展示获取方式说明
   - 原因：胚胎的获取流程不适合用配方页展示，改为文字说明更直观
+
+- **2026-07-17** — 点将台 Patchouli 超链接修正
+  - 改动：squad_barracks.json 第1页超链接显示文字 "胚胎" → "成熟胚胎"
+
+- **2026-07-17** — 功能冻结归档
+  - 已完成：JEI 信息页 + Patchouli 条目 + 超链接修正
+  - 关联 incidents：无
