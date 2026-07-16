@@ -99,12 +99,11 @@ public class FleshCasketEvents {
                     }
                 }
             }
-            return castTicks < maxShots;
+            return castTicks < (maxShots + castUp);
         }
 
         void stop() {
             ServerLevel serverLevel = (ServerLevel) player.level();
-            PhantomWandManager.clear(player);
             spell.stopSpell(serverLevel, player, staffStack,
                     focusStack.isEmpty() ? ItemStack.EMPTY : focusStack,
                     castTicks, spellStat);
@@ -128,7 +127,11 @@ public class FleshCasketEvents {
                 }
                 return false;
             });
-            return tasks.isEmpty();
+            if (tasks.isEmpty()) {
+                PhantomWandManager.scheduleClear(entry.getKey(), 400);
+                return true;
+            }
+            return false;
         });
     }
 
