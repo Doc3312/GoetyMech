@@ -1,0 +1,24 @@
+{
+  "name": "血肉晶匣",
+  "icon": "goetymech:flesh_casket_1",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "施法在大部分情况下都是件需要时间的事，但在探险中总是会遇到没时间施法的紧急情况，你为此深深的感到焦虑。$(br)好在一份记载着血肉魔法与机械的记录给了你灵感，为什么不将聚晶这么方便的东西嵌入体内呢？于是血肉晶匣应运而生。$(br)放入晶匣内的聚晶会在施法者受击时自动施法，并且与其他同类聚晶不共用冷却。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "晶匣共有三个版本，对应不同的触发条件：$(br)$(l:goetymech_crafts/flesh_casket)满盈$()：任何时候受伤都会施法。$(br)$(l:goetymech_crafts/flesh_casket)平衡$()：只有当玩家生命值低于一半时受伤才会施法。$(br)$(l:goetymech_crafts/flesh_casket)濒死$()：只有当玩家生命值低于20%%时受伤才会施法。$(br)将晶匣放入诅咒注入器中即可转换条件。$(br)$(4)\"一个好的开始，但人类的肉体终究还是太过脆弱，无法承载过多聚晶，或许成为巫妖能解决这个问题。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:flesh_casket_1"
+    }
+  ],
+  "extra_recipe_mappings": {
+    "goetymech:flesh_casket_2": 1,
+    "goetymech:flesh_casket_3": 1
+  }
+}
