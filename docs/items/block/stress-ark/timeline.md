@@ -27,3 +27,10 @@
   - 移除 Goety 的 `soul_energy_bar.png` 动画光效
   - 文字从固定偏移改为 `font.width()` 水平居中
   - 关联 incidents：`_meta.20260715.cross-session-overwrite.md`
+
+## 2026-07-16
+
+- **HUD UV 坐标修复**：绿色底条和红色覆盖条的 UV x 从 0 改为 9
+  - 原因：纹理精灵表中绿色条从 x=9 开始（与棕色边框对齐），但代码使用 u=0 导致左右空白
+  - 参考：Goety 的 `SoulEnergyGui.java` 第 64 行同样使用 UV `(9, 18)`
+  - 关联 incidents：`_craft.20260716.hud-uv-coordinate-fix.md`
