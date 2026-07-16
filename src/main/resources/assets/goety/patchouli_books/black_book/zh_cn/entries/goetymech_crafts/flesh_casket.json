@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "晶匣共有三个版本，对应不同的触发条件：$(br)$(l:goetymech_crafts/flesh_casket)满盈$()：任何时候受伤都会施法。$(br)$(l:goetymech_crafts/flesh_casket)平衡$()：只有当玩家生命值低于一半时受伤才会施法。$(br)$(l:goetymech_crafts/flesh_casket)濒死$()：只有当玩家生命值低于20%%时受伤才会施法。$(br)将晶匣放入诅咒注入器中即可转换条件。$(br)$(4)\"一个好的开始，但人类的肉体终究还是太过脆弱，无法承载过多聚晶，或许成为巫妖能解决这个问题。\"$()"
+      "text": "晶匣共有三个版本，对应不同的触发条件：$(br)$(l:goetymech_crafts/flesh_casket)满盈$()：任何时候受伤都会施法。$(br)$(l:goetymech_crafts/flesh_casket)平衡$()：只有当玩家生命值低于一半时受伤才会施法。$(br)$(l:goetymech_crafts/flesh_casket)濒死$()：只有当玩家生命值低于20%%时受伤才会施法。$(br)将晶匣放入诅咒注入器中即可转换条件。$(br)由血肉晶匣释放的法术将只消耗50%%的灵魂，晶匣的冷却继承放置的聚晶。$(br)$(4)\"一个好的开始，但人类的肉体终究还是太过脆弱，无法承载过多聚晶，或许成为巫妖能解决这个问题。\"$()"
     },
     {
       "type": "goety:ritual",

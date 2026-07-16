@@ -5,6 +5,7 @@ import com.Polarice3.Goety.api.magic.IBlockSpell;
 import com.Polarice3.Goety.api.magic.IChargingSpell;
 import com.Polarice3.Goety.api.magic.ISpell;
 import com.Polarice3.Goety.api.magic.ITouchSpell;
+import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.entities.projectiles.AbstractBeam;
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.common.magic.SpellStat;
@@ -199,9 +200,14 @@ public class FleshCasketEvents {
             if (!player.isCreative() && SEHelper.getSoulAmountInt(player) < halfCost) continue;
 
             // Create staff + set phantom wand BEFORE conditionsMet() so WandUtil.findFocus() works
-            ItemStack staffStack = new ItemStack(
-                    tier >= 2 ? ModItems.AUTO_CAST_DUMMY_WAND.get()
-                              : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
+            ItemStack staffStack;
+            if (tier >= 3 && spell.getSpellType() == SpellType.NECROMANCY) {
+                staffStack = new ItemStack(com.Polarice3.Goety.common.items.ModItems.NAMELESS_STAFF.get());
+            } else {
+                staffStack = new ItemStack(
+                        tier >= 2 ? ModItems.AUTO_CAST_DUMMY_WAND.get()
+                                  : ModItems.AUTO_CAST_DUMMY_WAND_T1.get());
+            }
             SoulUsingItemHandler.get(staffStack).setStackInSlot(0, focusStack);
             PhantomWandManager.set(player, staffStack);
 

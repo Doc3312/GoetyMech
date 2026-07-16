@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "The Casket has three versions, each with different trigger conditions:$(br)$(l:goetymech_crafts/flesh_casket)Fullness$(): casts on any damage taken.$(br)$(l:goetymech_crafts/flesh_casket)Balance$(): casts only when health is below half.$(br)$(l:goetymech_crafts/flesh_casket)Deathbed$(): casts only when health is below 20%%.$(br)Place the Casket into a Cursed Infuser to cycle between conditions.$(br)$(4)\"A good start, but human flesh is ultimately too fragile to bear too many foci. Perhaps becoming a lich could solve this.\"$()"
+      "text": "The Casket has three versions, each with different trigger conditions:$(br)$(l:goetymech_crafts/flesh_casket)Fullness$(): casts on any damage taken.$(br)$(l:goetymech_crafts/flesh_casket)Balance$(): casts only when health is below half.$(br)$(l:goetymech_crafts/flesh_casket)Deathbed$(): casts only when health is below 20%%.$(br)Place the Casket into a Cursed Infuser to cycle between conditions.$(br)Spells cast by the Flesh Casket consume only 50%% soul energy, and its cooldown is inherited from the placed focus.$(br)$(4)\"A good start, but human flesh is ultimately too fragile to bear too many foci. Perhaps becoming a lich could solve this.\"$()"
     },
     {
       "type": "goety:ritual",
