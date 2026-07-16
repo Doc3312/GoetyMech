@@ -25,10 +25,8 @@ public class FleshCasketScreen extends AbstractContainerScreen<FleshCasketContai
 
     @Override
     protected void init() {
-        this.imageHeight = 140;
         super.init();
         this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
-        this.inventoryLabelY = 50;
     }
 
     @Override
