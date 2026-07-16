@@ -171,8 +171,9 @@ Curios 饰品槽位的自动施法容器。内置 1/3/5 格（按阶位）存储
   - extra_recipe_mappings：flesh_casket_2/3 → 第2页
   - 关联：20260716.patchouli-percent-format-error（20%% 正确转义）
 
-### 2026-07-16 — GUI 纹理替换：三阶独立材质 + imageHeight 修复
-- 改动：flesh_casket.png 拆为 flesh_casket_1/2/3.png（176×140）；FleshCasketScreen 按 tier 选纹理；imageHeight=140，container 槽位 Y 上移（60/120）
-- 原因：原 256×256 占位纹理替换为独立设计；旧 blit 默认 256 纹理空间导致 176×140 纹理放大+UV 出界紫黑条纹
-- 关联：commit 476d4d4, 07f770d
+### 2026-07-16 — GUI 纹理替换：三阶独立材质（补白到 256×256）
+- 改动：flesh_casket.png 拆为 flesh_casket_1/2/3.png，176×140 PNG 补白到 256×256（内容左上）；Screen 按 tier 选纹理
+- 原因：原 256×256 占位纹理替换为独立设计；短 blit 默认 256 纹理空间，176×140 直接采样会 UV 出界紫黑条纹；容器预设高度 166 与 140 纹理不兼容
+- 方案：不修改容器高度/槽位 Y，纹理补白到 256×256，blit 恢复 7 参数短重载
+- 关联：commit 476d4d4, 07f770d, 868ad86
 
