@@ -34,7 +34,7 @@ public class FleshCasketContainer extends AbstractContainerMenu {
         int slotCount = handler.getSlots();
         int startX = (176 - slotCount * 18) / 2;
         for (int i = 0; i < slotCount; i++) {
-            addSlot(new SlotItemHandler(handler, i, startX + i * 18, 25));
+            addSlot(new SlotItemHandler(handler, i, startX + i * 18, 35));
         }
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
