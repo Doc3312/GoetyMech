@@ -118,7 +118,6 @@
   "jei.goetymech.info.prototype_mimic": "A Prototype Mimic is crafted by combining a Prototype with any chestplate in a crafting grid.\nIt inherits all attributes, enchantments, and modifiers from the chestplate.\nCombine a Prototype Mimic back into a crafting grid to retrieve the Prototype.\n§cNote: The original chestplate is not preserved on deconstruction.",
   "jei.goetymech.category.mimic_combination": "Prototype Mimic Combination",
   "jei.goetymech.category.mimic_deconstruction": "Prototype Mimic Deconstruction",
-  "jei.goetymech.category.embryo_conversion": "Embryo Conversion",
   "fluid.goetymech.soul_liquid": "Soul Liquid",
   "item.goetymech.soul_liquid_bucket": "Soul Liquid Bucket",
   "block.goetymech.soul_liquid": "Soul Liquid",
@@ -174,5 +173,7 @@
   "item.goetymech.soul_dominion_focus": "Focus of Soul Dominion",
   "spell.goety.soul_dominion": "§5Soul Dominion§5",
   "info.goetymech.soul_dominion.no_servants": "§cNo servants in range!",
-  "info.goetymech.soul_dominion.shift_info": "Links to all owned servants within range, transferring all incoming damage to them."
+  "info.goetymech.soul_dominion.shift_info": "Links to all owned servants within range, transferring all incoming damage to them.",
+  "jei.goetymech.info.twisted_embryo": "Feed enough food to the Breeding Nest to obtain a Twisted Embryo.",
+  "jei.goetymech.info.mature_embryo": "Put a Twisted Embryo into a Flesh Furnace bound to an Ominous Pyre to obtain the corresponding Mature Embryo."
 }

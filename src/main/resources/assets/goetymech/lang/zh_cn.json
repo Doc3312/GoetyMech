@@ -118,7 +118,6 @@
   "jei.goetymech.info.prototype_mimic": "原型·拟态是由原型与任意胸甲合成获得。\n它会继承胸甲的所有属性、附魔和修饰符。\n将原型·拟态放回合成格即可还原出原型。\n§c注意：还原后原胸甲不保留。",
   "jei.goetymech.category.mimic_combination": "原型拟态组合",
   "jei.goetymech.category.mimic_deconstruction": "原型拟态还原",
-  "jei.goetymech.category.embryo_conversion": "胚胎转化",
   "fluid.goetymech.soul_liquid": "灵魂液",
   "item.goetymech.soul_liquid_bucket": "灵魂液桶",
   "block.goetymech.soul_liquid": "灵魂液",
@@ -174,5 +173,7 @@
   "item.goetymech.soul_dominion_focus": "灵魂统御聚晶",
   "spell.goety.soul_dominion": "§5灵魂统御§5",
   "info.goetymech.soul_dominion.no_servants": "§c范围内没有仆从！",
-  "info.goetymech.soul_dominion.shift_info": "链接范围内所有属于你的仆从，将你受到的所有伤害转移给它们。"
+  "info.goetymech.soul_dominion.shift_info": "链接范围内所有属于你的仆从，将你受到的所有伤害转移给它们。",
+  "jei.goetymech.info.twisted_embryo": "给育巢投入足够的食物，即可获得扭曲胚胎。",
+  "jei.goetymech.info.mature_embryo": "将扭曲胚胎投入绑定不祥火炬的血肉熔炉，即可获得对应兵种的成熟胚胎。"
 }

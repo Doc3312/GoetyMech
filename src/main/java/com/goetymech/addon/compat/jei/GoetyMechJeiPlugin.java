@@ -19,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
@@ -41,8 +40,7 @@ public class GoetyMechJeiPlugin implements IModPlugin {
         var guiHelper = registration.getJeiHelpers().getGuiHelper();
         registration.addRecipeCategories(
                 new MimicCombinationCategory(guiHelper),
-                new MimicDeconstructionCategory(guiHelper),
-                new EmbryoConversionCategory(guiHelper)
+                new MimicDeconstructionCategory(guiHelper)
         );
     }
 
@@ -88,18 +86,15 @@ public class GoetyMechJeiPlugin implements IModPlugin {
         }
         registration.addRecipes(JeiRecipeTypes.CURSED_INFUSER, cycleRecipes);
 
-        // Embryo conversions
-        var foodStacks = BuiltInRegistries.ITEM.stream()
-                .map(ItemStack::new)
-                .filter(s -> s.getItem().getFoodProperties(s, null) != null)
-                .limit(12)
-                .toList();
-        registration.addRecipes(GoetyMechRecipeTypes.EMBRYO_CONVERSION, List.of(
-                new EmbryoConversionRecipe(foodStacks, new ItemStack(ModItems.TWISTED_EMBRYO.get())),
-                new EmbryoConversionRecipe(
-                        List.of(new ItemStack(ModItems.TWISTED_EMBRYO.get())),
-                        new ItemStack(ModItems.MATURE_EMBRYO.get()))
-        ));
+        // Embryo info pages
+        registration.addIngredientInfo(
+                ModItems.TWISTED_EMBRYO.get(),
+                Component.translatable("jei.goetymech.info.twisted_embryo")
+        );
+        registration.addIngredientInfo(
+                ModItems.MATURE_EMBRYO.get(),
+                Component.translatable("jei.goetymech.info.mature_embryo")
+        );
     }
 
     private record CyclePair(TriggerType from, TriggerType to, String suffix) {}
