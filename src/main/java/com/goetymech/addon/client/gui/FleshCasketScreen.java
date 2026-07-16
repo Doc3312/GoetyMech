@@ -10,10 +10,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class FleshCasketScreen extends AbstractContainerScreen<FleshCasketContainer> {
-    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/container/flesh_casket.png");
+    private static final ResourceLocation[] GUI_TEXTURES = {
+        new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/container/flesh_casket_1.png"),
+        new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/container/flesh_casket_2.png"),
+        new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/container/flesh_casket_3.png")
+    };
+
+    private final int tier;
 
     public FleshCasketScreen(FleshCasketContainer container, Inventory inventory, Component title) {
         super(container, inventory, title);
+        this.tier = container.getTier();
     }
 
     @Override
@@ -35,7 +42,8 @@ public class FleshCasketScreen extends AbstractContainerScreen<FleshCasketContai
         if (this.minecraft != null) {
             int i = (this.width - this.imageWidth) / 2;
             int j = (this.height - this.imageHeight) / 2;
-            guiGraphics.blit(GUI_TEXTURES, i, j, 0, 0, this.imageWidth, this.imageHeight);
+            int idx = Math.max(0, Math.min(tier - 1, GUI_TEXTURES.length - 1));
+            guiGraphics.blit(GUI_TEXTURES[idx], i, j, 0, 0, this.imageWidth, this.imageHeight);
         }
     }
 }

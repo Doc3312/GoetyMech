@@ -13,6 +13,10 @@ public class FleshCasketContainer extends AbstractContainerMenu {
     private final ItemStack stack;
     private final int tier;
 
+    public int getTier() {
+        return tier;
+    }
+
     public static FleshCasketContainer createContainerClientSide(int id, Inventory inventory, FriendlyByteBuf buffer) {
         int tier = buffer.readInt();
         int slotCount = switch (tier) {
