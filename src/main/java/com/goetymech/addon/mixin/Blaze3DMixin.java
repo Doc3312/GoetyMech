@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Blaze3D.class)
 public class Blaze3DMixin {
-    @Inject(method = "getTime", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "getTime", at = @At("HEAD"), cancellable = true)
     private static void gp$getTime(CallbackInfoReturnable<Double> cir) {
         if (TimeStopUtils.isTimeStop && ClientContext.isTimeStop_andSameDimension)
             cir.setReturnValue(TimeContext.Client.timeStopGLFW / 1000D);
