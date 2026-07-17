@@ -2,6 +2,7 @@
 
 | Date | Change | Reason | Relates to |
 |------|--------|--------|-----------|
+| 2026-07-18 | 添加 appendHoverText + shift_info 描述 | 对齐 Goety 聚晶 SHIFT 说明规范 | — |
 | 2026-07-09 | 属性冻结归档 | 5秒施法 + VOID粒子 + heightmap贴地安全搜索 + 地图定位 + FreecamActive标记 | GatewayAdvancedSpell/GatewayUtil/ModCreativeTab/S2CSetFreecamPacket |
 
 ## 2026-07-13

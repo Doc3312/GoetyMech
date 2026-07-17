@@ -1,5 +1,11 @@
 # stable-rift-focus Timeline
 
+### 2026-07-18 — 添加 appendHoverText + shift_info 描述
+
+- 改动：添加 `appendHoverText` 覆写 + `ItemHelper.addOnShift`
+- 原因：对齐 Goety 聚晶 SHIFT 说明规范
+- 关联：—
+
 ### 2026-06-24 — 优化：rightStaff + cooldown 守卫
 
 - 改动：添加 `rightStaff(staff)` → 法杖匹配时灵魂消耗减半；cooldown 添加 `isEmpty()` 守卫
