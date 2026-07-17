@@ -282,6 +282,76 @@ public class MySummonedEntity extends Summoned {
 }
 ```
 
+# Shift 描述系统
+
+每个 Focus 必须在物品 tooltip 中提供按住 SHIFT 后显示的详细描述。Goety 通过 `ItemHelper.addOnShift()` 实现此模式。
+
+## 模式
+
+```java
+public class YourFocus extends MagicFocus {
+
+    public YourFocus() {
+        super(new YourSpell());
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level,
+                                 List<Component> tooltip, TooltipFlag flag) {
+        // 1. 灵魂消耗（来自 ModConfig）
+        tooltip.add(Component.translatable("info.goety.focus.cost",
+                ModConfig.YOUR_COST.get()));
+
+        // 2. 法术类型
+        tooltip.add(Component.translatable("info.goety.focus.spellType",
+                this.spell.getSpellType().getName()));
+
+        // 3. 蓝色标题行 "信息"
+        tooltip.add(Component.translatable("item.goety.focus.info")
+                .withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE));
+
+        // 4. 绑定状态（如果有，用绿色/红色显示）
+        // if (isBound(stack)) ...
+
+        // 5. SHIFT 详细描述
+        ItemHelper.addOnShift(tooltip, () -> {
+            tooltip.add(Component.translatable("info.goetymech.your_focus.shift_info")
+                    .withStyle(ChatFormatting.GRAY));
+        });
+    }
+}
+```
+
+## Lang Key 命名规则
+
+```
+info.goetymech.<注册名>.shift_info
+```
+
+示例：`gateway_focus` → `info.goetymech.gateway_focus.shift_info`
+
+**双态绑定类 Focus**（如 squad_focus、remote_storage_focus）使用两个 key：
+- `info.goetymech.<focus>.shift_bound` — 已绑定状态
+- `info.goetymech.<focus>.shift_unbound` — 未绑定状态
+
+## 描述风格要求
+
+与 Goety 原版对齐：**1–2 句，8–20 词，祈使句动词起手，简洁直白**。示例对比：
+
+| 焦点 | 描述 |
+|------|------|
+| Goety feast_focus | "Summons a magic Fang on any nearby mob or player that's not the caster." |
+| Goety blink_focus | "Teleports the caster to a location... Crouch casting will teleport to a random location." |
+| 本项目 crushing_wheel_focus | "Summon a crushing wheel. Sneak-cast to unbind." |
+| 本项目 chase_focus | "Mark a target. Sneak-cast within 10s to teleport behind them, up to 5 times." |
+
+潜行变体用 "Sneak-cast to..." / "Sneak-right-click to..." 或 "Cast crouching will..." 表达。
+
+## 中文翻译对齐
+
+中文描述保持和英文相同的信息量，使用相同句式结构：
+- "召唤粉碎轮冲击敌人。潜行施法解除绑定。" ← 对应 "Summon a crushing wheel. Sneak-cast to unbind."
+
 ## 实现步骤清单
 
 1. 构思法术效果 → 确定 SpellType
@@ -293,3 +363,4 @@ public class MySummonedEntity extends Summoned {
 7. 添加语言文件：en_us.json + zh_cn.json
 8. 添加纹理：`assets/<modid>/textures/item/`
 9. 测试：灵魂消耗、冷却、召唤上限、附魔加成
+10. **添加 Shift 描述**（见下方"Shift 描述系统"章节）：在 Focus 类覆写 `appendHoverText` + `ItemHelper.addOnShift`，lang 文件加 `info.goetymech.<focus>.shift_info`
