@@ -33,5 +33,5 @@ public class ChaseFocus extends MagicFocus {
                     .withStyle(ChatFormatting.GRAY));
         });
     }
-}
+
 }
