@@ -62,9 +62,14 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
         if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty()) {
             if (!level.isClientSide && monument.getUsedSlots() > 0) {
                 ListTag uuidList = new ListTag();
-                for (java.util.UUID uuid : monument.getSavedEntityUUIDs()) {
+                java.util.List<String> names = monument.getSavedEntityNames();
+                java.util.List<java.util.UUID> uuids = monument.getSavedEntityUUIDs();
+                for (int i = 0; i < uuids.size(); i++) {
                     CompoundTag entry = new CompoundTag();
-                    entry.putUUID("UUID", uuid);
+                    entry.putUUID("UUID", uuids.get(i));
+                    if (i < names.size()) {
+                        entry.putString("Name", names.get(i));
+                    }
                     uuidList.add(entry);
                 }
                 ItemStack dropStack = new ItemStack(this.asItem());
@@ -103,13 +108,20 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
             if (stack.hasTag() && stack.getTag().contains("MonumentUUIDs")) {
                 ListTag uuidList = stack.getTag().getList("MonumentUUIDs", Tag.TAG_COMPOUND);
                 java.util.List<java.util.UUID> uuids = new java.util.ArrayList<>();
+                java.util.List<String> names = new java.util.ArrayList<>();
                 for (int i = 0; i < uuidList.size(); i++) {
                     CompoundTag entry = uuidList.getCompound(i);
                     if (entry.hasUUID("UUID")) {
                         uuids.add(entry.getUUID("UUID"));
                     }
+                    if (entry.contains("Name")) {
+                        names.add(entry.getString("Name"));
+                    }
                 }
                 monument.setSavedEntityUUIDs(uuids);
+                if (names.size() == uuids.size()) {
+                    monument.setSavedEntityNames(names);
+                }
             }
         }
     }

@@ -213,6 +213,12 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         markUpdated();
     }
 
+    public void setSavedEntityNames(List<String> names) {
+        savedEntityNames.clear();
+        savedEntityNames.addAll(names);
+        markUpdated();
+    }
+
     public void clearAllData() {
         savedEntityUUIDs.clear();
         savedEntityNames.clear();
