@@ -39,6 +39,12 @@
   - 关联 openspec：`monument-summon-improvements`
    - 关联 incidents：`_craft.20260714.squad-monument-architecture.md`
 
+- **2026-07-18** — 修复：重新放置丰碑后 HUD 不显示仆从姓名
+  - 根因：破坏时只保存 UUID 不保存姓名，放置时只恢复 UUID
+  - 修复：`MonumentUUIDs` NBT 每条目新增 `Name` 字段，`setPlacedBy` 同步恢复
+  - 新增：`SoulMonumentBlockEntity.setSavedEntityNames()`
+  - 关联 openspec：`fix-soul-monument-hud-names`
+
 - **2026-07-16** — 配方重做：机械仪式 + 新材料
   - 修改：一阶合成配方（`soul_monument_1.json`）
     - 激活物：暗影墓碑（`goety:shade_gravestone`）
