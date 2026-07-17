@@ -251,6 +251,11 @@ public class ModConfig {
     /** 神行聚晶冷却时间（tick） */
     public static final ForgeConfigSpec.IntValue GATEWAY_ADV_COOLDOWN;
 
+    // ====== Crazed Summon Focus 配置 ======
+
+    /** 失败品聚晶灵魂消耗 */
+    public static final ForgeConfigSpec.IntValue CRAZED_SUMMON_COST;
+
     // ====== Stock Ticker Focus 配置 ======
 
     /** 仓储发报机聚晶灵魂消耗 */
@@ -756,6 +761,15 @@ public class ModConfig {
                 .defineInRange("advanced_cooldown", 9600, 100, 72000);
 
 BUILDER.pop();
+
+        // ====== Crazed Summon Focus 配置 ======
+        BUILDER.push("crazed_summon_focus");
+
+        CRAZED_SUMMON_COST = BUILDER
+                .comment("失败品聚晶的灵魂消耗", "范围: 1-1000，默认 20")
+                .defineInRange("soul_cost", 20, 1, 1000);
+
+        BUILDER.pop();
 
         // ====== Stock Ticker Focus 配置 ======
         BUILDER.push("stock_ticker_focus");
