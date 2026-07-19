@@ -27,6 +27,8 @@ public class GatewayUtil {
     public static volatile boolean pendingEyeCapture = false;
     @Nullable
     public static volatile BlockPos pendingEyePos = null;
+    @Nullable
+    public static volatile TagKey<Structure> pendingEyeTag = null;
 
     @Nullable
     public static BlockPos findNearestStructure(ServerLevel level, TagKey<Structure> tag, BlockPos origin) {

@@ -40,7 +40,8 @@
     "PackagerBlockEntityMixin",
     "BlockEntityConfigurationPacketMixin",
     "EyeOfEnderCaptureMixin",
-    "GoetyEyeItemCaptureMixin"
+    "GoetyEyeItemCaptureMixin",
+    "ServerLevelFindStructureMixin"
   ],
   "injectors": {
     "defaultRequire": 1

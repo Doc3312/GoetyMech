@@ -24,6 +24,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -145,17 +147,41 @@ public class GatewayAdvancedSpell extends Spell {
         }
 
         ItemStack backup = offhand.copy();
-        ServerLevel currentLevel = (ServerLevel) player.level();
         GatewayUtil.pendingEyeCapture = true;
         GatewayUtil.pendingEyePos = null;
+        GatewayUtil.pendingEyeTag = null;
 
         offhand.use(worldIn, player, InteractionHand.OFF_HAND);
 
         GatewayUtil.pendingEyeCapture = false;
         player.setItemInHand(InteractionHand.OFF_HAND, backup);
 
-        BlockPos structPos = GatewayUtil.pendingEyePos;
+        TagKey<Structure> capturedTag = GatewayUtil.pendingEyeTag;
+        GatewayUtil.pendingEyeTag = null;
+        BlockPos signalPos = GatewayUtil.pendingEyePos;
         GatewayUtil.pendingEyePos = null;
+
+        BlockPos structPos = null;
+        ServerLevel targetLevel = (ServerLevel) player.level();
+        BlockPos playerPos = player.blockPosition();
+
+        if (capturedTag != null) {
+            double bestDist = Double.MAX_VALUE;
+            for (ServerLevel level : player.getServer().getAllLevels()) {
+                BlockPos found = GatewayUtil.findNearestStructure(level, capturedTag, playerPos);
+                if (found == null) continue;
+                double dist = found.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    structPos = found;
+                    targetLevel = level;
+                }
+            }
+        }
+
+        if (structPos == null && signalPos != null) {
+            structPos = signalPos;
+        }
 
         if (structPos == null) {
             player.displayClientMessage(
@@ -168,14 +194,14 @@ public class GatewayAdvancedSpell extends Spell {
         Vec3 teleportPos;
 
         if (forceTeleport) {
-            BlockPos hightPos = currentLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, structPos);
-            if (hightPos.getY() <= currentLevel.getMinBuildHeight()) {
-                hightPos = structPos.atY(currentLevel.getSeaLevel());
+            BlockPos hightPos = targetLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, structPos);
+            if (hightPos.getY() <= targetLevel.getMinBuildHeight()) {
+                hightPos = structPos.atY(targetLevel.getSeaLevel());
             }
             teleportPos = Vec3.atCenterOf(hightPos);
             clearForceFlag(player);
         } else {
-            BlockPos safePos = GatewayUtil.findSafeTeleportPos(currentLevel, bounds, player);
+            BlockPos safePos = GatewayUtil.findSafeTeleportPos(targetLevel, bounds, player);
             if (safePos != null) {
                 teleportPos = Vec3.atCenterOf(safePos);
             } else {
@@ -199,8 +225,8 @@ public class GatewayAdvancedSpell extends Spell {
             SEHelper.addCooldown(player, focus.getItem(), ModConfig.GATEWAY_ADV_COOLDOWN.get());
         }
 
-        GatewayUtil.teleportPlayer(currentLevel, player, teleportPos);
-        triggerFreecam(currentLevel, player);
+        GatewayUtil.teleportPlayer(targetLevel, player, teleportPos);
+        triggerFreecam(targetLevel, player);
         this.playSound(worldIn, caster, SoundEvents.ENDERMAN_TELEPORT);
     }
 
