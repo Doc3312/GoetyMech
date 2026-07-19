@@ -38,6 +38,10 @@ openspec/
 .scratch/
 /com/
 /META-INF/
+/docs/
+/AGENTS.md
+/CONTEXT.md
+src/test/
 
 .vscode/
 *.code-workspace
