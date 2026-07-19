@@ -35,6 +35,9 @@ logs/
 *.ipr
 .opencode/
 openspec/
+.scratch/
+/com/
+/META-INF/
 
 .vscode/
 *.code-workspace
