@@ -27,6 +27,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class GatewayAdvancedSpell extends Spell {
 
@@ -141,35 +142,56 @@ public class GatewayAdvancedSpell extends Spell {
 
         TagKey<Structure> tag = GatewayUtil.deriveStructureTag(
                 player.getServer().registryAccess(), offhand);
-        if (tag == null) {
-            player.displayClientMessage(
-                    Component.translatable("info.goetymech.gateway.no_eye"), true);
-            return;
-        }
-
         BlockPos bestPos = null;
         ServerLevel bestLevel = null;
         double bestDist = Double.MAX_VALUE;
         BlockPos playerPos = player.blockPosition();
 
-        for (ServerLevel level : player.getServer().getAllLevels()) {
-            BlockPos structPos = GatewayUtil.findNearestStructure(level, tag, playerPos);
-            if (structPos == null) continue;
-            double dist = structPos.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
-            if (dist < bestDist) {
-                bestDist = dist;
-                bestPos = structPos;
-                bestLevel = level;
+        // Phase 1: try specific tag if available
+        if (tag != null) {
+            for (ServerLevel level : player.getServer().getAllLevels()) {
+                BlockPos structPos = GatewayUtil.findNearestStructure(level, tag, playerPos);
+                if (structPos == null) continue;
+                double dist = structPos.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestPos = structPos;
+                    bestLevel = level;
+                }
+            }
+        }
+
+        // Phase 2: fallback namespace scan if item looks like an eye
+        if (bestPos == null && GatewayUtil.isStructureEyeItem(offhand)) {
+            String ns = ForgeRegistries.ITEMS.getKey(offhand.getItem()).getNamespace();
+            for (ServerLevel level : player.getServer().getAllLevels()) {
+                BlockPos structPos = GatewayUtil.findNearestStructuresInNamespace(level, ns, playerPos);
+                if (structPos == null) continue;
+                double dist = structPos.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestPos = structPos;
+                    bestLevel = level;
+                }
             }
         }
 
         if (bestPos == null || bestLevel == null) {
-            player.displayClientMessage(
-                    Component.translatable("info.goetymech.gateway.no_structure"), true);
+            if (GatewayUtil.isStructureEyeItem(offhand)) {
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.gateway.no_structure_in_ns",
+                                ForgeRegistries.ITEMS.getKey(offhand.getItem()).getNamespace()), true);
+            } else {
+                player.displayClientMessage(
+                        Component.translatable("info.goetymech.gateway.no_eye"), true);
+            }
             return;
         }
 
-        AABB bounds = GatewayUtil.getStructureBoundingBox(bestLevel, bestPos, tag);
+        AABB bounds = null;
+        if (tag != null) {
+            bounds = GatewayUtil.getStructureBoundingBox(bestLevel, bestPos, tag);
+        }
         if (bounds == null) {
             bounds = new AABB(bestPos).inflate(48);
         }

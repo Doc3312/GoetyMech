@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:ender_eye",
+    "goety:cryptic_eye",
+    "goety:void_eye"
+  ]
+}

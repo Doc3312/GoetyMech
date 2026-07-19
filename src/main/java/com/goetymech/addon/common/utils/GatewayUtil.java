@@ -1,7 +1,10 @@
 package com.goetymech.addon.common.utils;
 
+import java.util.List;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -23,11 +26,16 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public class GatewayUtil {
+
+    /** 结构搜索半径（chunk），相当于 10000 格 */
+    private static final int STRUCTURE_SEARCH_RADIUS_CHUNKS = 625;
 
     private static final java.util.Map<ResourceLocation, TagKey<Structure>> TAG_CACHE = new java.util.HashMap<>();
 
@@ -124,7 +132,31 @@ public class GatewayUtil {
 
     @Nullable
     public static BlockPos findNearestStructure(ServerLevel level, TagKey<Structure> tag, BlockPos origin) {
-        return level.findNearestMapStructure(tag, origin, 100, false);
+        return level.findNearestMapStructure(tag, origin, STRUCTURE_SEARCH_RADIUS_CHUNKS, false);
+    }
+
+    public static boolean isStructureEyeItem(ItemStack stack) {
+        if (stack.isEmpty() || stack.is(Items.FILLED_MAP)) return false;
+        if (stack.is(com.goetymech.addon.init.ModTags.STRUCTURE_EYES)) return true;
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (id == null) return false;
+        String path = id.getPath();
+        return path.contains("_eye") || path.contains("eye_of");
+    }
+
+    @Nullable
+    public static BlockPos findNearestStructuresInNamespace(ServerLevel level, String namespace, BlockPos origin) {
+        Registry<Structure> registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        java.util.List<Holder<Structure>> holders = new java.util.ArrayList<>();
+        registry.getTags()
+                .filter(e -> e.getKey().location().getNamespace().equals(namespace))
+                .forEach(e -> e.getValue().forEach(holders::add));
+        if (holders.isEmpty()) return null;
+        HolderSet<Structure> all = HolderSet.direct(
+                holders.stream().distinct().toList());
+        Pair<BlockPos, Holder<Structure>> result = level.getChunkSource().getGenerator()
+                .findNearestMapStructure(level, all, origin, STRUCTURE_SEARCH_RADIUS_CHUNKS, false);
+        return result != null ? result.getLeft() : null;
     }
 
     @Nullable
