@@ -10,9 +10,7 @@ import com.goetymech.addon.common.events.StressShieldEvents;
 import com.goetymech.addon.common.events.VoidBlinkEvents;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.goetymech.addon.common.menu.ModMenuTypes;
-import com.goetymech.addon.common.utils.GatewayMappingLoader;
 import com.goetymech.addon.common.utils.GlobalStressLinkManager;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
@@ -89,10 +87,6 @@ public class GoetyMechMod {
 
         MinecraftForge.EVENT_BUS.register(VoidBlinkEvents.class);
         MinecraftForge.EVENT_BUS.register(SoulDominionEvents.class);
-        MinecraftForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> {
-            event.addListener(new GatewayMappingLoader());
-        });
-
         modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.register(IStressShield.class);
             event.register(ISoulDominion.class);

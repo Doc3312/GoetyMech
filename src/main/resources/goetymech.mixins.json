@@ -38,7 +38,9 @@
     "WandUtilMixin",
     "CastSpellTrapMixin",
     "PackagerBlockEntityMixin",
-    "BlockEntityConfigurationPacketMixin"
+    "BlockEntityConfigurationPacketMixin",
+    "EyeOfEnderCaptureMixin",
+    "GoetyEyeItemCaptureMixin"
   ],
   "injectors": {
     "defaultRequire": 1

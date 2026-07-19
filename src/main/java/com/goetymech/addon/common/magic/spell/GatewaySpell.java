@@ -11,17 +11,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class GatewaySpell extends Spell {
 
@@ -129,28 +127,27 @@ public class GatewaySpell extends Spell {
             return;
         }
 
-        TagKey<Structure> tag = GatewayUtil.deriveStructureTag(
-                player.getServer().registryAccess(), offhand);
-        BlockPos structPos = null;
-
-        if (tag != null) {
-            structPos = GatewayUtil.findNearestStructure(worldIn, tag, player.blockPosition());
+        if (offhand.isEmpty()) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.gateway.no_eye"), true);
+            return;
         }
 
-        if (structPos == null && GatewayUtil.isStructureEyeItem(offhand)) {
-            String ns = ForgeRegistries.ITEMS.getKey(offhand.getItem()).getNamespace();
-            structPos = GatewayUtil.findNearestStructuresInNamespace(worldIn, ns, player.blockPosition());
-        }
+        ItemStack backup = offhand.copy();
+        GatewayUtil.pendingEyeCapture = true;
+        GatewayUtil.pendingEyePos = null;
+
+        offhand.use(worldIn, player, InteractionHand.OFF_HAND);
+
+        GatewayUtil.pendingEyeCapture = false;
+        player.setItemInHand(InteractionHand.OFF_HAND, backup);
+
+        BlockPos structPos = GatewayUtil.pendingEyePos;
+        GatewayUtil.pendingEyePos = null;
 
         if (structPos == null) {
-            if (GatewayUtil.isStructureEyeItem(offhand)) {
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.gateway.no_structure_in_ns",
-                                ForgeRegistries.ITEMS.getKey(offhand.getItem()).getNamespace()), true);
-            } else {
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.gateway.no_eye"), true);
-            }
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.gateway.no_structure"), true);
             return;
         }
 

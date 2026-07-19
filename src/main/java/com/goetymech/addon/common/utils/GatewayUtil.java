@@ -1,15 +1,7 @@
 package com.goetymech.addon.common.utils;
 
-import java.util.List;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
@@ -26,63 +18,27 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public class GatewayUtil {
 
-    /** 结构搜索半径（chunk），相当于 10000 格 */
-    private static final int STRUCTURE_SEARCH_RADIUS_CHUNKS = 625;
-
-    private static final java.util.Map<ResourceLocation, TagKey<Structure>> TAG_CACHE = new java.util.HashMap<>();
+    public static volatile boolean pendingEyeCapture = false;
+    @Nullable
+    public static volatile BlockPos pendingEyePos = null;
 
     @Nullable
-    public static TagKey<Structure> deriveStructureTag(RegistryAccess registryAccess, ItemStack offhand) {
-        if (offhand.isEmpty()) return null;
-        ResourceLocation itemId = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(offhand.getItem());
-        if (itemId == null) return null;
-
-        return TAG_CACHE.computeIfAbsent(itemId, id -> {
-            // 1. Try data-driven mapping (from JSON reload listener)
-            ResourceLocation mapped = GatewayMappingLoader.getTagForItem(id);
-            if (mapped != null) {
-                TagKey<Structure> tag = TagKey.create(Registries.STRUCTURE, mapped);
-                Registry<Structure> registry = registryAccess.registryOrThrow(Registries.STRUCTURE);
-                if (registry.getTag(tag).isPresent() && registry.getTag(tag).get().size() > 0) {
-                    return tag;
-                }
-            }
-
-            // 2. Fallback: convention-based derivation
-            String path = id.getPath();
-            String namespace = id.getNamespace();
-            String stem = path.replaceAll("_eye$", "").replaceAll("^eye_of_", "");
-
-            TagKey<Structure> tag = tryTag(registryAccess, namespace, "explorer_maps/" + stem);
-            if (tag != null) return tag;
-
-            tag = tryTag(registryAccess, namespace, "eye_of_" + stem + "_located");
-            if (tag != null) return tag;
-
-            tag = tryTag(registryAccess, namespace, stem);
-            if (tag != null) return tag;
-
-            return null;
-        });
+    public static BlockPos findNearestStructure(ServerLevel level, TagKey<Structure> tag, BlockPos origin) {
+        return level.findNearestMapStructure(tag, origin, 100, false);
     }
 
     @Nullable
-    private static TagKey<Structure> tryTag(RegistryAccess registryAccess, String namespace, String path) {
-        ResourceLocation loc = new ResourceLocation(namespace, path);
-        Registry<Structure> registry = registryAccess.registryOrThrow(Registries.STRUCTURE);
-        TagKey<Structure> tagKey = TagKey.create(Registries.STRUCTURE, loc);
-        if (registry.getTag(tagKey).isPresent() && registry.getTag(tagKey).get().size() > 0) {
-            return tagKey;
-        }
-        return null;
+    public static AABB getStructureBoundingBox(ServerLevel level, BlockPos pos, TagKey<Structure> tag) {
+        StructureStart start = level.structureManager().getStructureWithPieceAt(pos, tag);
+        if (start == null || start == StructureStart.INVALID_START) return null;
+        net.minecraft.world.level.levelgen.structure.BoundingBox bb = start.getBoundingBox();
+        return new AABB(bb.minX(), bb.minY(), bb.minZ(), bb.maxX() + 1, bb.maxY() + 1, bb.maxZ() + 1);
     }
 
     public static boolean isMapWithMarker(ItemStack stack, ServerLevel level) {
@@ -128,43 +84,6 @@ public class GatewayUtil {
             return new BlockPos(worldX, worldY, worldZ);
         }
         return null;
-    }
-
-    @Nullable
-    public static BlockPos findNearestStructure(ServerLevel level, TagKey<Structure> tag, BlockPos origin) {
-        return level.findNearestMapStructure(tag, origin, STRUCTURE_SEARCH_RADIUS_CHUNKS, false);
-    }
-
-    public static boolean isStructureEyeItem(ItemStack stack) {
-        if (stack.isEmpty() || stack.is(Items.FILLED_MAP)) return false;
-        if (stack.is(com.goetymech.addon.init.ModTags.STRUCTURE_EYES)) return true;
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (id == null) return false;
-        String path = id.getPath();
-        return path.contains("_eye") || path.contains("eye_of");
-    }
-
-    @Nullable
-    public static BlockPos findNearestStructuresInNamespace(ServerLevel level, String namespace, BlockPos origin) {
-        Registry<Structure> registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
-        java.util.List<Holder<Structure>> holders = new java.util.ArrayList<>();
-        registry.getTags()
-                .filter(e -> e.getKey().location().getNamespace().equals(namespace))
-                .forEach(e -> e.getValue().forEach(holders::add));
-        if (holders.isEmpty()) return null;
-        HolderSet<Structure> all = HolderSet.direct(
-                holders.stream().distinct().toList());
-        Pair<BlockPos, Holder<Structure>> result = level.getChunkSource().getGenerator()
-                .findNearestMapStructure(level, all, origin, STRUCTURE_SEARCH_RADIUS_CHUNKS, false);
-        return result != null ? result.getLeft() : null;
-    }
-
-    @Nullable
-    public static AABB getStructureBoundingBox(ServerLevel level, BlockPos pos, TagKey<Structure> tag) {
-        StructureStart start = level.structureManager().getStructureWithPieceAt(pos, tag);
-        if (start == null || start == StructureStart.INVALID_START) return null;
-        net.minecraft.world.level.levelgen.structure.BoundingBox bb = start.getBoundingBox();
-        return new AABB(bb.minX(), bb.minY(), bb.minZ(), bb.maxX() + 1, bb.maxY() + 1, bb.maxZ() + 1);
     }
 
     @Nullable

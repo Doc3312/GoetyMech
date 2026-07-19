@@ -17,17 +17,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class GatewayAdvancedSpell extends Spell {
 
@@ -140,78 +138,48 @@ public class GatewayAdvancedSpell extends Spell {
             return;
         }
 
-        TagKey<Structure> tag = GatewayUtil.deriveStructureTag(
-                player.getServer().registryAccess(), offhand);
-        BlockPos bestPos = null;
-        ServerLevel bestLevel = null;
-        double bestDist = Double.MAX_VALUE;
-        BlockPos playerPos = player.blockPosition();
-
-        // Phase 1: try specific tag if available
-        if (tag != null) {
-            for (ServerLevel level : player.getServer().getAllLevels()) {
-                BlockPos structPos = GatewayUtil.findNearestStructure(level, tag, playerPos);
-                if (structPos == null) continue;
-                double dist = structPos.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
-                if (dist < bestDist) {
-                    bestDist = dist;
-                    bestPos = structPos;
-                    bestLevel = level;
-                }
-            }
-        }
-
-        // Phase 2: fallback namespace scan if item looks like an eye
-        if (bestPos == null && GatewayUtil.isStructureEyeItem(offhand)) {
-            String ns = ForgeRegistries.ITEMS.getKey(offhand.getItem()).getNamespace();
-            for (ServerLevel level : player.getServer().getAllLevels()) {
-                BlockPos structPos = GatewayUtil.findNearestStructuresInNamespace(level, ns, playerPos);
-                if (structPos == null) continue;
-                double dist = structPos.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
-                if (dist < bestDist) {
-                    bestDist = dist;
-                    bestPos = structPos;
-                    bestLevel = level;
-                }
-            }
-        }
-
-        if (bestPos == null || bestLevel == null) {
-            if (GatewayUtil.isStructureEyeItem(offhand)) {
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.gateway.no_structure_in_ns",
-                                ForgeRegistries.ITEMS.getKey(offhand.getItem()).getNamespace()), true);
-            } else {
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.gateway.no_eye"), true);
-            }
+        if (offhand.isEmpty()) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.gateway.no_eye"), true);
             return;
         }
 
-        AABB bounds = null;
-        if (tag != null) {
-            bounds = GatewayUtil.getStructureBoundingBox(bestLevel, bestPos, tag);
-        }
-        if (bounds == null) {
-            bounds = new AABB(bestPos).inflate(48);
+        ItemStack backup = offhand.copy();
+        ServerLevel currentLevel = (ServerLevel) player.level();
+        GatewayUtil.pendingEyeCapture = true;
+        GatewayUtil.pendingEyePos = null;
+
+        offhand.use(worldIn, player, InteractionHand.OFF_HAND);
+
+        GatewayUtil.pendingEyeCapture = false;
+        player.setItemInHand(InteractionHand.OFF_HAND, backup);
+
+        BlockPos structPos = GatewayUtil.pendingEyePos;
+        GatewayUtil.pendingEyePos = null;
+
+        if (structPos == null) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.gateway.no_structure"), true);
+            return;
         }
 
+        AABB bounds = new AABB(structPos).inflate(48);
         boolean forceTeleport = checkForceFlag(player);
         Vec3 teleportPos;
 
         if (forceTeleport) {
-            BlockPos hightPos = bestLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, bestPos);
-            if (hightPos.getY() <= bestLevel.getMinBuildHeight()) {
-                hightPos = bestPos.atY(bestLevel.getSeaLevel());
+            BlockPos hightPos = currentLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, structPos);
+            if (hightPos.getY() <= currentLevel.getMinBuildHeight()) {
+                hightPos = structPos.atY(currentLevel.getSeaLevel());
             }
             teleportPos = Vec3.atCenterOf(hightPos);
             clearForceFlag(player);
         } else {
-            BlockPos safePos = GatewayUtil.findSafeTeleportPos(bestLevel, bounds, player);
+            BlockPos safePos = GatewayUtil.findSafeTeleportPos(currentLevel, bounds, player);
             if (safePos != null) {
                 teleportPos = Vec3.atCenterOf(safePos);
             } else {
-                setForceFlag(player, bestPos);
+                setForceFlag(player, structPos);
                 player.displayClientMessage(
                         Component.translatable("info.goetymech.gateway.danger_area"), true);
                 return;
@@ -231,8 +199,8 @@ public class GatewayAdvancedSpell extends Spell {
             SEHelper.addCooldown(player, focus.getItem(), ModConfig.GATEWAY_ADV_COOLDOWN.get());
         }
 
-        GatewayUtil.teleportPlayer(bestLevel, player, teleportPos);
-        triggerFreecam(bestLevel, player);
+        GatewayUtil.teleportPlayer(currentLevel, player, teleportPos);
+        triggerFreecam(currentLevel, player);
         this.playSound(worldIn, caster, SoundEvents.ENDERMAN_TELEPORT);
     }
 
