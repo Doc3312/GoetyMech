@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EyeItemEntity.class)
 public class GoetyEyeItemCaptureMixin {
-    @Inject(method = "signalTo|m_36967_", at = @At("HEAD"))
+    @Inject(method = "signalTo", at = @At("HEAD"), remap = false)
     private void gp$capturePos(BlockPos pos, CallbackInfo ci) {
         if (GatewayUtil.pendingEyeCapture) {
             GatewayUtil.pendingEyePos = pos;
