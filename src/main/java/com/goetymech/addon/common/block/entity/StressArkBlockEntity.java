@@ -55,31 +55,10 @@ public class StressArkBlockEntity extends BlockEntity implements IChunkLoader {
         if (++tickCounter < 20) return;
         tickCounter = 0;
 
-        float totalCap = 0;
-        float totalStress = 0;
-        int readerCount = 0;
-
-        List<GlobalBlockPos> readers = GoetyMechMod.STRESS_LINK.getReadersForOwner(ownerUUID);
-
-        for (GlobalBlockPos readerPos : readers) {
-            GlobalStressLinkManager.ReaderSnapshot snap = GoetyMechMod.STRESS_LINK.getCachedReaderData(readerPos);
-            if (snap != null) {
-                totalCap += snap.capacity();
-                totalStress += snap.stress();
-                readerCount++;
-            } else {
-                StressReaderBlockEntity reader = GoetyMechMod.STRESS_LINK.activeReaders.get(readerPos);
-                if (reader != null) {
-                    totalCap += reader.getNetworkCapacity();
-                    totalStress += reader.getNetworkStress();
-                    readerCount++;
-                }
-            }
-        }
-
-        cachedTotalCapacity = totalCap;
-        cachedTotalStress = totalStress;
-        cachedNetworkCount = readerCount;
+        var agg = GoetyMechMod.STRESS_LINK.getAggregatedReaderData(ownerUUID);
+        cachedTotalCapacity = agg.totalCapacity();
+        cachedTotalStress = agg.totalStress();
+        cachedNetworkCount = agg.uniqueNetworkCount();
         float consumption = GoetyMechMod.STRESS_LINK.getEngineConsumptionForOwner(ownerUUID);
         syncToClient(consumption);
     }
