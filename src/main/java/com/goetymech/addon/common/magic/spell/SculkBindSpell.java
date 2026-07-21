@@ -82,7 +82,7 @@ public class SculkBindSpell extends Spell {
 
     @Override
     public List<Enchantment> acceptedEnchantments() {
-        return List.of(ModEnchantments.RANGE.get(), ModEnchantments.DURATION.get());
+        return List.of(ModEnchantments.POTENCY.get(), ModEnchantments.RANGE.get(), ModEnchantments.DURATION.get());
     }
 
     @Override
@@ -169,6 +169,9 @@ public class SculkBindSpell extends Spell {
 
         // 7. 召唤原版 Warden + 注入愤怒 + 禁遁地（保留出土动画）
         int wardenCount = ModConfig.SCULK_BIND_WARDEN_COUNT.get();
+        if (WandUtil.enchantedFocus(caster)) {
+            wardenCount += WandUtil.getLevels(ModEnchantments.POTENCY.get(), caster);
+        }
         if (useStaffBonus) {
             wardenCount += 1;
         }
