@@ -45,8 +45,6 @@ public class GlobalStressLinkManager {
     public boolean suppressEngineUpdates = false;
     public Set<GlobalBlockPos> dirtyReaders = new HashSet<>();
     public Set<GlobalBlockPos> overstrainedEngines = new HashSet<>();
-    public Map<GlobalBlockPos, Object> readerNetworkKey = new HashMap<>();
-
     private StressLinkSavedData savedData;
 
     public record ReaderSnapshot(float capacity, float stress, float speed) {
@@ -116,7 +114,6 @@ public class GlobalStressLinkManager {
         activeReaders.clear();
         activeEngines.clear();
         readerCache.clear();
-        readerNetworkKey.clear();
         arkRegistry.clear();
         ownerArks.clear();
         engineLocalStress.clear();
@@ -135,10 +132,6 @@ public class GlobalStressLinkManager {
         activeReaders.put(key, reader);
         rebuildOwnerIndex();
 
-        if (reader.hasNetwork()) {
-            readerNetworkKey.put(key, reader.getOrCreateNetwork());
-        }
-
         Set<GlobalBlockPos> engines = readerToEngine.get(key);
         if (engines != null && !engines.isEmpty()) {
             dirtyReaders.add(key);
@@ -147,7 +140,6 @@ public class GlobalStressLinkManager {
 
     public void onReaderUnload(GlobalBlockPos readerPos) {
         activeReaders.remove(readerPos);
-        readerNetworkKey.remove(readerPos);
         Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
         if (engines != null) {
             for (GlobalBlockPos ep : engines) {
@@ -162,7 +154,6 @@ public class GlobalStressLinkManager {
         GlobalBlockPos key = GlobalBlockPos.of(reader.getLevel(), reader.getBlockPos());
         activeReaders.remove(key);
         readerCache.remove(key);
-        readerNetworkKey.remove(key);
         readerOwners.remove(key);
         rebuildOwnerIndex();
 
@@ -264,12 +255,6 @@ public class GlobalStressLinkManager {
                 reader.getNetworkCapacity(),
                 reader.getNetworkStress(),
                 reader.getSpeed()));
-
-        if (reader.hasNetwork()) {
-            readerNetworkKey.put(readerKey, reader.getOrCreateNetwork());
-        } else {
-            readerNetworkKey.remove(readerKey);
-        }
 
         dirtyReaders.add(readerKey);
     }
@@ -597,25 +582,24 @@ public class GlobalStressLinkManager {
     public AggregatedReaderData getAggregatedReaderData(UUID ownerUUID) {
         float totalCap = 0;
         float totalStress = 0;
-        Set<Object> seenNetworks = new HashSet<>();
+        Set<KineticNetwork> seenNetworks = new HashSet<>();
         int uniqueCount = 0;
         for (GlobalBlockPos readerPos : getReadersForOwner(ownerUUID)) {
-            Object netKey = readerNetworkKey.get(readerPos);
-            boolean isDuplicate = (netKey != null) && !seenNetworks.add(netKey);
-            if (isDuplicate) continue;
+            StressReaderBlockEntity liveReader = activeReaders.get(readerPos);
+            if (liveReader != null && liveReader.hasNetwork()) {
+                KineticNetwork network = liveReader.getOrCreateNetwork();
+                if (!seenNetworks.add(network)) continue;
+            }
 
             ReaderSnapshot snap = getCachedReaderData(readerPos);
             if (snap != null) {
                 totalCap += snap.capacity();
                 totalStress += snap.stress();
                 uniqueCount++;
-            } else {
-                StressReaderBlockEntity reader = activeReaders.get(readerPos);
-                if (reader != null) {
-                    totalCap += reader.getNetworkCapacity();
-                    totalStress += reader.getNetworkStress();
-                    uniqueCount++;
-                }
+            } else if (liveReader != null) {
+                totalCap += liveReader.getNetworkCapacity();
+                totalStress += liveReader.getNetworkStress();
+                uniqueCount++;
             }
         }
         return new AggregatedReaderData(totalCap, totalStress, uniqueCount);
