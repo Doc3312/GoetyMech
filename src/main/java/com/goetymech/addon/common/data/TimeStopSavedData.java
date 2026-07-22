@@ -14,6 +14,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 时停维度持久化。记录当前时停影响的维度集合，服务器启动/存档重载时恢复。
+ */
 public class TimeStopSavedData extends SavedData {
     public Set<ResourceLocation> dimensions = new ObjectOpenHashSet<>();
 

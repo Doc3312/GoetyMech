@@ -537,14 +537,12 @@ public class StressLinkService extends SavedData {
         }
         rebuildOwnerIndex();
 
-        // 存档加载后：标记所有 reader 为 dirty，触发 distributeBudget() 填充运行时缓存
-        // 这解决了重进存档后 readerCache、engineLocalStress 等为空的问题
+        // 存档加载后标记所有 reader 为 dirty，触发 distributeBudget() 重建运行时缓存
         for (GlobalBlockPos readerPos : readerToEngine.keySet()) {
             dirtyReaders.add(readerPos);
         }
 
-        // 存档加载后：重新应用跨维度引擎的区块强加载
-        // 这确保跨维度引擎即使玩家离开也能正常工作
+        // 重新应用跨维度引擎的区块强加载
         for (GlobalBlockPos enginePos : engineToReader.keySet()) {
             forceLoadEngineChunk(enginePos);
         }

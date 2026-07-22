@@ -41,12 +41,14 @@ import java.util.List;
  */
 public class SculkBindSpell extends Spell {
 
-    // 定身标签 — 与 SculkBindEvents 共享
+    /** PersistentData 定身坐标标签，与 SculkBindEvents 共享用于每 tick 强制归位 */
     public static final String TAG_LOCK_X = "goetymech.sculk_lock_x";
     public static final String TAG_LOCK_Y = "goetymech.sculk_lock_y";
     public static final String TAG_LOCK_Z = "goetymech.sculk_lock_z";
+    /** 锁定过期时间戳，由 cleanExpiredLock 检查清理 */
     public static final String TAG_LOCK_END = "goetymech.sculk_lock_end";
 
+    /** 配置项在 GoetyMechMod 构造函数中预加载，构造时即可安全读取 */
     @Override
     public int defaultSoulCost() {
         return ModConfig.SCULK_BIND_COST.get();
@@ -67,6 +69,7 @@ public class SculkBindSpell extends Spell {
         return true;
     }
 
+    /** 仅在运行时被 getTarget/WandUtil.getStats 调用，可安全读取配置 */
     @Override
     public SpellStat defaultStats() {
         return new SpellStat(0, 0, ModConfig.SCULK_BIND_RANGE.get(), 0.0D, 0, 0.0F);

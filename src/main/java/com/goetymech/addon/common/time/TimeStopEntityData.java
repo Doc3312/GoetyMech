@@ -3,6 +3,9 @@ package com.goetymech.addon.common.time;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * 实体级时停数据访问。通过 PersistentData 读写实体的时停剩余时间和可移动标志。
+ */
 public class TimeStopEntityData {
     private static final String KEY_COUNT = "goetymech_time_stop_count";
     private static final String KEY_CAN_MOVE = "goetymech_time_stop_can_move";

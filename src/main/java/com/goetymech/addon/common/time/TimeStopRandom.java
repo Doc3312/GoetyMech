@@ -4,6 +4,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * 时停专用随机数生成器。时停激活时跳过 seed 更新，使视觉效果保持一致。
+ */
 public class TimeStopRandom extends LegacyRandomSource {
     private final AtomicLong seed = new AtomicLong();
 

@@ -16,6 +16,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.PacketDistributor;
 
+/**
+ * 时停核心引擎（服务端）。
+ * 管理全局时停标志、广播 S2C 状态包、维护时停维度持久化。
+ * use() 为同步入口，支持倒计时自动解除。
+ */
 public class TimeStopUtils {
     public static volatile boolean isTimeStop;
 

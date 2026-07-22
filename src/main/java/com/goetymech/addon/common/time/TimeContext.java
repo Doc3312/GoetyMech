@@ -10,6 +10,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 时停专用时间上下文。
+ * Client 侧维护独立 Timer（不受 msPerTick=1.0e32 影响）和冻结时刻的 GLFW 时间锚点。
+ * Both 侧提供可替换的时间源，用于时停中的时间计算。
+ */
 public class TimeContext {
 
     @OnlyIn(Dist.CLIENT)

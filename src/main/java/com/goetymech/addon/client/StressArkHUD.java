@@ -73,8 +73,7 @@ public class StressArkHUD {
         float cap = totalCapacity;
         float stress = totalStress;
         float used = Math.max(stress, 0);
-        // totalStress（used）已含远程引擎消耗（Reader.calculateStressApplied 注入 Create 网络），
-        // 不再重复扣减 engineConsumption
+        // used 已含远程引擎消耗（Reader.calculateStressApplied 注入 Create 网络）
 
         int barX = width / 2 + 100;
         int barY = height - 25;

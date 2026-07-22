@@ -24,6 +24,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 小队兵营 GUI。根据兵营等级（T1/T2/T3）加载对应纹理，显示槽位和兵种选择按钮。
+ * 通过 SquadConfigC2SPacket 与服务端同步配置。
+ */
 public class SquadBarracksScreen extends AbstractContainerScreen<SquadBarracksMenu> {
 
     private static final ResourceLocation TEXTURE_T1 =
