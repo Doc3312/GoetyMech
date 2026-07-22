@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "After obtaining Twisted Embryos, you began exploring ways to convert them into combat power more efficiently.$(br)Eventually, you found inspiration in the traditional training methods of the illagers, and through dark magic, you established a connection between this furnace and an Ominous Pyre."
+      "text": "After obtaining $(l:goetymech_crafts/twisted_embryo)Twisted Embryos$(/l), you began exploring ways to convert them into combat power more efficiently.$(br)Eventually, you found inspiration in the traditional training methods of the illagers, and through dark magic, you established a connection between this furnace and an $(l:crafts/artifice/ominous_pyre)Ominous Pyre$(/l)."
     },
     {
       "type": "goety:ritual",
