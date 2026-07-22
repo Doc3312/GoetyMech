@@ -1,0 +1,49 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.goetymech.addon.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "goetymech.refmap.json",
+  "client": [
+    "Blaze3DMixin",
+    "CameraMixin",
+    "ClientLevelMixin",
+    "GameRendererMixin",
+    "GuiMixin",
+    "HumanoidArmorLayerMixin",
+    "ItemInHandRendererMixin",
+    "LevelRendererMixin",
+    "MinecraftMixin",
+    "ParticleEngineMixin",
+    "TimerAccessor",
+    "TutorialMixin",
+    "EntityMixin",
+    "StockKeeperRequestMenuMixin",
+    "StockKeeperRequestScreenMixin",
+    "LogisticalStockResponsePacketMixin"
+  ],
+  "mixins": [
+    "CollectingNeighborUpdaterMixin",
+    "InstantNeighborUpdaterMixin",
+    "LevelMixin",
+    "LivingEntityHurtMixin",
+    "LivingEntityTickMixin",
+    "ItemEntityPrototypeMixin",
+    "ItemEntityVoidMixin",
+    "PrototypePlayerMixin",
+    "PrototypeStepHeightMixin",
+    "PrototypeTravelMixin",
+    "MixinWallRunTravel",
+    "EntityOnGroundAccessor",
+    "WandUtilMixin",
+    "CastSpellTrapMixin",
+    "PackagerBlockEntityMixin",
+    "BlockEntityConfigurationPacketMixin",
+    "EyeOfEnderCaptureMixin",
+    "GoetyEyeItemCaptureMixin",
+    "ServerLevelFindStructureMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

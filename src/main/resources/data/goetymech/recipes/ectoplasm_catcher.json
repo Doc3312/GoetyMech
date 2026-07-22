@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PSP",
+    "STS",
+    "PSP"
+  ],
+  "key": {
+    "P": { "item": "goety:pale_steel_ingot" },
+    "S": { "item": "minecraft:stick" },
+    "T": { "item": "goety:totem_of_roots" }
+  },
+  "result": {
+    "item": "goetymech:ectoplasm_catcher"
+  }
+}

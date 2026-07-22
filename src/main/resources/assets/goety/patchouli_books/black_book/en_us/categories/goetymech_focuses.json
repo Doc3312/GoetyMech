@@ -1,0 +1,7 @@
+{
+  "name": "Focuses",
+  "description": "Scientific concepts bring innovation to magic. They may not have world-shattering destructive power, but they always make exploring the world a little easier.",
+  "icon": "goetymech:sculk_bind_focus",
+  "sortnum": 9,
+  "parent": "goety:goetymech"
+}

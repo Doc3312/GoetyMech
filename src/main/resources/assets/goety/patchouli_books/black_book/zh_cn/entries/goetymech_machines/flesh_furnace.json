@@ -1,0 +1,20 @@
+{
+  "name": "血肉熔炉",
+  "icon": "goetymech:flesh_furnace",
+  "category": "goety:goetymech_machines",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "获得$(l:goetymech_crafts/twisted_embryo)扭曲胚胎$(/l)之后，你开始探索将它们更高效的转化为战力的方式。$(br)最终，你在灾厄村民传统的训练方式上找到了灵感，通过黑魔法，你成功使熔炉与$(l:crafts/artifice/ominous_pyre)不祥火炬$(/l)建立了联系。"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:flesh_furnace"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "熔炉放置后将自动绑定8格内的不祥火炬，绑定后可通过漏斗输入扭曲胚胎。$(br)经过一段时间转化后，胚胎将转化为绑定火炬所对应兵种的成熟胚胎。$(br)花费一点灵魂，即可将胚胎转化为你的士兵。$(br)与点将台和兵团聚晶一起使用，可以更为高效的组织一支军队。$(br)$(4)\"扭曲的血肉造物，我能隐约感受到这些血肉仍有更高深的秘密等待探索，但那已经偏离了魔法的范畴。\"$()"
+    }
+  ]
+}

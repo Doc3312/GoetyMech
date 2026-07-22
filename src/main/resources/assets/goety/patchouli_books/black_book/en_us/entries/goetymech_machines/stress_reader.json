@@ -1,0 +1,16 @@
+{
+  "name": "Stress Reader",
+  "icon": "goetymech:stress_reader",
+  "category": "goety:goetymech_machines",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A product combining dark magic and machinery. Place it in a stress network to read all stress data of that network.$(br)Can be used together with the $(l:goetymech_machines/stress_ark)Stress Ark$(/l) and $(l:goetymech_machines/remote_engine)Remote Engine$(/l). When a Stress Ark is present, all stress data collected by Stress Readers will be aggregated to the ark.$(br)$(4)\"Through it, we will transmit stress in a much lighter way.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:stress_reader"
+    }
+  ]
+}

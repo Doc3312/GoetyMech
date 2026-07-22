@@ -1,0 +1,7 @@
+{
+  "name": "Crafts",
+  "description": "The collision of different paths always births something new, each with its own wondrous effects.",
+  "icon": "goetymech:remote_engine",
+  "sortnum": 11,
+  "parent": "goety:goetymech"
+}

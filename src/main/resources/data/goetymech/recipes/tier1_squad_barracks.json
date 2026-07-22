@@ -1,0 +1,22 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:troop_focus"
+  },
+  "craftType": "mechanical",
+  "soulCost": 400,
+  "duration": 4,
+  "ingredients": [
+    { "item": "create:andesite_casing" },
+    { "item": "create:andesite_casing" },
+    { "item": "minecraft:iron_ingot" },
+    { "item": "goety:ectoplasm" },
+    { "item": "goety:ectoplasm" },
+    { "item": "minecraft:chest" },
+    { "item": "goety:waystone" }
+  ],
+  "result": {
+    "item": "goetymech:tier1_squad_barracks"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "远程仓储聚晶",
+  "icon": "goetymech:remote_storage_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "一个成熟的黑魔法师总是积攒着许多材料，但随身携带又太过笨重，放在仓库里又不便拿取。末影箱给了你灵感，现在你可以远程访问仓库了。$(br)只要在仓库地址里写上你的名字，就可以将物品传送至身边。$(br)$(4)\"尽情搜刮吧，背包将不再是限制。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:remote_storage_focus"
+    }
+  ],
+  "extra_recipe_mappings": {
+    "goetymech:remote_storage_focus": 1
+  }
+}

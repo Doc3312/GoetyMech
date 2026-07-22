@@ -1,0 +1,16 @@
+{
+  "name": "Advanced Gateway Focus",
+  "icon": "goetymech:gateway_focus_advanced",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "An upgraded form of the $(l:goetymech_focuses/gateway_focus)Gateway Focus$(/l), capable of teleporting across dimensions to the vicinity of a target destination.$(br)When casting with a Structure Eye or a map containing coordinates (such as a treasure map, woodland mansion map, etc.) in the off-hand, the caster will be teleported to the vicinity of the corresponding structure.$(br)Upon arrival, the caster enters a one-minute Clairvoyant state, allowing them to scout the surrounding area in a manner similar to Spectator Mode, making it easier to locate their target.$(br)$(4)\"With this, we can go wherever we please.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:gateway_focus_advanced"
+    }
+  ]
+}

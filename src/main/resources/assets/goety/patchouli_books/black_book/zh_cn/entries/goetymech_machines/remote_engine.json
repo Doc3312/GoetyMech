@@ -1,0 +1,16 @@
+{
+  "name": "远程引擎",
+  "icon": "goetymech:remote_engine",
+  "category": "goety:goetymech_machines",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "黑魔法与机械的结合产物，手持右键绑定$(l:goetymech_machines/stress_reader)应力读取器$(/l)，绑定后即可跨维度输出读取器所在网络应力，蹲下右键读取器解绑。$(br)若存在$(l:goetymech_machines/stress_ark)应力方舟$(/l)，则不需单独绑定应力读取器，放置引擎后方舟将自动为引擎分配可用的读取器网络。$(br)$(4)\"魔法的全新表达方式，我们不再仅仅驾驭魔力。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:remote_engine"
+    }
+  ]
+}

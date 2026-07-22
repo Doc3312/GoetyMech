@@ -1,0 +1,16 @@
+{
+  "name": "Sculk Bind Focus",
+  "icon": "goetymech:sculk_bind_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Use thorns to bind the target, then forcefully summon an enraged Warden beside them.$(br)Very low cost — even aerial targets can be bound.$(br)But after the Warden eliminates the target, it will also relentlessly chase the caster.$(br)$(4)\"If you can escape from the Warden, it will be your best enforcer!\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:sculk_bind_focus"
+    }
+  ]
+}

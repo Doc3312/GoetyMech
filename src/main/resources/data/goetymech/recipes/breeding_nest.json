@@ -1,0 +1,26 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:hunger_core"
+  },
+  "craftType": "mechanical",
+  "entity_to_sacrifice": {
+    "tag": "goety:villagers",
+    "display_name": "entity.minecraft.villager"
+  },
+  "soulCost": 500,
+  "duration": 10,
+  "ingredients": [
+    { "item": "minecraft:rotten_flesh" },
+    { "item": "minecraft:rotten_flesh" },
+    { "item": "goety:tall_skull" },
+    { "item": "goety:tall_skull" },
+    { "item": "goety:ectoplasm" },
+    { "item": "goety:ectoplasm" },
+    { "item": "minecraft:hay_block" }
+  ],
+  "result": {
+    "item": "goetymech:breeding_nest"
+  }
+}

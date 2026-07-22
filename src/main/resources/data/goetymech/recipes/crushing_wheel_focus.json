@@ -1,0 +1,21 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:empty_focus"
+  },
+  "craftType": "mechanical",
+  "soulCost": 50,
+  "duration": 5,
+  "ingredients": [
+    { "item": "create:crushing_wheel" },
+    { "item": "minecraft:iron_block" },
+    { "item": "goety:waystone" },
+    { "item": "create:shaft" },
+    { "item": "create:shaft" },
+    { "item": "goety:ectoplasm" }
+  ],
+  "result": {
+    "item": "goetymech:crushing_wheel_focus"
+  }
+}

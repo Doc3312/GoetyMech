@@ -1,0 +1,16 @@
+{
+  "name": "Neuro Stasis Focus Pouch",
+  "icon": "goetymech:neuro_stasis_focus_pouch",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A seemingly living focus pouch that embeds itself deep into the wearer's body.$(br)Compared to an ordinary focus pouch, this one allows you to concentrate far more intensely when deciding which spell to cast.$(br)When holding a wand, pressing X to switch focuses or C to open the pouch will freeze the movement of nearby creatures.$(br)$(4)\"When you contemplate, the world stands still for you.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:neuro_stasis_focus_pouch"
+    }
+  ]
+}

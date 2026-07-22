@@ -1,0 +1,16 @@
+{
+  "name": "神行聚晶",
+  "icon": "goetymech:gateway_focus_advanced",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "由$(l:goetymech_focuses/gateway_focus)定点聚晶$(/l)晋升而来，可跨维度传送至目的地附近。$(br)当副手持有结构之眼或某个蕴含坐标的地图（如藏宝图、林地府邸地图等）时施法，即可将施法者传送至对应结构附近。$(br)抵达后施法者将进入一分钟的神行状态，玩家可如观察者模式一般探寻目的地四周的环境，以便更快找到目标。$(br)$(4)\"有了这个，我们想去哪就可以去哪。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:gateway_focus_advanced"
+    }
+  ]
+}

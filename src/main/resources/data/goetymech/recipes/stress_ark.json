@@ -1,0 +1,22 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "create:stressometer"
+  },
+  "craftType": "mechanical",
+  "soulCost": 16,
+  "duration": 8,
+  "ingredients": [
+    { "item": "minecraft:obsidian" },
+    { "item": "minecraft:obsidian" },
+    { "item": "create:cogwheel" },
+    { "item": "create:cogwheel" },
+    { "item": "create:large_cogwheel" },
+    { "item": "create:large_cogwheel" },
+    { "item": "goety:ectoplasm" }
+  ],
+  "result": {
+    "item": "goetymech:stress_ark"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "应力方舟",
+  "icon": "goetymech:stress_ark",
+  "category": "goety:goetymech_machines",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "黑魔法与机械结合的巅峰之作，作为应力网络和应力系列的指挥中枢，应力网络可以自动获取所有的$(l:goetymech_machines/stress_reader)应力读取器$(/l)所在网络的数据，并跨纬度为$(l:goetymech_machines/remote_engine)远程引擎$(/l)和所有应力系列的聚晶提供应力数据的计算。$(br)可通过shift+右键破坏。$(br)$(4)\"它对应力魔法就如同灵魂方舟对灵魂魔法一样，没有它，远程应力的投送将变得十分困难。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:stress_ark"
+    }
+  ]
+}

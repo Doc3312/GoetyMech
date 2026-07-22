@@ -1,0 +1,12 @@
+{
+  "name": "扭曲胚胎",
+  "icon": "goetymech:twisted_embryo",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "自$(l:goetymech_machines/breeding_nest)育巢$(/l)诞生的，扭曲的血肉与黑魔法结合的产物。$(br)消耗微不足道的灵魂，即可将其转化为忠心的新刌民仆从，灵魂不足也可以半血状态强制转化。$(br)抑或是放入$(l:goetymech_machines/flesh_furnace)血肉熔炉$(/l)，将其转化为更强大的战士。$(br)但需要注意的是，扭曲胚胎所转化的仆从无法学习魔法。$(br)$(4)\"我们踏出了第一步，军团的雏形建立起来了。\"$()"
+    }
+  ]
+}

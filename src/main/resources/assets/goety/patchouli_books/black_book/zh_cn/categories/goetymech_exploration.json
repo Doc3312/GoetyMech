@@ -1,0 +1,7 @@
+{
+  "name": "探索",
+  "description": "你意识到你不是唯一一个走在机械与魔法结合道路上的探索者，你想找到这些同道们互相\u201c交流\u201d一番。",
+  "icon": "goetymech:stress_reader",
+  "sortnum": 12,
+  "parent": "goety:goetymech"
+}

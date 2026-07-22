@@ -1,0 +1,12 @@
+{
+  "name": "Mature Embryo",
+  "icon": "goetymech:mature_embryo",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A $(l:goetymech_crafts/twisted_embryo)Twisted Embryo$(/l) transformed by the $(l:goetymech_machines/flesh_furnace)Flesh Furnace$(/l). Spend a bit of soul energy to turn it into a soldier; if soul energy is insufficient, it can be forcibly converted at half health.$(br)Through the $(l:goetymech_machines/squad_barracks)Squad Barracks$(/l) and $(l:goetymech_focuses/squad_focus)Squad Focus$(/l), you can use them more conveniently.$(br)$(4)\"Rise, soldier.\"$()"
+    }
+  ]
+}

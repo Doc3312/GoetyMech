@@ -1,0 +1,16 @@
+{
+  "name": "粉碎轮聚晶",
+  "icon": "goetymech:crushing_wheel_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "可召唤多个滚动的巨轮击飞沿途的敌人，巨轮伤害由绑定的网络总应力所决定，默认每2000应力转化为1点伤害，可在配置中调整。$(br)默认需手持聚晶右键$(l:goetymech_machines/stress_reader)应力读取器$(/l)进行网络绑定，蹲下右键解绑；若存在$(l:goetymech_machines/stress_ark)应力方舟$(/l)则无需手动绑定。$(br)$(4)\"这粉碎轮不只粉碎物品好用，用来碾碎敌人也不错。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:crushing_wheel_focus"
+    }
+  ]
+}

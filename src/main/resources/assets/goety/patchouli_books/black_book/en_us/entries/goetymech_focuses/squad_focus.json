@@ -1,0 +1,16 @@
+{
+  "name": "Squad Focus",
+  "icon": "goetymech:squad_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Evolved from the $(l:goety:focuses/void/troop_focus)Troop Focus$(/l), allows you to configure your army more conveniently.$(br)Right-click with the focus in hand to bind a $(l:goetymech_machines/squad_barracks)Squad Barracks$(/l) or $(l:goetymech_machines/soul_monument)Soul Monument$(/l); sneak + right-click to unbind.$(br)The casting logic differs between binding a Squad Barracks and a Soul Monument — hold Shift while holding a bound focus for details.$(br)$(4)\"Fight for me, my servants!\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:squad_focus"
+    }
+  ]
+}

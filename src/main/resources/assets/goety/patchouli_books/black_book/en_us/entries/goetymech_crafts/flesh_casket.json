@@ -1,0 +1,24 @@
+{
+  "name": "Flesh Casket",
+  "icon": "goetymech:flesh_casket_1",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Spellcasting takes time in most cases, but on adventures you'll always encounter emergencies where there's no time to cast, filling you with deep anxiety.$(br)Fortunately, these records of flesh magic and machinery gave you an idea: why not embed foci directly into the body? And so the Flesh Casket was born.$(br)Foci placed inside a Casket will auto-cast when the wearer takes damage, and do not share cooldowns with other foci of the same type."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Casket has three versions, each with different trigger conditions:$(br)$(l:goetymech_crafts/flesh_casket)Fullness$(): casts on any damage taken.$(br)$(l:goetymech_crafts/flesh_casket)Balance$(): casts only when health is below half.$(br)$(l:goetymech_crafts/flesh_casket)Deathbed$(): casts only when health is below 20%%.$(br)Place the Casket into a Cursed Infuser to cycle between conditions.$(br)Spells cast by the Flesh Casket consume only 50%% soul energy, and its cooldown is inherited from the placed focus.$(br)$(4)\"A good start, but human flesh is ultimately too fragile to bear too many foci. Perhaps becoming a lich could solve this.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:flesh_casket_1"
+    }
+  ],
+  "extra_recipe_mappings": {
+    "goetymech:flesh_casket_2": 1,
+    "goetymech:flesh_casket_3": 1
+  }
+}

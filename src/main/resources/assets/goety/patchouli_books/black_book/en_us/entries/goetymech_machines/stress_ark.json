@@ -1,0 +1,16 @@
+{
+  "name": "Stress Ark",
+  "icon": "goetymech:stress_ark",
+  "category": "goety:goetymech_machines",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The pinnacle of dark magic and machinery. As the command hub of the stress network and stress series, the Stress Ark automatically collects data from all bound $(l:goetymech_machines/stress_reader)Stress Readers$(/l) and provides cross-dimensional stress computation for the $(l:goetymech_machines/remote_engine)Remote Engine$(/l) and all stress-series focuses.$(br)Can be broken by shift + right-click.$(br)$(4)\"It is to stress magic what the Soul Ark is to soul magic — without it, long-range stress projection becomes exceedingly difficult.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:stress_ark"
+    }
+  ]
+}

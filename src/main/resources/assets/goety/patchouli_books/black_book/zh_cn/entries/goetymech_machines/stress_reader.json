@@ -1,0 +1,16 @@
+{
+  "name": "应力读取器",
+  "icon": "goetymech:stress_reader",
+  "category": "goety:goetymech_machines",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "黑魔法与机械的结合产物，放置在应力网络中，即可读取所在网络所有应力数据。$(br)可与$(l:goetymech_machines/stress_ark)应力方舟$(/l)和$(l:goetymech_machines/remote_engine)远程引擎$(/l)配合使用，在有应力方舟的情况下，所有应力读取器获取的应力网络数据都会被汇总到应力方舟。$(br)$(4)\"通过它，我们将用更为轻便的方式传递应力。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:stress_reader"
+    }
+  ]
+}

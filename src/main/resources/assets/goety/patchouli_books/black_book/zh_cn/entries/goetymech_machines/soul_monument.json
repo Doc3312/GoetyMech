@@ -1,0 +1,28 @@
+{
+  "name": "魂灵丰碑",
+  "icon": "goetymech:tier1_soul_monument",
+  "category": "goety:goetymech_machines",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "相较那些弱小的炮灰，总有些仆从是你不愿失去的，你希望它们能更好的为你效力。$(br)所以，你想到了一个新的点子，只要将它们的灵魂抽出，肉体封印进石碑，再辅以万能而高效的黑魔法，你就拥有了随叫随到，永远不会真正死去的仆从。$(br)放置后，使用$(l:goety:crafts/taglock_kit)巫毒娃娃$(/l)绑定仆从，之后用娃娃右键丰碑，即可进入绑定仪式。$(br)进入仪式后，需要在丰碑的半径10格内杀死一只村民，由他来代替仆从真正死去，村民死亡后仆从则会消失，仪式完成。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "注意，进入仪式后不可随意退出，只能通过破坏丰碑或等到仪式超时结束。$(br)丰碑仆从一经绑定就无法撤回，只能通过空手shift+左键点击丰碑三次来清除丰碑内的所有仆从，请慎重绑定。$(br)丰碑仆从可在任何纬度召唤，每只仆从需要消耗1000灵魂。$(br)升级丰碑即可在提升丰碑容量，每阶提升4个，同时如$(l:goetymech_machines/squad_barracks)点将台$(/l)般减少灵魂的消耗。$(br)$(4)\"为什么这些精锐这么容易死？该死的，我受够每次浪费大量的时间复活它们了，我需要一种更高效的方法来让他们为我效力！\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:soul_monument_1"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:soul_monument_1_to_2"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:soul_monument_2_to_3"
+    }
+  ]
+}

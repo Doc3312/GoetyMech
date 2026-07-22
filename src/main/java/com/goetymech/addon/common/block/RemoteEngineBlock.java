@@ -1,0 +1,112 @@
+package com.goetymech.addon.common.block;
+
+import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
+import com.goetymech.addon.common.item.RemoteEngineBlockItem;
+import com.goetymech.addon.init.ModBlocks;
+import com.simibubi.create.AllShapes;
+import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
+import net.createmod.catnip.math.VoxelShaper;
+import com.simibubi.create.foundation.block.IBE;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
+
+/**
+ * 遥控引擎。Create 动力方块，远程提供旋转动力。
+ */
+public class RemoteEngineBlock extends DirectionalKineticBlock
+        implements IBE<RemoteEngineBlockEntity> {
+
+    public static final VoxelShaper REMOTE_ENGINE_SHAPE = VoxelShaper.forDirectional(
+        box(2, 0, 0, 14, 14, 16), Direction.NORTH);
+
+    public RemoteEngineBlock() {
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .strength(5.0f)
+                .requiresCorrectToolForDrops()
+                .sound(SoundType.METAL));
+    }
+
+    @Override
+    public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
+        return face == state.getValue(FACING);
+    }
+
+    @Override
+    public Direction.Axis getRotationAxis(BlockState state) {
+        return state.getValue(FACING).getAxis();
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction preferred = getPreferredFacing(context);
+        if (preferred == null || (context.getPlayer() != null && context.getPlayer().isShiftKeyDown())) {
+            Direction nearestLookingDirection = context.getNearestLookingDirection();
+            return defaultBlockState().setValue(FACING, context.getPlayer() != null && context.getPlayer()
+                .isShiftKeyDown() ? nearestLookingDirection : nearestLookingDirection.getOpposite());
+        }
+        return defaultBlockState().setValue(FACING, preferred);
+    }
+
+    @Override
+    public Class<RemoteEngineBlockEntity> getBlockEntityClass() {
+        return RemoteEngineBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends RemoteEngineBlockEntity> getBlockEntityType() {
+        return ModBlocks.REMOTE_ENGINE_ENTITY.get();
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state,
+                            @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (placer instanceof Player && !level.isClientSide) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof RemoteEngineBlockEntity engine) {
+                engine.setPlacerUUID(placer.getUUID());
+                if (RemoteEngineBlockItem.isBound(stack)) {
+                    engine.setLinkedPos(
+                            RemoteEngineBlockItem.getBoundPos(stack),
+                            RemoteEngineBlockItem.getBoundDim(stack));
+                    RemoteEngineBlockItem.writeEnginePos(stack, pos);
+                }
+            }
+        }
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+        return REMOTE_ENGINE_SHAPE.get(state.getValue(FACING));
+    }
+
+    @Override
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
+    }
+
+    @Override
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
+        return false;
+    }
+
+}

@@ -1,0 +1,22 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:empty_focus"
+  },
+  "craftType": "end",
+  "soulCost": 240,
+  "duration": 8,
+  "ingredients": [
+    { "item": "minecraft:ender_pearl" },
+    { "item": "minecraft:amethyst_shard" },
+    { "item": "goety:waystone" },
+    { "item": "minecraft:ender_eye" },
+    { "item": "minecraft:phantom_membrane" },
+    { "item": "minecraft:phantom_membrane" },
+    { "item": "goety:ectoplasm" }
+  ],
+  "result": {
+    "item": "goetymech:chase_focus"
+  }
+}

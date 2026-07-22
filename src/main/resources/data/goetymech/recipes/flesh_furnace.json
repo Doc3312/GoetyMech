@@ -1,0 +1,26 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:furnace"
+  },
+  "craftType": "mechanical",
+  "entity_to_sacrifice": {
+    "tag": "goety:villagers",
+    "display_name": "entity.minecraft.villager"
+  },
+  "soulCost": 500,
+  "duration": 5,
+  "ingredients": [
+    { "item": "goety:waystone" },
+    { "item": "goety:ominous_pyre" },
+    { "item": "minecraft:ender_pearl" },
+    { "item": "goety:ectoplasm" },
+    { "item": "goety:ectoplasm" },
+    { "item": "minecraft:bone" },
+    { "item": "minecraft:rotten_flesh" }
+  ],
+  "result": {
+    "item": "goetymech:flesh_furnace"
+  }
+}

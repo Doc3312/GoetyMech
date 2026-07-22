@@ -1,0 +1,7 @@
+{
+  "name": "仪式",
+  "description": "为了不必挥动铁锤，调试器械，黑魔法师开始了自己的一点小小尝试——把机械的加工改由魔法完成。",
+  "icon": "goetymech:stress_ark",
+  "sortnum": 10,
+  "parent": "goety:goetymech"
+}

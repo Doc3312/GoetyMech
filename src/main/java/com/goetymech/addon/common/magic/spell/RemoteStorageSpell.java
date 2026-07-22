@@ -1,0 +1,178 @@
+package com.goetymech.addon.common.magic.spell;
+
+import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.common.item.RemoteStorageFocus;
+import com.goetymech.addon.config.ModConfig;
+import com.Polarice3.Goety.api.magic.SpellType;
+import com.Polarice3.Goety.common.magic.Spell;
+import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.utils.SEHelper;
+import com.Polarice3.Goety.utils.WandUtil;
+import com.simibubi.create.AllMenuTypes;
+import com.simibubi.create.Create;
+import com.simibubi.create.content.logistics.stockTicker.StockKeeperCategoryMenu;
+import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkHooks;
+
+/**
+ * 远程打开 Create Stock Ticker 下单界面。
+ */
+public class RemoteStorageSpell extends Spell {
+
+    @Override
+    public int defaultSoulCost() {
+        return ModConfig.STOCK_TICKER_FOCUS_COST.get();
+    }
+
+    @Override
+    public int defaultCastDuration() {
+        return 0;
+    }
+
+    @Override
+    public int defaultSpellCooldown() {
+        return ModConfig.STOCK_TICKER_FOCUS_COOLDOWN.get();
+    }
+
+    @Override
+    public boolean hasCustomCooldown(LivingEntity caster, ItemStack staff,
+                                     ItemStack focus, int initialCooldown) {
+        return true;
+    }
+
+    @Override
+    public SpellStat defaultStats() {
+        return new SpellStat(0, 0, 0, 0, 0, 0);
+    }
+
+    @Override
+    public SpellType getSpellType() {
+        return GoetyMechMod.MECHANICAL;
+    }
+
+    @Override
+    public SoundEvent CastingSound() {
+        return SoundEvents.ENDERMAN_TELEPORT;
+    }
+
+    @Override
+    public void SpellResult(ServerLevel worldIn, LivingEntity caster,
+                            ItemStack staff, SpellStat spellStat) {
+        if (!(caster instanceof ServerPlayer player)) return;
+
+        ItemStack focus = WandUtil.findFocus(caster);
+        if (!(focus.getItem() instanceof RemoteStorageFocus)) return;
+
+        if (!RemoteStorageFocus.isBound(focus)) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.remote_storage_focus.not_bound"), true);
+            return;
+        }
+
+        BlockPos boundPos = RemoteStorageFocus.getBoundPos(focus);
+        ResourceLocation boundDim = RemoteStorageFocus.getBoundDimension(focus);
+        if (boundPos == null || boundDim == null) return;
+
+        if (player.getServer() == null) return;
+        ResourceKey<Level> dimKey = ResourceKey.create(Registries.DIMENSION, boundDim);
+        ServerLevel targetLevel = player.getServer().getLevel(dimKey);
+        if (targetLevel == null) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.remote_storage_focus.dimension_unloaded"), true);
+            return;
+        }
+
+        BlockEntity be = targetLevel.getBlockEntity(boundPos);
+        if (!(be instanceof StockTickerBlockEntity stbe)) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.remote_storage_focus.ticker_lost"), true);
+            RemoteStorageFocus.clearBinding(focus);
+            return;
+        }
+
+        if (!stbe.isKeeperPresent()) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.remote_storage_focus.no_keeper"), true);
+            return;
+        }
+
+        if (!stbe.behaviour.mayInteract(player)) {
+            player.displayClientMessage(
+                    Component.translatable("info.goetymech.remote_storage_focus.locked"), true);
+            return;
+        }
+
+        if (this.isShifting(caster)) {
+            if (!player.isCreative()) {
+                SEHelper.decreaseSouls(player, defaultSoulCost());
+            }
+            SEHelper.addCooldown(player, focus.getItem(), defaultSpellCooldown());
+            NetworkHooks.openScreen(player, new DepositProvider(stbe.behaviour.freqId, new SimpleContainer(54)),
+                    buf -> {});
+            this.playSound(worldIn, caster, this.CastingSound());
+            return;
+        }
+
+        if (!player.isCreative()) {
+            SEHelper.decreaseSouls(player, defaultSoulCost());
+        }
+
+        SEHelper.addCooldown(player, focus.getItem(), defaultSpellCooldown());
+
+        boolean showLockOption = stbe.behaviour.mayAdministrate(player)
+                && Create.LOGISTICS.isLockable(stbe.behaviour.freqId);
+        boolean isCurrentlyLocked = Create.LOGISTICS.isLocked(stbe.behaviour.freqId);
+
+        final StockTickerBlockEntity finalStbe = stbe;
+        final BlockPos finalBoundPos = boundPos;
+
+        GoetyMechMod.LOGGER.info("STOCK_DIAG:SPELL player=({}:{},{},{}) → ticker=({}:{},{},{}) shift={}",
+                worldIn.dimension().location(), player.getBlockX(), player.getBlockY(), player.getBlockZ(),
+                boundDim, boundPos.getX(), boundPos.getY(), boundPos.getZ(),
+                isShifting(caster));
+
+        NetworkHooks.openScreen(player, new MenuProvider() {
+            @Override
+            public AbstractContainerMenu createMenu(int containerId, Inventory inv, Player p) {
+                return new StockKeeperCategoryMenu(
+                        AllMenuTypes.STOCK_KEEPER_REQUEST.get(), containerId, inv, finalStbe) {
+                    @Override
+                    public boolean stillValid(Player p) {
+                        return !contentHolder.isRemoved();
+                    }
+                };
+            }
+
+            @Override
+            public Component getDisplayName() {
+                return Component.empty();
+            }
+        }, buf -> {
+            buf.writeBoolean(showLockOption);
+            buf.writeBoolean(isCurrentlyLocked);
+            buf.writeBlockPos(finalBoundPos);
+        });
+
+        stbe.getRecentSummary().divideAndSendTo(player, boundPos);
+
+        this.playSound(worldIn, caster, this.CastingSound());
+    }
+}

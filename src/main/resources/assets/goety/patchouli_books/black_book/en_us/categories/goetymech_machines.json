@@ -1,0 +1,7 @@
+{
+  "name": "Machines",
+  "description": "The core of the school — products where machinery and magic intertwine, alongside some heretical and uncanny contraptions. But they all share one thing: efficiency.",
+  "icon": "goetymech:breeding_nest",
+  "sortnum": 8,
+  "parent": "goety:goetymech"
+}

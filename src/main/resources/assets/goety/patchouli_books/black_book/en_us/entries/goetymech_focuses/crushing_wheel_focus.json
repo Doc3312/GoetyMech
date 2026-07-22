@@ -1,0 +1,16 @@
+{
+  "name": "Crushing Wheel Focus",
+  "icon": "goetymech:crushing_wheel_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Summons multiple rolling crushing wheels that knock back enemies along their path. Damage is determined by the total stress of the bound network — defaults to 1 damage per 2000 stress, configurable in the config file.$(br)Right-click a $(l:goetymech_machines/stress_reader)Stress Reader$(/l) to bind the focus to a network; sneak + right-click to unbind. If a $(l:goetymech_machines/stress_ark)Stress Ark$(/l) exists, manual binding is not required.$(br)$(4)\"These crushing wheels aren't just good for crushing items — they're great for ramming people too!\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:crushing_wheel_focus"
+    }
+  ]
+}

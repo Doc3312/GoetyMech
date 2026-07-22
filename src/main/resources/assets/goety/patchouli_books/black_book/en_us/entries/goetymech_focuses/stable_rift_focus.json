@@ -1,0 +1,16 @@
+{
+  "name": "Stable Rift Focus",
+  "icon": "goetymech:stable_rift_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Teleports to the corresponding location in the Nether, and can teleport back to the Overworld from the Nether.$(br)An upgraded version of the $(l:goetymech_focuses/unstable_rift_focus)Unstable Rift Focus$(/l), this focus allows free traversal between the Overworld and the Nether.$(br)Useful for evading attacks or covering long distances. Unlike the Unstable Rift Focus, the Stable Rift Focus seeks out safe coordinates in the Nether — if the corresponding coordinates are too dangerous, it teleports the user to the bedrock layer instead.$(br)$(4)\"The Nether Star stabilizes the passage between realms, freeing dimensional travel from the constraints of ancient portals.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:stable_rift_focus"
+    }
+  ]
+}

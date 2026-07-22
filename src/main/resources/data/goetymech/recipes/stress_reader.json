@@ -1,0 +1,30 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "create:andesite_casing"
+  },
+  "craftType": "mechanical",
+  "soulCost": 16,
+  "duration": 8,
+  "ingredients": [
+    {
+      "item": "create:andesite_casing"
+    },
+    {
+      "item": "create:andesite_casing"
+    },
+    {
+      "item": "create:stressometer"
+    },
+    {
+      "item": "goety:waystone"
+    },
+    {
+      "item": "goety:ectoplasm"
+    }
+  ],
+  "result": {
+    "item": "goetymech:stress_reader"
+  }
+}

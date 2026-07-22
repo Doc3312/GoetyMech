@@ -1,0 +1,16 @@
+{
+  "name": "界旅聚晶",
+  "icon": "goetymech:stable_rift_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "传送到下界对应的位置，或从下界传送回主世界对应的坐标。$(br)由$(l:goetymech_focuses/unstable_rift_focus)裂纬聚晶$(/l)升级而来，可自由穿梭于下界与主世界的聚晶。$(br)可用于躲避攻击或赶路，与裂纬聚晶不同，界旅聚晶会寻找下界安全的坐标，如果对应坐标十分危险，则会将使用者传送至基岩层。$(br)$(4)\"下界之星的力量稳定了纬度间的通道，从此纬度旅行不再受限于古老的门扉。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:stable_rift_focus"
+    }
+  ]
+}

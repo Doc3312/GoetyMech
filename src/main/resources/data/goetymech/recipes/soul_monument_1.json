@@ -1,0 +1,40 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:shade_gravestone"
+  },
+  "craftType": "mechanical",
+  "entity_to_sacrifice": {
+    "tag": "goety:villagers",
+    "display_name": "entity.minecraft.villager"
+  },
+  "soulCost": 3000,
+  "duration": 6,
+  "ingredients": [
+    {
+      "item": "goety:dark_ingot"
+    },
+    {
+      "item": "goety:dark_ingot"
+    },
+    {
+      "item": "goety:waystone"
+    },
+    {
+      "item": "goetymech:squad_focus"
+    },
+    {
+      "item": "goety:unholy_blood"
+    },
+    {
+      "item": "goety:ectoplasm"
+    },
+    {
+      "item": "goety:esoteric_tesseract"
+    }
+  ],
+  "result": {
+    "item": "goetymech:tier1_soul_monument"
+  }
+}

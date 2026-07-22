@@ -1,0 +1,3 @@
+﻿# GoetyMech
+A Minecraft 1.20.1 mod using the Architectury framework.
+This project targets the GoetyMech mod.

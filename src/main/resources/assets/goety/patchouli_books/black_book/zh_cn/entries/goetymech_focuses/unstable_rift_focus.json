@@ -1,0 +1,16 @@
+{
+  "name": "裂纬聚晶",
+  "icon": "goetymech:unstable_rift_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "短暂的传送到下界，十秒后回到原地。$(br)看上去十分不稳定，造价低廉的聚晶；使用后可将使用者传送至与主世界坐标对应的下界处，十秒后回到主世界原位。$(br)$(4)\"没人知道传送的另一端会是什么，使用它需要巨大的勇气，或许只有穷途末路的赌徒才会尝试使用。\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:unstable_rift_focus"
+    }
+  ]
+}

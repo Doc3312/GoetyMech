@@ -1,0 +1,7 @@
+{
+  "name": "聚晶",
+  "description": "科学的理念为魔法带来了一些创新，或许它们并没有毁天灭地的杀伤力，但总能让你探索世界时更加轻松。",
+  "icon": "goetymech:sculk_bind_focus",
+  "sortnum": 9,
+  "parent": "goety:goetymech"
+}

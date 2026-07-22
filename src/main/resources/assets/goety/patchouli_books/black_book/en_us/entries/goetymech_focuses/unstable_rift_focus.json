@@ -1,0 +1,16 @@
+{
+  "name": "Unstable Rift Focus",
+  "icon": "goetymech:unstable_rift_focus",
+  "category": "goety:goetymech_focuses",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Briefly teleports to the Nether, returning after ten seconds.$(br)Cheap and highly unstable — this focus sends the user to the Nether coordinates corresponding to their Overworld position, then brings them back to their original spot after ten seconds.$(br)$(4)\"Nobody knows what awaits on the other side. Using it requires immense courage — perhaps only a desperate gambler with nothing left to lose would dare.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:unstable_rift_focus"
+    }
+  ]
+}

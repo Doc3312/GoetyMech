@@ -1,0 +1,22 @@
+{
+  "name": "Mechanical Ritual",
+  "icon": "create:mechanical_press",
+  "category": "goety:goetymech_rituals",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Requirements: $(li)16 Andesite Casings $(li)2 Cauldrons $(li)1 Mechanical Press $(li)1 Anvil $(li)1 Smithing Table $(li)1 Mechanical Saw or Stonecutter"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/gui/entries/mechanical_ritual.png"],
+      "border": true,
+      "text": "An example of how the ritual can be placed."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "You have simulated the madman's laboratory, channeling dark magic to drive these bulky yet beautiful precision machines. Now, unsullied by blood or dust, you too can recreate those items bearing the unique stress-impelled style."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Remote Engine",
+  "icon": "goetymech:remote_engine",
+  "category": "goety:goetymech_machines",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A product combining dark magic and machinery. Right-click to bind a $(l:goetymech_machines/stress_reader)Stress Reader$(/l); once bound, it can output the stress of the bound network across dimensions. Sneak + right-click to unbind.$(br)If a $(l:goetymech_machines/stress_ark)Stress Ark$(/l) exists, the engine does not need to be bound individually — the ark will automatically assign an available reader network to the engine upon placement.$(br)$(4)\"A new expression of magic — we no longer merely harness magical power.\"$()"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetymech:remote_engine"
+    }
+  ]
+}

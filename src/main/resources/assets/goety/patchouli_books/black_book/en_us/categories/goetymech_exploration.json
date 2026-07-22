@@ -1,0 +1,7 @@
+{
+  "name": "Exploration",
+  "description": "You realize you are not the only explorer walking the path where machinery and magic converge. You seek to find these kindred spirits and have a little... \"exchange\" with them.",
+  "icon": "goetymech:stress_reader",
+  "sortnum": 12,
+  "parent": "goety:goetymech"
+}

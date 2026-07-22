@@ -1,0 +1,37 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:dark_wand"
+  },
+  "craftType": "mechanical",
+  "entity_to_sacrifice": {
+    "tag": "goety:villagers",
+    "display_name": "entity.minecraft.villager"
+  },
+  "soulCost": 111,
+  "duration": 6,
+  "ingredients": [
+    {
+      "item": "goety:pale_steel_ingot"
+    },
+    {
+      "item": "goety:pale_steel_ingot"
+    },
+    {
+      "item": "goety:dark_ingot"
+    },
+    {
+      "item": "goety:dark_ingot"
+    },
+    {
+      "item": "goety:ectoplasm"
+    },
+    {
+      "tag": "forge:raw_meat"
+    }
+  ],
+  "result": {
+    "item": "goetymech:flesh_casket_1"
+  }
+}
