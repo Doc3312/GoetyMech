@@ -47,8 +47,6 @@ public class SculkBindSpell extends Spell {
     public static final String TAG_LOCK_Z = "goetymech.sculk_lock_z";
     public static final String TAG_LOCK_END = "goetymech.sculk_lock_end";
 
-    // defaultSoulCost() 在 MagicFocus 构造时被调用，需要 loadConfig 已提前加载配置
-    // 参见 GoetyMechMod 构造函数中 ModConfig.loadConfig() 调用
     @Override
     public int defaultSoulCost() {
         return ModConfig.SCULK_BIND_COST.get();
@@ -69,7 +67,6 @@ public class SculkBindSpell extends Spell {
         return true;
     }
 
-    // defaultStats() 仅在运行时被调用（getTarget / WandUtil.getStats），可安全读取配置
     @Override
     public SpellStat defaultStats() {
         return new SpellStat(0, 0, ModConfig.SCULK_BIND_RANGE.get(), 0.0D, 0, 0.0F);
@@ -150,7 +147,6 @@ public class SculkBindSpell extends Spell {
         tag.putDouble(TAG_LOCK_Z, lockPos.getZ() + 0.5);
         tag.putLong(TAG_LOCK_END, worldIn.getGameTime() + lockTicks);
 
-        // 黑暗 5 秒
         target.addEffect(new MobEffectInstance(MobEffects.DARKNESS,
                 100, 0, false, false, true));
 
@@ -162,7 +158,6 @@ public class SculkBindSpell extends Spell {
         spike.setLifeSpan(lockTicks);
         worldIn.addFreshEntity(spike);
 
-        // 6. 声波粒子
         worldIn.sendParticles(ParticleTypes.SONIC_BOOM,
                 spikePos.getX() + 0.5, spikePos.getY() + 1.5, spikePos.getZ() + 0.5,
                 1, 0, 0, 0, 0);
@@ -239,6 +234,8 @@ public class SculkBindSpell extends Spell {
 
     /**
      * 向下查找地面：扫描到第一个非空气方块后返回其坐标
+     * @param level 服务器世界
+     * @param pos 起始扫描坐标
      * @return 地面方块坐标，如果到底仍未找到则返回 null
      */
     private BlockPos findGroundBelow(ServerLevel level, BlockPos pos) {
@@ -254,7 +251,11 @@ public class SculkBindSpell extends Spell {
 
     /**
      * 查找指定 XZ 处合适的生成 Y 坐标
-     * 从参考 Y 开始双向搜索，优先向上找非固体顶部，否则向下找固体顶部
+     * @param level 服务器世界
+     * @param x X 坐标
+     * @param z Z 坐标
+     * @param referenceY 参考 Y 坐标，从此处开始搜索
+     * @return 合适的生成 Y 坐标，兜底返回 referenceY
      */
     private double findSolidGround(ServerLevel level, int x, int z, int referenceY) {
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos(x, referenceY, z);

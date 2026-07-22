@@ -67,7 +67,7 @@ public class PrototypeEvents {
 
     // ── Ring animation sequencer ──
     private static final int RINGS_DELAY = 1;
-    private static final int SLAM_DELAY_TICKS = 40; // 2秒
+    private static final int SLAM_DELAY_TICKS = 40;
 
     private static final Map<ServerLevel, List<SlamAnimData>> ACTIVE_SLAMS = new ConcurrentHashMap<>();
     private static final Map<ServerLevel, List<DelayedDamageData>> PENDING_DAMAGES = new ConcurrentHashMap<>();

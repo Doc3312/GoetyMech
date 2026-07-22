@@ -12,12 +12,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.block.state.BlockState;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class StressReaderRenderer extends KineticBlockEntityRenderer<StressReaderBlockEntity> {
-    private static final Logger LOGGER = LoggerFactory.getLogger("StressReaderRenderer");
-
     public StressReaderRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
     }
@@ -30,8 +25,6 @@ public class StressReaderRenderer extends KineticBlockEntityRenderer<StressReade
     @Override
     protected void renderSafe(StressReaderBlockEntity be, float partialTicks, PoseStack ms,
                               MultiBufferSource buffer, int light, int overlay) {
-        //LOGGER.debug("[STRESS_READER] renderSafe called at pos={}", be.getBlockPos());
-
         BlockState state = getRenderedBlockState(be);
         RenderType type = getRenderType(be, state);
         renderRotatingBuffer(be, getRotatedModel(be, state), ms, buffer.getBuffer(type), light);

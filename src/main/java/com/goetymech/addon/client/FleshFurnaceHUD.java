@@ -98,7 +98,6 @@ public class FleshFurnaceHUD {
                 (width - BAR_WIDTH) / 2, height - 86,
                 0, 16, fill, BAR_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
-        // 百分比
         String percent = furnace.getProgressPercent() + "%";
         gui.drawString(font, percent, (width - font.width(percent)) / 2, height - 86 + 4, 0xFFFFFF);
     }

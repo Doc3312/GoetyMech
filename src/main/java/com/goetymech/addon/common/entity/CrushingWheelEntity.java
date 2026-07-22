@@ -1,7 +1,5 @@
 package com.goetymech.addon.common.entity;
 
-import com.Polarice3.Goety.common.entities.neutral.AbstractObsidianMonolith;
-import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.config.ModConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -52,7 +50,6 @@ public class CrushingWheelEntity extends Entity {
         if (level().isClientSide) return;
 
         if (tickCount >= MAX_LIFETIME_TICKS) {
-            //GoetyMechMod.LOGGER.debug("Wheel {} reached max lifetime, despawning", getId());
             discard();
             return;
         }
@@ -79,17 +76,6 @@ public class CrushingWheelEntity extends Entity {
             discard();
             return;
         }
-
-        //GoetyMechMod.LOGGER.debug("Wheel tick={} pos={},{},{} vel={},{},{} box={} ground={} collH={}",
-        //        tickCount,
-        //        String.format("%.1f", position().x),
-        //        String.format("%.1f", position().y),
-        //        String.format("%.1f", position().z),
-        //        String.format("%.2f", getDeltaMovement().x),
-        //        String.format("%.2f", getDeltaMovement().y),
-        //        String.format("%.2f", getDeltaMovement().z),
-        //        getBoundingBox(),
-        //        onGround(), horizontalCollision);
 
         checkEntityCollisions();
     }
@@ -127,40 +113,16 @@ public class CrushingWheelEntity extends Entity {
         List<Entity> targets = level().getEntities(this, box.inflate(0.5),
                 e -> e instanceof LivingEntity && !e.getUUID().equals(ownerUUID));
 
-        //GoetyMechMod.LOGGER.debug("[WheelTest] tick={} box={} inflated={} targets={} owner={}",
-        //        tickCount, box, box.inflate(0.5), targets.size(), ownerUUID);
-
         for (Entity target : targets) {
             UUID uuid = target.getUUID();
-            //GoetyMechMod.LOGGER.debug("[WheelTest] found target id={} pos={} box={} class={}",
-        //            target.getDisplayName().getString(),
-        //            target.position(), target.getBoundingBox(),
-        //            target.getClass().getSimpleName());
 
             Integer lastHit = hitCooldowns.get(uuid);
             if (lastHit != null && tickCount - lastHit < 10) {
-                //GoetyMechMod.LOGGER.debug("[WheelTest] skip {} (cooldown {})", uuid, 10 - (tickCount - lastHit));
                 continue;
             }
 
             LivingEntity owner = getOwner();
-            //GoetyMechMod.LOGGER.debug("[WheelTest] owner={} ownerUUID={} damage={}",
-        //            owner, ownerUUID, damage);
-
-            if (target instanceof AbstractObsidianMonolith monolith) {
-                boolean emerging = monolith.isEmerging();
-                //GoetyMechMod.LOGGER.debug("[WheelTest] >>> MONOLITH detected! emerging={} empowered={} health={}",
-        //                        emerging, monolith.empowered, monolith.getHealth());
-            }
-
-            boolean hurtResult = target.hurt(damageSources().indirectMagic(this, owner), damage);
-            //GoetyMechMod.LOGGER.debug("[WheelTest] hurt()={} on {} dmg={}",
-        //                    hurtResult, target.getDisplayName().getString(), damage);
-
-            if (target instanceof AbstractObsidianMonolith monolith) {
-                //GoetyMechMod.LOGGER.debug("[WheelTest] after hurt: health={} emerging={} empowered={}",
-        //                        monolith.getHealth(), monolith.isEmerging(), monolith.empowered);
-            }
+            target.hurt(damageSources().indirectMagic(this, owner), damage);
 
             Vec3 knockDir = direction.scale(3.0).add(0, 1.0, 0);
             target.setDeltaMovement(target.getDeltaMovement().add(knockDir));

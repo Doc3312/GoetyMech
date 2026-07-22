@@ -57,7 +57,6 @@ public class ModClientForgeEvents {
         int bindingCode = ModKeybindings.wandCircle().getKey().getValue();
         if (event.getKey() != bindingCode) return;
 
-        //LOGGER.debug("X released (InputEvent.Key) while radial menu open");
         if (!anyPouchOpen) {
             radMenuOpen = false;
             freezePacketDelay = 0;
@@ -87,7 +86,6 @@ public class ModClientForgeEvents {
         if (freezePacketDelay > 0) {
             freezePacketDelay--;
             if (freezePacketDelay == 0 && hasNeuroStasisFocusPouch()) {
-                //LOGGER.debug("freezePacketDelay reached 0, sending freeze packet");
                 anyPouchOpen = true;
                 ModNetwork.CHANNEL.sendToServer(new C2STimeStopPacket(true));
             }
@@ -139,7 +137,6 @@ public class ModClientForgeEvents {
                 || screen instanceof FocusPackScreen
                 || screen instanceof FocusBagScreen;
         if (!isFreezeScreen) return;
-        //LOGGER.debug("onScreenClosed for {}", screen.getClass().getSimpleName());
         anyPouchOpen = false;
         radMenuOpen = false;
         freezePacketDelay = 0;

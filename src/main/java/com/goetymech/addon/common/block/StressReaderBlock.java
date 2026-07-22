@@ -7,8 +7,6 @@ import com.goetymech.addon.common.item.StressShieldFocus;
 import com.goetymech.addon.config.ModConfig;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.AllShapes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
@@ -38,8 +36,6 @@ import javax.annotation.Nullable;
 
 public class StressReaderBlock extends DirectionalKineticBlock
         implements IBE<StressReaderBlockEntity> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("StressReaderBlock");
 
     public StressReaderBlock() {
         super(Properties.of()
@@ -103,7 +99,6 @@ public class StressReaderBlock extends DirectionalKineticBlock
         if (player.isShiftKeyDown() && stack.getItem() instanceof RemoteEngineBlockItem
                 && RemoteEngineBlockItem.isBound(stack)
                 && RemoteEngineBlockItem.getBoundPos(stack).equals(pos)) {
-            //LOGGER.debug("[StressReaderBlock] UNBIND at {} | isClient={}", pos, level.isClientSide);
             if (!level.isClientSide) {
                 RemoteEngineBlockItem.clearBinding(stack);
                 player.displayClientMessage(

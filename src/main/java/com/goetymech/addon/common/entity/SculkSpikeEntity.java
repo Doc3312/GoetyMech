@@ -33,7 +33,6 @@ public class SculkSpikeEntity extends Entity {
     private int life = DEFAULT_LIFE;
     private int lifeSpan = DEFAULT_LIFE;
 
-    // 定身目标
     @Nullable
     private LivingEntity target;
     @Nullable
@@ -77,10 +76,8 @@ public class SculkSpikeEntity extends Entity {
         super.tick();
         if (this.level().isClientSide) return;
 
-        // 定身：每 tick 将目标强制拉回锚点位置
         this.bindTarget();
 
-        // 升起动画
         if (life > lifeSpan - RISE_DURATION) {
             float progress = 1.0F - (float)(life - (lifeSpan - RISE_DURATION)) / RISE_DURATION;
             this.entityData.set(RISE, Math.min(progress, 1.0F));
@@ -100,7 +97,6 @@ public class SculkSpikeEntity extends Entity {
         if (t == null || !t.isAlive()) return;
         if (this.life <= 0) return;
 
-        // 强制归位
         t.setPos(this.position());
         t.setDeltaMovement(Vec3.ZERO);
         t.move(MoverType.SELF, Vec3.ZERO);

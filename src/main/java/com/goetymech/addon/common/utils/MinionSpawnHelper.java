@@ -186,6 +186,9 @@ public class MinionSpawnHelper {
      *   - 0 < currentSouls < effectiveCost → 半血，扣 soulCost → INSUFFICIENT
      *   - currentSouls == 0 → 半血，不扣灵魂 → DEPLETED
      *
+     * @param player 施法玩家
+     * @param soulCost 基础灵魂消耗
+     * @param mob 目标仆从实体
      * @return SoulCostResult 枚举，调用方据此决定 UI 提示
      */
     public static SoulCostResult handleSoulCost(Player player, int soulCost, Mob mob) {
