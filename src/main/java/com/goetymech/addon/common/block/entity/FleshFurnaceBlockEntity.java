@@ -59,14 +59,11 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
     private int cookingProgress;
     private int cookingTotalTime;
 
-    // === 链接数据 ===
     private int linkedX, linkedY, linkedZ;
     private boolean hasLink;
 
-    // === 元数据 ===
     private String placerName = "";
 
-    // === Create 漏斗兼容 ===
     private final LazyOptional<IItemHandlerModifiable>[] handlers = SidedInvWrapper.create(this, Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 
     public FleshFurnaceBlockEntity(BlockPos pos, BlockState state) {
@@ -110,14 +107,12 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
             }
         }
 
-        // === 烹制逻辑 ===
         if (!cookingStack.isEmpty() && cookingStack.is(ModItems.TWISTED_EMBRYO.get())) {
             if (isServer) {
                 // 检查链接是否有效
                 String entityTypeId = getTargetEntityTypeId();
                 if (hasLink && entityTypeId != null) {
 
-                    // ===== 标签检测：需完整训练结构的高级兵种 → 拒绝转化 =====
                     if (isEntityRestricted(entityTypeId)) {
                         notifyNearbyPlayers(Component.translatable("info.goetymech.furnace.no_magic_talent"));
                         cookingProgress = 0;
@@ -201,7 +196,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         Containers.dropItemStack(level, worldPosition.getX() + 0.5D, worldPosition.getY() + 1.0D, worldPosition.getZ() + 0.5D, stack);
     }
 
-    // ===== 烹制控制 =====
 
     /**
      * 是否可以接受新的胚胎输入
@@ -234,7 +228,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    // ===== HUD 数据 =====
 
     public double getCookingProgress() {
         if (cookingTotalTime <= 0) return 0;
@@ -245,7 +238,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         return (int) (getCookingProgress() * 100);
     }
 
-    // ===== 链接系统 =====
 
     public void setLinkPosition(BlockPos pos) {
         this.linkedX = pos.getX();
@@ -317,7 +309,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         return false;
     }
 
-    // ===== 兵种限制检测 =====
 
     private static final Map<EntityType<?>, Boolean> spellcasterCache = new HashMap<>();
 
@@ -360,7 +351,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    // ===== 拥有者 =====
 
     public String getPlacerName() {
         return placerName;
@@ -371,7 +361,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         setChanged();
     }
 
-    // ===== 数据持久化 =====
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
@@ -423,7 +412,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         placerName = tag.getString("PlacerName");
     }
 
-    // ===== 网络同步 =====
 
     @Override
     public CompoundTag getUpdateTag() {
@@ -455,7 +443,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    // ===== 粒子效果 =====
 
     private void makeCookingParticles() {
         if (level == null) return;
@@ -563,7 +550,6 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         cookingTotalTime = 0;
     }
 
-    // ===== Create 漏斗 IItemHandler 能力 =====
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {

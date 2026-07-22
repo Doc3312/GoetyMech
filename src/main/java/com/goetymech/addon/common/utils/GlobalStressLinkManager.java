@@ -31,7 +31,6 @@ public class GlobalStressLinkManager {
     public Map<GlobalBlockPos, UUID> readerOwners = new HashMap<>();
     public Map<UUID, Set<GlobalBlockPos>> ownerReaders = new HashMap<>();
 
-    // === Runtime-only data ===
     public Map<GlobalBlockPos, StressReaderBlockEntity> activeReaders = new HashMap<>();
     public Map<GlobalBlockPos, RemoteEngineBlockEntity> activeEngines = new HashMap<>();
     public Map<GlobalBlockPos, ReaderSnapshot> readerCache = new HashMap<>();
@@ -245,7 +244,6 @@ public class GlobalStressLinkManager {
         return engineToReader.get(enginePos);
     }
 
-    // ── Event-driven update + cache ──
 
     public void onReaderNetworkChanged(StressReaderBlockEntity reader) {
         if (reader.getLevel() == null) return;
@@ -264,7 +262,6 @@ public class GlobalStressLinkManager {
         return readerCache.get(readerPos);
     }
 
-    // ── Tick: 延迟推送 + 批量分配 ──
 
     public void tick() {
         if (dirtyReaders.isEmpty()) return;
@@ -449,7 +446,6 @@ public class GlobalStressLinkManager {
         engine.applyRemoteUpdate(speed, budget, capacity, readerStress);
     }
 
-    // ── Engine network update ──
 
     public void onEngineNetworkChanged(GlobalBlockPos enginePos, float localStress, float localCapacity) {
         RemoteEngineBlockEntity engine = activeEngines.get(enginePos);
@@ -486,7 +482,6 @@ public class GlobalStressLinkManager {
         }
     }
 
-    // ── Consumption calculation ──
 
     public float getEngineConsumptionForReader(GlobalBlockPos readerPos) {
         Set<GlobalBlockPos> engines = readerToEngine.get(readerPos);
@@ -522,7 +517,6 @@ public class GlobalStressLinkManager {
         return total;
     }
 
-    // ── Reader ownership ──
 
     public void registerReaderOwner(GlobalBlockPos readerPos, UUID ownerUUID) {
         readerOwners.put(readerPos, ownerUUID);
@@ -547,7 +541,6 @@ public class GlobalStressLinkManager {
             ownerReaders.computeIfAbsent(entry.getValue(), k -> new HashSet<>()).add(entry.getKey());
     }
 
-    // ── Ark registry ──
 
     public void registerArk(GlobalBlockPos arkPos, UUID ownerUUID) {
         arkRegistry.put(arkPos, ownerUUID);
@@ -609,7 +602,6 @@ public class GlobalStressLinkManager {
         return getAggregatedReaderData(ownerUUID).totalCapacity();
     }
 
-    // ── Chunk force loading ──
 
     private void forceLoadEngineChunk(@Nullable RemoteEngineBlockEntity engine, GlobalBlockPos enginePos) {
         MinecraftServer server = engine != null ? engine.getLevel().getServer() : GoetyMechMod.STRESS_LINK.server;
@@ -629,7 +621,6 @@ public class GlobalStressLinkManager {
         engineLevel.setChunkForced(chunkPos.x, chunkPos.z, false);
     }
 
-    // ── SavedData bridge ──
 
     public static class StressLinkSavedData extends SavedData {
 
@@ -706,6 +697,5 @@ public class GlobalStressLinkManager {
         }
     }
 
-    // ── Server reference for levelLoaded ──
     public MinecraftServer server;
 }

@@ -218,7 +218,6 @@ public class PrototypeEvents {
         }
     }
 
-    // ── LivingTick: Slam 状态机（fires before updateFallFlying → 可同 tick 停飞） ──
 
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
@@ -244,7 +243,6 @@ public class PrototypeEvents {
 
     }
 
-    // ── PlayerTick (END): 推进 + 抗 drag（fires after travel → 修饰持久到下一 tick） ──
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -257,7 +255,6 @@ public class PrototypeEvents {
         if (event.phase == TickEvent.Phase.START) {
             Vec3 startM = player.getDeltaMovement();
 
-            // ── 爬墙检测（放在飞行前面） ──
             if (hasPrototype && !isSlamming) {
                 if (PrototypeItem.isWallRunning(player)) {
                     handleWallRunTick(player);
@@ -266,7 +263,6 @@ public class PrototypeEvents {
                 }
             }
 
-            // ── Ground takeoff / mid-air flight start ──
             if (!PrototypeItem.isWallRunning(player)
                     && PrototypeItem.isHoldingPrototype(player)
                     && !player.isFallFlying()) {
@@ -288,7 +284,6 @@ public class PrototypeEvents {
         }
 
         if (event.phase == TickEvent.Phase.END) {
-            // ── 追踪实际地面速度（仅当正在移动时更新，蓄力时不覆盖） ──
             double moved = Math.sqrt(
                     (player.getX() - player.xo) * (player.getX() - player.xo)
                     + (player.getZ() - player.zo) * (player.getZ() - player.zo));
@@ -297,7 +292,6 @@ public class PrototypeEvents {
                 PrototypeItem.setGroundSpeed(player, moved);
             }
 
-            // ── 地面冲刺加速 ──
             if (hasPrototype && !isSlamming
                     && !PrototypeItem.isWallRunning(player)
                     && !player.isFallFlying()
@@ -328,7 +322,6 @@ public class PrototypeEvents {
             }
 
 
-            // ── Charged jump 水平速度持续注入（抵消 move() 的摩擦衰减） ──
             if (PrototypeItem.isWallRunning(player)) {
                 PrototypeItem.clearChargedJump(player);
             } else if (PrototypeItem.isChargedJumping(player)) {
@@ -342,19 +335,16 @@ public class PrototypeEvents {
                 }
             }
 
-            // ── Wall movement (server tracks state only; client handles velocity via setDeltaMovement) ──
             if (PrototypeItem.isWallRunning(player)) {
                 return;
             }
 
-            // ── 非飞行状态 ──
             if (!player.isFallFlying()) {
                 return;
             }
         }
     }
 
-    // ── 检测 ──
 
     private static boolean isFlyingWithPrototype(Player player) {
         if (!player.isFallFlying()) return false;
@@ -699,7 +689,6 @@ public class PrototypeEvents {
         double cz = dd.pz;
         float r = dd.radius;
 
-        // ── 白色魔法扩张环 ──
         level.sendParticles(
                 new CircleExplodeParticleOption(0.8f, 0.8f, 1.0f, r, 1),
                 cx, cy + 1.25, cz, 1, 0, 0, 0, 0);
@@ -712,10 +701,8 @@ public class PrototypeEvents {
         double pz = player.getZ();
         int floorY = (int) Math.floor(BlockFinder.moveDownToGround(player) - 0.0625);
 
-        // ── 启动逐圈错开升起动画 ──
         startRingAnimation(player, level, new Vec3(px, py, pz), floorY, radius, fallDistance, rings, random);
 
-        // ── MOBILE 飞散碎块（中心向外飞，范围 3 格内） ──
         int debrisCount = 20;
         for (int i = 0; i < debrisCount; i++) {
             double angle = random.nextDouble() * 2 * Math.PI;
@@ -736,7 +723,6 @@ public class PrototypeEvents {
             level.addFreshEntity(debris);
         }
 
-        // ── 中心 DEBRIS 碎块（15个，水平 0.5~2.0 向外飞散） ──
         for (int i = 0; i < 15; i++) {
             double angle = random.nextDouble() * 2 * Math.PI;
             double dist = 0.5 + random.nextDouble() * 1.5;
@@ -756,7 +742,6 @@ public class PrototypeEvents {
             level.addFreshEntity(debris);
         }
 
-        // ── 粒子：红色 CircleExplode 外圈边界（即时爆发） ──
         try {
             level.sendParticles(
                     new CircleExplodeParticleOption(1.0f, 0.0f, 0.0f, radius, 2),
@@ -764,7 +749,6 @@ public class PrototypeEvents {
         } catch (Exception ignored) {
         }
 
-        // ── 粒子：AoEParticleOption 地面半透明红色圆形（持续显示伤害范围） ──
         try {
             double aoeGroundY = BlockFinder.moveDownToGround(player) + 0.25;
             level.sendParticles(
@@ -773,7 +757,6 @@ public class PrototypeEvents {
         } catch (Exception ignored) {
         }
 
-        // ── 镜头震动 CameraShake ──
         try {
             CameraShake.cameraShake(level, player.position(),
                     radius * 1.5f, 0.15f, 15, 10);
@@ -781,7 +764,6 @@ public class PrototypeEvents {
         }
     }
 
-    // ── Ring animation system ──
 
     private static void startRingAnimation(Player player, ServerLevel level, Vec3 center, int floorY,
                                            float radius, float fallDistance, int rings, RandomSource random) {
@@ -853,7 +835,6 @@ public class PrototypeEvents {
         if (event.phase != TickEvent.Phase.END) return;
         if (!(event.level instanceof ServerLevel serverLevel)) return;
 
-        // ── Ring animation ──
         List<SlamAnimData> slams = ACTIVE_SLAMS.get(serverLevel);
         if (slams != null && !slams.isEmpty()) {
             synchronized (slams) {
@@ -891,7 +872,6 @@ public class PrototypeEvents {
             }
         }
 
-        // ── Delayed AoE damage ──
         List<DelayedDamageData> pending = PENDING_DAMAGES.get(serverLevel);
         if (pending != null) {
             synchronized (pending) {
@@ -911,7 +891,6 @@ public class PrototypeEvents {
             }
         }
 
-        // ── Indestructible guard: pull prototype from void ──
         AABB voidBox = new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY, -64.0, Double.POSITIVE_INFINITY);
         for (ItemEntity item : serverLevel.getEntitiesOfClass(ItemEntity.class, voidBox)) {
@@ -985,7 +964,6 @@ public class PrototypeEvents {
         LivingEntity killed = event.getEntity();
         float mobMaxHealth = killed.getMaxHealth();
 
-        // ── Health absorption ──
         float ratio = (float)(double)ModConfig.KILL_HEALTH_ABSORB_RATIO.get();
         if (ratio > 0.0F) {
             float absorbAmount = mobMaxHealth * ratio;
@@ -1002,7 +980,6 @@ public class PrototypeEvents {
             }
         }
 
-        // ── Food restoration ──
         float foodRatio = (float)(double)ModConfig.KILL_FOOD_RESTORE_RATIO.get();
         if (foodRatio > 0.0F) {
             float foodAmount = mobMaxHealth * foodRatio;
@@ -1020,7 +997,6 @@ public class PrototypeEvents {
             }
         }
 
-        // ── Assimilation kill count ──
         PrototypeItem.incrementAssimilationKills(player);
         if (player instanceof ServerPlayer sp) {
             ModNetwork.sendTo(sp, new S2CAssimilationDataPacket(PrototypeItem.getAssimilationKills(player)));

@@ -26,7 +26,6 @@ public class StressLinkService extends SavedData {
     private final Map<GlobalBlockPos, UUID> readerOwners = new HashMap<>();
     private transient final Map<UUID, Set<GlobalBlockPos>> ownerReaders = new HashMap<>();
 
-    // === Runtime-only ===
     private transient final Map<GlobalBlockPos, StressReaderBlockEntity> activeReaders = new HashMap<>();
     private transient final Map<GlobalBlockPos, RemoteEngineBlockEntity> activeEngines = new HashMap<>();
     private transient final Map<GlobalBlockPos, ReaderSnapshot> readerCache = new HashMap<>();
@@ -62,7 +61,6 @@ public class StressLinkService extends SavedData {
 
     public StressLinkService() { super(); }
 
-    // ── Static accessor ──
 
     @Nullable
     public static StressLinkService get(@Nullable Level level) {
@@ -83,7 +81,6 @@ public class StressLinkService extends SavedData {
         return new StressLinkService().load(tag);
     }
 
-    // ── Clear all data (for world unload to prevent cross-save) ──
 
     public void clear() {
         engineToReader.clear();
@@ -178,7 +175,6 @@ public class StressLinkService extends SavedData {
         engineNetworkKey.remove(enginePos);
     }
 
-    // ── Binding management ──
 
     public void bind(GlobalBlockPos enginePos, GlobalBlockPos readerPos) {
         GlobalBlockPos oldReader = engineToReader.get(enginePos);
@@ -243,7 +239,6 @@ public class StressLinkService extends SavedData {
         return engineToReader.get(enginePos);
     }
 
-    // ── Event-driven update + cache ──
 
     public void onReaderNetworkChanged(StressReaderBlockEntity reader) {
         if (reader.getLevel() == null) return;
@@ -267,7 +262,6 @@ public class StressLinkService extends SavedData {
         return readerCache.get(readerPos);
     }
 
-    // ── Tick: 延迟推送 + 批量分配 ──
 
     public void tick() {
         if (dirtyReaders.isEmpty()) return;
@@ -366,7 +360,6 @@ public class StressLinkService extends SavedData {
         engine.applyRemoteUpdate(speed, budget, capacity, readerStress);
     }
 
-    // ── Engine consumption tracking ──
 
     public void onEngineNetworkChanged(GlobalBlockPos enginePos, float localStress, float localCapacity) {
         // 更新引擎网络身份：同一 KineticNetwork 内的多个引擎用相同的 key，用于去重
@@ -444,7 +437,6 @@ public class StressLinkService extends SavedData {
         return total;
     }
 
-    // ── Reader ownership ──
 
     public void registerReaderOwner(GlobalBlockPos readerPos, UUID ownerUUID) {
         readerOwners.put(readerPos, ownerUUID);
@@ -474,7 +466,6 @@ public class StressLinkService extends SavedData {
             ownerReaders.computeIfAbsent(entry.getValue(), k -> new HashSet<>()).add(entry.getKey());
     }
 
-    // ── Ark registry ──
 
     public void registerArk(GlobalBlockPos arkPos, UUID ownerUUID) {
         arkRegistry.put(arkPos, ownerUUID);
@@ -502,7 +493,6 @@ public class StressLinkService extends SavedData {
         return arks != null ? arks.size() : 0;
     }
 
-    // ── SavedData ──
 
     @Override
     public CompoundTag save(CompoundTag tag) {

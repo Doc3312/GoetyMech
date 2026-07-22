@@ -71,14 +71,12 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
 
         int maxEnergy = ModConfig.cachedNestMaxEnergy;
 
-        // === 能量满且空闲 → 开始 2s 转化 ===
         if (conversionTicks < 0 && energy >= maxEnergy && outputStack.isEmpty()) {
             energy -= maxEnergy;
             conversionTicks = 0;
             markUpdated();
         }
 
-        // === 转化进行中 ===
         if (conversionTicks >= 0) {
             conversionTicks++;
             // 红石粒子
@@ -130,7 +128,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         Containers.dropItemStack(level, worldPosition.getX() + 0.5D, worldPosition.getY() + 1.0D, worldPosition.getZ() + 0.5D, stack);
     }
 
-    // ===== HUD 数据 =====
 
     public int getEnergy() { return energy; }
 
@@ -175,7 +172,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    // ===== 网络同步 =====
 
     @Override
     public CompoundTag getUpdateTag() {
@@ -208,7 +204,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         }
     }
 
-    // ===== WorldlyContainer =====
 
     private static final int[] SLOTS = {0};
 
@@ -308,7 +303,6 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
         conversionTicks = -1;
     }
 
-    // ===== Capability =====
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
