@@ -65,10 +65,23 @@ public class BreedingNestBlock extends BaseEntityBlock implements SimpleWaterlog
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
-        }
-
-        return InteractionResult.PASS;
     }
+
+    if (!level.isClientSide) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof BreedingNestBlockEntity nest) {
+            ItemStack output = nest.removeItem(0, 64);
+            if (!output.isEmpty()) {
+                if (!player.getInventory().add(output)) {
+                    player.drop(output, false);
+                }
+                level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.2F, 1.0F);
+                return InteractionResult.SUCCESS;
+            }
+        }
+    }
+    return InteractionResult.PASS;
+}
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
