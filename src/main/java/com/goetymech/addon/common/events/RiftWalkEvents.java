@@ -18,6 +18,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 裂隙行走事件处理。
+ */
 public class RiftWalkEvents {
 
     private static final String TAG_ORIGIN_DIM = "goetymech.origin_dim";

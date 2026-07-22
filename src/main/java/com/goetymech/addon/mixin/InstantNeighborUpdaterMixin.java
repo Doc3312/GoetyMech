@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InstantNeighborUpdater.class)
+/**
+ * 红石更新 Mixin（即时模式）。时停中取消更新。
+ */
 public abstract class InstantNeighborUpdaterMixin {
     @Shadow @Final private Level level;
 

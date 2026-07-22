@@ -17,6 +17,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
+/**
+ * GameRenderer Mixin。替换 random 和 partialTick 为时停值。
+ */
 public abstract class GameRendererMixin {
     @Shadow @Final @Mutable private RandomSource random;
     @Shadow @Final private Minecraft minecraft;

@@ -4,6 +4,9 @@ import com.goetymech.addon.common.time.TimeStopUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * 时停公开 API。包装 TimeStopUtils 供其他模组调用。
+ */
 public class TimeStopAPI {
     public static boolean canMove(Entity entity) {
         return TimeStopUtils.canMove(entity);

@@ -7,6 +7,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+/**
+ * 模组仪式注册。
+ */
 public class ModRituals {
     public static final ResourceLocation RITUAL_FACTORY_REGISTRY =
             new ResourceLocation("goety", "ritual_factory");

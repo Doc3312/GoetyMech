@@ -24,6 +24,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidArmorLayer.class)
+/**
+ * 人形护甲层 Mixin。适配原型拟态装备渲染。
+ */
 public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends HumanoidModel<T>> extends RenderLayer<T, A> {
 
     private HumanoidArmorLayerMixin(RenderLayerParent<T, A> renderer) {

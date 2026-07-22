@@ -16,6 +16,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * 原型同化数据管理器。持久化玩家同化击杀数。
+ */
 public class AssimilationSaveManager {
     private static final Set<UUID> DIRTY = new HashSet<>();
 

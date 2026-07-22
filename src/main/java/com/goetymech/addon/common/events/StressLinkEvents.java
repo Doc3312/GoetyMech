@@ -19,6 +19,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
+/**
+ * 应力链接事件。管理 GlobalStressLinkManager 存档加载和关闭。
+ */
 public class StressLinkEvents {
 
     @SubscribeEvent

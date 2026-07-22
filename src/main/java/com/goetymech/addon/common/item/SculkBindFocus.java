@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 幽匿束缚聚晶。锁敌→定身→召唤 Warden。
+ */
 public class SculkBindFocus extends MagicFocus {
 
     public SculkBindFocus() {

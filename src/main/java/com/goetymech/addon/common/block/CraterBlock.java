@@ -16,6 +16,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * 撞击坑方块。临时视觉效果，BESR 渲染后恢复原状。
+ */
 public class CraterBlock extends BaseEntityBlock {
 
     public CraterBlock() {

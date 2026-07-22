@@ -12,6 +12,9 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 灵质捕手饰品。击杀时拦截灵魂转化为灵质。
+ */
 public class EctoplasmCatcherCurio extends Item implements ICurioItem {
 
     private static final String TAG_SOULS = "ectoplasm_souls";

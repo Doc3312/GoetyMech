@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 灵魂统御法术。连接仆从均分伤害。
+ */
 public class SoulDominionSpell extends Spell {
 
     @Override

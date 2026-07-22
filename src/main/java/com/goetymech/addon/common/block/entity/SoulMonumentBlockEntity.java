@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 魂灵丰碑方块实体。管理绑定灵魂和召回冷却。
+ */
 public class SoulMonumentBlockEntity extends BlockEntity {
 
     private static final String TAG_SAVED_UUIDS = "SavedEntityUUIDs";

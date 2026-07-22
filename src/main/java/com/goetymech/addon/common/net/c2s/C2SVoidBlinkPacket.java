@@ -17,6 +17,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 虚空闪现 C2S 包。同步闪现操作。
+ */
 public class C2SVoidBlinkPacket {
 
     public static C2SVoidBlinkPacket decode(FriendlyByteBuf buf) {

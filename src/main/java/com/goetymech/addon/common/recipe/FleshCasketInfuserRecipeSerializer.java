@@ -11,6 +11,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
+/**
+ * 注魔配方序列化器。
+ */
 public class FleshCasketInfuserRecipeSerializer implements RecipeSerializer<FleshCasketInfuserRecipe> {
     public static final FleshCasketInfuserRecipeSerializer INSTANCE = new FleshCasketInfuserRecipeSerializer();
 

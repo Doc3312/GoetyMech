@@ -12,6 +12,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * 服务端扩展上下文。管理时停状态和实体 tick。
+ */
 public class ServerExpandedContext {
     public final MinecraftServer server;
     private TimeStopSavedData timeStopSavedData;

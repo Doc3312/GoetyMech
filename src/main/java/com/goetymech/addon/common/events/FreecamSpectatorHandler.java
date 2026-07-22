@@ -17,6 +17,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
+/**
+ * Freecam 模式事件处理器。管理旁观者模式和夜视。
+ */
 public class FreecamSpectatorHandler {
 
     private static final String TAG_ACTIVE = "GoetyMechSpectator";

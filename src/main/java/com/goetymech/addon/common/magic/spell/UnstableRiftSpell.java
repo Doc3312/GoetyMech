@@ -22,6 +22,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * 不稳定裂隙法术。创建快速位移通道。
+ */
 public class UnstableRiftSpell extends Spell {
 
     public static final String TAG_ORIGIN_DIM = "goetymech.origin_dim";

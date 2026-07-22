@@ -1,5 +1,8 @@
 package com.goetymech.addon.common.item.curio;
 
+/**
+ * 晶匣触发条件枚举。
+ */
 public enum TriggerType {
     A, B, C;
 

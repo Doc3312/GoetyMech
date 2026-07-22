@@ -6,6 +6,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
+/**
+ * 时停开关 C2S 包。
+ */
 public class C2STimeStopPacket {
     private final boolean activate;
 

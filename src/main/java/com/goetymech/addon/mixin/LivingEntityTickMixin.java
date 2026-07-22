@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
+/**
+ * 实体 tick Mixin。时停倒计时归零时自动解冻。
+ */
 public class LivingEntityTickMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))

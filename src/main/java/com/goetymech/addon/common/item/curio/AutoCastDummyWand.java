@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 自动施法假人魔杖。FleshCasket 自动施法系统的代理法杖。
+ */
 public class AutoCastDummyWand extends Item implements IWand {
     private final SpellType primaryType;
     private final List<SpellType> spellTypes;

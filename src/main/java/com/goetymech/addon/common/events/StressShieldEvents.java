@@ -21,6 +21,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 应力护盾事件。NORMAL 优先级处理伤害吸收。
+ */
 public class StressShieldEvents {
 
     private static final long NO_HURT_TICKS = 100;

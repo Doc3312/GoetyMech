@@ -21,6 +21,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.InventoryMenu;
 
+/**
+ * 碾压轮实体渲染器。渲染旋转的粉碎轮模型。
+ */
 public class CrushingWheelRenderer extends EntityRenderer<CrushingWheelEntity> {
 
     private static final ResourceLocation MODEL_ID =

@@ -6,6 +6,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * Slam 状态 S2C 包。同步 slam 开始/结束。
+ */
 public class S2CSlamStatePacket {
 
     private final boolean slamming;

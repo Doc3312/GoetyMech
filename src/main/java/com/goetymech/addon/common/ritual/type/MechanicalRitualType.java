@@ -18,6 +18,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.Predicate;
 
+/**
+ * 机械仪式类型。集成 Create 动力系统。
+ */
 public class MechanicalRitualType implements IRitualType {
     @Override
     public String getName() {

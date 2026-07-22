@@ -7,6 +7,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+/**
+ * 模组菜单类型注册。
+ */
 public class ModMenuTypes {
     public static final DeferredRegister<MenuType<?>> CONTAINER_TYPE =
             DeferredRegister.create(ForgeRegistries.MENU_TYPES, GoetyMechMod.MOD_ID);

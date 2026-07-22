@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * ISoulDominion Capability Provider。
+ */
 public class SoulDominionProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
 
     public static final Capability<ISoulDominion> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});

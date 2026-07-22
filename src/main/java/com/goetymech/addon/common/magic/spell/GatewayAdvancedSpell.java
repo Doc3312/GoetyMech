@@ -29,6 +29,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * 跨维度结构传送法术。传送后进入 Freecam。
+ */
 public class GatewayAdvancedSpell extends Spell {
 
     private static final String TAG_SAFE_FAILED_POS = "GatewayAdvSafeFailedPos";

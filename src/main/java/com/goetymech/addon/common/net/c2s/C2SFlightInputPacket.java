@@ -7,6 +7,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 飞行输入 C2S 包。同步客户端飞行方向。
+ */
 public class C2SFlightInputPacket {
     private final float forward;
 

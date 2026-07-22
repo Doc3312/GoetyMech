@@ -16,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(StockKeeperRequestMenu.class)
+/**
+ * Create 库存菜单 Mixin。适配远程仓储。
+ */
 public class StockKeeperRequestMenuMixin {
 
     @Shadow(remap = false)

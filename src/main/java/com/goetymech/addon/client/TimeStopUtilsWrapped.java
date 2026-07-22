@@ -5,6 +5,9 @@ import com.goetymech.addon.common.time.TimeStopUtils;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
+/**
+ * 客户端时停包装器。管理 enable/disable 及 GLFW 时间锚点。
+ */
 public class TimeStopUtilsWrapped {
     public static void enable(int id) {
         Minecraft mc = Minecraft.getInstance();

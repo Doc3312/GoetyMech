@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 不稳定裂隙聚晶。创建快速位移用的不稳定裂隙。
+ */
 public class UnstableRiftFocus extends MagicFocus {
     public UnstableRiftFocus() {
         super(new UnstableRiftSpell());

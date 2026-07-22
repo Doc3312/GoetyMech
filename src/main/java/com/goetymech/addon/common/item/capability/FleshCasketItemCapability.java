@@ -13,6 +13,9 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * 血肉晶匣 Capability。管理插槽和自动施法数据。
+ */
 public class FleshCasketItemCapability implements ICapabilitySerializable<Tag> {
     private final ItemStack stack;
     private final LazyOptional<IItemHandler> holder = LazyOptional.of(this::getHandler);

@@ -25,6 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 
 @Mixin(Minecraft.class)
+/**
+ * Minecraft Mixin。HEAD 注入设 msPerTick 取消主循环，自定义循环驱动屏幕。
+ */
 public abstract class MinecraftMixin {
     @Shadow @Nullable public net.minecraft.client.player.LocalPlayer player;
     @Shadow @Nullable public net.minecraft.client.multiplayer.ClientLevel level;

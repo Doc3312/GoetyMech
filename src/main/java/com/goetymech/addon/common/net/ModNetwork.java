@@ -25,6 +25,9 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
+/**
+ * 模组网络通道。注册所有 C2S/S2C 包。
+ */
 public class ModNetwork {
 
     private static final String PROTOCOL_VERSION = "1";

@@ -13,6 +13,9 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
+/**
+ * 应力方舟 HUD。显示容量/应力/引擎消耗。
+ */
 public class StressArkHUD {
 
     private static final int BAR_WIDTH = 128;

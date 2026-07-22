@@ -20,6 +20,9 @@ import net.minecraftforge.network.NetworkHooks;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * 远程仓储中转站。管理物品存入逻辑。
+ */
 public class DepositProvider implements MenuProvider {
 
     private final UUID freqId;

@@ -18,6 +18,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
+/**
+ * 魂灵丰碑 HUD。准星对准时显示绑定信息。
+ */
 public class SoulMonumentHUD {
 
     @SubscribeEvent

@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerLevel.class)
+/**
+ * 服务端找结构 Mixin。Gateway 跨维度搜索。
+ */
 public class ServerLevelFindStructureMixin {
 
     @Inject(method = "findNearestMapStructure", at = @At("HEAD"))

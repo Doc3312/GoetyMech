@@ -9,6 +9,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 眼睛实体捕获。Gateway 法术的辅助事件。
+ */
 public class EyeCaptureHandler {
 
     @SubscribeEvent

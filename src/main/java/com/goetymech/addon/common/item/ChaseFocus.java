@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 追击聚晶。锁定目标施加印记，按 Shift 闪现到目标背后。
+ */
 public class ChaseFocus extends MagicFocus {
     public ChaseFocus() {
         super(new VoidBlinkSpell());

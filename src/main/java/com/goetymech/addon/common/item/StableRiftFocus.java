@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 稳定裂隙聚晶。创建长期稳定的传送通道。
+ */
 public class StableRiftFocus extends MagicFocus {
     public StableRiftFocus() {
         super(new StableRiftSpell());

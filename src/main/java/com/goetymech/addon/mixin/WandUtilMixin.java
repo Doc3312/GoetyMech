@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WandUtil.class)
+/**
+ * Goety 魔杖工具 Mixin。适配晶匣自动施法。
+ */
 public class WandUtilMixin {
 
     @Inject(method = "findWand", at = @At("RETURN"), cancellable = true, remap = false)

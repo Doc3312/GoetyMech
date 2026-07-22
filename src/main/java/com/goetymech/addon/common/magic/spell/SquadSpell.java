@@ -50,6 +50,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * 兵团法术。批量召唤编队仆从。
+ */
 public class SquadSpell extends Spell {
 
     @Override

@@ -19,6 +19,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
+/**
+ * 应力读取器方块实体。管理应力数据、红石信号和远程引擎消耗。
+ */
 public class StressReaderBlockEntity extends KineticBlockEntity {
 
     @Nullable private UUID placerUUID;

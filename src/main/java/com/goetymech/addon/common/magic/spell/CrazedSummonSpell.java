@@ -24,6 +24,9 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 召唤疯狂唤魔者法术。
+ */
 public class CrazedSummonSpell extends SummonSpell {
 
     @Override

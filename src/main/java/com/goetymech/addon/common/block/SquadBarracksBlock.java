@@ -42,6 +42,9 @@ import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
+/**
+ * 点将台。编队配置，消耗胚胎批量召唤仆从。
+ */
 public abstract class SquadBarracksBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;

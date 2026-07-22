@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EyeItemEntity.class)
+/**
+ * Goety 眼睛实体 Mixin。Gateway 捕获相关。
+ */
 public class GoetyEyeItemCaptureMixin {
     @Inject(method = "signalTo", at = @At("HEAD"), remap = false)
     private void gp$capturePos(BlockPos pos, CallbackInfo ci) {

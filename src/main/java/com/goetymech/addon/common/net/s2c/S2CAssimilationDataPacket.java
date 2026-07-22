@@ -8,6 +8,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 同化数据 S2C 包。同步击杀数到客户端。
+ */
 public class S2CAssimilationDataPacket {
 
     private final int kills;

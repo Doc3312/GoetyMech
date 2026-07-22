@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EyeOfEnder.class)
+/**
+ * 末影之眼 Mixin。Gateway 捕获相关。
+ */
 public class EyeOfEnderCaptureMixin {
     @Inject(method = "signalTo", at = @At("HEAD"))
     private void gp$capturePos(BlockPos pos, CallbackInfo ci) {

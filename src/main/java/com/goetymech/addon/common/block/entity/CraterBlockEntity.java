@@ -12,6 +12,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+/**
+ * 撞击坑方块实体。持有变换数据（旋转/平移/弹跳）和生命周期。
+ */
 public class CraterBlockEntity extends BlockEntity {
 
     private BlockState originalState = Blocks.AIR.defaultBlockState();

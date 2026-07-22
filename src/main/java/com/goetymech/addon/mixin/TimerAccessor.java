@@ -6,6 +6,9 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Timer.class)
+/**
+ * Timer.msPerTick 访问器。
+ */
 public interface TimerAccessor {
     @Accessor("msPerTick")
     float gp$getMsPerTick();

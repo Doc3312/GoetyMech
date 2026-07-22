@@ -13,6 +13,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+/**
+ * 墙跑工具单元测试。
+ */
 public class WallUtilTests {
 
     @SubscribeEvent

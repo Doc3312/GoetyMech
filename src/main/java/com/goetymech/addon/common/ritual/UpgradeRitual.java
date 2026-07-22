@@ -10,6 +10,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 
+/**
+ * 晶匣升级仪式。消耗材料升级 FleshCasket 等级。
+ */
 public class UpgradeRitual extends Ritual {
     public UpgradeRitual(RitualRecipe recipe) {
         super(recipe);

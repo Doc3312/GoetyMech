@@ -18,6 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.lang.reflect.Method;
 
 @Mixin(BlockEntityConfigurationPacket.class)
+/**
+ * Create BE 配置包 Mixin。适配远程引擎网络同步。
+ */
 public class BlockEntityConfigurationPacketMixin {
 
     @Shadow(remap = false)

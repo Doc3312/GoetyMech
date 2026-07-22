@@ -12,6 +12,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+/**
+ * 拟态分解 JEI 分类。
+ */
 public class MimicDeconstructionCategory extends AbstractRecipeCategory<MimicDeconstructionRecipe> {
 
     private final IDrawable background;

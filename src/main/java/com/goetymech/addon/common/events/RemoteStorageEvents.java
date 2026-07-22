@@ -16,6 +16,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 远程仓储事件处理。
+ */
 public class RemoteStorageEvents {
 
     @SubscribeEvent

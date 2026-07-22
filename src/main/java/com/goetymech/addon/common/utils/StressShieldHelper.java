@@ -7,6 +7,9 @@ import com.goetymech.addon.common.net.s2c.S2CStressShieldUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * 应力护盾辅助。
+ */
 public class StressShieldHelper {
 
     public static IStressShield getShield(LivingEntity entity) {

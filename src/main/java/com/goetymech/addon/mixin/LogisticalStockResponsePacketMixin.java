@@ -16,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(LogisticalStockResponsePacket.class)
+/**
+ * Create 物流响应包 Mixin。适配远程仓储。
+ */
 public class LogisticalStockResponsePacketMixin {
 
     @Shadow(remap = false)

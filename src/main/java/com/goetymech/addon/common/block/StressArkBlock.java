@@ -22,6 +22,9 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
 
+/**
+ * 应力方舟。大容量应力存储/缓冲。
+ */
 public class StressArkBlock extends BaseEntityBlock {
 
     public StressArkBlock() {

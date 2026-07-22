@@ -34,6 +34,9 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 应力护盾法术。施放后获得 Capability 护盾。
+ */
 public class StressShieldSpell extends Spell {
 
     @Override

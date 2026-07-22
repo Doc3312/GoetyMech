@@ -19,6 +19,9 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * 缩放神光粒子。时停专用粒子效果。
+ */
 public class ScaledGodRayParticle extends TextureSheetParticle {
     private final float halfLife;
     private final float widthScale;

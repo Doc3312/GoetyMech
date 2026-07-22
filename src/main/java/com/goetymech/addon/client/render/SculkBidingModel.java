@@ -6,6 +6,9 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.world.entity.Entity;
 
+/**
+ * 幽匿绑定实体模型。
+ */
 public class SculkBidingModel<T extends Entity> extends HierarchicalModel<T> {
     private static final float DEG = (float) (Math.PI / 180.0);
 

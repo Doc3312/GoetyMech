@@ -9,6 +9,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 墙跑输入 C2S 包。同步 forward/strafe。
+ */
 public class C2SWallInputPacket {
     private final float forward;
     private final float strafe;

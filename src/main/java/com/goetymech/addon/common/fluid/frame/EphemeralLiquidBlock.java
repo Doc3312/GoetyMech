@@ -15,6 +15,9 @@ import net.minecraft.world.level.material.FlowingFluid;
 
 import java.util.function.Supplier;
 
+/**
+ * 临时流体方块。计时消失和接触效果。
+ */
 public class EphemeralLiquidBlock extends LiquidBlock {
 
     private final EphemeralFluidConfig config;

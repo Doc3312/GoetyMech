@@ -8,6 +8,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
+/**
+ * 魂灵丰碑方块物品。存储实体 NBT 快照。
+ */
 public class SoulMonumentBlockItem extends BlockItem {
     public SoulMonumentBlockItem(Block block, Properties properties) {
         super(block, properties);

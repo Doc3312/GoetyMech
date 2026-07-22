@@ -19,6 +19,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 应力护盾聚晶。施放后获得应力护盾。
+ */
 public class StressShieldFocus extends MagicFocus {
 
     private static final String TAG_BOUND = "goetymech.shield_bound";

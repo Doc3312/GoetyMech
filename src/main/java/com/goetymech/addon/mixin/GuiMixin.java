@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Gui.class)
+/**
+ * GUI Mixin。时停中替换 partialTick。
+ */
 public class GuiMixin {
     @ModifyVariable(method = "render", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private float gp$partial(float value) {

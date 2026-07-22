@@ -5,6 +5,9 @@ import java.util.function.Consumer;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.entity.player.Player;
 
+/**
+ * 临时流体配置 Builder。
+ */
 public class EphemeralFluidConfig {
 
     private final ParticleOptions particle;

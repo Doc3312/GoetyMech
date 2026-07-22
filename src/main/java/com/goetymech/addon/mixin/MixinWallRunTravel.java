@@ -13,6 +13,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Player.class)
+/**
+ * 墙跑 Travel Mixin。替换玩家移动为墙跑物理。
+ */
 public abstract class MixinWallRunTravel {
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)

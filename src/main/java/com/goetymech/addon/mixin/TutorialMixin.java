@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Tutorial.class)
+/**
+ * 教程 Mixin。时停中取消教程 tick。
+ */
 public class TutorialMixin {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void gp$tick(CallbackInfo ci) {

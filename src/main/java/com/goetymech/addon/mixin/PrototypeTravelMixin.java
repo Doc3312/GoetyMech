@@ -13,6 +13,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Player.class)
+/**
+ * 原型飞行 Travel Mixin。velocity-set 模型覆盖原版鞘翅物理。
+ */
 public abstract class PrototypeTravelMixin {
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)

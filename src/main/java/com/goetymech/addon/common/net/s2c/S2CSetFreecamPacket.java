@@ -6,6 +6,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 设置 Freecam S2C 包。
+ */
 public class S2CSetFreecamPacket {
     private final boolean active;
 

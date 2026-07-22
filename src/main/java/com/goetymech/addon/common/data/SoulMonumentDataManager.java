@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
+/**
+ * 魂灵丰碑数据管理器。读写 .dat 文件持久化仆从快照。
+ */
 public class SoulMonumentDataManager {
 
     private static final LevelResource DATA_DIR = new LevelResource("data/goetymech/monument");

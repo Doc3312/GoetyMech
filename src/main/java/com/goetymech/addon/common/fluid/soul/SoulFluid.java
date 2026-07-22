@@ -12,6 +12,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraftforge.fluids.FluidType;
 
+/**
+ * 灵魂液。具体流体实现，继承 AbstractEphemeralFluid。
+ */
 public abstract class SoulFluid extends AbstractEphemeralFluid {
 
     @Override

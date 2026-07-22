@@ -19,6 +19,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 碾压轮聚晶。绑定 StressReader 后召唤碾压轮实体。
+ */
 public class CrushingWheelFocus extends MagicFocus {
 
     private static final String TAG_BOUND = "goetymech.bound";

@@ -24,6 +24,9 @@ import top.theillusivec4.curios.api.SlotResult;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 灵质捕手事件。拦截击杀灵魂并转化为灵质。
+ */
 public class EctoplasmCatcherEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

@@ -12,6 +12,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * 拟态合成 JEI 分类。
+ */
 public class MimicCombinationCategory extends AbstractRecipeCategory<MimicCombinationRecipe> {
 
     private final IDrawable background;

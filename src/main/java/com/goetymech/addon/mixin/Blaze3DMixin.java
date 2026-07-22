@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Blaze3D.class)
+/**
+ * Blaze3D 时间替换。时停中返回冻结时刻的 GLFW 时间。
+ */
 public class Blaze3DMixin {
     @Inject(method = "getTime", at = @At("HEAD"), cancellable = true)
     private static void gp$getTime(CallbackInfoReturnable<Double> cir) {

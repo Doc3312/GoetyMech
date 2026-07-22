@@ -7,6 +7,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 墙跑跳离 C2S 包。
+ */
 public class C2SWallJumpOffPacket {
 
     public C2SWallJumpOffPacket() {

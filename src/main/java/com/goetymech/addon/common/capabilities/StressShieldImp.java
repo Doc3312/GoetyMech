@@ -2,6 +2,9 @@ package com.goetymech.addon.common.capabilities;
 
 import net.minecraft.world.level.Level;
 
+/**
+ * IStressShield 默认实现。
+ */
 public class StressShieldImp implements IStressShield {
     private float shield;
     private float maxShield;

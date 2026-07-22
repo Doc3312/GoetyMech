@@ -24,6 +24,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
+/**
+ * 灵魂统御锁链渲染器。显示玩家与仆从之间的红色锁链。
+ */
 public class SoulDominionChainRenderer {
 
     private static final ResourceLocation CHAIN_TEXTURE =

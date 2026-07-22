@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Entity.class)
+/**
+ * 实体 Mixin。处理实体自动解除时停。
+ */
 public abstract class EntityMixin {
     @Shadow public Level level;
 

@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Consumer;
 
 @Mixin(Level.class)
+/**
+ * 世界 Mixin。时停中拦截 guardEntityTick。
+ */
 public class LevelMixin {
 
     @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)

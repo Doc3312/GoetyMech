@@ -6,6 +6,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
+/**
+ * 应力方舟数据 S2C 包。同步容量/应力。
+ */
 public class S2CStressArkDataPacket {
     private final float totalCapacity;
     private final float totalStress;

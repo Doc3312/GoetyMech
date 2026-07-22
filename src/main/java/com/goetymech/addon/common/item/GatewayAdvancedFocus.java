@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 神行聚晶。跨维度结构传送，传送后进入 Freecam。
+ */
 public class GatewayAdvancedFocus extends MagicFocus {
 
     public GatewayAdvancedFocus() {

@@ -22,6 +22,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 灵魂统御事件。HIGHEST 优先级拦截伤害并均分给仆从。
+ */
 public class SoulDominionEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

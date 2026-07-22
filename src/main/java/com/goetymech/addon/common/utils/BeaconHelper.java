@@ -14,6 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 信标效果扫描。丰碑旁信标 buff 传播给召唤仆从。
+ */
 public class BeaconHelper {
 
     private static final Field PRIMARY_POWER;

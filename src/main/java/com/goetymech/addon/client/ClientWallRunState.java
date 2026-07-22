@@ -2,6 +2,9 @@ package com.goetymech.addon.client;
 
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * 客户端墙跑状态。管理相机旋转和移动输入。
+ */
 public class ClientWallRunState {
     public static Vec3 wallNormal = Vec3.ZERO;
     public static float forwardInput = 0.0f;

@@ -14,6 +14,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+/**
+ * 兵营配置 C2S 包。同步编队设置到服务端。
+ */
 public class SquadConfigC2SPacket {
 
     private static final Map<UUID, Long> lastPacketTick = new ConcurrentHashMap<>();

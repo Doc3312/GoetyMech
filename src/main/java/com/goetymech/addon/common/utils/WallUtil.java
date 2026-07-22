@@ -10,6 +10,9 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 墙面检测工具。AABB 碰撞检测四方向墙体。
+ */
 public class WallUtil {
 
     @Nullable

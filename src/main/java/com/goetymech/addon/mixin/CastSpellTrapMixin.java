@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(CastSpellTrap.class)
+/**
+ * Goety 法术陷阱 Mixin。适配远程引擎施法。
+ */
 public class CastSpellTrapMixin {
 
     @Unique

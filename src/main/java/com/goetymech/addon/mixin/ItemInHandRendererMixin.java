@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ItemInHandRenderer.class)
+/**
+ * 手持物品渲染 Mixin。时停中替换 partialTick。
+ */
 public class ItemInHandRendererMixin {
     @ModifyVariable(method = "renderHandsWithItems", at = @At("HEAD"), argsOnly = true)
     private float gp$renderHandsWithItems(float value) {

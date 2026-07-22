@@ -13,6 +13,9 @@ import net.minecraftforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+/**
+ * 撞击坑 BESR 渲染器。渲染方块变形和弹跳动画。
+ */
 public class CraterBlockRenderer implements BlockEntityRenderer<CraterBlockEntity> {
 
     public CraterBlockRenderer(BlockEntityRendererProvider.Context ctx) {}

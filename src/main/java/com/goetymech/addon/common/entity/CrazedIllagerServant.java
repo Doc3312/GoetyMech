@@ -23,6 +23,9 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
+/**
+ * 疯狂唤魔者仆从版本。使用 summonAttack 修复击杀归属。
+ */
 public class CrazedIllagerServant extends VindicatorServant {
 
     private int particleTicks;

@@ -9,6 +9,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
+/**
+ * 血肉晶匣容器。管理插槽和物品同步。
+ */
 public class FleshCasketContainer extends AbstractContainerMenu {
     private final ItemStack stack;
     private final int tier;

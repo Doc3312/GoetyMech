@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Camera.class)
+/**
+ * 相机 Mixin。时停中替换 partialTick。
+ */
 public class CameraMixin {
 
     @ModifyVariable(method = "setup", at = @At("HEAD"), ordinal = 0, argsOnly = true)

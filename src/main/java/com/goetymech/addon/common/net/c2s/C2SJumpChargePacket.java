@@ -7,6 +7,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 蓄力跳 C2S 包。同步蓄力 tick 和地面速度。
+ */
 public class C2SJumpChargePacket {
     private final int action;
     private final float forward;

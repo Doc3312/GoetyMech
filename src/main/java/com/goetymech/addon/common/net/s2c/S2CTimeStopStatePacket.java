@@ -6,6 +6,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
+/**
+ * 时停状态 S2C 包。广播冻结/解冻。
+ */
 public class S2CTimeStopStatePacket {
     private final boolean isTimeStop;
     private final int user;

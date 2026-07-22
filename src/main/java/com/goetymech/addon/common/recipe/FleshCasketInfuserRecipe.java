@@ -12,6 +12,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.items.ItemStackHandler;
 
+/**
+ * 血肉晶匣注魔配方。
+ */
 public class FleshCasketInfuserRecipe extends CursedInfuserRecipes {
     public FleshCasketInfuserRecipe(ResourceLocation pId, String pGroup, Ingredient pIngredient, ItemStack pResult, float pExperience, int pCookingTime, boolean grim) {
         super(pId, pGroup, pIngredient, pResult, pExperience, pCookingTime, grim);

@@ -8,6 +8,9 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 
 import java.util.EnumSet;
 
+/**
+ * 丰碑仆从跟随 AI。非 IServant 实体跟随玩家。
+ */
 public class MonumentFollowGoal extends Goal {
 
     private final Mob mob;

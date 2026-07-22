@@ -27,6 +27,9 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 
+/**
+ * 稳定裂隙法术。创建长期传送通道。
+ */
 public class StableRiftSpell extends Spell {
 
     @Override

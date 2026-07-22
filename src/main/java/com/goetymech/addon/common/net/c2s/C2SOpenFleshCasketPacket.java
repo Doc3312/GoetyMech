@@ -13,6 +13,9 @@ import net.minecraftforge.network.NetworkHooks;
 
 import java.util.function.Supplier;
 
+/**
+ * 打开血肉晶匣 C2S 包。
+ */
 public class C2SOpenFleshCasketPacket {
 
     public static void encode(C2SOpenFleshCasketPacket packet, FriendlyByteBuf buf) {}

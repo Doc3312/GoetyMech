@@ -12,6 +12,9 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
+/**
+ * 应力护盾 HUD 覆盖层。显示护盾值条。
+ */
 public class StressShieldOverlay {
     public static final IGuiOverlay OVERLAY = StressShieldOverlay::drawOverlay;
 

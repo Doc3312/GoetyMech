@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 召唤疯狂唤魔者聚晶。
+ */
 public class CrazedSummonFocus extends MagicFocus {
     public CrazedSummonFocus() {
         super(new CrazedSummonSpell());

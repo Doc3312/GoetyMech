@@ -26,6 +26,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * 应力护盾玩家渲染层。在玩家模型外层渲染护盾效果。
+ */
 public class StressShieldLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             new ResourceLocation(GoetyMechMod.MOD_ID, "stress_shield"), "main");

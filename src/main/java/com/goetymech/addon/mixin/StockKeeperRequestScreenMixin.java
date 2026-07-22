@@ -16,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.lang.ref.WeakReference;
 
 @Mixin(StockKeeperRequestScreen.class)
+/**
+ * Create 库存屏幕 Mixin。适配远程仓储。
+ */
 public class StockKeeperRequestScreenMixin {
 
     @Shadow(remap = false)

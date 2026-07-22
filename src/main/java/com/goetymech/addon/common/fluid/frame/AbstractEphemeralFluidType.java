@@ -8,6 +8,9 @@ import net.minecraftforge.fluids.FluidType;
 
 import java.util.function.Consumer;
 
+/**
+ * 临时流体类型基类。纹理复用和着色。
+ */
 public abstract class AbstractEphemeralFluidType extends FluidType {
 
     public AbstractEphemeralFluidType() {

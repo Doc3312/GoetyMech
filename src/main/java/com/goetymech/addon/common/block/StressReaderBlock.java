@@ -34,6 +34,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
+/**
+ * 应力读取器。读取所在 Create 网络的应力数据。
+ */
 public class StressReaderBlock extends DirectionalKineticBlock
         implements IBE<StressReaderBlockEntity> {
 

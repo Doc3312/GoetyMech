@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
+/**
+ * 原型步高 Mixin。提升原型持有者的步伐高度。
+ */
 public abstract class PrototypeStepHeightMixin {
 
     @Inject(method = "maxUpStep", at = @At("HEAD"), cancellable = true)

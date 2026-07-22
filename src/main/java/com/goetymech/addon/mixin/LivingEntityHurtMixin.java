@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
+/**
+ * 实体受伤 Mixin。时停中取消伤害。
+ */
 public class LivingEntityHurtMixin {
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)

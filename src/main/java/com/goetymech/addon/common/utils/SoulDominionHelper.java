@@ -7,6 +7,9 @@ import com.goetymech.addon.common.net.s2c.S2CSoulDominionSyncPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * 灵魂统御辅助。
+ */
 public class SoulDominionHelper {
 
     public static ISoulDominion getDominion(LivingEntity entity) {

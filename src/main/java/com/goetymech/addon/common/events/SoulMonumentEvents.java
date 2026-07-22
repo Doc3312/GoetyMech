@@ -27,6 +27,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 魂灵丰碑事件。TaglockKit 交互、村民献祭、仆从掉落拦截。
+ */
 public class SoulMonumentEvents {
 
     @SubscribeEvent

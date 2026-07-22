@@ -17,6 +17,9 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 拟态分解配方。将拟态制品分解还原。
+ */
 public class MimicDeconstructionRecipe implements CraftingRecipe {
 
     private final ResourceLocation id;

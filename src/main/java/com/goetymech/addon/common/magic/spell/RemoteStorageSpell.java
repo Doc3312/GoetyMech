@@ -32,6 +32,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkHooks;
 
+/**
+ * 远程打开 Create Stock Ticker 下单界面。
+ */
 public class RemoteStorageSpell extends Spell {
 
     @Override

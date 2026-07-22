@@ -8,6 +8,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
+/**
+ * 物品实体虚空 Mixin。防止原型坠入虚空。
+ */
 public class ItemEntityVoidMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))

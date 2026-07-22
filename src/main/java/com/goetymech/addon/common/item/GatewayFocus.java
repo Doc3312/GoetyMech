@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 定点聚晶。同维度结构传送。
+ */
 public class GatewayFocus extends MagicFocus {
 
     public GatewayFocus() {

@@ -13,6 +13,9 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * 幽匿绑定实体渲染器。
+ */
 public class SculkBidingRenderer extends EntityRenderer<SculkSpikeEntity> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             new ResourceLocation(GoetyMechMod.MOD_ID, "sculk_biding"), "main");

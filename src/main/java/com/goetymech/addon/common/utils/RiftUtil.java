@@ -6,6 +6,9 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
+/**
+ * 裂隙工具。
+ */
 public class RiftUtil {
 
     private record DimensionPair(ResourceKey<Level> a, ResourceKey<Level> b, double aToBScale) {

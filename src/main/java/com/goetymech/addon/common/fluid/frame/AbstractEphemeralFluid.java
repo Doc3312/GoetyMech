@@ -14,6 +14,9 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
+/**
+ * 临时流体基类。支持消退和不可无限产生。
+ */
 public abstract class AbstractEphemeralFluid extends FlowingFluid {
 
     public abstract int getDecayRate();

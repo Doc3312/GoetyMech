@@ -12,6 +12,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * IStressShield Capability Provider。
+ */
 public class StressShieldProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
 
     public static final Capability<IStressShield> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});

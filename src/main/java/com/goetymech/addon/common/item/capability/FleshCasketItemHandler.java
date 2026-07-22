@@ -9,6 +9,9 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
+/**
+ * 血肉晶匣物品处理器。管理存储的聚晶。
+ */
 public class FleshCasketItemHandler extends ItemStackHandler {
     private final ItemStack itemStack;
 

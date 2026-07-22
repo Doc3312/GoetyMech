@@ -6,6 +6,9 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 
+/**
+ * 疯狂唤魔者渲染器。
+ */
 public class CrazedIllagerRenderer extends MobRenderer<Mob, CrazedIllagerModel<Mob>> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(

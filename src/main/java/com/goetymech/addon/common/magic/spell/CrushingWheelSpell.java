@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 召唤碾压轮实体攻击。伤害取决于应力网络容量。
+ */
 public class CrushingWheelSpell extends Spell {
 
     @Override

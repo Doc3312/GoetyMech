@@ -12,6 +12,9 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
+/**
+ * Freecam 模式 HUD。显示红色提示覆盖层。
+ */
 public class FreecamHUD {
 
     public static final IGuiOverlay OVERLAY = FreecamHUD::drawHUD;

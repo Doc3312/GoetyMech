@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 兵团聚晶。绑定点将台/丰碑后批量召唤编队仆从。
+ */
 public class SquadFocus extends MagicFocus {
 
     private static final String TAG_BOUND = "goetymech.bound";

@@ -9,6 +9,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * Slam 冲击 S2C 包。同步冲击位置和半径。
+ */
 public class S2CSlamImpactPacket {
 
     private final double x;

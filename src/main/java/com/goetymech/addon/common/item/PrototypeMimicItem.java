@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * 原型拟态。隐藏原型外观并伪装为其他胸甲。
+ */
 public class PrototypeMimicItem extends ElytraItem {
 
     private static final String TAG_SOURCE_ID = "goetymech.mimic_source_id";

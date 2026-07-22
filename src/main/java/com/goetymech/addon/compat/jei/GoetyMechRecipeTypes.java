@@ -3,6 +3,9 @@ package com.goetymech.addon.compat.jei;
 import com.goetymech.addon.GoetyMechMod;
 import mezz.jei.api.recipe.RecipeType;
 
+/**
+ * JEI 配方类型注册。
+ */
 public class GoetyMechRecipeTypes {
 
     public static final RecipeType<MimicCombinationRecipe> MIMIC_COMBINATION =

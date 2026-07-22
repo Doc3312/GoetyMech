@@ -20,6 +20,9 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 拟态合成配方。将原物品+源物品合成为拟态制品。
+ */
 public class MimicCombinationRecipe implements CraftingRecipe {
 
     private final ResourceLocation id;

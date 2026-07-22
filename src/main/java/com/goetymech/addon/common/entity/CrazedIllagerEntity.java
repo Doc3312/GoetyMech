@@ -39,6 +39,9 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
+/**
+ * 疯狂唤魔者实体。Goety 仆从扩展，头部锯刃攻击，无视无敌帧。
+ */
 public class CrazedIllagerEntity extends AbstractIllager {
 
     private static final Predicate<Difficulty> DOOR_BREAKING_PREDICATE =

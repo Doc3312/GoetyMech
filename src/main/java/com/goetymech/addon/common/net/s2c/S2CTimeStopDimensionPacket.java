@@ -11,6 +11,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
+/**
+ * 时停维度 S2C 包。广播冻结维度。
+ */
 public class S2CTimeStopDimensionPacket {
     private final ResourceLocation toRemoveDimensionID;
     private final ResourceLocation toAddDimensionID;

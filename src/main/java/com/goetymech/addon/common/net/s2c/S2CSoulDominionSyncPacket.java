@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+/**
+ * 灵魂统御同步 S2C 包。
+ */
 public class S2CSoulDominionSyncPacket {
     private final int entityId;
     private final boolean active;

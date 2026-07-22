@@ -9,6 +9,9 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.BooleanSupplier;
 
+/**
+ * 客户端 Level 扩展。更新时停维度并取消时停中的世界 tick。
+ */
 public class ClientLevelExpandedContext extends LevelExpandedContext {
     public final ClientLevel clientLevel;
     public ResourceKey<Level> currentTimeStopDimension = null;

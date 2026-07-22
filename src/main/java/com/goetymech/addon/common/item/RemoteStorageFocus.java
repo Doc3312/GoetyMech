@@ -20,6 +20,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 远程仓储聚晶。绑定 Stock Ticker 后远程打开 GUI。
+ */
 public class RemoteStorageFocus extends MagicFocus {
 
     private static final String TAG_BOUND = "goetymech.st_bound";

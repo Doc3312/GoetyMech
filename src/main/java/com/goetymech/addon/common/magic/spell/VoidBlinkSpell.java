@@ -31,6 +31,9 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
+/**
+ * 虚空闪现法术。锁定目标后多次闪现传送。
+ */
 public class VoidBlinkSpell extends Spell {
 
     @Override

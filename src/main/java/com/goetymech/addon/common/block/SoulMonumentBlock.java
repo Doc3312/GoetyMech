@@ -38,6 +38,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
+/**
+ * 魂灵丰碑。记录绑定灵魂并召唤小队傀儡。
+ */
 public abstract class SoulMonumentBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;

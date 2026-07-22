@@ -13,6 +13,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
+/**
+ * 世界渲染 Mixin。时停中替换 partialTick 并取消 tickRain。
+ */
 public class LevelRendererMixin {
 
     @ModifyVariable(method = "renderEntity", at = @At("HEAD"), argsOnly = true)

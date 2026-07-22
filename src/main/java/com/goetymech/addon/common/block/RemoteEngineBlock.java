@@ -28,6 +28,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
+/**
+ * 遥控引擎。Create 动力方块，远程提供旋转动力。
+ */
 public class RemoteEngineBlock extends DirectionalKineticBlock
         implements IBE<RemoteEngineBlockEntity> {
 

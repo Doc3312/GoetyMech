@@ -6,6 +6,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 退出 Freecam C2S 包。
+ */
 public class C2SFreecamEndPacket {
 
     public C2SFreecamEndPacket() {}

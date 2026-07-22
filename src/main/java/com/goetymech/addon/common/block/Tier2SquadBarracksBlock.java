@@ -1,5 +1,8 @@
 package com.goetymech.addon.common.block;
 
+/**
+ * 二级点将台。
+ */
 public class Tier2SquadBarracksBlock extends SquadBarracksBlock {
     @Override
     public int getConfigSlots() {

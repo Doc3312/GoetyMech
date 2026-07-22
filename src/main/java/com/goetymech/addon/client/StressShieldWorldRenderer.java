@@ -25,6 +25,9 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+/**
+ * 应力护盾世界渲染器。渲染护盾受击效果。
+ */
 public class StressShieldWorldRenderer {
 
     private static final ResourceLocation SHARD_TEXTURE = new ResourceLocation("textures/entity/wither/wither_armor.png");

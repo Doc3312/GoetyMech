@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * ISoulDominion 默认实现。
+ */
 public class SoulDominionImp implements ISoulDominion {
     private boolean active;
     private long expireTick;

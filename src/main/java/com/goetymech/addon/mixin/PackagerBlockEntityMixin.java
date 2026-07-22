@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PackagerBlockEntity.class)
+/**
+ * Create 打包器 Mixin。适配远程仓储。
+ */
 public class PackagerBlockEntityMixin {
 
     @Inject(method = "tick", at = @At(value = "INVOKE",

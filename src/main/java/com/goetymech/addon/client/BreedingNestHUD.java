@@ -20,6 +20,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, value = Dist.CLIENT)
+/**
+ * 育巢 HUD。准星对准育巢时显示能量和转化进度。
+ */
 public class BreedingNestHUD {
 
     private static final int BAR_WIDTH = 64;

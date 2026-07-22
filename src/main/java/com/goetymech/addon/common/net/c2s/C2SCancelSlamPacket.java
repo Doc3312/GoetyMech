@@ -9,6 +9,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 取消 Slam C2S 包。
+ */
 public class C2SCancelSlamPacket {
     public static C2SCancelSlamPacket decode(FriendlyByteBuf buf) {
         return new C2SCancelSlamPacket();

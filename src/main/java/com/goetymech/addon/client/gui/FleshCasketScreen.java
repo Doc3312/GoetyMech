@@ -9,6 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+/**
+ * 血肉晶匣 GUI。显示插槽和法术配置。
+ */
 public class FleshCasketScreen extends AbstractContainerScreen<FleshCasketContainer> {
     private static final ResourceLocation[] GUI_TEXTURES = {
         new ResourceLocation(GoetyMechMod.MOD_ID, "textures/gui/container/flesh_casket_1.png"),

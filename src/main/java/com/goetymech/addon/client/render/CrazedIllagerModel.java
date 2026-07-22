@@ -10,6 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * 疯狂唤魔者模型。头部锯刃和躯干几何。
+ */
 public class CrazedIllagerModel<T extends LivingEntity> extends HierarchicalModel<T> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(

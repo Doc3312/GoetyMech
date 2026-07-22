@@ -13,6 +13,9 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * 拟态物品 ISTER 渲染器。渲染伪装后的胸甲模型。
+ */
 public class MimicItemRenderer extends BlockEntityWithoutLevelRenderer {
 
     private static MimicItemRenderer INSTANCE;

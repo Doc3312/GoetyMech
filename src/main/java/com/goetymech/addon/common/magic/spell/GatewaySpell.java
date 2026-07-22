@@ -21,6 +21,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * 同维度结构传送法术。副手持结构之眼定位。
+ */
 public class GatewaySpell extends Spell {
 
     private static final String TAG_SAFE_FAILED_POS = "GatewaySafeFailedPos";

@@ -7,6 +7,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * 护盾更新 S2C 包。同步护盾值。
+ */
 public class S2CStressShieldUpdatePacket {
     private final int entityId;
     private final float shield;

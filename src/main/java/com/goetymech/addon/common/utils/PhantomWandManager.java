@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 虚拟法杖注入管理器。晶匣自动施法的代理法杖。
+ */
 public class PhantomWandManager {
     private static final Map<UUID, ItemStack> PHANTOM_WANDS = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> PENDING_CLEAR = new ConcurrentHashMap<>();

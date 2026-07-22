@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemEntity.class)
+/**
+ * 物品实体 Mixin。原型物品虚空保护。
+ */
 public class ItemEntityPrototypeMixin {
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)

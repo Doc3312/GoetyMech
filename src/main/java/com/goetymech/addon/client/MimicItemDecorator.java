@@ -7,6 +7,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.IItemDecorator;
 
+/**
+ * 拟态物品装饰器。在物品图标上显示覆盖层。
+ */
 public class MimicItemDecorator implements IItemDecorator {
     private static final ResourceLocation OVERLAY_TEXTURE =
             new ResourceLocation("goetymech", "textures/item/prototype_mimic_overlay.png");

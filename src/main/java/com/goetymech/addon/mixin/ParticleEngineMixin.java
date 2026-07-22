@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ParticleEngine.class)
+/**
+ * 粒子引擎 Mixin。时停中取消粒子 tick。
+ */
 public class ParticleEngineMixin {
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)

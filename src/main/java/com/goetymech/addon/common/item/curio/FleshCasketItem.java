@@ -24,6 +24,9 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * 血肉晶匣饰品。Curios 槽位自动施法容器。
+ */
 public class FleshCasketItem extends Item implements ICurioItem {
     private static final String TAG_COOLDOWN = "flesh_casket_cooldown";
     private static final String TAG_TRIGGER_TYPE = "flesh_casket_trigger_type";

@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * 灵魂统御聚晶。连接仆从均分伤害。
+ */
 public class SoulDominionFocus extends MagicFocus {
 
     public SoulDominionFocus() {

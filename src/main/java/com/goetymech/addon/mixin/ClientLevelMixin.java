@@ -30,6 +30,9 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @Mixin(ClientLevel.class)
+/**
+ * 客户端世界 Mixin。取消时停中的 tick/tickTime/animateTick。
+ */
 public abstract class ClientLevelMixin extends Level implements LevelEC {
     @Shadow @Final public EntityTickList tickingEntities;
     @Shadow @Final private TransientEntitySectionManager<Entity> entityStorage;

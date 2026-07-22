@@ -22,6 +22,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
+/**
+ * 结构定位工具。安全位置搜索和结构坐标计算。
+ */
 public class GatewayUtil {
 
     public static volatile boolean pendingEyeCapture = false;

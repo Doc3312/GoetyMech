@@ -1,5 +1,8 @@
 package com.goetymech.addon.common.capabilities;
 
+/**
+ * 应力护盾 Capability 接口。管理护盾值。
+ */
 public interface IStressShield {
     float getShield();
     void setShield(float value);
