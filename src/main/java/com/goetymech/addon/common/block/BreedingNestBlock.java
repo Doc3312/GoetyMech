@@ -52,6 +52,21 @@ public class BreedingNestBlock extends BaseEntityBlock implements SimpleWaterlog
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack held = player.getItemInHand(hand);
 
+        // 优先检查是否有产物可取
+        if (!level.isClientSide) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof BreedingNestBlockEntity nest) {
+                ItemStack output = nest.removeItem(0, 64);
+                if (!output.isEmpty()) {
+                    if (!player.getInventory().add(output)) {
+                        player.drop(output, false);
+                    }
+                    level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.2F, 1.0F);
+                    return InteractionResult.SUCCESS;
+                }
+            }
+        }
+
         if (!held.isEmpty()) {
             FoodProperties food = held.getItem().getFoodProperties(held, null);
             if (food != null) {
@@ -65,23 +80,10 @@ public class BreedingNestBlock extends BaseEntityBlock implements SimpleWaterlog
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
-    }
-
-    if (!level.isClientSide) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof BreedingNestBlockEntity nest) {
-            ItemStack output = nest.removeItem(0, 64);
-            if (!output.isEmpty()) {
-                if (!player.getInventory().add(output)) {
-                    player.drop(output, false);
-                }
-                level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.2F, 1.0F);
-                return InteractionResult.SUCCESS;
-            }
         }
+
+        return InteractionResult.PASS;
     }
-    return InteractionResult.PASS;
-}
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
