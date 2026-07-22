@@ -19,7 +19,7 @@
   "info.goetymech.furnace.no_target": "§7未设置训练目标",
   "info.goetymech.hud.cooking": "血肉转化中",
   "info.goetymech.hud.linked": "已链接：",
-  "info.goetymech.hud.nest": "育巢充能中",
+  "info.goetymech.hud.nest": "育巢饱和度",
   "item.goetymech.sculk_bind_focus": "幽匿束缚聚晶",
   "info.goetymech.sculk_bind_focus.no_target": "§c请瞄准一个实体！",
   "info.goetymech.sculk_bind_focus.shift_info": "束缚目标并在其身边召唤愤怒的监守者，它同样会攻击施法者。",

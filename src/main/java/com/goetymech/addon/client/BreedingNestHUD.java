@@ -62,10 +62,6 @@ public class BreedingNestHUD {
         int titleWidth = font.width(title);
         gui.drawString(font, title, (width - titleWidth) / 2, height - 100, 0xFFFFFF);
 
-        String progress = nest.getEnergy() + "/" + nest.getMaxEnergy() + " hunger";
-        int progressWidth = font.width(progress);
-        gui.drawString(font, progress, (width - progressWidth) / 2, height - 90, 0xAAAAAA);
-
         gui.blit(Goety.location("textures/gui/train_bar.png"),
                 (width - BAR_WIDTH) / 2, height - 86,
                 0, 0, BAR_WIDTH, BAR_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);

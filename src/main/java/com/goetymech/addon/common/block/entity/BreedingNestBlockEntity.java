@@ -91,7 +91,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             if (conversionTicks >= 40) {
                 outputStack = new ItemStack(ModItems.TWISTED_EMBRYO.get(), 1);
                 conversionTicks = -1;
-                level.playSound(null, worldPosition, SoundEvents.VILLAGER_CELEBRATE, SoundSource.BLOCKS, 0.8F, 1.0F);
+                level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE, SoundSource.BLOCKS, 0.8F, 1.0F);
                 markUpdated();
             }
         }
@@ -226,7 +226,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
 
     @Override
     public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
-        if (direction == Direction.UP || direction == Direction.DOWN) return false;
+        if (direction == Direction.UP) return false;
         return !outputStack.isEmpty();
     }
 
@@ -312,7 +312,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER && side != null && side != Direction.DOWN) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER && side != null) {
             LazyOptional<IItemHandlerModifiable> handler = handlers[side.get3DDataValue()];
             if (handler != null) return handler.cast();
         }

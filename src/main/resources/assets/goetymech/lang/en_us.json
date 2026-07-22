@@ -19,7 +19,7 @@
   "info.goetymech.furnace.no_target": "§7No training target set",
   "info.goetymech.hud.cooking": "Converting in Flesh Furnace",
   "info.goetymech.hud.linked": "Linked: ",
-  "info.goetymech.hud.nest": "Breeding Nest Charging",
+  "info.goetymech.hud.nest": "Breeding Nest Saturation",
   "item.goetymech.sculk_bind_focus": "Sculk Bind Focus",
   "info.goetymech.sculk_bind_focus.no_target": "§cNo target in sight!",
   "info.goetymech.sculk_bind_focus.shift_info": "Bind a target and summon an enraged Warden. It will also turn on the caster.",
