@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "goetymech:block/soul_monument_tier1"
+    },
+    "facing=east": {
+      "model": "goetymech:block/soul_monument_tier1",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "goetymech:block/soul_monument_tier1",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "goetymech:block/soul_monument_tier1",
+      "y": 270
     }
   }
 }
