@@ -91,7 +91,7 @@ public class BreedingNestBlockEntity extends BlockEntity implements WorldlyConta
             if (conversionTicks >= 40) {
                 outputStack = new ItemStack(ModItems.TWISTED_EMBRYO.get(), 1);
                 conversionTicks = -1;
-                level.playSound(null, worldPosition, SoundEvents.WITHER_SPAWN, SoundSource.BLOCKS, 0.8F, 1.0F);
+                level.playSound(null, worldPosition, SoundEvents.WITHER_AMBIENT, SoundSource.BLOCKS, 0.8F, 1.0F);
                 markUpdated();
             }
         }
