@@ -8,7 +8,7 @@ GoetyMech 在开发过程中参考了以下开源项目。感谢所有原作者�
 
 | 项目 | 作者 | 许可证 | 参考内容 |
 |------|------|--------|---------|
-| **EndLibrary** | MegaDarkness | [MIT](https://opensource.org/licenses/MIT) | 时停系统架构参考 |
+| **EndLibrary** | MegaDarkness | [MIT](https://opensource.org/licenses/MIT) | 时停系统架构（大幅度参考） |
 | **EpicFight** | Epic Fight Team | [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html) | 地面破碎动画算法参考 |
 | **ParCool** | Alrex | [LGPL-3.0](https://www.gnu.org/licenses/lgpl-3.0.html) | 墙跑系统概念参考 |
 
