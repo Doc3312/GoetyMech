@@ -299,12 +299,24 @@ public class FleshFurnaceBlockEntity extends BlockEntity implements WorldlyConta
         BlockPos current = getBlockPos();
         int radius = ModConfig.cachedLinkRange;
         Vec3i area = new Vec3i(radius, 4, radius);
+
+        BlockPos closest = null;
+        double closestDistSqr = Double.MAX_VALUE;
+
         for (BlockPos candidate : BlockPos.betweenClosed(current.subtract(area), current.offset(area))) {
             BlockEntity be = level.getBlockEntity(candidate);
             if (be instanceof com.Polarice3.Goety.common.blocks.entities.OminousPyreBlockEntity) {
-                setLinkPosition(candidate.immutable());
-                return true;
+                double distSqr = candidate.distSqr(current);
+                if (distSqr < closestDistSqr) {
+                    closestDistSqr = distSqr;
+                    closest = candidate.immutable();
+                }
             }
+        }
+
+        if (closest != null) {
+            setLinkPosition(closest);
+            return true;
         }
         return false;
     }
