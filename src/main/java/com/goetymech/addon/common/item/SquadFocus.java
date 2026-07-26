@@ -210,9 +210,10 @@ public class SquadFocus extends MagicFocus {
         if (player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 if (isBound(stack)) {
+                    String boundType = getBoundType(stack);
                     clearBinding(stack);
                     player.displayClientMessage(Component.translatable(
-                            BOUND_TYPE_MONUMENT.equals(getBoundType(stack))
+                            BOUND_TYPE_MONUMENT.equals(boundType)
                                     ? "info.goetymech.squad_focus.unbound_monument"
                                     : "info.goetymech.squad_focus.unbound"), true);
                 }
