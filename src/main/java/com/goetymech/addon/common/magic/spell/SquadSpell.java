@@ -18,6 +18,7 @@ import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
 import com.Polarice3.Goety.utils.SEHelper;
@@ -41,6 +42,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -90,6 +92,11 @@ public class SquadSpell extends Spell {
     @Override
     public SpellStat defaultStats() {
         return new SpellStat(0, 0, 0, 0, 0, 0);
+    }
+
+    @Override
+    public List<Enchantment> acceptedEnchantments() {
+        return List.of(ModEnchantments.DURATION.get());
     }
 
     @Override
@@ -237,6 +244,10 @@ public class SquadSpell extends Spell {
         if (useStaffBonus) {
             lifespan = (int) (lifespan * 1.5);
         }
+        int durationLevel = WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
+        if (durationLevel > 0) {
+            lifespan += durationLevel * ModConfig.SQUAD_DURATION_PER_LEVEL.get() * 20;
+        }
         String summonerKey = SquadFocus.makeSummonerKey(boundPos, boundDim);
         spawnSquad(player, worldIn, consumedSquad, lifespan, summonerKey);
 
@@ -361,6 +372,10 @@ public class SquadSpell extends Spell {
         int lifespan = ModConfig.SQUAD_LIFESPAN.get();
         if (useStaffBonus) {
             lifespan = (int) (lifespan * 1.5);
+        }
+        int durationLevel = WandUtil.getLevels(ModEnchantments.DURATION.get(), player);
+        if (durationLevel > 0) {
+            lifespan += durationLevel * ModConfig.SQUAD_DURATION_PER_LEVEL.get() * 20;
         }
 
         List<MobEffectInstance> beaconEffects = BeaconHelper.collectBeaconEffects(blockLevel, boundPos, 64);

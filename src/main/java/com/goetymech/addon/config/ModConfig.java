@@ -64,6 +64,9 @@ public class ModConfig {
     /** 召唤仆从寿命（tick） */
     public static final ForgeConfigSpec.IntValue SQUAD_LIFESPAN;
 
+    /** 持久附魔每级增加的召唤持续时间（秒） */
+    public static final ForgeConfigSpec.IntValue SQUAD_DURATION_PER_LEVEL;
+
     /** 丰碑召唤冷却时间（tick） */
     public static final ForgeConfigSpec.IntValue MONUMENT_SUMMON_COOLDOWN;
 
@@ -460,6 +463,10 @@ public class ModConfig {
         SQUAD_LIFESPAN = BUILDER
                 .comment("召唤仆从寿命（tick）", "范围: 20-72000，默认 6000（5分钟）")
                 .defineInRange("squad_lifespan", 6000, 20, 72000);
+
+        SQUAD_DURATION_PER_LEVEL = BUILDER
+                .comment("持久附魔每级增加的召唤持续时间（秒）", "范围: 0-3600，默认 100")
+                .defineInRange("squad_duration_per_level", 100, 0, 3600);
 
         MONUMENT_SUMMON_COOLDOWN = BUILDER
                 .comment("魂灵丰碑兵团召唤冷却时间（tick）", "范围: 20-72000，默认 6000（5分钟）")
