@@ -41,6 +41,7 @@ public class SquadBarracksScreen extends AbstractContainerScreen<SquadBarracksMe
     private final int configSlotCount;
     private final Map<Integer, ItemStack> slotIcons = new HashMap<>();
     private final Map<Integer, ResourceLocation> slotTypes = new HashMap<>();
+    private int lastDragSlot = -1;
 
     public SquadBarracksScreen(SquadBarracksMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -76,6 +77,19 @@ public class SquadBarracksScreen extends AbstractContainerScreen<SquadBarracksMe
         ItemStack fallback = new ItemStack(ModItems.MATURE_EMBRYO.get());
         fallback.getOrCreateTag().putString("EntityTypeId", entityTypeId.toString());
         return fallback;
+    }
+
+    private int getConfigSlotAt(double guiX, double guiY) {
+        int lx = this.leftPos;
+        int ly = this.topPos;
+        double dx = guiX - lx - 8;
+        double dy = guiY - ly - 18;
+        if (dx < 0 || dy < 0) return -1;
+        int c = (int) (dx / 18);
+        int r = (int) (dy / 18);
+        int index = r * 6 + c;
+        if (c >= 0 && c < 6 && r >= 0 && index < configSlotCount) return index;
+        return -1;
     }
 
     @Override
@@ -181,9 +195,61 @@ public class SquadBarracksScreen extends AbstractContainerScreen<SquadBarracksMe
                 slotTypes.remove(i);
                 slotIcons.remove(i);
             }
+            lastDragSlot = i;
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button != 0 || lastDragSlot < 0) {
+            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        }
+        int i = getConfigSlotAt(mouseX, mouseY);
+        if (i < 0 || i == lastDragSlot) return true;
+
+        lastDragSlot = i;
+        ItemStack held = menu.getCarried();
+
+        if (!held.isEmpty()) {
+            if (held.getItem() instanceof SpawnEggItem eggItem) {
+                EntityType<?> type = eggItem.getType(held.getTag());
+                ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
+                if (id != null) {
+                    ModNetwork.CHANNEL.sendToServer(
+                            new SquadConfigC2SPacket(menu.containerId, i, id.toString()));
+                    slotTypes.put(i, id);
+                    slotIcons.put(i, new ItemStack(held.getItem()));
+                }
+            } else if (held.hasTag()) {
+                CompoundTag tag = held.getTag();
+                if (tag != null && tag.contains("EntityTypeId")) {
+                    String typeId = tag.getString("EntityTypeId");
+                    if (!typeId.isEmpty()) {
+                        ModNetwork.CHANNEL.sendToServer(
+                                new SquadConfigC2SPacket(menu.containerId, i, typeId));
+                        ResourceLocation rl = ResourceLocation.tryParse(typeId);
+                        if (rl != null) {
+                            slotTypes.put(i, rl);
+                            slotIcons.put(i, new ItemStack(held.getItem()));
+                        }
+                    }
+                }
+            }
+        } else {
+            ModNetwork.CHANNEL.sendToServer(
+                    new SquadConfigC2SPacket(menu.containerId, i, null));
+            slotTypes.remove(i);
+            slotIcons.remove(i);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0) lastDragSlot = -1;
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override

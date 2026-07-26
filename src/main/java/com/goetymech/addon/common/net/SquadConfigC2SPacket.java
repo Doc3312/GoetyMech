@@ -9,17 +9,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
  * 兵营配置 C2S 包。同步编队设置到服务端。
  */
 public class SquadConfigC2SPacket {
-
-    private static final Map<UUID, Long> lastPacketTick = new ConcurrentHashMap<>();
 
     private final int containerId;
     private final int slotIndex;
@@ -50,10 +45,6 @@ public class SquadConfigC2SPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
-            long now = player.serverLevel().getGameTime();
-            Long last = lastPacketTick.get(player.getUUID());
-            if (last != null && now - last < 5) return;
-            lastPacketTick.put(player.getUUID(), now);
             if (player.containerMenu instanceof SquadBarracksMenu menu && menu.containerId == packet.containerId) {
                 SquadBarracksBlockEntity barracks = menu.getBarracks();
                 if (barracks.getOwnerUUID() == null || !barracks.isOwner(player)) return;
