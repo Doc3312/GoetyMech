@@ -530,8 +530,8 @@ public class ModConfig {
         BUILDER.push("crushing_wheel_focus");
 
         CRUSHING_WHEEL_FOCUS_COST = BUILDER
-                .comment("粉碎轮聚晶的灵魂消耗", "范围: 0-1000，默认 0")
-                .defineInRange("soul_cost", 0, 0, 1000);
+                .comment("粉碎轮聚晶的灵魂消耗", "范围: 0-1000，默认 20")
+                .defineInRange("soul_cost", 20, 0, 1000);
 
         CRUSHING_WHEEL_FOCUS_COOLDOWN = BUILDER
                 .comment("施法冷却时间（tick）", "范围: 5-1200，默认 400（=20秒）")
