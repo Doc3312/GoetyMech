@@ -5,6 +5,7 @@ import com.goetymech.addon.client.ModClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -26,7 +27,8 @@ public class FreecamHUD {
         Font font = mc.font;
         if (font == null) return;
 
-        String text = "\u6309R\u9000\u51FA\u795E\u884C\u72B6\u6001";
+        String keyName = ModClientEvents.freecamExitKey.getTranslatedKeyMessage().getString();
+        String text = Component.translatable("key.goetymech.freecam_exit").getString() + " [" + keyName + "]";
         int textWidth = font.width(text);
         int x = (screenWidth - textWidth) / 2;
         int y = screenHeight - 48;
