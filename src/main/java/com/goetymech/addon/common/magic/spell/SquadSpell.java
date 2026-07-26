@@ -10,6 +10,8 @@ import com.goetymech.addon.common.utils.BeaconHelper;
 import com.goetymech.addon.common.utils.MinionSpawnHelper;
 import com.goetymech.addon.common.utils.MonumentFollowGoal;
 import com.goetymech.addon.config.ModConfig;
+import com.goetymech.addon.init.ModParticleTypes;
+import com.Polarice3.Goety.utils.ServerParticleUtil;
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.api.magic.SpellType;
@@ -424,6 +426,10 @@ public class SquadSpell extends Spell {
                 worldIn.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
                         spawnPos.x, spawnPos.y + h / 2.0, spawnPos.z,
                         Math.max(5, (int)(w * h * 10)), w / 2.0, h / 2.0, w / 2.0, 0.05);
+                ServerParticleUtil.sendAlwaysVisibleParticles(worldIn,
+                        ModParticleTypes.SCALED_GOD_RAY.get(),
+                        mob.getX(), mob.getY(), mob.getZ(),
+                        0, w, h, 0, 1.0F);
             }
         }
         focus.getOrCreateTag().putInt("goetymech.cached_tier", monument.getTier());

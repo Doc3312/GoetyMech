@@ -192,6 +192,13 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         savedEntityNames.add(target.getDisplayName().getString());
 
         target.getPersistentData().putBoolean("goetymech.recorded", true);
+        float w = target.getBbWidth();
+        float h = target.getBbHeight();
+        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                target.getX(), target.getY() + h / 2.0, target.getZ(),
+                Math.max(5, (int)(w * h * 10)), w / 2.0, h / 2.0, w / 2.0, 0.05);
+        level.playSound(null, target.getX(), target.getY(), target.getZ(),
+                SoundEvents.WITHER_DEATH, SoundSource.NEUTRAL, 2.0F, 1.0F);
         target.discard();
 
         SquadFocus.refreshMonumentFoci(level, worldPosition, this);
