@@ -182,5 +182,8 @@
   "info.goetymech.soul_dominion.no_servants": "§cNo servants in range!",
   "info.goetymech.soul_dominion.shift_info": "Links to all owned servants within range, transferring all incoming damage to them.",
   "jei.goetymech.info.twisted_embryo": "Feed enough food to the Breeding Nest to obtain a Twisted Embryo.",
-  "jei.goetymech.info.mature_embryo": "Put a Twisted Embryo into a Flesh Furnace bound to an Ominous Pyre to obtain the corresponding Mature Embryo."
+  "jei.goetymech.info.mature_embryo": "Put a Twisted Embryo into a Flesh Furnace bound to an Ominous Pyre to obtain the corresponding Mature Embryo.",
+  "key.goetymech.category": "GoetyMech",
+  "key.goetymech.open_flesh_casket": "Open Flesh Casket",
+  "key.goetymech.freecam_exit": "Exit Freecam"
 }

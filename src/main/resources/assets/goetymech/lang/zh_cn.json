@@ -182,5 +182,8 @@
   "info.goetymech.soul_dominion.no_servants": "§c范围内没有仆从！",
   "info.goetymech.soul_dominion.shift_info": "链接范围内所有属于你的仆从，将你受到的所有伤害转移给它们。",
   "jei.goetymech.info.twisted_embryo": "给育巢投入足够的食物，即可获得扭曲胚胎。",
-  "jei.goetymech.info.mature_embryo": "将扭曲胚胎投入绑定不祥火炬的血肉熔炉，即可获得对应兵种的成熟胚胎。"
+  "jei.goetymech.info.mature_embryo": "将扭曲胚胎投入绑定不祥火炬的血肉熔炉，即可获得对应兵种的成熟胚胎。",
+  "key.goetymech.category": "GoetyMech",
+  "key.goetymech.open_flesh_casket": "打开晶匣",
+  "key.goetymech.freecam_exit": "退出神行"
 }
