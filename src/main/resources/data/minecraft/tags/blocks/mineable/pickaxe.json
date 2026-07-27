@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "goetymech:flesh_furnace",
+    "goetymech:breeding_nest",
+    "goetymech:tier1_squad_barracks",
+    "goetymech:tier2_squad_barracks",
+    "goetymech:tier3_squad_barracks",
+    "goetymech:stress_reader",
+    "goetymech:remote_engine"
+  ]
+}
