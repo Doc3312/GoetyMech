@@ -4,6 +4,7 @@ import com.goetymech.addon.common.events.FreecamSpectatorHandler;
 import com.goetymech.addon.common.net.ModNetwork;
 import com.goetymech.addon.common.net.s2c.S2CSetFreecamPacket;
 import com.goetymech.addon.common.utils.GatewayUtil;
+import com.goetymech.addon.common.worker.GatewaySearchManager;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -165,73 +166,18 @@ public class GatewayAdvancedSpell extends Spell {
         BlockPos signalPos = GatewayUtil.pendingEyePos;
         GatewayUtil.pendingEyePos = null;
 
-        BlockPos structPos = null;
-        ServerLevel targetLevel = (ServerLevel) player.level();
-        BlockPos playerPos = player.blockPosition();
-
         if (capturedTag != null) {
-            double bestDist = Double.MAX_VALUE;
-            for (ServerLevel level : player.getServer().getAllLevels()) {
-                BlockPos found = GatewayUtil.findNearestStructure(level, capturedTag, playerPos);
-                if (found == null) continue;
-                double dist = found.distToCenterSqr(playerPos.getX(), playerPos.getY(), playerPos.getZ());
-                if (dist < bestDist) {
-                    bestDist = dist;
-                    structPos = found;
-                    targetLevel = level;
-                }
-            }
-        }
-
-        if (structPos == null && signalPos != null) {
-            structPos = signalPos;
-        }
-
-        if (structPos == null) {
-            player.displayClientMessage(
-                    Component.translatable("info.goetymech.gateway.no_structure"), true);
+            GatewaySearchManager.startSearch(player, capturedTag);
             return;
         }
 
-        AABB bounds = new AABB(structPos).inflate(48);
-        boolean forceTeleport = checkForceFlag(player);
-        Vec3 teleportPos;
-
-        if (forceTeleport) {
-            BlockPos hightPos = targetLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, structPos);
-            if (hightPos.getY() <= targetLevel.getMinBuildHeight()) {
-                hightPos = structPos.atY(targetLevel.getSeaLevel());
-            }
-            teleportPos = Vec3.atCenterOf(hightPos);
-            clearForceFlag(player);
-        } else {
-            BlockPos safePos = GatewayUtil.findSafeTeleportPos(targetLevel, bounds, player);
-            if (safePos != null) {
-                teleportPos = Vec3.atCenterOf(safePos);
-            } else {
-                setForceFlag(player, structPos);
-                player.displayClientMessage(
-                        Component.translatable("info.goetymech.gateway.danger_area"), true);
-                return;
-            }
+        if (signalPos != null) {
+            doTeleport((ServerLevel) player.level(), player, signalPos);
+            return;
         }
 
-        int cost = ModConfig.GATEWAY_ADV_COST.get();
-        if (rightStaff(staff)) {
-            cost = Math.max(1, cost / 2);
-        }
-        if (!player.isCreative()) {
-            SEHelper.decreaseSouls(player, cost);
-        }
-
-        ItemStack focus = WandUtil.findFocus(caster);
-        if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), (int)(ModConfig.GATEWAY_ADV_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player)));
-        }
-
-        GatewayUtil.teleportPlayer(targetLevel, player, teleportPos);
-        triggerFreecam(targetLevel, player);
-        this.playSound(worldIn, caster, SoundEvents.ENDERMAN_TELEPORT);
+        player.displayClientMessage(
+                Component.translatable("info.goetymech.gateway.no_structure"), true);
     }
 
     private void triggerFreecam(ServerLevel level, ServerPlayer player) {

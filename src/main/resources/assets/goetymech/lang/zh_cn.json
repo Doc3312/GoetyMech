@@ -133,6 +133,7 @@
   "info.goetymech.gateway_focus_advanced.shift_info": "副手持有地图或结构之眼时，跨维度传送至指定结构，抵达后进入旁观者视角。",
   "info.goetymech.gateway.no_eye": "§c请将结构之眼放入副手",
   "info.goetymech.gateway.no_structure": "§c搜索范围内未发现结构",
+  "info.goetymech.gateway.searching": "§a正在搜索结构...",
   "info.goetymech.gateway.danger_area": "§e目标区域危险，再次施法将强制传送",
   "info.goetymech.gateway.no_marker": "§c地图上无有效标记点",
   "info.goetymech.gateway.map_target_found": "§a已定位地图标记点",

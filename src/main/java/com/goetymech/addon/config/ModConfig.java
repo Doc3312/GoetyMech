@@ -254,6 +254,12 @@ public class ModConfig {
     /** 神行聚晶冷却时间（tick） */
     public static final ForgeConfigSpec.IntValue GATEWAY_ADV_COOLDOWN;
 
+    /** 神行聚晶最大搜索半径（chunk） */
+    public static final ForgeConfigSpec.IntValue GATEWAY_ADV_SEARCH_RADIUS;
+
+    /** 神行聚晶最大搜索采样数 */
+    public static final ForgeConfigSpec.IntValue GATEWAY_ADV_SEARCH_SAMPLES;
+
     // ====== Crazed Summon Focus 配置 ======
 
     /** 失败品聚晶灵魂消耗 */
@@ -766,6 +772,14 @@ public class ModConfig {
         GATEWAY_ADV_COOLDOWN = BUILDER
                 .comment("神行聚晶冷却时间（tick）", "范围: 100-72000，默认 9600（8分钟）")
                 .defineInRange("advanced_cooldown", 9600, 100, 72000);
+
+        GATEWAY_ADV_SEARCH_RADIUS = BUILDER
+                .comment("神行聚晶最大搜索半径（chunk）", "超出此半径未找到结构则放弃", "范围: 50-5000，默认 500")
+                .defineInRange("advanced_search_radius", 500, 50, 5000);
+
+        GATEWAY_ADV_SEARCH_SAMPLES = BUILDER
+                .comment("神行聚晶最大搜索采样数", "超出此采样数未找到则放弃", "范围: 1000-100000，默认 50000")
+                .defineInRange("advanced_search_samples", 50000, 1000, 100000);
 
 BUILDER.pop();
 
