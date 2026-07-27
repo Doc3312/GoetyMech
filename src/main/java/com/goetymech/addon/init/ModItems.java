@@ -23,6 +23,7 @@ import com.goetymech.addon.common.item.SoulMonumentBlockItem;
 import com.goetymech.addon.common.item.curio.AutoCastDummyWand;
 import com.goetymech.addon.common.item.curio.FleshCasketItem;
 import com.goetymech.addon.common.item.curio.EctoplasmCatcherCurio;
+import com.goetymech.addon.common.item.curio.MagicSkullNecklace;
 import com.Polarice3.Goety.api.magic.SpellType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -169,6 +170,10 @@ public class ModItems {
 
     public static final RegistryObject<Item> ECTOPLASM_CATCHER =
             ITEMS.register("ectoplasm_catcher", EctoplasmCatcherCurio::new);
+
+    /** 魔力之颅项链 — 聚晶冷却 ×0.1 + 灵魂消耗 ×0.8 */
+    public static final RegistryObject<Item> MAGIC_SKULL_NECKLACE =
+            ITEMS.register("magic_skull_necklace", MagicSkullNecklace::new);
 
     // ── 原型 — 鞘翅类物品，无限耐久，推进 + Slam 技能 ──
 

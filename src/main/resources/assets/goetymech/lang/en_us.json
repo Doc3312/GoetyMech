@@ -151,6 +151,7 @@
   "info.goetymech.soul_monument.clear_step2": "§eClick again to confirm.",
   "info.goetymech.soul_monument.clear_done": "§aCleared monument entities.",
   "info.goetymech.soul_monument.clear_too_fast": "§cToo fast, please wait",
+  "info.goetymech.soul_monument.not_a_servant": "§cThis creature is not a servant",
   "info.goetymech.squad_focus.bound_success_monument": "§aBound to Soul Monument",
   "info.goetymech.squad_focus.block_missing_monument": "§cBound Soul Monument was destroyed",
   "info.goetymech.squad_focus.not_owner_monument": "§cYou are not the owner of this Soul Monument",
@@ -185,5 +186,8 @@
   "jei.goetymech.info.mature_embryo": "Put a Twisted Embryo into a Flesh Furnace bound to an Ominous Pyre to obtain the corresponding Mature Embryo.",
   "key.goetymech.category": "GoetyMech",
   "key.goetymech.open_flesh_casket": "Open Flesh Casket",
-  "key.goetymech.freecam_exit": "Exit Freecam"
+  "key.goetymech.freecam_exit": "Exit Freecam",
+  "item.goetymech.magic_skull_necklace": "Magic Skull Necklace",
+  "info.goetymech.magic_skull_necklace.cooldown": "§5×0.1 Focus Cooldown§5",
+  "info.goetymech.magic_skull_necklace.soul": "§5×0.8 Soul Cost§5"
 }
