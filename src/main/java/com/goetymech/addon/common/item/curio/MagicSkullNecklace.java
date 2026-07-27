@@ -1,7 +1,7 @@
 package com.goetymech.addon.common.item.curio;
 
 import com.Polarice3.Goety.init.ModAttributes;
-import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -37,8 +37,8 @@ public class MagicSkullNecklace extends Item implements ICurioItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext, UUID uuid) {
-        Multimap<Attribute, AttributeModifier> map = LinkedHashMultimap.create();
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext, UUID uuid, ItemStack stack) {
+        Multimap<Attribute, AttributeModifier> map = HashMultimap.create();
 
         map.put(ModAttributes.COOLDOWN_DISCOUNT.get(),
                 new AttributeModifier(COOLDOWN_DISCOUNT_ID, "msn_cooldown_discount",

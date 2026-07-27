@@ -113,6 +113,19 @@ public class SoulMonumentEvents {
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.WITHER_DEATH, SoundSource.NEUTRAL, 2.0F, 1.0F);
     }
 
+    private static boolean isValidServantForPlayer(Level level, java.util.UUID entityUUID, Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return false;
+        for (Entity entity : serverLevel.getAllEntities()) {
+            if (entity.getUUID().equals(entityUUID)) {
+                if (!entity.isAlive()) return false;
+                if (!(entity instanceof IOwned owned)) return false;
+                java.util.UUID ownerId = owned.getOwnerId();
+                return ownerId != null && ownerId.equals(player.getUUID());
+            }
+        }
+        return false;
+    }
+
     @SubscribeEvent
     public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         Player player = event.getEntity();
@@ -173,6 +186,14 @@ public class SoulMonumentEvents {
 
         if (!held.hasTag() || !held.getTag().contains(TaglockKit.TAG_ENTITY)) return;
         java.util.UUID targetUUID = held.getTag().getUUID(TaglockKit.TAG_ENTITY);
+
+        if (!isValidServantForPlayer(level, targetUUID, player)) {
+            if (player instanceof ServerPlayer sp) {
+                sp.sendSystemMessage(
+                        net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.not_a_servant"), true);
+            }
+            return;
+        }
 
         if (monument.tryStartRecording(player, targetUUID)) {
             TaglockKit.removeEntity(held);

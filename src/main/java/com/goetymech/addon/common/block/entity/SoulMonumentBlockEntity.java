@@ -7,6 +7,7 @@ import com.goetymech.addon.common.block.Tier3SoulMonumentBlock;
 import com.goetymech.addon.common.data.SoulMonumentDataManager;
 import com.goetymech.addon.common.item.SquadFocus;
 import com.goetymech.addon.init.ModBlocks;
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.MiscCapHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,6 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -104,6 +106,11 @@ public class SoulMonumentBlockEntity extends BlockEntity {
 
     public boolean tryStartRecording(Player player, UUID targetUUID) {
         if (recording || isFull()) return false;
+        if (level instanceof ServerLevel serverLevel) {
+            if (!isValidServantForPlayer(serverLevel, targetUUID, player)) {
+                return false;
+            }
+        }
         recording = true;
         recordingTimer = RECORDING_DURATION;
         taggedEntityUUID = targetUUID;
@@ -183,6 +190,8 @@ public class SoulMonumentBlockEntity extends BlockEntity {
         AABB detectionBox = new AABB(worldPosition).inflate(DETECTION_RANGE);
         if (!detectionBox.contains(target.position())) return;
 
+        if (!isServantOwnedByMonument(target)) return;
+
         CompoundTag entityData = new CompoundTag();
         target.save(entityData);
         entityData.putUUID("MonumentRecordedUUID", UUID.randomUUID());
@@ -215,6 +224,23 @@ public class SoulMonumentBlockEntity extends BlockEntity {
             }
         }
         return null;
+    }
+
+    private static boolean isValidServantForPlayer(ServerLevel level, UUID targetUUID, Player player) {
+        for (Entity entity : level.getAllEntities()) {
+            if (entity.getUUID().equals(targetUUID)) {
+                if (!entity.isAlive()) return false;
+                if (!(entity instanceof IOwned owned)) return false;
+                return player.getUUID().equals(owned.getOwnerId());
+            }
+        }
+        return false;
+    }
+
+    private boolean isServantOwnedByMonument(LivingEntity entity) {
+        if (!(entity instanceof IOwned owned)) return false;
+        UUID ownerId = owned.getOwnerId();
+        return ownerId != null && ownerId.equals(ownerUUID);
     }
 
     public void setSavedEntityUUIDs(List<UUID> uuids) {
