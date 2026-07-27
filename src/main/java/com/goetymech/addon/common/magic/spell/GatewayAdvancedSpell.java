@@ -8,6 +8,7 @@ import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.init.ModAttributes;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.core.BlockPos;
@@ -82,7 +83,7 @@ public class GatewayAdvancedSpell extends Spell {
         if (!player.isCreative()) {
             SEHelper.decreaseSouls(player, cost);
         }
-        SEHelper.addCooldown(player, focus.getItem(), ModConfig.GATEWAY_ADV_COOLDOWN.get());
+        SEHelper.addCooldown(player, focus.getItem(), (int)(ModConfig.GATEWAY_ADV_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player)));
 
         GatewayUtil.teleportPlayer(level, player, teleportPos);
         triggerFreecam(level, player);
@@ -225,7 +226,7 @@ public class GatewayAdvancedSpell extends Spell {
 
         ItemStack focus = WandUtil.findFocus(caster);
         if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), ModConfig.GATEWAY_ADV_COOLDOWN.get());
+            SEHelper.addCooldown(player, focus.getItem(), (int)(ModConfig.GATEWAY_ADV_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player)));
         }
 
         GatewayUtil.teleportPlayer(targetLevel, player, teleportPos);

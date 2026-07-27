@@ -3,7 +3,7 @@ package com.goetymech.addon.common.events;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.magic.effect.VoidMarkEffect;
 import com.goetymech.addon.common.net.ModNetwork;
-import com.goetymech.addon.common.net.c2s.C2SVoidBlinkPacket;
+import com.goetymech.addon.common.net.c2s.C2SChasePacket;
 import com.goetymech.addon.init.ModEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
@@ -21,9 +21,9 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 /**
- * 虚空闪现事件处理。
+ * 追猎事件处理。
  */
-public class VoidBlinkEvents {
+public class ChaseEvents {
 
     @SubscribeEvent
     public static void onLivingTick(TickEvent.PlayerTickEvent event) {
@@ -86,7 +86,7 @@ public class VoidBlinkEvents {
 
             boolean isNowDown = Minecraft.getInstance().options.keyShift.isDown();
             if (isNowDown && !wasShiftDown) {
-                ModNetwork.CHANNEL.sendToServer(new C2SVoidBlinkPacket());
+                ModNetwork.CHANNEL.sendToServer(new C2SChasePacket());
             }
             wasShiftDown = isNowDown;
         }

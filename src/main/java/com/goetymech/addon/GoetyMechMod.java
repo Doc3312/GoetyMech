@@ -7,7 +7,7 @@ import com.goetymech.addon.common.capabilities.SoulDominionProvider;
 import com.goetymech.addon.common.events.SoulDominionEvents;
 import com.goetymech.addon.common.events.StressLinkEvents;
 import com.goetymech.addon.common.events.StressShieldEvents;
-import com.goetymech.addon.common.events.VoidBlinkEvents;
+import com.goetymech.addon.common.events.ChaseEvents;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.goetymech.addon.common.menu.ModMenuTypes;
 import com.goetymech.addon.common.utils.GlobalStressLinkManager;
@@ -85,7 +85,7 @@ public class GoetyMechMod {
             event.put(ModEntities.CRAZED_ILLAGER_SERVANT.get(), CrazedIllagerServant.setCustomAttributes().build());
         });
 
-        MinecraftForge.EVENT_BUS.register(VoidBlinkEvents.class);
+        MinecraftForge.EVENT_BUS.register(ChaseEvents.class);
         MinecraftForge.EVENT_BUS.register(SoulDominionEvents.class);
         modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.register(IStressShield.class);

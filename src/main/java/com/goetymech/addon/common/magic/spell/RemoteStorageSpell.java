@@ -6,6 +6,7 @@ import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.init.ModAttributes;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import com.simibubi.create.AllMenuTypes;
@@ -124,7 +125,7 @@ public class RemoteStorageSpell extends Spell {
             if (!player.isCreative()) {
                 SEHelper.decreaseSouls(player, defaultSoulCost());
             }
-            SEHelper.addCooldown(player, focus.getItem(), defaultSpellCooldown());
+            SEHelper.addCooldown(player, focus.getItem(), (int)(defaultSpellCooldown() * ModAttributes.getCooldownDiscount(caster)));
             NetworkHooks.openScreen(player, new DepositProvider(stbe.behaviour.freqId, new SimpleContainer(54)),
                     buf -> {});
             this.playSound(worldIn, caster, this.CastingSound());
@@ -135,7 +136,7 @@ public class RemoteStorageSpell extends Spell {
             SEHelper.decreaseSouls(player, defaultSoulCost());
         }
 
-        SEHelper.addCooldown(player, focus.getItem(), defaultSpellCooldown());
+        SEHelper.addCooldown(player, focus.getItem(), (int)(defaultSpellCooldown() * ModAttributes.getCooldownDiscount(caster)));
 
         boolean showLockOption = stbe.behaviour.mayAdministrate(player)
                 && Create.LOGISTICS.isLockable(stbe.behaviour.freqId);

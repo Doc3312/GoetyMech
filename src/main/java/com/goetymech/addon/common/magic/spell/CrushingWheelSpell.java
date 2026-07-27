@@ -9,6 +9,7 @@ import com.goetymech.addon.init.ModEntities;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.init.ModAttributes;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import com.Polarice3.Goety.utils.WandUtil;
@@ -165,7 +166,7 @@ public class CrushingWheelSpell extends Spell {
             worldIn.addFreshEntity(wheel);
         }
 
-        int cooldown = (int) (ModConfig.CRUSHING_WHEEL_FOCUS_COOLDOWN.get());
+        int cooldown = (int) (ModConfig.CRUSHING_WHEEL_FOCUS_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player));
         if (!focus.isEmpty()) {
             SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }

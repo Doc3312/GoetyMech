@@ -18,18 +18,18 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * 虚空闪现 C2S 包。同步闪现操作。
+ * 追猎 C2S 包。同步闪现操作。
  */
-public class C2SVoidBlinkPacket {
+public class C2SChasePacket {
 
-    public static C2SVoidBlinkPacket decode(FriendlyByteBuf buf) {
-        return new C2SVoidBlinkPacket();
+    public static C2SChasePacket decode(FriendlyByteBuf buf) {
+        return new C2SChasePacket();
     }
 
-    public static void encode(C2SVoidBlinkPacket packet, FriendlyByteBuf buf) {
+    public static void encode(C2SChasePacket packet, FriendlyByteBuf buf) {
     }
 
-    public static void handle(C2SVoidBlinkPacket packet, Supplier<NetworkEvent.Context> ctx) {
+    public static void handle(C2SChasePacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
@@ -61,7 +61,7 @@ public class C2SVoidBlinkPacket {
 
             int fullDuration = data.getInt(VoidMarkEffect.TAG_WINDOW_DURATION);
             if (fullDuration <= 0) {
-                fullDuration = ModConfig.VOID_BLINK_WINDOW_SECONDS.get() * 20;
+                fullDuration = ModConfig.CHASE_WINDOW_SECONDS.get() * 20;
             }
             player.addEffect(new MobEffectInstance(ModEffects.VOID_MARK.get(), fullDuration, 0, false, true, true));
             data.putLong(VoidMarkEffect.TAG_WINDOW_END, level.getGameTime() + fullDuration);

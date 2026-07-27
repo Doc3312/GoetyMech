@@ -6,6 +6,7 @@ import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.events.ArcaTeleporter;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.init.ModAttributes;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.core.BlockPos;
@@ -126,7 +127,7 @@ public class UnstableRiftSpell extends Spell {
 
         ItemStack focus = WandUtil.findFocus(caster);
         if (!focus.isEmpty()) {
-            int cooldown = ModConfig.UNSTABLE_RIFT_COOLDOWN.get();
+            int cooldown = (int)(ModConfig.UNSTABLE_RIFT_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player));
             if (useStaffBonus) {
                 cooldown = (int) (cooldown * 0.2);
             }

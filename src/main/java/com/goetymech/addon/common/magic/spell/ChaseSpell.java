@@ -32,9 +32,9 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 /**
- * 虚空闪现法术。锁定目标后多次闪现传送。
+ * 追猎法术。锁定目标后多次闪现传送。
  */
-public class VoidBlinkSpell extends Spell {
+public class ChaseSpell extends Spell {
 
     @Override
     @javax.annotation.Nullable
@@ -57,7 +57,7 @@ public class VoidBlinkSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return ModConfig.VOID_BLINK_COST.get();
+        return ModConfig.CHASE_COST.get();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class VoidBlinkSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return ModConfig.VOID_BLINK_COOLDOWN.get();
+        return ModConfig.CHASE_COOLDOWN.get();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class VoidBlinkSpell extends Spell {
 
     @Override
     public SpellStat defaultStats() {
-        return new SpellStat(0, 0, ModConfig.VOID_BLINK_RANGE.get(), 0.0D, 0, 0.0F);
+        return new SpellStat(0, 0, ModConfig.CHASE_RANGE.get(), 0.0D, 0, 0.0F);
     }
 
     @Override
@@ -114,12 +114,12 @@ public class VoidBlinkSpell extends Spell {
             return;
         }
 
-        int uses = ModConfig.VOID_BLINK_MAX_USES.get();
+        int uses = ModConfig.CHASE_MAX_USES.get();
         if (WandUtil.enchantedFocus(caster)) {
             uses += WandUtil.getLevels(ModEnchantments.POTENCY.get(), caster);
         }
 
-        int windowSec = ModConfig.VOID_BLINK_WINDOW_SECONDS.get();
+        int windowSec = ModConfig.CHASE_WINDOW_SECONDS.get();
         if (WandUtil.enchantedFocus(caster)) {
             windowSec += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster) * 5;
         }

@@ -3,7 +3,7 @@ package com.goetymech.addon.common.net;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.net.c2s.C2SOpenFleshCasketPacket;
 import com.goetymech.addon.common.net.c2s.C2SCancelSlamPacket;
-import com.goetymech.addon.common.net.c2s.C2SVoidBlinkPacket;
+import com.goetymech.addon.common.net.c2s.C2SChasePacket;
 import com.goetymech.addon.common.net.c2s.C2SJumpChargePacket;
 import com.goetymech.addon.common.net.c2s.C2STimeStopPacket;
 import com.goetymech.addon.common.net.c2s.C2SFreecamEndPacket;
@@ -102,10 +102,10 @@ public class ModNetwork {
                 C2SOpenFleshCasketPacket::encode,
                 C2SOpenFleshCasketPacket::decode,
                 C2SOpenFleshCasketPacket::handle);
-        CHANNEL.registerMessage(idx++, C2SVoidBlinkPacket.class,
-                C2SVoidBlinkPacket::encode,
-                C2SVoidBlinkPacket::decode,
-                C2SVoidBlinkPacket::handle);
+        CHANNEL.registerMessage(idx++, C2SChasePacket.class,
+                C2SChasePacket::encode,
+                C2SChasePacket::decode,
+                C2SChasePacket::handle);
         CHANNEL.registerMessage(idx++, C2SFreecamEndPacket.class,
                 C2SFreecamEndPacket::encode,
                 C2SFreecamEndPacket::decode,

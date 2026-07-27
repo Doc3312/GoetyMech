@@ -226,19 +226,19 @@ public class ModConfig {
     // ====== Chase Focus 配置 ======
 
     /** 追猎聚晶灵魂消耗 */
-    public static final ForgeConfigSpec.IntValue VOID_BLINK_COST;
+    public static final ForgeConfigSpec.IntValue CHASE_COST;
 
     /** 追猎聚晶冷却时间（tick） */
-    public static final ForgeConfigSpec.IntValue VOID_BLINK_COOLDOWN;
+    public static final ForgeConfigSpec.IntValue CHASE_COOLDOWN;
 
     /** 基础锁定距离（格） */
-    public static final ForgeConfigSpec.IntValue VOID_BLINK_RANGE;
+    public static final ForgeConfigSpec.IntValue CHASE_RANGE;
 
     /** 基础传送次数 */
-    public static final ForgeConfigSpec.IntValue VOID_BLINK_MAX_USES;
+    public static final ForgeConfigSpec.IntValue CHASE_MAX_USES;
 
     /** 基础效果窗口（秒） */
-    public static final ForgeConfigSpec.IntValue VOID_BLINK_WINDOW_SECONDS;
+    public static final ForgeConfigSpec.IntValue CHASE_WINDOW_SECONDS;
 
     // ====== Gateway Focus 配置 ======
 
@@ -726,23 +726,23 @@ public class ModConfig {
         // ====== Chase Focus 配置 ======
         BUILDER.push("chase_focus");
 
-        VOID_BLINK_COST = BUILDER
+        CHASE_COST = BUILDER
                 .comment("追猎聚晶的灵魂消耗", "范围: 1-1000，默认 100")
                 .defineInRange("soul_cost", 100, 1, 1000);
 
-        VOID_BLINK_COOLDOWN = BUILDER
+        CHASE_COOLDOWN = BUILDER
                 .comment("追猎聚晶冷却时间（tick）", "范围: 100-72000，默认 160（8秒）")
                 .defineInRange("cooldown", 160, 100, 72000);
 
-        VOID_BLINK_RANGE = BUILDER
+        CHASE_RANGE = BUILDER
                 .comment("基础锁定距离（格）", "范围: 5-64，默认 20")
                 .defineInRange("range", 20, 5, 64);
 
-        VOID_BLINK_MAX_USES = BUILDER
+        CHASE_MAX_USES = BUILDER
                 .comment("基础传送次数", "范围: 1-20，默认 5")
                 .defineInRange("max_uses", 5, 1, 20);
 
-        VOID_BLINK_WINDOW_SECONDS = BUILDER
+        CHASE_WINDOW_SECONDS = BUILDER
                 .comment("基础效果窗口（秒）", "范围: 1-60，默认 10")
                 .defineInRange("window_seconds", 10, 1, 60);
 

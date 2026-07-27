@@ -6,6 +6,7 @@ import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.events.ArcaTeleporter;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.init.ModAttributes;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.core.BlockPos;
@@ -118,7 +119,7 @@ public class StableRiftSpell extends Spell {
 
         ItemStack focus = WandUtil.findFocus(caster);
         if (!focus.isEmpty()) {
-            SEHelper.addCooldown(player, focus.getItem(), ModConfig.STABLE_RIFT_COOLDOWN.get());
+            SEHelper.addCooldown(player, focus.getItem(), (int)(ModConfig.STABLE_RIFT_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player)));
         }
 
         player.changeDimension(targetLevel, new ArcaTeleporter(landingPos));

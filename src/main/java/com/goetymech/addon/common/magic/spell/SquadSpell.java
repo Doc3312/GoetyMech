@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceKey;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.init.ModAttributes;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.ChatFormatting;
@@ -259,7 +260,7 @@ public class SquadSpell extends Spell {
                             .withStyle(ChatFormatting.YELLOW), true);
         }
 
-        int cooldown = (int) (ModConfig.SQUAD_SUMMON_COOLDOWN.get());
+        int cooldown = (int) (ModConfig.SQUAD_SUMMON_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player));
         if (!focus.isEmpty()) {
             SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }
@@ -323,7 +324,7 @@ public class SquadSpell extends Spell {
                     Component.translatable("info.goetymech.squad_focus.all_alive").withStyle(ChatFormatting.YELLOW), true);
             GoetyMechMod.LOGGER.debug("handleMonumentSummon: all alive teleport, adding 20t cooldown");
             if (!focus.isEmpty()) {
-                SEHelper.addCooldown(player, focus.getItem(), 20);
+                SEHelper.addCooldown(player, focus.getItem(), (int)(20 * ModAttributes.getCooldownDiscount(player)));
             }
             this.playSound(worldIn, player, SoundEvents.EVOKER_CAST_SPELL);
             return;
@@ -450,7 +451,7 @@ public class SquadSpell extends Spell {
         focus.getOrCreateTag().putInt("goetymech.cached_tier", monument.getTier());
         focus.getTag().putInt("goetymech.monument_used", monument.getUsedSlots());
 
-        int cooldown = ModConfig.MONUMENT_SUMMON_COOLDOWN.get();
+        int cooldown = (int)(ModConfig.MONUMENT_SUMMON_COOLDOWN.get() * ModAttributes.getCooldownDiscount(player));
         if (!focus.isEmpty()) {
             SEHelper.addCooldown(player, focus.getItem(), cooldown);
         }

@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.item;
 
-import com.goetymech.addon.common.magic.spell.VoidBlinkSpell;
+import com.goetymech.addon.common.magic.spell.ChaseSpell;
 import com.goetymech.addon.config.ModConfig;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import com.Polarice3.Goety.utils.ItemHelper;
@@ -18,14 +18,14 @@ import java.util.List;
  */
 public class ChaseFocus extends MagicFocus {
     public ChaseFocus() {
-        super(new VoidBlinkSpell());
+        super(new ChaseSpell());
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level,
                                  List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("info.goety.focus.cost",
-                ModConfig.VOID_BLINK_COST.get()));
+                ModConfig.CHASE_COST.get()));
         tooltip.add(Component.translatable("info.goety.focus.spellType",
                 this.spell.getSpellType().getName()));
         tooltip.add(Component.translatable("item.goety.focus.info")
