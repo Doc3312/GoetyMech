@@ -91,6 +91,7 @@ public class GatewayUtil {
         return null;
     }
 
+    @Deprecated
     @Nullable
     public static BlockPos findSafeTeleportPos(ServerLevel level, AABB structureBounds, Player player) {
         BlockPos center = BlockPos.containing(structureBounds.getCenter());
@@ -105,6 +106,54 @@ public class GatewayUtil {
             }
         }
 
+        return null;
+    }
+
+    @Nullable
+    public static BlockPos findSafeNearStructure(ServerLevel level, BlockPos structPos, Player player) {
+        int seaLevel = level.getSeaLevel();
+
+        for (int radius = 0; radius <= 20; radius += 3) {
+            for (BlockPos xzPos : perimeterCandidates(structPos, radius)) {
+                BlockPos found = tryStandAtHeightmap(level, xzPos, Heightmap.Types.MOTION_BLOCKING, 1, -5);
+                if (found != null) return found;
+
+                found = tryStandAtHeightmap(level, xzPos, Heightmap.Types.OCEAN_FLOOR, 1, -3);
+                if (found != null) return found;
+
+                found = tryStandAtSeaLevel(level, xzPos, seaLevel);
+                if (found != null) return found;
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private static BlockPos tryStandAtHeightmap(ServerLevel level, BlockPos xzPos, Heightmap.Types type, int startDy, int endDy) {
+        BlockPos hmPos = level.getHeightmapPos(type, xzPos);
+        if (hmPos.getY() <= level.getMinBuildHeight()) return null;
+        for (int dy = startDy; dy >= endDy; dy--) {
+            BlockPos candidate = hmPos.atY(hmPos.getY() + dy);
+            Optional<Vec3> safe = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, candidate);
+            if (safe.isEmpty()) continue;
+            BlockPos safePos = BlockPos.containing(safe.get());
+            if (hasLavaAt(level, safePos)) continue;
+            return safePos;
+        }
+        return null;
+    }
+
+    @Nullable
+    private static BlockPos tryStandAtSeaLevel(ServerLevel level, BlockPos xzPos, int seaLevel) {
+        for (int dy = 1; dy >= -1; dy--) {
+            BlockPos candidate = xzPos.atY(seaLevel + dy);
+            Optional<Vec3> safe = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, candidate);
+            if (safe.isEmpty()) continue;
+            BlockPos safePos = BlockPos.containing(safe.get());
+            if (hasLavaAt(level, safePos)) continue;
+            return safePos;
+        }
         return null;
     }
 
@@ -137,16 +186,19 @@ public class GatewayUtil {
 
     private static java.util.List<BlockPos> perimeterCandidates(BlockPos center, int radius) {
         java.util.List<BlockPos> list = new java.util.ArrayList<>();
-        int r = radius;
-        list.add(center.offset(r, 0, 0));
-        list.add(center.offset(-r, 0, 0));
-        list.add(center.offset(0, 0, r));
-        list.add(center.offset(0, 0, -r));
-        if (r >= 10) {
-            list.add(center.offset(r, 0, r));
-            list.add(center.offset(r, 0, -r));
-            list.add(center.offset(-r, 0, r));
-            list.add(center.offset(-r, 0, -r));
+        if (radius == 0) {
+            list.add(center);
+            return list;
+        }
+        list.add(center.offset(radius, 0, 0));
+        list.add(center.offset(-radius, 0, 0));
+        list.add(center.offset(0, 0, radius));
+        list.add(center.offset(0, 0, -radius));
+        if (radius >= 10) {
+            list.add(center.offset(radius, 0, radius));
+            list.add(center.offset(radius, 0, -radius));
+            list.add(center.offset(-radius, 0, radius));
+            list.add(center.offset(-radius, 0, -radius));
         }
         return list;
     }

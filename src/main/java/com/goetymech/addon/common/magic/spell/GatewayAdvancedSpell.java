@@ -52,7 +52,6 @@ public class GatewayAdvancedSpell extends Spell {
     }
 
     private void doTeleport(ServerLevel level, ServerPlayer player, BlockPos target) {
-        AABB bounds = new AABB(target).inflate(48);
         boolean forceTeleport = checkForceFlag(player);
         Vec3 teleportPos;
 
@@ -64,7 +63,7 @@ public class GatewayAdvancedSpell extends Spell {
             teleportPos = Vec3.atCenterOf(hightPos);
             clearForceFlag(player);
         } else {
-            BlockPos safePos = GatewayUtil.findSafeTeleportPos(level, bounds, player);
+            BlockPos safePos = GatewayUtil.findSafeNearStructure(level, target, player);
             if (safePos != null) {
                 teleportPos = Vec3.atCenterOf(safePos);
             } else {

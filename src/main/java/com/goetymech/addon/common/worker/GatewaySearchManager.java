@@ -170,7 +170,6 @@ public class GatewaySearchManager {
     }
 
     private static void executeTeleport(ServerPlayer player, ServerLevel targetLevel, BlockPos structPos) {
-        AABB bounds = new AABB(structPos).inflate(48);
         boolean forceTeleport = checkForceFlag(player);
         Vec3 teleportPos;
 
@@ -183,7 +182,7 @@ public class GatewaySearchManager {
             teleportPos = Vec3.atCenterOf(hightPos);
             clearForceFlag(player);
         } else {
-            BlockPos safePos = GatewayUtil.findSafeTeleportPos(targetLevel, bounds, player);
+            BlockPos safePos = GatewayUtil.findSafeNearStructure(targetLevel, structPos, player);
             if (safePos != null) {
                 teleportPos = Vec3.atCenterOf(safePos);
             } else {
