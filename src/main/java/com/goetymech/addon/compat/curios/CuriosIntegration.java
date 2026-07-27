@@ -1,33 +1,18 @@
 package com.goetymech.addon.compat.curios;
 
 import com.goetymech.addon.GoetyMechMod;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotTypeMessage;
-import top.theillusivec4.curios.api.SlotTypePreset;
 
+/**
+ * Curios 槽位说明：
+ * Goety 的 {@code Goety.java:778-785} 已注册所有常用基础槽位
+ * （BELT、BODY、BACK、CHARM、HEAD、NECKLACE、HANDS、RING、CURIO），
+ * 因此本模组无需通过 InterModComms 重复注册。
+ * <p>
+ * 新增 Curios 饰品只需：
+ * 1. ModItems.java 注册物品（implements ICurioItem）
+ * 2. data/curios/tags/items/&lt;slot&gt;.json 声明物品→槽位映射
+ */
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CuriosIntegration {
-
-    @SuppressWarnings("deprecation")
-    @SubscribeEvent
-    public static void sendImc(InterModEnqueueEvent event) {
-        // Prototype 需要背部槽和身体槽
-        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
-                () -> SlotTypePreset.BODY.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
-                () -> SlotTypePreset.BACK.getMessageBuilder().build());
-        // 时间聚晶袋使用腰带槽（与 Goety 多晶大袋一致）
-        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
-                () -> SlotTypePreset.BELT.getMessageBuilder().build());
-
-        // Soul Catcher 使用的槽位
-        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
-                () -> SlotTypePreset.CHARM.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
-                () -> SlotTypePreset.HANDS.getMessageBuilder().build());
-    }
 }
