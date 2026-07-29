@@ -33,21 +33,14 @@ logs/
 *.iml
 *.iws
 *.ipr
-.opencode/*
-!.opencode/plugins/
-!.opencode/scripts/
-!.opencode/templates/
-!.opencode/skills/
-!.opencode/.doc-debt.json
-!.opencode/.workflow-state.json
+.opencode/
 openspec/
 .scratch/
-docs/incidents/.archive/
 /com/
 /META-INF/
-!/docs/
-!/AGENTS.md
-!/CONTEXT.md
+/docs/
+/AGENTS.md
+/CONTEXT.md
 src/test/
 
 .vscode/
