@@ -1,0 +1,221 @@
+---
+name: "goety-addon-dev"
+description: "Goety Focus / Spell / servant / soul / 聚晶 / 法术 / 仆从 / 灵魂"
+mandatory: true
+mandatoryRule: "★强制调用★ IF 讨论/开发涉及 Goety 物品/方块/实体注册、Focus/Spell 开发、聚晶合成/配方、Ritual/Focus 开发、法术类型/翻译key、或即将进入 openspec 工作流/制定任何实现计划 THEN 必须先调用此 skill。禁止跳过直接读源码或实施。"
+---
+
+# Goety Addon Dev — 综合开发指南
+
+> 前置模组源码路径见 `.opencode/skills/_shared/libcode-paths.md`。
+> 快速排除：当前任务如果不涉及 Goety 物品/方块注册、Focus/Spell 开发、仆从实体或灵魂系统，请跳过本 skill。
+
+## 适用场景
+
+- 开发 Goety 1.20.1 Forge 附属模组
+- 注册物品/方块/实体/法术/聚晶
+- 实现自定义 Spell 法术逻辑或 Focus 聚晶
+- 创建召唤仆从或投射物实体
+- 接入 Goety 灵魂能量、Capability 等系统
+- 所有涉及代码编写、注册、构建、调试的操作
+
+---
+
+## 项目架构规范
+
+### 最终项目结构
+
+```
+com.yourmod.addon/
+├── MainMod.java                       # 主入口（仅注册总线 + 配置 + 网络）
+├── config/ModConfig.java              # Forge 配置
+├── init/                              # 注册层
+│   ├── ModBlocks.java                 # 方块 + 方块实体
+│   ├── ModItems.java                  # 物品（含 Focus）
+│   ├── ModEntities.java               # 实体类型
+│   └── ModCreativeTab.java           # 创造标签页
+├── common/                            # 通用逻辑层
+│   ├── item/                          # 自定义物品
+│   ├── block/                         # 自定义方块 + entity/
+│   ├── entity/                        # 自定义实体
+│   ├── magic/spell/                   # 法术实现
+│   ├── events/                        # Forge 事件订阅
+│   └── utils/                         # 静态工具类
+├── client/                            # 客户端专用
+│   ├── entity/                        # 实体渲染器
+│   └── gui/                           # HUD/GUI
+└── network/                           # 自定义网络包
+```
+
+### 分层原则
+
+| 层 | 职责 | 禁止 |
+|----|------|------|
+| `init/` | DeferredRegister + RegistryObject | 业务逻辑、匿名内部类 |
+| `common/` | 业务逻辑实现 | 客户端专用代码 |
+| `client/` | HUD/渲染/粒子/按键 | 服务端逻辑 |
+| `config/` | ForgeConfigSpec 配置项 | 运行时逻辑 |
+| `network/` | 自定义网络包 | 业务逻辑 |
+
+### YAGNI
+
+- 禁止预留空方法、空类、空事件监听器
+- 只在真正需要时才添加代码
+
+---
+
+## 强制规则
+
+### 注册顺序
+
+```java
+ModBlocks.BLOCKS.register(modEventBus);         // 1. 方块
+ModBlocks.BLOCK_ENTITIES.register(modEventBus);  // 2. 方块实体
+ModItems.ITEMS.register(modEventBus);            // 3. 物品
+TABS.register(modEventBus);                     // 4. 创造标签页
+```
+
+### 仆从驯服 — 必须用 MobUtil.summonTame()
+
+```java
+Entity entity = type.create(serverLevel);
+if (entity instanceof Mob mob) {
+    MobUtil.summonTame(mob, player);
+    mob.finalizeSpawn(serverLevel, ...);
+}
+```
+
+禁止手动 setTrueOwner 不调 summonTame。
+
+### 复用 Goety 既有实现（优先级）
+
+1. **继承** Goety 类（`Spell`、`Summoned`、`RitualType`）
+2. **调用** Goety 工具方法（`MobUtil.summonTame()`、`SoulUtil`）
+3. **实现** Goety 接口（`ISpell`、`IFocus`、`IServant`）
+4. 以上不行再自创
+
+### Mixin refmap 配置
+
+```groovy
+minecraft.runs.configureEach {
+    property 'mixin.env.disableRefMap', 'true'   // ✅ 必须
+}
+```
+
+### 禁止修改依赖配置
+
+除非用户明确要求，禁止修改 build.gradle、settings.gradle、gradle.properties。
+
+### 构建失败策略
+
+构建失败超过 3 次时停止重试，整理原因汇报，等用户指示后再继续。
+
+### 中文译名强制
+
+所有已注册对象（物品/方块/实体/流体等）必须同时在 `zh_cn.json` 写入中文译名。译名以开发讨论为准，不确定时必须询问用户，否则视为未完成。
+
+---
+
+## 文档索引
+
+| 文件 | 内容 |
+|------|------|
+| [forge-basics.md](forge-basics.md) | Forge 1.20.x 开发基础（主类/注册/事件/BE/网络/配置） |
+| [focus-spell.md](focus-spell.md) | Goety 核心 API + Focus/Spell/Summoned/Projectile 全链路开发 |
+| [warden-practice.md](warden-practice.md) | Warden 实战经验（Brain/愤怒/出土/音效） |
+| [utility-reference.md](utility-reference.md) | 工具方法速查表 + Goety API 接口速查 |
+
+## 相关技能
+
+| 技能 | 典型切换场景 |
+|------|-------------|
+| `entity-render-dev` | 需要为新的仆从/法术实体编写渲染器和模型时 |
+| `goety-block-anim-and-particle` | 添加方块动画、粒子效果或镜头震动时 |
+| `jei-dev` | 为聚晶/方块添加 JEI 配方展示或幽灵拖拽时 |
+| `goety-ritual-dev` | 开发 Goety 仪式配方/JSON 格式/Ritual 子类/ModRitualFactory 时 |
+| `goetymech-architecture` | 不确定新建类的包路径或注册模式时 |
+
+---
+
+## SpellType 扩展 + 翻译 key 规则（★必读★）
+
+### SpellType.create() 用法
+
+```java
+// ✅ 正确 — 构造器自动拼 spell.goety. 前缀
+MECHANICAL = SpellType.create("mechanical", "mechanical");
+// → 翻译 key: spell.goety.mechanical
+
+// ❌ 错误 — 双重前缀
+SpellType.create("mechanical", "spell.goety.mechanical");
+// → 翻译 key: spell.goety.spell.goety.mechanical
+```
+
+**原理**：`SpellType` 构造器内部调用 `Component.translatable("spell.goety." + name)`。
+
+### 翻译 key 对照表
+
+| key 模式 | 用途 | 格式要求 |
+|----------|------|---------|
+| `spell.goety.<name>` | 法术类型 tooltip 名称 | `§<色码>名称§<色码>`，色码参照 Goety 既有风格 |
+| `jei.goety.craftType.<name>` | JEI/Patchouli 仪式类型名 | 纯文本，不要色码 |
+| `container.goetymech.<name>` | 自定义 GUI 标题 | 纯文本 |
+| `ritual.goety.<name>` | ❌ 错误 key，不存在 | Goety 用 `jei.goety.craftType.*`，不是 `ritual.goety.*` |
+
+**MC 色码参考**（Goety 既有风格）：
+- `§2` 暗绿（死灵）、`§4` 暗红（下界）、`§9` 蓝（霜冻）
+- `§5` 暗紫（虚空）、`§6` 金（风暴）、`§e` 黄（机械）
+- 格式：`"§e机械§e"`，首尾相同色码
+
+### 中文译名强制（重申）
+
+所有已注册对象必须在 `zh_cn.json` 写入中文译名。**翻译 key 命名必须遵循 Goety 约定**，禁止自创。不确定时必须查 Goety 源码确认。
+
+---
+
+## Curios 饰品开发规范
+
+### 槽位注册规则
+
+Goety 在 `Goety.java:778-785` 已注册所有常用基础槽位：
+
+```
+BELT / BODY / BACK / CHARM / HEAD / NECKLACE / HANDS / RING / CURIO
+```
+
+因此附属模组**不得再通过 `InterModComms` 重复注册**。新增 Curios 饰品只需：
+
+1. **注册物品** — `ModItems.java` 中 `ITEMS.register("your_item", YourItem::new)`，物品类 `implements ICurioItem`
+2. **声明槽位映射** — 创建 `data/curios/tags/items/<slot>.json`，写入物品 ID
+
+```json
+{
+  "replace": false,
+  "values": [
+    "yourmod:your_item"
+  ]
+}
+```
+
+**不需要**修改 `CuriosIntegration.java`。
+
+### `getAttributeModifiers` 签名
+
+Goety 的 `ICurio`/`ICurioItem` 要求三个参数：
+
+```java
+@Override
+public Multimap<Attribute, AttributeModifier> getAttributeModifiers(
+        SlotContext slotContext, UUID uuid, ItemStack stack) {
+    Multimap<Attribute, AttributeModifier> map = HashMultimap.create();
+    // ...
+    return map;
+}
+```
+
+使用 `HashMultimap.create()`（而非 `LinkedHashMultimap`，与 Goety 风格一致）。
+
+### 属性修饰器
+
+- 用 `AttributeModifier.Operation.ADDITION`（因为 Goety 属性默认值均为 0.0，`MULTIPLY_TOTAL` 无效）
+- 各 modifier 使用独立静态 UUID

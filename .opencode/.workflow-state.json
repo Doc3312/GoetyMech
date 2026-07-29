@@ -1,0 +1,855 @@
+{
+  "tasks": [
+    {
+      "id": "fe01fm",
+      "desc": "应力网络重构：StressReader Map架构 + RemoteEngine RPM继承",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/StressReaderBlock.java",
+        "src/main/java/com/goetymech/addon/common/block/RemoteEngineBlock.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-02T15:59:36.107Z",
+      "completedAt": "2026-07-02T16:18:08.518Z"
+    },
+    {
+      "id": "vee4ho",
+      "desc": "归档 stress-network-rework + 修复HUD/解绑问题",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/StressReaderBlock.java",
+        "src/main/java/com/goetymech/addon/common/item/RemoteEngineBlockItem.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-02T16:31:45.838Z",
+      "completedAt": "2026-07-02T16:34:30.352Z"
+    },
+    {
+      "id": "9ljs4g",
+      "desc": "stress-network-ark-rework",
+      "files": [
+        "StressArkBlockEntity.java",
+        "RemoteEngineBlockEntity.java",
+        "RemoteEngineBlock.java",
+        "RemoteEngineBlockItem.java",
+        "StressReaderBlock.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-02T16:52:12.438Z",
+      "completedAt": "2026-07-02T18:17:52.367Z"
+    },
+    {
+      "id": "qkba5h",
+      "desc": "修复远程引擎应力消耗计算和调试日志",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/item/RemoteEngineBlockItem.java",
+        "src/main/java/com/goetymech/addon/common/block/StressReaderBlock.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-02T19:07:16.088Z",
+      "completedAt": "2026-07-02T19:16:44.608Z"
+    },
+    {
+      "id": "3wq2g4",
+      "desc": "修复Ark引擎注册丢失和消耗公式改为全量可用应力",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressArkBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-02T19:31:16.835Z",
+      "completedAt": "2026-07-02T19:40:25.412Z"
+    },
+    {
+      "id": "1e9r9p",
+      "desc": "Phase1: StressLink核心Service+1:1绑定",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/utils/GlobalBlockPos.java",
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/item/RemoteEngineBlockItem.java",
+        "src/main/java/com/goetymech/addon/init/ModBlocks.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-03T17:28:40.531Z",
+      "completedAt": "2026-07-03T17:37:04.749Z"
+    },
+    {
+      "id": "a02jag",
+      "desc": "Phase2: Ark重构+Service缓存+ShieldSpell",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressArkBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/StressArkBlock.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/StressShieldSpell.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-03T17:38:23.053Z",
+      "completedAt": "2026-07-03T17:46:53.094Z"
+    },
+    {
+      "id": "ruz2hb",
+      "desc": "清理+Multi-Ark+Phase3",
+      "files": [
+        "StressLinkService.java",
+        "StressArkBlockEntity.java",
+        "StressShieldSpell.java",
+        "StressArkBlock.java",
+        "StressArkHUD.java",
+        "S2CStressArkDataPacket.java",
+        "ModNetwork.java",
+        "ModConfig.java",
+        "StressReaderBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-03T17:46:57.190Z",
+      "completedAt": "2026-07-03T17:50:02.860Z"
+    },
+    {
+      "id": "yori4w",
+      "desc": "EpicFight公式替换crater效果",
+      "files": [
+        "src/main/java/com/goetymech/addon/client/SlamGroundTiltHandler.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/CraterBlockEntity.java",
+        "src/main/java/com/goetymech/addon/client/render/CraterBlockRenderer.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-03T18:16:49.855Z",
+      "completedAt": "2026-07-03T18:17:15.279Z"
+    },
+    {
+      "id": "flhluu",
+      "desc": "Fix P0-P3/P5 stress system bugs",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressArkBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/common/utils/EngineStatus.java",
+        "src/main/java/com/goetymech/addon/init/ModBlockEntities.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-03T18:26:55.146Z",
+      "completedAt": "2026-07-03T18:29:39.638Z"
+    },
+    {
+      "id": "djg93r",
+      "desc": "Implement structure-teleport-focus: two focus items, two spells, highlight marker",
+      "files": [
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/java/com/goetymech/addon/init/ModItems.java",
+        "src/main/java/com/goetymech/addon/init/ModEntities.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewaySpell.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewayAdvancedSpell.java",
+        "src/main/java/com/goetymech/addon/common/item/GatewayFocus.java",
+        "src/main/java/com/goetymech/addon/common/item/GatewayAdvancedFocus.java",
+        "src/main/java/com/goetymech/addon/common/entity/StructureHighlightMarker.java",
+        "src/main/java/com/goetymech/addon/client/render/StructureHighlightRenderer.java",
+        "src/main/java/com/goetymech/addon/client/ModClientEvents.java",
+        "src/main/resources/assets/goetymech/lang/en_us.json",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-03T18:46:34.582Z",
+      "completedAt": "2026-07-03T18:57:55.726Z"
+    },
+    {
+      "id": "6g4v04",
+      "desc": "Simplify stress system - remove auto-pool, fix cross-save",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/RemoteEngineBlock.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressArkBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/utils/EngineStatus.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-03T19:20:03.042Z",
+      "completedAt": "2026-07-03T19:27:38.389Z"
+    },
+    {
+      "id": "29bv5k",
+      "desc": "Skill consolidation + audit: delete redundancies, merge patchouli+prototype, add cross-refs, write audit script",
+      "files": [
+        ".opencode/skills",
+        ".opencode/plugins/skill-preloader.ts",
+        "opencode.json",
+        ".opencode/scripts/skill-audit.mjs",
+        "docs/incidents/_craft",
+        "docs/design"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T08:59:14.214Z",
+      "completedAt": "2026-07-07T09:04:42.945Z"
+    },
+    {
+      "id": "fffi41",
+      "desc": "gateway-freecam: 神行聚晶新增 Freecam 灵魂出窍功能",
+      "files": [
+        "src/main/java/com/goetymech/addon/client/FreecamHandler.java",
+        "src/main/java/com/goetymech/addon/client/FreecamInputHandler.java",
+        "src/main/java/com/goetymech/addon/mixin/CameraMixin.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewayAdvancedSpell.java",
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/java/com/goetymech/addon/init/ModEntities.java",
+        "src/main/java/com/goetymech/addon/common/entity/StructureHighlightMarker.java",
+        "src/main/java/com/goetymech/addon/client/render/StructureHighlightRenderer.java",
+        "src/main/java/com/goetymech/addon/client/ModClientEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T09:47:09.927Z",
+      "completedAt": "2026-07-07T09:53:51.389Z"
+    },
+    {
+      "id": "y0tcpc",
+      "desc": "Engine消费反馈回路：Engine上报本地网络消耗给Ark",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressArkBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T10:00:15.823Z",
+      "completedAt": "2026-07-07T10:08:34.491Z"
+    },
+    {
+      "id": "hhb7f8",
+      "desc": "修复Engine/Reader工具提示 + Ark HUD残留",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java",
+        "src/main/java/com/goetymech/addon/client/StressArkHUD.java",
+        "src/main/java/com/goetymech/addon/common/block/StressArkBlock.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressArkBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T10:26:29.203Z",
+      "completedAt": "2026-07-07T11:02:41.939Z"
+    },
+    {
+      "id": "raplts",
+      "desc": "Reader同步字段 + Engine Ark自动绑定",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/common/block/RemoteEngineBlock.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/RemoteEngineBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T11:07:14.547Z",
+      "completedAt": "2026-07-07T18:43:29.931Z"
+    },
+    {
+      "id": "94ej3f",
+      "desc": "删除下砸内圈+hDist跳过+startDist改为3",
+      "files": [
+        "src/main/java/com/goetymech/addon/client/SlamGroundTiltHandler.java",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T11:42:06.624Z",
+      "completedAt": "2026-07-07T11:42:42.409Z"
+    },
+    {
+      "id": "beykbl",
+      "desc": "StressReader真实应力消耗修复",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/StressReaderBlockEntity.java",
+        "docs/items/block/stress-reader/timeline.md"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T18:43:40.199Z",
+      "completedAt": "2026-07-07T18:47:41.862Z"
+    },
+    {
+      "id": "kurjmt",
+      "desc": "修复应力系统双重计入：pushToEngine budget公式 + ArkHUD重复扣减",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/utils/StressLinkService.java",
+        "src/main/java/com/goetymech/addon/client/StressArkHUD.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-07T19:27:48.350Z",
+      "completedAt": "2026-07-14T18:45:17.078Z"
+    },
+    {
+      "id": "eprtgz",
+      "desc": "修复神行和定点聚晶 —— 5秒施法 + 虚空粒子 + 安全定位修复",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewaySpell.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewayAdvancedSpell.java",
+        "src/main/java/com/goetymech/addon/common/utils/GatewayUtil.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-08T12:48:55.824Z",
+      "completedAt": "2026-07-08T13:09:51.569Z"
+    },
+    {
+      "id": "lo3y7g",
+      "desc": "Gateway map定位 —— 新增 readMapTarget + SpellResult 地图分支 + lang key",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewaySpell.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewayAdvancedSpell.java",
+        "src/main/java/com/goetymech/addon/common/utils/GatewayUtil.java",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json",
+        "src/main/resources/assets/goetymech/lang/en_us.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-08T13:10:02.167Z",
+      "completedAt": "2026-07-08T13:16:29.468Z"
+    },
+    {
+      "id": "xiyf4i",
+      "desc": "删除下砸落地后冻结(硬直)逻辑",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-09T11:06:16.186Z",
+      "completedAt": "2026-07-10T07:06:32.062Z"
+    },
+    {
+      "id": "2qre16",
+      "desc": "清理残留测试/调试日志，注释掉非保留代码",
+      "files": [
+        "src/main/java/com/GoetyMech/common/entity/CrushingWheelEntity.java",
+        "src/main/java/com/GoetyMech/common/events/PrototypeEvents.java",
+        "src/main/java/com/GoetyMech/mixin/PrototypePlayerMixin.java",
+        "src/main/java/com/GoetyMech/client/events/PrototypeRenderEvents.java",
+        "src/main/java/com/GoetyMech/client/renderer/CrushingWheelRenderer.java",
+        "src/main/java/com/GoetyMech/client/renderer/StressReaderRenderer.java",
+        "src/main/java/com/GoetyMech/client/renderer/RemoteEngineRenderer.java",
+        "src/main/java/com/GoetyMech/common/item/RemoteEngineBlockItem.java",
+        "src/main/java/com/GoetyMech/common/block/StressReaderBlock.java",
+        "src/main/java/com/GoetyMech/common/spell/CrushingWheelSpell.java",
+        "src/main/java/com/GoetyMech/client/events/ModClientEvents.java",
+        "src/main/java/com/GoetyMech/client/events/ModClientForgeEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-09T11:08:21.443Z",
+      "completedAt": "2026-07-09T11:14:44.025Z"
+    },
+    {
+      "id": "mntigr",
+      "desc": "灵质捕手饰品重命名+机制变更",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/item/curio/SoulCatcherCurio.java",
+        "src/main/java/com/goetymech/addon/common/events/SoulCatcherEvents.java",
+        "src/main/java/com/goetymech/addon/init/ModItems.java",
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/resources/assets/goetymech/lang/en_us.json",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json",
+        "src/main/resources/data/curios/tags/items/charm.json",
+        "src/main/resources/data/curios/tags/items/hands.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-09T14:29:41.684Z",
+      "completedAt": "2026-07-09T14:38:31.309Z"
+    },
+    {
+      "id": "us5rr1",
+      "desc": "Prototype运动系统诊断日志",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/MixinWallRunTravel.java",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java",
+        "src/main/java/com/goetymech/addon/client/PrototypeRenderEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T07:06:36.543Z",
+      "completedAt": "2026-07-10T11:33:26.860Z"
+    },
+    {
+      "id": "ww6uo4",
+      "desc": "墙跑修复：客户端主导+渐进加速+服务端不干预",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/MixinWallRunTravel.java",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java",
+        "src/main/java/com/goetymech/addon/client/PrototypeRenderEvents.java",
+        "src/main/java/com/goetymech/addon/common/net/c2s/C2SWallInputPacket.java",
+        "src/main/java/com/goetymech/addon/config/ModConfig.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T11:33:33.151Z",
+      "completedAt": "2026-07-10T11:55:48.852Z"
+    },
+    {
+      "id": "dfemjl",
+      "desc": "删 Curios+修游泳+下界检测",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/item/PrototypeItem.java",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java",
+        "src/main/java/com/goetymech/addon/client/PrototypeRenderEvents.java",
+        "src/main/java/com/goetymech/addon/mixin/PrototypeTravelMixin.java",
+        "src/main/java/com/goetymech/addon/GoetyMechMod.java",
+        "src/main/java/com/goetymech/addon/common/item/curio/PrototypeCurio.java",
+        "src/main/java/com/goetymech/addon/compat/caelus/CaelusFlightHandler.java",
+        "src/main/java/com/goetymech/addon/compat/caelus/CaelusLoaded.java",
+        "src/main/java/com/goetymech/addon/common/utils/CuriosHelper.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T11:55:55.558Z",
+      "completedAt": "2026-07-10T12:21:05.325Z"
+    },
+    {
+      "id": "67d4u9",
+      "desc": "Plan B: shift+dismiss不再清除冷却 / SquadFocus解绑不受冷却限制",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/events/SquadFocusEvents.java",
+        "src/main/java/com/goetymech/addon/common/item/SquadFocus.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T12:05:29.491Z",
+      "completedAt": "2026-07-10T14:28:14.383Z"
+    },
+    {
+      "id": "zi9jnn",
+      "desc": "slam冻结诊断日志",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/item/PrototypeItem.java",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T12:21:12.047Z",
+      "completedAt": "2026-07-10T12:28:08.740Z"
+    },
+    {
+      "id": "jx9lf4",
+      "desc": "清理诊断日志+免疫系统+Config+Tooltip",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/MixinWallRunTravel.java",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java",
+        "src/main/java/com/goetymech/addon/client/PrototypeRenderEvents.java",
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/java/com/goetymech/addon/common/item/PrototypeItem.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T12:28:16.700Z",
+      "completedAt": "2026-07-10T12:57:00.097Z"
+    },
+    {
+      "id": "ec05e0",
+      "desc": "修复 StockTicker 远距离 GUI + 假包",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/StockKeeperRequestMenuMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/LevelMixin.java",
+        "src/main/java/com/goetymech/addon/common/net/s2c/S2CRegisterStockCachePacket.java",
+        "src/main/java/com/goetymech/addon/common/net/ModNetwork.java",
+        "src/main/java/com/goetymech/addon/client/CrossDimStockCache.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T12:43:50.124Z",
+      "completedAt": "2026-07-10T12:50:59.221Z"
+    },
+    {
+      "id": "i5o3ka",
+      "desc": "修Curios tag + 删下砸冻结",
+      "files": [
+        "src/main/resources/data/curios/tags/items/back.json",
+        "src/main/resources/data/curios/tags/items/body.json",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java",
+        "src/main/java/com/goetymech/addon/common/item/PrototypeItem.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T12:57:06.687Z",
+      "completedAt": "2026-07-10T15:01:49.601Z"
+    },
+    {
+      "id": "3h49uv",
+      "desc": "修复 StockTicker Screen 一闪而过",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/StockKeeperRequestScreenMixin.java",
+        "src/main/resources/goetymech.mixins.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T13:11:10.501Z",
+      "completedAt": "2026-07-10T13:17:44.859Z"
+    },
+    {
+      "id": "247cjc",
+      "desc": "修复 StockTicker 库存数据+玩家收包+诊断日志",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/LogisticalStockResponsePacketMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/StockKeeperRequestScreenMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/PackagerBlockEntityMixin.java",
+        "src/main/resources/goetymech.mixins.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T14:04:18.438Z",
+      "completedAt": "2026-07-10T14:27:40.525Z"
+    },
+    {
+      "id": "vxa90v",
+      "desc": "Plan A: SummonSpell模式shift长按dismiss + 恢复SEHelper冷却 + 死亡特效修复",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/magic/spell/SquadSpell.java",
+        "src/main/java/com/goetymech/addon/common/item/SquadFocus.java",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json",
+        "src/main/resources/assets/goetymech/lang/en_us.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T14:28:14.530Z",
+      "completedAt": "2026-07-14T07:00:56.749Z"
+    },
+    {
+      "id": "v8l5cf",
+      "desc": "重构 PackagerBlockEntityMixin + StockKeeperScreen tick",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/PackagerBlockEntityMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/StockKeeperRequestScreenMixin.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T14:44:22.737Z",
+      "completedAt": "2026-07-10T14:49:16.893Z"
+    },
+    {
+      "id": "x5vejw",
+      "desc": "归档Prototype运动系统改动",
+      "files": [
+        "docs/design/prototype.md",
+        "src/main/java/com/goetymech/addon/common/block/CraterBlock.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T15:01:50.015Z",
+      "completedAt": "2026-07-10T15:01:58.659Z"
+    },
+    {
+      "id": "q5u7fk",
+      "desc": "StockTicker 全链路 STOCK_DIAG 诊断日志",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/magic/spell/StockTickerSpell.java",
+        "src/main/java/com/goetymech/addon/mixin/BlockEntityConfigurationPacketMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/PackagerBlockEntityMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/StockKeeperRequestScreenMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/LogisticalStockResponsePacketMixin.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-10T15:53:48.367Z",
+      "completedAt": "2026-07-12T14:48:27.483Z"
+    },
+    {
+      "id": "2qmwms",
+      "desc": "健壮性修复: 反射异常日志 + fakeBE cleanup + 日志降级 + 假包模型同步",
+      "files": [
+        "src/main/java/com/goetymech/addon/mixin/BlockEntityConfigurationPacketMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/StockKeeperRequestScreenMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/LogisticalStockResponsePacketMixin.java",
+        "src/main/java/com/goetymech/addon/mixin/PackagerBlockEntityMixin.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-12T16:51:32.435Z",
+      "completedAt": "2026-07-12T17:03:26.648Z"
+    },
+    {
+      "id": "949fc4",
+      "desc": "地面变形可配置+参考环+由内到外恢复",
+      "files": [
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/java/com/goetymech/addon/common/net/s2c/S2CSlamImpactPacket.java",
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java",
+        "src/main/java/com/goetymech/addon/client/SlamGroundTiltHandler.java",
+        "PROTOTYPE_ARCHITECTURE.md"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-13T09:58:56.717Z",
+      "completedAt": "2026-07-13T10:02:18.628Z"
+    },
+    {
+      "id": "fitrv6",
+      "desc": "Fix VoidBlinkSpell targeting for multi-hitbox entities (EnderDragon)",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/magic/spell/VoidBlinkSpell.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-13T10:06:20.401Z",
+      "completedAt": "2026-07-13T10:07:12.539Z"
+    },
+    {
+      "id": "b2tuwx",
+      "desc": "prototype 受击免疫移至 LivingAttackEvent",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/events/PrototypeEvents.java",
+        "src/main/java/com/goetymech/addon/common/item/PrototypeItem.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-13T13:02:12.788Z",
+      "completedAt": "2026-07-13T13:10:07.860Z"
+    },
+    {
+      "id": "e0ih77",
+      "desc": "地面变形 max 改 16 + 修复 config 缓存问题",
+      "files": [
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "run/config/goetymech-common.toml",
+        "PROTOTYPE_ARCHITECTURE.md"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-13T13:11:28.763Z",
+      "completedAt": "2026-07-13T13:30:08.701Z"
+    },
+    {
+      "id": "9a1gu1",
+      "desc": "修复拟态物品手持/Gui渲染：builtin/entity + item/generated display transforms",
+      "files": [
+        "src/main/resources/assets/goetymech/models/item/prototype_mimic.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-13T19:19:10.230Z",
+      "completedAt": "2026-07-13T19:32:29.826Z"
+    },
+    {
+      "id": "8s7v1e",
+      "desc": "Issue2: HUD显示实体名字 + Issue3: 死亡特效AreaEffectCloud→sendParticles",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/SoulMonumentBlockEntity.java",
+        "src/main/java/com/goetymech/addon/client/SoulMonumentHUD.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/SquadSpell.java",
+        "src/main/java/com/goetymech/addon/common/events/SoulMonumentEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-14T07:00:56.896Z",
+      "completedAt": "2026-07-14T07:21:25.306Z"
+    },
+    {
+      "id": "6fue7h",
+      "desc": "Issue1+2: HUD向后兼容 + Goety风格死亡特效",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/SoulMonumentBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/events/SoulMonumentEvents.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/SquadSpell.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-14T07:21:25.489Z",
+      "completedAt": "2026-07-14T18:45:17.080Z"
+    },
+    {
+      "id": "fta2zl",
+      "desc": "实现灵魂统御聚晶全功能",
+      "files": [
+        "src/main/java/com/goetymech/addon/GoetyMechMod.java",
+        "src/main/java/com/goetymech/addon/init/ModItems.java",
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/java/com/goetymech/addon/common/net/ModNetwork.java",
+        "src/main/resources/assets/goetymech/lang/en_us.json",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-14T17:16:35.434Z",
+      "completedAt": "2026-07-14T18:45:17.080Z"
+    },
+    {
+      "id": "pp5wqf",
+      "desc": "Remove TAG_SKIP_SOULS, use real-time curios check in EctoplasmCatcherEvents",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/events/EctoplasmCatcherEvents.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-14T19:20:51.933Z",
+      "completedAt": "2026-07-14T19:36:21.136Z"
+    },
+    {
+      "id": "00l13j",
+      "desc": "晶匣自动施法修复：PhantomWand时机+多通道+ITouch+IBlock+学派覆盖",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/events/FleshCasketEvents.java",
+        "src/main/java/com/goetymech/addon/common/item/curio/AutoCastDummyWand.java",
+        "src/main/java/com/goetymech/addon/mixin/WandUtilMixin.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-16T15:43:01.481Z",
+      "completedAt": "2026-07-17T21:07:11.566Z"
+    },
+    {
+      "id": "iwy69b",
+      "desc": "胚胎JEI改为信息页",
+      "files": [
+        "src/main/java/com/goetymech/addon/compat/jei/GoetyMechJeiPlugin.java",
+        "src/main/java/com/goetymech/addon/compat/jei/GoetyMechRecipeTypes.java",
+        "src/main/java/com/goetymech/addon/compat/jei/EmbryoConversionCategory.java",
+        "src/main/java/com/goetymech/addon/compat/jei/EmbryoConversionRecipe.java",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json",
+        "src/main/resources/assets/goetymech/lang/en_us.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-16T20:09:09.630Z",
+      "completedAt": "2026-07-16T20:11:22.804Z"
+    },
+    {
+      "id": "lt1su3",
+      "desc": "幽匿束缚聚晶增加 POTENCY 附魔 - 每级 +1 Warden",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/magic/spell/SculkBindSpell.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-21T19:01:07.344Z",
+      "completedAt": "2026-07-21T19:01:36.467Z"
+    },
+    {
+      "id": "vjdvob",
+      "desc": "多应力读取器同网络预算交叉污染修复",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/utils/GlobalStressLinkManager.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/StressArkBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-21T19:27:20.560Z",
+      "completedAt": "2026-07-21T19:46:13.758Z"
+    },
+    {
+      "id": "laocyg",
+      "desc": "育巢修复: 漏斗提取/音效/HUD",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/BreedingNestBlockEntity.java",
+        "src/main/java/com/goetymech/addon/client/BreedingNestHUD.java",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json",
+        "src/main/resources/assets/goetymech/lang/en_us.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-22T13:03:09.276Z",
+      "completedAt": "2026-07-22T13:03:34.167Z"
+    },
+    {
+      "id": "0476d9",
+      "desc": "育巢: 空手/非食物右键取出产物",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/BreedingNestBlock.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-22T13:12:03.827Z",
+      "completedAt": "2026-07-22T13:12:26.899Z"
+    },
+    {
+      "id": "5y69ff",
+      "desc": "育巢: 优先弹出产物+凋零音效",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/BreedingNestBlock.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/BreedingNestBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-22T13:23:01.621Z",
+      "completedAt": "2026-07-22T13:23:26.618Z"
+    },
+    {
+      "id": "ykbdms",
+      "desc": "Fix scanAndLink nearest-torch selection",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/FleshFurnaceBlockEntity.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-26T13:17:12.646Z",
+      "completedAt": "2026-07-26T13:17:38.085Z"
+    },
+    {
+      "id": "gigyri",
+      "desc": "魂灵丰碑绑定+召唤特效增强",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/block/entity/SoulMonumentBlockEntity.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/SquadSpell.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-26T13:51:18.520Z",
+      "completedAt": "2026-07-26T13:52:15.459Z"
+    },
+    {
+      "id": "72unjd",
+      "desc": "修复粉碎轮聚晶默认灵魂消耗",
+      "files": [
+        "src/main/java/com/goetymech/addon/config/ModConfig.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-26T20:40:19.272Z",
+      "completedAt": "2026-07-26T20:46:22.925Z"
+    },
+    {
+      "id": "zvyakg",
+      "desc": "修复丰碑冷却未生效 + 改为40秒",
+      "files": [
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/SquadSpell.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-26T21:57:33.704Z",
+      "completedAt": "2026-07-26T21:58:11.585Z"
+    },
+    {
+      "id": "10n8gj",
+      "desc": "魂灵丰碑实体校验修复",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/events/SoulMonumentEvents.java",
+        "src/main/java/com/goetymech/addon/common/block/entity/SoulMonumentBlockEntity.java",
+        "src/main/resources/assets/goetymech/lang/zh_cn.json",
+        "src/main/resources/assets/goetymech/lang/en_us.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-27T15:56:08.629Z",
+      "completedAt": "2026-07-27T16:07:13.277Z"
+    },
+    {
+      "id": "1xkn9w",
+      "desc": "神行聚晶渐进式结构搜索优化",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/utils/GatewayUtil.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewayAdvancedSpell.java",
+        "src/main/java/com/goetymech/addon/config/ModConfig.java",
+        "src/main/java/com/goetymech/addon/MainMod.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-27T18:53:48.407Z",
+      "completedAt": "2026-07-27T19:04:54.289Z"
+    },
+    {
+      "id": "22l688",
+      "desc": "修复点将台/血肉熔炉/育巢等方块挖掘标签+战利品表",
+      "files": [
+        "src/main/resources/data/minecraft/tags/blocks/mineable/pickaxe.json",
+        "src/main/resources/data/goetymech/loot_tables/blocks/tier1_squad_barracks.json",
+        "src/main/resources/data/goetymech/loot_tables/blocks/tier2_squad_barracks.json",
+        "src/main/resources/data/goetymech/loot_tables/blocks/tier3_squad_barracks.json",
+        "src/main/resources/data/goetymech/loot_tables/blocks/breeding_nest.json"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-27T21:07:30.169Z",
+      "completedAt": "2026-07-27T21:08:10.855Z"
+    },
+    {
+      "id": "drmay2",
+      "desc": "修复神行聚晶传送位置偏差",
+      "files": [
+        "src/main/java/com/goetymech/addon/common/utils/GatewayUtil.java",
+        "src/main/java/com/goetymech/addon/common/worker/GatewaySearchManager.java",
+        "src/main/java/com/goetymech/addon/common/magic/spell/GatewayAdvancedSpell.java"
+      ],
+      "status": "complete",
+      "startedAt": "2026-07-27T21:40:27.629Z",
+      "completedAt": "2026-07-27T21:41:58.055Z"
+    },
+    {
+      "id": "jhvkxh",
+      "desc": "文档体系+Harness全面重构：25子任务，涉及.opencode/plugins scripts templates docs/design/adr docs/agents/ AGENTS.md",
+      "files": [
+        ".opencode/plugins/bash-guard.ts",
+        ".opencode/plugins/write-guard.ts",
+        ".opencode/plugins/skill-preloader.ts",
+        ".opencode/scripts/build-index.mjs",
+        ".opencode/scripts/validate-index.mjs",
+        ".opencode/scripts/health-check.mjs",
+        ".opencode/scripts/migrate-incidents.mjs",
+        ".opencode/scripts/new-item-doc.mjs",
+        ".opencode/templates/spec-template.md",
+        ".opencode/templates/timeline-template.md",
+        "docs/design/adr/",
+        "docs/agents/documentation-system.md",
+        "docs/agents/harness-design.md",
+        "AGENTS.md",
+        "docs/INDEX.yaml"
+      ],
+      "status": "active",
+      "startedAt": "2026-07-29T19:59:57.423Z"
+    }
+  ]
+}
