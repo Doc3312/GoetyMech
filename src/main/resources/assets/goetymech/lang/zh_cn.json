@@ -178,7 +178,7 @@
   "goetymech.category.exploration": "GoetyMech 探索",
   "spell.goety.mechanical": "§e机械§e",
   "container.goetymech.deposit": "仓库中转站",
-  "info.goetymech.deposit.saved": "§e部分物品未能存入中转站缓存，使用聚晶再次打开即可取出",
+  "info.goetymech.deposit.saved": "§e部分物品未能存入仓库，再次打开中转站即可取出",
   "jei.goety.craftType.mechanical": "机械",
   "item.goetymech.soul_dominion_focus": "灵魂统御聚晶",
   "spell.goety.soul_dominion": "§5灵魂统御§5",
