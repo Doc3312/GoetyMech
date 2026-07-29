@@ -178,6 +178,7 @@
   "goetymech.category.exploration": "GoetyMech Exploration",
   "spell.goety.mechanical": "§eMechanical§e",
   "container.goetymech.deposit": "Warehouse Depot",
+  "info.goetymech.deposit.saved": "§eItems could not be fully deposited — reopening the depot will retrieve them",
   "jei.goety.craftType.mechanical": "Mechanical",
   "item.goetymech.soul_dominion_focus": "Focus of Soul Dominion",
   "spell.goety.soul_dominion": "§5Soul Dominion§5",

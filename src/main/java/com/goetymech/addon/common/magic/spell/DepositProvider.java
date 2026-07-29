@@ -1,5 +1,6 @@
 package com.goetymech.addon.common.magic.spell;
 
+import com.goetymech.addon.common.data.DepositSavedData;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
 import com.simibubi.create.content.logistics.packagerLink.LogisticallyLinkedBehaviour;
 import com.simibubi.create.content.logistics.packagerLink.PackagerLinkBlockEntity;
@@ -15,26 +16,33 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.NetworkHooks;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
-/**
- * 远程仓储中转站。管理物品存入逻辑。
- */
 public class DepositProvider implements MenuProvider {
 
     private final UUID freqId;
-    private final SimpleContainer container;
+    private final ServerPlayer player;
 
-    public DepositProvider(UUID freqId, SimpleContainer container) {
+    public DepositProvider(UUID freqId, ServerPlayer player) {
         this.freqId = freqId;
-        this.container = container;
+        this.player = player;
     }
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+        SimpleContainer container = new SimpleContainer(54);
+        DepositSavedData data = DepositSavedData.readOrCreate(this.player.server);
+        if (data.hasItems(this.player.getUUID(), freqId)) {
+            List<ItemStack> saved = data.getItems(this.player.getUUID(), freqId);
+            for (int i = 0; i < Math.min(saved.size(), 54); i++) {
+                container.setItem(i, saved.get(i));
+            }
+            data.clear(this.player.getUUID(), freqId);
+        }
         return new ChestMenu(MenuType.GENERIC_9x6, id, inv, container, 6) {
             @Override
             public void removed(Player p) {
@@ -53,7 +61,6 @@ public class DepositProvider implements MenuProvider {
         if (player.level().isClientSide) return;
 
         Collection<LogisticallyLinkedBehaviour> links = LogisticallyLinkedBehaviour.getAllPresent(freqId, false);
-        if (links.isEmpty()) return;
 
         outer:
         for (LogisticallyLinkedBehaviour link : links) {
@@ -80,11 +87,14 @@ public class DepositProvider implements MenuProvider {
         }
 
         if (hasRemaining && player instanceof ServerPlayer sp) {
-            SimpleContainer remaining = new SimpleContainer(54);
+            DepositSavedData data = DepositSavedData.readOrCreate(sp.server);
+            List<ItemStack> remaining = new ArrayList<>();
             for (int i = 0; i < container.getContainerSize(); i++) {
-                remaining.setItem(i, container.getItem(i));
+                remaining.add(container.getItem(i));
             }
-            NetworkHooks.openScreen(sp, new DepositProvider(freqId, remaining), buf -> {});
+            data.setItems(sp.getUUID(), freqId, remaining);
+            sp.displayClientMessage(
+                    Component.translatable("info.goetymech.deposit.saved"), true);
         }
     }
 }
