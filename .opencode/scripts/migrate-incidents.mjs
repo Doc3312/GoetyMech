@@ -21,7 +21,7 @@ function walkSubdirs(dir) {
   if (!existsSync(dir)) return results;
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
-    if (entry.startsWith(".") || entry.startsWith("_")) continue;
+    if (entry.startsWith(".")) continue; // _craft/_meta/_mimic/_prototype are valid category dirs
     const st = statSync(full);
     if (st.isDirectory()) {
       for (const f of readdirSync(full)) {
@@ -53,7 +53,10 @@ function extractOldMetadata(fullPath) {
       if (m) status = m[1];
       contentStart = i + 1;
     } else if (line.startsWith("status:")) {
-      status = line.replace(/^status:\s*/, "").trim();
+      let raw = line.replace(/^status:\s*/, "").trim();
+      // Strip comments in parens
+      raw = raw.replace(/\s*\(.*$/, "");
+      status = raw;
       contentStart = i + 1;
     }
     // Try YAML front matter
@@ -114,13 +117,21 @@ function extractOldMetadata(fullPath) {
     relatedItems = dirMap[subdir] ? [dirMap[subdir]] : [];
   }
 
+  // Normalize status to new system: open | verified | superseded | legacy
+  const statusNorm = { verified: "verified", open: "open", superseded: "superseded",
+    resolved: "verified", consolidated: "superseded", disputed: "legacy",
+    unknown: "open" };
+  status = statusNorm[status] || "open";
+
   return { status, title, date, tags, relatedItems, body };
 }
 
 function generateNewContent(fullPath, meta) {
   const relPath = relative(INCIDENTS, fullPath).replace(/\\/g, "/");
-  const slug = basename(fullPath, ".md").replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 60);
-  const id = `${relPath.replace(/[/\\]/g, "-").replace(/\.md$/i, "")}-${slug}`.replace(/^\.-/, "");
+  // Generate clean ID: <parent_dir>/<basename_without_ext>
+  const parentDir = dirname(relPath);
+  const slug = basename(fullPath, ".md");
+  const id = (parentDir === "." ? slug : `${parentDir}/${slug}`).replace(/\\/g, "/");
 
   // Extract sections heuristically from body
   const body = meta.body || "";

@@ -42,6 +42,7 @@ logs/
 !.opencode/.workflow-state.json
 openspec/
 .scratch/
+docs/incidents/.archive/
 /com/
 /META-INF/
 !/docs/

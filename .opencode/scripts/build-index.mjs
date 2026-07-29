@@ -1,6 +1,5 @@
-#!/usr/bin/env node
 /**
- * build-index.mjs — Scan docs/**/*.md for YAML front matter,
+ * build-index.mjs — Scan docs/** / *.md for YAML front matter,
  * build docs/INDEX.yaml (single-file registry of all items, incidents, patterns, adrs).
  *
  * Usage: node .opencode/scripts/build-index.mjs [--quiet]
@@ -16,6 +15,7 @@ const INDEX_FILE = join(PROJECT, "docs", "INDEX.yaml");
 
 function walkDir(dir, files = []) {
   for (const entry of readdirSync(dir)) {
+    if (entry.startsWith(".archive") || entry.startsWith(".")) continue;
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) {
       walkDir(full, files);
