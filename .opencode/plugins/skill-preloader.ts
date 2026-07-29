@@ -136,6 +136,24 @@ export default async () => {
           lines.push(`- ${id}: ${sn}`);
         }
         lines.push("- _catchall: 无匹配域时走常规工作流");
+
+        // Inject health-check snapshot
+        try {
+          const { execSync } = require("child_process");
+          const hc = execSync("node .opencode/scripts/health-check.mjs --json", {
+            cwd: PROJECT_DIR, encoding: "utf-8", timeout: 5000,
+          });
+          const stats = JSON.parse(hc);
+          if (stats && !stats.error) {
+            lines.push("\n## 项目健康快照\n");
+            lines.push(`- 文档覆盖: ${stats.coverage}% (${stats.completeItems}/${stats.totalItems})`);
+            lines.push(`- 文档债务: ${stats.docDebt} 条目`);
+            lines.push(`- 过期 Incident (open>30d): ${stats.staleIncidents}`);
+            lines.push(`- 活跃声索: ${stats.activeTasks}`);
+            lines.push(`- 孤 Incident (无物品关联): ${stats.orphanIncidents}`);
+          }
+        } catch { /* health-check optionally available */ }
+
         if (!out.context) out.context = [];
         out.context.push(lines.join("\n"));
       } catch { /* skip */ }

@@ -131,6 +131,7 @@ let anyError = false;
 let reportLines = [];
 
 for (const file of changedFiles) {
+  if (file.endsWith("encoding-check.mjs")) continue; // self-referential: the garbage patterns ARE the test
   const issues = checkFile(file);
   if (issues.length > 0) {
     anyError = true;
