@@ -207,11 +207,11 @@ public class ModFluids {
     public static final RegistryObject<FlowingFluid> MYSTIC_LIQUID_FLOWING =
             FLUIDS.register("mystic_liquid_flowing", () -> new MysticFluid.Flowing());
 
-    private static final List<MobEffect> MYSTIC_AURAS = List.of(
-            GoetyEffects.FIERY_AURA.get(),
-            GoetyEffects.REPULSIVE.get(),
-            GoetyEffects.FROSTY_AURA.get(),
-            GoetyEffects.GRAVITY_PULSE.get());
+    private static final List<RegistryObject<MobEffect>> MYSTIC_AURAS = List.of(
+            GoetyEffects.FIERY_AURA,
+            GoetyEffects.REPULSIVE,
+            GoetyEffects.FROSTY_AURA,
+            GoetyEffects.GRAVITY_PULSE);
 
     public static final RegistryObject<PermanentLiquidBlock> MYSTIC_LIQUID_BLOCK =
             BLOCKS.register("mystic_liquid", () -> new PermanentLiquidBlock(
@@ -235,7 +235,7 @@ public class ModFluids {
     public static final RegistryObject<DrinkableLiquidBottleItem> MYSTIC_LIQUID_BOTTLE =
             ITEMS.register("mystic_liquid_bottle", () -> new DrinkableLiquidBottleItem(
                     new Item.Properties().stacksTo(16),
-                    entity -> drink(entity, MYSTIC_AURAS.get(entity.level().random.nextInt(MYSTIC_AURAS.size())))
+                    entity -> drink(entity, MYSTIC_AURAS.get(entity.level().random.nextInt(MYSTIC_AURAS.size())).get())
             ));
 
     // ── 烈风之液 ──
