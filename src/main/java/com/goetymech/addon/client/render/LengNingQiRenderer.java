@@ -20,8 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlockEntity> {
 
-    private static final float FAN_SCALE = 0.45f;
-    private static final float FAN_X_OFFSET = 6.5f / 16f;
+    private static final float FAN_SCALE = 0.3f;
+    private static final float FAN_X_OFFSET = 7.25f / 16f;
     private static final float SHAFT_Z_OFFSET = 6.5f / 16f;
     private static final float SHAFT_Y_OFFSET = 3f / 16f;
 
@@ -40,7 +40,7 @@ public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlo
         VertexConsumer fanVB = buffer.getBuffer(RenderType.cutout());
         VertexConsumer shaftVB = buffer.getBuffer(RenderType.solid());
 
-        // 左右喇叭风扇：块中心 (8,8,8) → 喇叭中心 (1.5,8,8) / (14.5,8,8)
+        // 左右喇叭风扇：喇叭口面板内侧 (0.75,8,8) / (15.25,8,8)，位于喇叭槽挡板 (x=1-2) 前方，从喇叭口可见
         renderFan(be, blockState, ms, fanVB, angle, light, -FAN_X_OFFSET, Direction.WEST);
         renderFan(be, blockState, ms, fanVB, angle, light, FAN_X_OFFSET, Direction.EAST);
 
