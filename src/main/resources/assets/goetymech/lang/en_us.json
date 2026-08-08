@@ -191,7 +191,5 @@
   "key.goetymech.freecam_exit": "Exit Freecam",
   "item.goetymech.magic_skull_necklace": "Magic Skull Necklace",
   "info.goetymech.magic_skull_necklace.cooldown": "§5×0.1 Focus Cooldown§5",
-  "info.goetymech.magic_skull_necklace.soul": "§5×0.8 Soul Cost§5",
-  "block.goetymech.lengningqi": "Condenser",
-  "item.goetymech.lengningqi": "Condenser"
+  "info.goetymech.magic_skull_necklace.soul": "§5×0.8 Soul Cost§5"
 }

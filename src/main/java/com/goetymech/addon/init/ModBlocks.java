@@ -3,7 +3,6 @@ package com.goetymech.addon.init;
 import com.goetymech.addon.GoetyMechMod;
 import com.goetymech.addon.common.block.BreedingNestBlock;
 import com.goetymech.addon.common.block.FleshFurnaceBlock;
-import com.goetymech.addon.common.block.LengNingQiBlock;
 import com.goetymech.addon.common.block.RemoteEngineBlock;
 import com.goetymech.addon.common.block.SoulMonumentBlock;
 import com.goetymech.addon.common.block.StressArkBlock;
@@ -16,7 +15,6 @@ import com.goetymech.addon.common.block.Tier3SoulMonumentBlock;
 import com.goetymech.addon.common.block.Tier3SquadBarracksBlock;
 import com.goetymech.addon.common.block.entity.BreedingNestBlockEntity;
 import com.goetymech.addon.common.block.entity.FleshFurnaceBlockEntity;
-import com.goetymech.addon.common.block.entity.LengNingQiBlockEntity;
 import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
@@ -138,17 +136,6 @@ public class ModBlocks {
                     () -> BlockEntityType.Builder.of(
                             CraterBlockEntity::new,
                             CRATER.get()).build(null));
-
-    // ── 冷凝器 ──
-
-    public static final RegistryObject<Block> LENGNINGQI =
-            BLOCKS.register("lengningqi", LengNingQiBlock::new);
-
-    public static final RegistryObject<BlockEntityType<LengNingQiBlockEntity>> LENGNINGQI_ENTITY =
-            BLOCK_ENTITIES.register("lengningqi",
-                    () -> BlockEntityType.Builder.of(
-                            LengNingQiBlockEntity::new,
-                            LENGNINGQI.get()).build(null));
 
     public static void registerStressValues(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
