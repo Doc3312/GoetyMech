@@ -149,12 +149,12 @@ public class LengNingQiBlockEntity extends KineticBlockEntity {
                 continue;
             }
             if (be.worldPosition.distSqr(event.getAltarPos()) <= rangeSq) {
-                be.onRitualCompleted(event);
+                be.applyRitualCompletion(event);
             }
         }
     }
 
-    private void onRitualCompleted(RitualCompletedEvent event) {
+    private void applyRitualCompletion(RitualCompletedEvent event) {
         Fluid fluid = CondenserProductManager.getRitualFluid(event.getRecipeId());
         if (fluid == null) {
             return;

@@ -8,6 +8,7 @@ import com.goetymech.addon.client.render.CraterBlockRenderer;
 import com.goetymech.addon.client.render.CrazedIllagerModel;
 import com.goetymech.addon.client.render.CrazedIllagerRenderer;
 import com.goetymech.addon.client.render.CrushingWheelRenderer;
+import com.goetymech.addon.client.render.LengNingQiRenderer;
 import com.goetymech.addon.client.render.RemoteEngineRenderer;
 import com.goetymech.addon.client.render.SculkBidingModel;
 import com.goetymech.addon.client.render.SculkBidingRenderer;
@@ -144,6 +145,8 @@ public class ModClientEvents {
                 RemoteEngineRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.CRATER_ENTITY.get(),
                 CraterBlockRenderer::new);
+        event.registerBlockEntityRenderer(ModBlocks.LENGNINGQI_ENTITY.get(),
+                LengNingQiRenderer::new);
     }
 
     @SubscribeEvent

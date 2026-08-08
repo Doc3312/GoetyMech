@@ -191,5 +191,9 @@
   "key.goetymech.freecam_exit": "Exit Freecam",
   "item.goetymech.magic_skull_necklace": "Magic Skull Necklace",
   "info.goetymech.magic_skull_necklace.cooldown": "§5×0.1 Focus Cooldown§5",
-  "info.goetymech.magic_skull_necklace.soul": "§5×0.8 Soul Cost§5"
+  "info.goetymech.magic_skull_necklace.soul": "§5×0.8 Soul Cost§5",
+  "block.goetymech.lengningqi": "Witch Condenser",
+  "item.goetymech.lengningqi": "Witch Condenser",
+  "info.goetymech.lengningqi.hint": "§7Condenses fluids from the biome it sits in, or from completed rituals nearby. Faster rotation, faster production.§7",
+  "info.goetymech.lengningqi.capacity": "§7Stores up to 3 fluids, 1000mb each (3000mb total). Extractable with pipes, cannot be filled.§7"
 }

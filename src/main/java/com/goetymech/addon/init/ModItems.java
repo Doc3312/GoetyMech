@@ -216,4 +216,12 @@ public class ModItems {
     /** 灵魂统御聚晶 — 连接范围内仆从，伤害转移给仆从 */
     public static final RegistryObject<Item> SOUL_DOMINION_FOCUS =
             ITEMS.register("soul_dominion_focus", SoulDominionFocus::new);
+
+    // ── 巫法冷凝 BlockItem ──
+
+    public static final RegistryObject<Item> LENGNINGQI =
+            ITEMS.register("lengningqi", () ->
+                    new BlockItem(ModBlocks.LENGNINGQI.get(),
+                            new Item.Properties().rarity(Rarity.UNCOMMON))
+            );
 }

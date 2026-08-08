@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -42,7 +43,8 @@ public class CondenserProductManager extends SimpleJsonResourceReloadListener {
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager) {
+    protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager,
+                         ProfilerFiller profilerFiller) {
         List<BiomeEntry> newBiomeEntries = new ArrayList<>();
         Map<ResourceLocation, Fluid> newRitualFluids = new HashMap<>();
 

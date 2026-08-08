@@ -1,9 +1,11 @@
 package com.goetymech.addon;
 
+import com.goetymech.addon.common.block.entity.LengNingQiBlockEntity;
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
 import com.goetymech.addon.common.capabilities.ISoulDominion;
 import com.goetymech.addon.common.capabilities.SoulDominionProvider;
+import com.goetymech.addon.common.data.CondenserProductManager;
 import com.goetymech.addon.common.events.SoulDominionEvents;
 import com.goetymech.addon.common.events.StressLinkEvents;
 import com.goetymech.addon.common.events.StressShieldEvents;
@@ -29,6 +31,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import org.slf4j.Logger;
@@ -87,6 +90,9 @@ public class GoetyMechMod {
 
         MinecraftForge.EVENT_BUS.register(ChaseEvents.class);
         MinecraftForge.EVENT_BUS.register(SoulDominionEvents.class);
+        MinecraftForge.EVENT_BUS.register(LengNingQiBlockEntity.class);
+        MinecraftForge.EVENT_BUS.addListener((AddReloadListenerEvent event) ->
+                event.addListener(CondenserProductManager.INSTANCE));
         modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.register(IStressShield.class);
             event.register(ISoulDominion.class);

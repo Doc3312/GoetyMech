@@ -1,12 +1,11 @@
 package com.goetymech.addon.mixin;
 
 import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
-import com.Polarice3.Goety.common.recipes.RitualRecipe;
+import com.Polarice3.Goety.common.crafting.RitualRecipe;
 import com.goetymech.addon.common.event.RitualCompletedEvent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,21 +17,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DarkAltarBlockEntity.class)
 public class DarkAltarBlockEntityMixin {
 
-    @Shadow
-    private Level level;
-
-    @Inject(method = "stopRitual", at = @At("HEAD"))
+    @Inject(method = "stopRitual", at = @At("HEAD"), remap = false)
     private void goetymech$onStopRitual(boolean finished, CallbackInfo ci) {
-        if (!finished || level == null || level.isClientSide) {
+        if (!finished) {
             return;
         }
-        RitualRecipe recipe = ((DarkAltarBlockEntity) (Object) this).getCurrentRitualRecipe();
+        DarkAltarBlockEntity altar = (DarkAltarBlockEntity) (Object) this;
+        Level level = altar.getLevel();
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        RitualRecipe recipe = altar.getCurrentRitualRecipe();
         if (recipe == null) {
             return;
         }
         MinecraftForge.EVENT_BUS.post(new RitualCompletedEvent(
                 level,
-                ((DarkAltarBlockEntity) (Object) this).getBlockPos(),
+                altar.getBlockPos(),
                 recipe.getId(),
                 recipe.getSoulCost()));
     }
