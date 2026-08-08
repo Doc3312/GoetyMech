@@ -5,8 +5,8 @@
     "particle": "goetymech:block/andesite_casing",
     "base": "goetymech:block/andesite_casing",
     "panel": "goetymech:block/gearbox",
-    "glass": "minecraft:block/glass",
-    "frame": "create:block/axis",
+    "glass": "goetymech:block/glass",
+    "frame": "goetymech:block/axis",
     "horn": "goetymech:block/fan_casing"
   },
   "elements": [
