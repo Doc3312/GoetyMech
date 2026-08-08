@@ -4,8 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -16,7 +14,8 @@ import net.minecraft.world.level.material.FlowingFluid;
 import java.util.function.Supplier;
 
 /**
- * 临时流体方块。计时消失和接触效果。
+ * 临时流体方块。计时消失。
+ * 接触效果由 {@link com.goetymech.addon.common.fluid.FluidContactEvents} 事件驱动。
  */
 public class EphemeralLiquidBlock extends LiquidBlock {
 
@@ -112,16 +111,6 @@ public class EphemeralLiquidBlock extends LiquidBlock {
             double y = pos.getY() + random.nextDouble();
             double z = pos.getZ() + random.nextDouble();
             level.addParticle(config.getParticle(), x, y, z, 0.0, 0.0, 0.0);
-        }
-    }
-
-    @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        super.entityInside(state, level, pos, entity);
-        if (!level.isClientSide
-                && entity instanceof Player player
-                && level.getGameTime() % 20 == 0) {
-            config.getContactEffect().accept(player);
         }
     }
 }

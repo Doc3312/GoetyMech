@@ -192,28 +192,43 @@ public class ModClientEvents {
 
     @SubscribeEvent
     public static void registerItemColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
-        registerLiquidBottleColor(event, ModFluids.VITALITY_LIQUID_BOTTLE.get());
-        registerLiquidBottleColor(event, ModFluids.HUNGER_LIQUID_BOTTLE.get());
-        registerLiquidBottleColor(event, ModFluids.MYSTIC_LIQUID_BOTTLE.get());
-        registerLiquidBottleColor(event, ModFluids.GALE_LIQUID_BOTTLE.get());
+        registerLiquidBottleColor(event, ModFluids.VITALITY_LIQUID_BOTTLE.get(), ModFluids.VITALITY_LIQUID_SOURCE.get());
+        registerLiquidBottleColor(event, ModFluids.HUNGER_LIQUID_BOTTLE.get(), ModFluids.HUNGER_LIQUID_SOURCE.get());
+        registerLiquidBottleColor(event, ModFluids.MYSTIC_LIQUID_BOTTLE.get(), ModFluids.MYSTIC_LIQUID_SOURCE.get());
+        registerLiquidBottleColor(event, ModFluids.GALE_LIQUID_BOTTLE.get(), ModFluids.GALE_LIQUID_SOURCE.get());
+
+        registerLiquidBucketColor(event, ModFluids.SOUL_LIQUID_BUCKET.get());
+        registerLiquidBucketColor(event, ModFluids.VITALITY_LIQUID_BUCKET.get());
+        registerLiquidBucketColor(event, ModFluids.HUNGER_LIQUID_BUCKET.get());
+        registerLiquidBucketColor(event, ModFluids.MYSTIC_LIQUID_BUCKET.get());
+        registerLiquidBucketColor(event, ModFluids.GALE_LIQUID_BUCKET.get());
     }
 
     private static void registerLiquidBottleColor(
             net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event,
-            net.minecraft.world.item.Item bottle) {
+            net.minecraft.world.item.Item bottle, net.minecraft.world.level.material.Fluid fluid) {
         event.register((stack, layer) -> layer == 0
-                ? bottleTint(bottle)
+                ? fluidTint(fluid)
                 : 0xFFFFFFFF, bottle);
     }
 
-    private static int bottleTint(net.minecraft.world.item.Item bottle) {
-        if (bottle == ModFluids.VITALITY_LIQUID_BOTTLE.get())
-            return 0xFF636363;
-        if (bottle == ModFluids.HUNGER_LIQUID_BOTTLE.get())
-            return 0xFF23ADBE;
-        if (bottle == ModFluids.MYSTIC_LIQUID_BOTTLE.get())
-            return 0xFF9D4BB8;
-        return 0xFFB89745;
+    private static void registerLiquidBucketColor(
+            net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event,
+            net.minecraft.world.item.Item bucket) {
+        event.register((stack, layer) -> {
+            if (layer != 1) {
+                return 0xFFFFFFFF;
+            }
+            return net.minecraftforge.fluids.FluidUtil.getFluidContained(stack)
+                    .filter(contained -> !contained.isEmpty())
+                    .map(contained -> net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions.of(contained.getFluid()).getTintColor(contained))
+                    .orElse(0xFFFFFFFF);
+        }, bucket);
+    }
+
+    private static int fluidTint(net.minecraft.world.level.material.Fluid fluid) {
+        return net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions.of(fluid)
+                .getTintColor(net.minecraftforge.fluids.FluidStack.EMPTY);
     }
 
 }

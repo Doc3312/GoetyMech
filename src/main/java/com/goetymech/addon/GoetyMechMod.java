@@ -79,8 +79,11 @@ public class GoetyMechMod {
 
         ModNetwork.init();
         modEventBus.addListener((FMLCommonSetupEvent event) -> {
-            MECHANICAL = SpellType.create("mechanical", "mechanical");
-            ModRitualTypes.register();
+            event.enqueueWork(() -> {
+                MECHANICAL = SpellType.create("mechanical", "mechanical");
+                ModRitualTypes.register();
+                ModFluids.registerContactEffects();
+            });
         });
         modEventBus.addListener(ModBlocks::registerStressValues);
         modEventBus.addListener((EntityAttributeCreationEvent event) -> {

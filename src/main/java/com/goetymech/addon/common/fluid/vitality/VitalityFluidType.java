@@ -7,7 +7,7 @@ import com.goetymech.addon.common.fluid.frame.AbstractEphemeralFluidType;
  */
 public class VitalityFluidType extends AbstractEphemeralFluidType {
 
-    private static final int TINT_COLOR = 0xFF636363;
+    private static final int TINT_COLOR = 0xFFC1C1C1;
 
     @Override
     protected int getFluidTintColor() {

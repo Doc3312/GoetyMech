@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.common.fluid.FluidContactEvents;
 import com.goetymech.addon.common.fluid.frame.EphemeralFluidConfig;
 import com.goetymech.addon.common.fluid.frame.EphemeralLiquidBlock;
 import com.goetymech.addon.common.fluid.frame.PermanentLiquidBlock;
@@ -26,6 +27,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -72,7 +74,6 @@ public class ModFluids {
     private static final EphemeralFluidConfig SOUL_LIQUID_CONFIG = EphemeralFluidConfig.builder()
             .particle(ParticleTypes.SCULK_SOUL)
             .particleProbability(0.025f)
-            .contactEffect(player -> SEHelper.increaseSouls(player, 50))
             .build();
 
     public static final RegistryObject<EphemeralLiquidBlock> SOUL_LIQUID_BLOCK =
@@ -140,7 +141,6 @@ public class ModFluids {
                             .randomTicks()
                             .strength(100.0F)
                             .noLootTable(),
-                    VITALITY_IMMERSION,
                     null, 0.0f
             ));
 
@@ -180,7 +180,6 @@ public class ModFluids {
                             .randomTicks()
                             .strength(100.0F)
                             .noLootTable(),
-                    HUNGER_IMMERSION,
                     null, 0.0f
             ));
 
@@ -222,7 +221,6 @@ public class ModFluids {
                             .randomTicks()
                             .strength(100.0F)
                             .noLootTable(),
-                    List.of(),
                     null, 0.0f
             ));
 
@@ -261,7 +259,6 @@ public class ModFluids {
                             .randomTicks()
                             .strength(100.0F)
                             .noLootTable(),
-                    GALE_IMMERSION,
                     null, 0.0f
             ));
 
@@ -276,4 +273,29 @@ public class ModFluids {
                     new Item.Properties().stacksTo(16),
                     entity -> drink(entity, MobEffects.LEVITATION)
             ));
+
+    // ── 浸泡效果注册（common setup 时调用，此时 registry 已可用） ──
+
+    public static void registerContactEffects() {
+        FluidContactEvents.register(VITALITY_LIQUID_SOURCE.get(), entity -> {
+            for (MobEffectInstance effect : VITALITY_IMMERSION) {
+                entity.addEffect(new MobEffectInstance(effect));
+            }
+        });
+        FluidContactEvents.register(HUNGER_LIQUID_SOURCE.get(), entity -> {
+            for (MobEffectInstance effect : HUNGER_IMMERSION) {
+                entity.addEffect(new MobEffectInstance(effect));
+            }
+        });
+        FluidContactEvents.register(GALE_LIQUID_SOURCE.get(), entity -> {
+            for (MobEffectInstance effect : GALE_IMMERSION) {
+                entity.addEffect(new MobEffectInstance(effect));
+            }
+        });
+        FluidContactEvents.register(SOUL_LIQUID_SOURCE.get(), entity -> {
+            if (entity instanceof Player player) {
+                SEHelper.increaseSouls(player, 50);
+            }
+        });
+    }
 }

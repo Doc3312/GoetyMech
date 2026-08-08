@@ -7,7 +7,7 @@ import com.goetymech.addon.common.fluid.frame.AbstractEphemeralFluidType;
  */
 public class HungerFluidType extends AbstractEphemeralFluidType {
 
-    private static final int TINT_COLOR = 0xFF23ADBE;
+    private static final int TINT_COLOR = 0xFF402626;
 
     @Override
     protected int getFluidTintColor() {
