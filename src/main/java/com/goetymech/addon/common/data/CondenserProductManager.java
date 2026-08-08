@@ -208,6 +208,14 @@ public class CondenserProductManager extends SimpleJsonResourceReloadListener {
             return false;
         }
 
+        public List<ResourceLocation> getBiomes() {
+            return biomes;
+        }
+
+        public List<ResourceLocation> getTags() {
+            return tags;
+        }
+
         public List<FluidChance> getLiquids() {
             return liquids;
         }

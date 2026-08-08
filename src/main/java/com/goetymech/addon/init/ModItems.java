@@ -219,9 +219,9 @@ public class ModItems {
 
     // ── 巫法冷凝 BlockItem ──
 
-    public static final RegistryObject<Item> LENGNINGQI =
-            ITEMS.register("lengningqi", () ->
-                    new BlockItem(ModBlocks.LENGNINGQI.get(),
+    public static final RegistryObject<Item> WITCH_CONDENSER =
+            ITEMS.register("witch_condenser", () ->
+                    new BlockItem(ModBlocks.WITCH_CONDENSER.get(),
                             new Item.Properties().rarity(Rarity.UNCOMMON))
             );
 }

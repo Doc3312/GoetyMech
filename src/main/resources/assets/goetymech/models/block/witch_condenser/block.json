@@ -3,7 +3,7 @@
 	"textures": {
 		"1": "goetymech:block/andesite_casing",
 		"2": "goetymech:block/gearbox",
-		"3": "minecraft:block/glass",
+		"3": "goetymech:block/glass",
 		"5": "create:block/fan_casing",
 		"particle": "goetymech:block/andesite_casing"
 	},

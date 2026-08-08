@@ -26,12 +26,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 巫法冷凝。Create 应力驱动蒸馏机：
+ * 巫术冷凝机。Create 应力驱动蒸馏机：
  *  - 群系蒸馏：转速非零时按 max(20, |speed|×0.625) mb/s 累积，满 50mb 脉冲产出（群系概率表独立判定）
  *  - 仪式联动：仪式成功完成后按仪式专属表产液体（soulCost×5 mb），距离 ≤ 8 格
  *  - 存储 3 槽 × 1000mb，只出不进（管道可抽，不可灌）
  */
-public class LengNingQiBlockEntity extends KineticBlockEntity {
+public class WitchCondenserBlockEntity extends KineticBlockEntity {
 
     public static final int TANK_COUNT = 3;
     public static final int TANK_CAPACITY = 1000;
@@ -41,13 +41,13 @@ public class LengNingQiBlockEntity extends KineticBlockEntity {
     public static final float MIN_RATE = 20f;
 
     /** 服务端活动实例集合（仪式事件派发用） */
-    private static final Set<LengNingQiBlockEntity> ACTIVE = new HashSet<>();
+    private static final Set<WitchCondenserBlockEntity> ACTIVE = new HashSet<>();
 
     protected SmartFluidTankBehaviour fluidBehaviour;
     private float progress;
 
-    public LengNingQiBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocks.LENGNINGQI_ENTITY.get(), pos, state);
+    public WitchCondenserBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlocks.WITCH_CONDENSER_ENTITY.get(), pos, state);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class LengNingQiBlockEntity extends KineticBlockEntity {
             return;
         }
         int rangeSq = RITUAL_RANGE * RITUAL_RANGE;
-        for (LengNingQiBlockEntity be : new ArrayList<>(ACTIVE)) {
+        for (WitchCondenserBlockEntity be : new ArrayList<>(ACTIVE)) {
             if (be.level != event.getLevel()) {
                 continue;
             }

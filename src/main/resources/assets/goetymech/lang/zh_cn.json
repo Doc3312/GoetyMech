@@ -192,8 +192,10 @@
   "item.goetymech.magic_skull_necklace": "魔力之颅项链",
   "info.goetymech.magic_skull_necklace.cooldown": "§5聚晶冷却 ×0.1§5",
   "info.goetymech.magic_skull_necklace.soul": "§5灵魂消耗 ×0.8§5",
-  "block.goetymech.lengningqi": "巫法冷凝",
-  "item.goetymech.lengningqi": "巫法冷凝",
-  "info.goetymech.lengningqi.hint": "§7放置在不同群系或仪式祭坛旁，消耗应力蒸馏液体。转速越高产出越快。§7",
-  "info.goetymech.lengningqi.capacity": "§7可储存 3 种液体，每种最多 1000mb（共 3000mb）。可用管道抽出，不可注入。§7"
+  "block.goetymech.witch_condenser": "巫术冷凝机",
+  "item.goetymech.witch_condenser": "巫术冷凝机",
+  "info.goetymech.witch_condenser.hint": "§7放置在不同群系或仪式祭坛旁，消耗应力蒸馏液体。转速越高产出越快。§7",
+  "info.goetymech.witch_condenser.capacity": "§7可储存 3 种液体，每种最多 1000mb（共 3000mb）。可用管道抽出，不可注入。§7",
+  "jei.goetymech.category.condenser": "巫法冷凝",
+  "jei.goetymech.category.condenser.ritual.amount": "产出量 = 仪式灵魂消耗 × 5"
 }

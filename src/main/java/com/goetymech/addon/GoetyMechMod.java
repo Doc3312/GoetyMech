@@ -1,6 +1,6 @@
 package com.goetymech.addon;
 
-import com.goetymech.addon.common.block.entity.LengNingQiBlockEntity;
+import com.goetymech.addon.common.block.entity.WitchCondenserBlockEntity;
 import com.goetymech.addon.common.capabilities.IStressShield;
 import com.goetymech.addon.common.capabilities.StressShieldProvider;
 import com.goetymech.addon.common.capabilities.ISoulDominion;
@@ -90,7 +90,7 @@ public class GoetyMechMod {
 
         MinecraftForge.EVENT_BUS.register(ChaseEvents.class);
         MinecraftForge.EVENT_BUS.register(SoulDominionEvents.class);
-        MinecraftForge.EVENT_BUS.register(LengNingQiBlockEntity.class);
+        MinecraftForge.EVENT_BUS.register(WitchCondenserBlockEntity.class);
         MinecraftForge.EVENT_BUS.addListener((AddReloadListenerEvent event) ->
                 event.addListener(CondenserProductManager.INSTANCE));
         modEventBus.addListener((RegisterCapabilitiesEvent event) -> {

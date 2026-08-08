@@ -8,7 +8,7 @@ import com.goetymech.addon.client.render.CraterBlockRenderer;
 import com.goetymech.addon.client.render.CrazedIllagerModel;
 import com.goetymech.addon.client.render.CrazedIllagerRenderer;
 import com.goetymech.addon.client.render.CrushingWheelRenderer;
-import com.goetymech.addon.client.render.LengNingQiRenderer;
+import com.goetymech.addon.client.render.WitchCondenserRenderer;
 import com.goetymech.addon.client.render.RemoteEngineRenderer;
 import com.goetymech.addon.client.render.SculkBidingModel;
 import com.goetymech.addon.client.render.SculkBidingRenderer;
@@ -58,6 +58,30 @@ public class ModClientEvents {
                     net.minecraft.client.renderer.RenderType.translucent());
             net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
                     ModFluids.SOUL_LIQUID_FLOWING.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.VITALITY_LIQUID_SOURCE.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.VITALITY_LIQUID_FLOWING.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.HUNGER_LIQUID_SOURCE.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.HUNGER_LIQUID_FLOWING.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.MYSTIC_LIQUID_SOURCE.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.MYSTIC_LIQUID_FLOWING.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.GALE_LIQUID_SOURCE.get(),
+                    net.minecraft.client.renderer.RenderType.translucent());
+            net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                    ModFluids.GALE_LIQUID_FLOWING.get(),
                     net.minecraft.client.renderer.RenderType.translucent());
             net.minecraft.client.gui.screens.MenuScreens.register(
                     ModMenuTypes.SQUAD_BARRACKS.get(), SquadBarracksScreen::new);
@@ -145,8 +169,8 @@ public class ModClientEvents {
                 RemoteEngineRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.CRATER_ENTITY.get(),
                 CraterBlockRenderer::new);
-        event.registerBlockEntityRenderer(ModBlocks.LENGNINGQI_ENTITY.get(),
-                LengNingQiRenderer::new);
+        event.registerBlockEntityRenderer(ModBlocks.WITCH_CONDENSER_ENTITY.get(),
+                WitchCondenserRenderer::new);
     }
 
     @SubscribeEvent
@@ -164,6 +188,32 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void registerItemDecorations(RegisterItemDecorationsEvent event) {
         event.register(ModItems.PROTOTYPE_MIMIC.get(), new MimicItemDecorator());
+    }
+
+    @SubscribeEvent
+    public static void registerItemColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
+        registerLiquidBottleColor(event, ModFluids.VITALITY_LIQUID_BOTTLE.get());
+        registerLiquidBottleColor(event, ModFluids.HUNGER_LIQUID_BOTTLE.get());
+        registerLiquidBottleColor(event, ModFluids.MYSTIC_LIQUID_BOTTLE.get());
+        registerLiquidBottleColor(event, ModFluids.GALE_LIQUID_BOTTLE.get());
+    }
+
+    private static void registerLiquidBottleColor(
+            net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event,
+            net.minecraft.world.item.Item bottle) {
+        event.register((stack, layer) -> layer == 0
+                ? bottleTint(bottle)
+                : 0xFFFFFFFF, bottle);
+    }
+
+    private static int bottleTint(net.minecraft.world.item.Item bottle) {
+        if (bottle == ModFluids.VITALITY_LIQUID_BOTTLE.get())
+            return 0xFF636363;
+        if (bottle == ModFluids.HUNGER_LIQUID_BOTTLE.get())
+            return 0xFF23ADBE;
+        if (bottle == ModFluids.MYSTIC_LIQUID_BOTTLE.get())
+            return 0xFF9D4BB8;
+        return 0xFFB89745;
     }
 
 }

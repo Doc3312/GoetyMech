@@ -1,6 +1,6 @@
 package com.goetymech.addon.common.block;
 
-import com.goetymech.addon.common.block.entity.LengNingQiBlockEntity;
+import com.goetymech.addon.common.block.entity.WitchCondenserBlockEntity;
 import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
@@ -14,11 +14,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
 /**
- * 巫法冷凝。Create 应力蒸馏机，FACING 6 向，轴接口在 FACING 反面。
+ * 巫术冷凝机。Create 应力蒸馏机，FACING 6 向，轴接口在 FACING 反面。
  */
-public class LengNingQiBlock extends DirectionalKineticBlock implements IBE<LengNingQiBlockEntity> {
+public class WitchCondenserBlock extends DirectionalKineticBlock implements IBE<WitchCondenserBlockEntity> {
 
-    public LengNingQiBlock() {
+    public WitchCondenserBlock() {
         super(Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(5.0f)
@@ -37,17 +37,17 @@ public class LengNingQiBlock extends DirectionalKineticBlock implements IBE<Leng
     }
 
     @Override
-    public Class<LengNingQiBlockEntity> getBlockEntityClass() {
-        return LengNingQiBlockEntity.class;
+    public Class<WitchCondenserBlockEntity> getBlockEntityClass() {
+        return WitchCondenserBlockEntity.class;
     }
 
     @Override
-    public BlockEntityType<? extends LengNingQiBlockEntity> getBlockEntityType() {
-        return ModBlocks.LENGNINGQI_ENTITY.get();
+    public BlockEntityType<? extends WitchCondenserBlockEntity> getBlockEntityType() {
+        return ModBlocks.WITCH_CONDENSER_ENTITY.get();
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return ModBlocks.LENGNINGQI_ENTITY.get().create(pos, state);
+        return ModBlocks.WITCH_CONDENSER_ENTITY.get().create(pos, state);
     }
 }
