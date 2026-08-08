@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlockEntity> {
 
-    private static final float FAN_SCALE = 0.4f;
+    private static final float FAN_SCALE = 0.45f;
     private static final float FAN_X_OFFSET = 6.5f / 16f;
     private static final float SHAFT_Z_OFFSET = 6.5f / 16f;
     private static final float SHAFT_Y_OFFSET = 3f / 16f;
