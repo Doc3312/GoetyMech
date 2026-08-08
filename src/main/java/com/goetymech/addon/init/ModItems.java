@@ -168,6 +168,14 @@ public class ModItems {
                             new Item.Properties().rarity(Rarity.EPIC))
             );
 
+    // ── 冷凝器 BlockItem ──
+
+    public static final RegistryObject<Item> LENGNINGQI =
+            ITEMS.register("lengningqi", () ->
+                    new BlockItem(ModBlocks.LENGNINGQI.get(),
+                            new Item.Properties())
+            );
+
     public static final RegistryObject<Item> ECTOPLASM_CATCHER =
             ITEMS.register("ectoplasm_catcher", EctoplasmCatcherCurio::new);
 
