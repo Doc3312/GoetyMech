@@ -18,6 +18,11 @@ import net.minecraftforge.fluids.FluidType;
 public abstract class HungerFluid extends AbstractEphemeralFluid {
 
     @Override
+    public int getDecayRate() {
+        return 0;
+    }
+
+    @Override
     public Fluid getFlowing() {
         return ModFluids.HUNGER_LIQUID_FLOWING.get();
     }

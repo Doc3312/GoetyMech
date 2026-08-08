@@ -1,0 +1,12 @@
+{
+  "name": "Vitality Liquid",
+  "icon": "goetymech:vitality_liquid_bucket",
+  "category": "goety:crafts",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "goetymech:vitality_liquid_bucket",
+      "text": "A liquid used to build the Vitality Core. Creatures immersed in it constantly gain Regeneration and Speed. Drinking it grants 20s of Regeneration and Speed.\n\nObtained from the $(l:goety:crafts/lengningqi)Witch Condenser$(/l).\n\n$(4)Faintly, one can sense the life within."
+    }
+  ]
+}

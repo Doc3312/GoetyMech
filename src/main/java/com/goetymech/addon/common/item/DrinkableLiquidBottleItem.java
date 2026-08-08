@@ -4,18 +4,19 @@ import java.util.function.Consumer;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Drinkable;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
 /**
  * 可饮用液体瓶。右键饮用，施效后返还空玻璃瓶。
  */
-public class DrinkableLiquidBottleItem extends Item implements Drinkable {
+public class DrinkableLiquidBottleItem extends Item {
 
     private final Consumer<LivingEntity> drinkEffect;
 
@@ -25,9 +26,19 @@ public class DrinkableLiquidBottleItem extends Item implements Drinkable {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.DRINK;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack) {
+        return 32;
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         player.startUsingItem(hand);
-        return InteractionResult.SUCCESS;
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 
     @Override

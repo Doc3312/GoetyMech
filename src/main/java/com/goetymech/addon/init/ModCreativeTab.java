@@ -56,6 +56,14 @@ public class ModCreativeTab {
                         output.accept(ModItems.SOUL_DOMINION_FOCUS.get());
                         output.accept(ModItems.WITCH_CONDENSER.get());
                         output.accept(ModFluids.SOUL_LIQUID_BUCKET.get());
+                        output.accept(ModFluids.VITALITY_LIQUID_BUCKET.get());
+                        output.accept(ModFluids.VITALITY_LIQUID_BOTTLE.get());
+                        output.accept(ModFluids.HUNGER_LIQUID_BUCKET.get());
+                        output.accept(ModFluids.HUNGER_LIQUID_BOTTLE.get());
+                        output.accept(ModFluids.MYSTIC_LIQUID_BUCKET.get());
+                        output.accept(ModFluids.MYSTIC_LIQUID_BOTTLE.get());
+                        output.accept(ModFluids.GALE_LIQUID_BUCKET.get());
+                        output.accept(ModFluids.GALE_LIQUID_BOTTLE.get());
                     })
                     .build()
     );

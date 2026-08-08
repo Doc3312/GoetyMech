@@ -1,0 +1,17 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "goetymech:vitality_liquid"
+    }
+  ],
+  "results": [
+    {
+      "item": "goetymech:vitality_liquid_bottle"
+    }
+  ]
+}

@@ -18,6 +18,11 @@ import net.minecraftforge.fluids.FluidType;
 public abstract class GaleFluid extends AbstractEphemeralFluid {
 
     @Override
+    public int getDecayRate() {
+        return 0;
+    }
+
+    @Override
     public Fluid getFlowing() {
         return ModFluids.GALE_LIQUID_FLOWING.get();
     }

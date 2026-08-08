@@ -235,7 +235,7 @@ public class ModFluids {
     public static final RegistryObject<DrinkableLiquidBottleItem> MYSTIC_LIQUID_BOTTLE =
             ITEMS.register("mystic_liquid_bottle", () -> new DrinkableLiquidBottleItem(
                     new Item.Properties().stacksTo(16),
-                    entity -> drink(entity, MYSTIC_AURAS.get(entity.level.random.nextInt(MYSTIC_AURAS.size())))
+                    entity -> drink(entity, MYSTIC_AURAS.get(entity.level().random.nextInt(MYSTIC_AURAS.size())))
             ));
 
     // ── 烈风之液 ──
