@@ -1,0 +1,24 @@
+{
+  "entries": [
+    {
+      "biomes": ["minecraft:deep_dark"],
+      "liquids": [
+        { "fluid": "goetymech:soul_liquid", "chance": 100 },
+        { "fluid": "goetymech:special_fluid", "chance": 30 }
+      ]
+    },
+    {
+      "tags": ["minecraft:is_ocean"],
+      "liquids": [
+        { "fluid": "minecraft:water", "chance": 80 },
+        { "fluid": "goetymech:soul_liquid", "chance": 20 }
+      ]
+    },
+    {
+      "tags": ["minecraft:is_nether"],
+      "liquids": [
+        { "fluid": "minecraft:lava", "chance": 80 }
+      ]
+    }
+  ]
+}

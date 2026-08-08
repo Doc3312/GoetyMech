@@ -19,7 +19,9 @@ import com.goetymech.addon.common.block.entity.RemoteEngineBlockEntity;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.block.entity.SquadBarracksBlockEntity;
 import com.goetymech.addon.common.block.CraterBlock;
+import com.goetymech.addon.common.block.LengNingQiBlock;
 import com.goetymech.addon.common.block.entity.CraterBlockEntity;
+import com.goetymech.addon.common.block.entity.LengNingQiBlockEntity;
 import com.goetymech.addon.common.block.entity.StressArkBlockEntity;
 import com.goetymech.addon.common.block.entity.StressReaderBlockEntity;
 import com.simibubi.create.api.stress.BlockStressValues;
@@ -137,10 +139,22 @@ public class ModBlocks {
                             CraterBlockEntity::new,
                             CRATER.get()).build(null));
 
+    // ── 巫法冷凝 ──
+
+    public static final RegistryObject<Block> LENGNINGQI =
+            BLOCKS.register("lengningqi", LengNingQiBlock::new);
+
+    public static final RegistryObject<BlockEntityType<LengNingQiBlockEntity>> LENGNINGQI_ENTITY =
+            BLOCK_ENTITIES.register("lengningqi",
+                    () -> BlockEntityType.Builder.of(
+                            LengNingQiBlockEntity::new,
+                            LENGNINGQI.get()).build(null));
+
     public static void registerStressValues(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             BlockStressValues.CAPACITIES.register(REMOTE_ENGINE.get(), () -> 0.0);
             BlockStressValues.IMPACTS.register(REMOTE_ENGINE.get(), () -> 0.0);
+            BlockStressValues.IMPACTS.register(LENGNINGQI.get(), () -> 2048.0);
         });
     }
 }

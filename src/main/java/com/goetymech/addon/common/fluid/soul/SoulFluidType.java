@@ -7,7 +7,7 @@ import com.goetymech.addon.common.fluid.frame.AbstractEphemeralFluidType;
  */
 public class SoulFluidType extends AbstractEphemeralFluidType {
 
-    private static final int TINT_COLOR = 0xCC7CFCFF;
+    private static final int TINT_COLOR = 0xFF7CFCFF;
 
     @Override
     protected int getFluidTintColor() {

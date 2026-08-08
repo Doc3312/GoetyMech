@@ -37,6 +37,7 @@
     "EntityOnGroundAccessor",
     "WandUtilMixin",
     "CastSpellTrapMixin",
+    "DarkAltarBlockEntityMixin",
     "PackagerBlockEntityMixin",
     "BlockEntityConfigurationPacketMixin",
     "EyeOfEnderCaptureMixin",
