@@ -100,11 +100,15 @@ public class ModFluids {
 
     // ── 浸泡/饮用效果辅助 ──
 
-    private static final int IMMERSION_TICKS = 25;
+    private static final int IMMERSION_TICKS = 100;
     private static final int DRINK_TICKS = 400;
 
     private static MobEffectInstance immersion(MobEffect effect) {
         return new MobEffectInstance(effect, IMMERSION_TICKS);
+    }
+
+    private static MobEffectInstance immersion(MobEffect effect, int amplifier) {
+        return new MobEffectInstance(effect, IMMERSION_TICKS, amplifier);
     }
 
     private static void drink(LivingEntity entity, MobEffect effect) {
@@ -129,7 +133,7 @@ public class ModFluids {
             FLUIDS.register("vitality_liquid_flowing", () -> new VitalityFluid.Flowing());
 
     private static final List<MobEffectInstance> VITALITY_IMMERSION = List.of(
-            immersion(MobEffects.REGENERATION),
+            immersion(MobEffects.REGENERATION, 1),
             immersion(MobEffects.MOVEMENT_SPEED));
 
     public static final RegistryObject<PermanentLiquidBlock> VITALITY_LIQUID_BLOCK =
@@ -275,27 +279,35 @@ public class ModFluids {
             ));
 
     // ── 浸泡效果注册（common setup 时调用，此时 registry 已可用） ──
+    // 注意：流动层的 FluidState#getType 返回 Flowing 实例而非 Source，两者都必须注册。
 
     public static void registerContactEffects() {
-        FluidContactEvents.register(VITALITY_LIQUID_SOURCE.get(), entity -> {
-            for (MobEffectInstance effect : VITALITY_IMMERSION) {
-                entity.addEffect(new MobEffectInstance(effect));
-            }
-        });
-        FluidContactEvents.register(HUNGER_LIQUID_SOURCE.get(), entity -> {
-            for (MobEffectInstance effect : HUNGER_IMMERSION) {
-                entity.addEffect(new MobEffectInstance(effect));
-            }
-        });
-        FluidContactEvents.register(GALE_LIQUID_SOURCE.get(), entity -> {
-            for (MobEffectInstance effect : GALE_IMMERSION) {
-                entity.addEffect(new MobEffectInstance(effect));
-            }
-        });
+        registerImmersion(VITALITY_LIQUID_SOURCE.get(), VITALITY_LIQUID_FLOWING.get(), VITALITY_IMMERSION);
+        registerImmersion(HUNGER_LIQUID_SOURCE.get(), HUNGER_LIQUID_FLOWING.get(), HUNGER_IMMERSION);
+        registerImmersion(GALE_LIQUID_SOURCE.get(), GALE_LIQUID_FLOWING.get(), GALE_IMMERSION);
         FluidContactEvents.register(SOUL_LIQUID_SOURCE.get(), entity -> {
             if (entity instanceof Player player) {
                 SEHelper.increaseSouls(player, 50);
             }
         });
+        FluidContactEvents.register(SOUL_LIQUID_FLOWING.get(), entity -> {
+            if (entity instanceof Player player) {
+                SEHelper.increaseSouls(player, 50);
+            }
+        });
+    }
+
+    private static void registerImmersion(Fluid source, Fluid flowing, List<MobEffectInstance> effects) {
+        FluidContactEvents.ContactEffect apply = entity -> {
+            for (MobEffectInstance effect : effects) {
+                boolean added = entity.addEffect(
+                        new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier()));
+                if (!added) {
+                    GoetyMechMod.LOGGER.warn("[FLUID] addEffect failed: {} on {}", effect.getEffect(), entity);
+                }
+            }
+        };
+        FluidContactEvents.register(source, apply);
+        FluidContactEvents.register(flowing, apply);
     }
 }
