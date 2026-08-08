@@ -10,7 +10,6 @@
     "2": "goetymech:block/gearbox",
     "3": "minecraft:block/glass",
     "4": "create:block/axis",
-    "5": "goetymech:block/fan_casing",
     "particle": "goetymech:block/andesite_casing"
   },
   "elements": [
@@ -483,84 +482,6 @@
       }
     },
     {
-      "name": "里",
-      "from": [
-        0,
-        4,
-        4
-      ],
-      "to": [
-        0,
-        12,
-        12
-      ],
-      "rotation": {
-        "angle": 0,
-        "axis": "y",
-        "origin": [
-          -3,
-          0,
-          1
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            2.25,
-            16
-          ],
-          "texture": "#5"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#5"
-        },
-        "south": {
-          "uv": [
-            13.75,
-            0,
-            16,
-            16
-          ],
-          "texture": "#5"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#5"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            16,
-            2
-          ],
-          "texture": "#5"
-        },
-        "down": {
-          "uv": [
-            0,
-            14,
-            15.25,
-            16
-          ],
-          "texture": "#5"
-        }
-      }
-    },
-    {
       "from": [
         3,
         0,
@@ -1023,84 +944,6 @@
             16
           ],
           "texture": "#4"
-        }
-      }
-    },
-    {
-      "name": "里",
-      "from": [
-        16,
-        4,
-        4
-      ],
-      "to": [
-        16,
-        12,
-        12
-      ],
-      "rotation": {
-        "angle": 0,
-        "axis": "y",
-        "origin": [
-          19,
-          0,
-          1
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            2.25,
-            0,
-            0,
-            16
-          ],
-          "texture": "#5"
-        },
-        "east": {
-          "uv": [
-            16,
-            0,
-            0,
-            16
-          ],
-          "texture": "#5"
-        },
-        "south": {
-          "uv": [
-            16,
-            0,
-            13.75,
-            16
-          ],
-          "texture": "#5"
-        },
-        "west": {
-          "uv": [
-            16,
-            0,
-            0,
-            16
-          ],
-          "texture": "#5"
-        },
-        "up": {
-          "uv": [
-            16,
-            0,
-            0,
-            2
-          ],
-          "texture": "#5"
-        },
-        "down": {
-          "uv": [
-            15.25,
-            14,
-            0,
-            16
-          ],
-          "texture": "#5"
         }
       }
     }

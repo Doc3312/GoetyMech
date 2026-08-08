@@ -20,8 +20,10 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlockEntity> {
 
-    private static final float FAN_SCALE = 0.3f;
+    private static final float FAN_SCALE = 0.4f;
     private static final float FAN_X_OFFSET = 6.5f / 16f;
+    private static final float SHAFT_Z_OFFSET = 6.5f / 16f;
+    private static final float SHAFT_Y_OFFSET = 3f / 16f;
 
     public LengNingQiRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
@@ -42,9 +44,9 @@ public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlo
         renderFan(be, blockState, ms, fanVB, angle, light, -FAN_X_OFFSET, Direction.WEST);
         renderFan(be, blockState, ms, fanVB, angle, light, FAN_X_OFFSET, Direction.EAST);
 
-        // 前后面板转轴：块中心半段朝面板方向，端面在块表面可见（RemoteEngine 已验证模式）
-        renderShaft(be, blockState, ms, shaftVB, angle, light, Direction.NORTH);
-        renderShaft(be, blockState, ms, shaftVB, angle, light, Direction.SOUTH);
+        // 前后面板转轴：中心在面板中心 (8,5,1.5)/(8,5,14.5)，半段朝块内，端面贴面板表面
+        renderShaft(be, blockState, ms, shaftVB, angle, light, -SHAFT_Z_OFFSET, Direction.SOUTH);
+        renderShaft(be, blockState, ms, shaftVB, angle, light, SHAFT_Z_OFFSET, Direction.NORTH);
     }
 
     private void renderFan(LengNingQiBlockEntity be, BlockState state, PoseStack ms, VertexConsumer vb,
@@ -60,8 +62,9 @@ public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlo
     }
 
     private void renderShaft(LengNingQiBlockEntity be, BlockState state, PoseStack ms, VertexConsumer vb,
-                             float angle, int light, Direction facing) {
+                             float angle, int light, float zOffset, Direction facing) {
         ms.pushPose();
+        ms.translate(0, -SHAFT_Y_OFFSET, zOffset);
         SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, state, facing);
         shaft.rotateCentered(angle, Direction.Axis.Z);
         shaft.light(light);
