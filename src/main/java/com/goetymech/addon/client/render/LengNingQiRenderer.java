@@ -20,9 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlockEntity> {
 
-    private static final float FAN_SCALE = 0.5f;
+    private static final float FAN_SCALE = 0.3f;
     private static final float FAN_X_OFFSET = 6.5f / 16f;
-    private static final float SHAFT_Y_OFFSET = 3f / 16f;
 
     public LengNingQiRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
@@ -43,9 +42,9 @@ public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlo
         renderFan(be, blockState, ms, fanVB, angle, light, -FAN_X_OFFSET, Direction.WEST);
         renderFan(be, blockState, ms, fanVB, angle, light, FAN_X_OFFSET, Direction.EAST);
 
-        // 前后面板转轴：中心 y=8 → 面板中心 y=5
-        renderShaft(be, blockState, ms, shaftVB, angle, light, -SHAFT_Y_OFFSET, Direction.NORTH);
-        renderShaft(be, blockState, ms, shaftVB, angle, light, -SHAFT_Y_OFFSET, Direction.SOUTH);
+        // 前后面板转轴：块中心半段朝面板方向，端面在块表面可见（RemoteEngine 已验证模式）
+        renderShaft(be, blockState, ms, shaftVB, angle, light, Direction.NORTH);
+        renderShaft(be, blockState, ms, shaftVB, angle, light, Direction.SOUTH);
     }
 
     private void renderFan(LengNingQiBlockEntity be, BlockState state, PoseStack ms, VertexConsumer vb,
@@ -61,9 +60,8 @@ public class LengNingQiRenderer extends KineticBlockEntityRenderer<LengNingQiBlo
     }
 
     private void renderShaft(LengNingQiBlockEntity be, BlockState state, PoseStack ms, VertexConsumer vb,
-                             float angle, int light, float yOffset, Direction facing) {
+                             float angle, int light, Direction facing) {
         ms.pushPose();
-        ms.translate(0, yOffset, 0);
         SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, state, facing);
         shaft.rotateCentered(angle, Direction.Axis.Z);
         shaft.light(light);
