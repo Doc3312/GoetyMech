@@ -3,6 +3,7 @@ package com.goetymech.addon.common;
 import com.goetymech.addon.common.data.TimeStopSavedData;
 import com.goetymech.addon.common.time.TimeStopEntityData;
 import com.goetymech.addon.common.time.TimeStopUtils;
+import com.goetymech.addon.config.ModConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -36,8 +37,10 @@ public class ServerExpandedContext {
 
         if (serverLevel.getGameTime() % 60 == 0) {
             AtomicBoolean has = new AtomicBoolean(false);
-            for (LivingEntity living : serverLevel.getEntitiesOfClass(LivingEntity.class,
-                    new AABB(new BlockPos(0, 0, 0)).inflate(30000000))) {
+            AABB scanArea = (TimeStopUtils.shouldLimitRange(serverLevel) && TimeStopUtils.timeStopCenter != null)
+                    ? new AABB(TimeStopUtils.timeStopCenter).inflate(ModConfig.cachedTimeStopRange)
+                    : new AABB(new BlockPos(0, 0, 0)).inflate(30000000);
+            for (LivingEntity living : serverLevel.getEntitiesOfClass(LivingEntity.class, scanArea)) {
                 if (TimeStopEntityData.getTimeStopCount(living) > 0 && living.isAlive()) {
                     has.set(true);
                     break;
