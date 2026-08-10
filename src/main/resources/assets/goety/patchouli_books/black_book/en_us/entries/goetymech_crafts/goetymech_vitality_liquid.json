@@ -7,7 +7,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "goetymech:vitality_liquid_bucket",
-      "text": "A liquid used to build the Vitality Core. Creatures immersed in it constantly gain Regeneration and Speed. Drinking it grants 20s of Regeneration and Speed.\n\nObtained from the Witch Condenser.\n\n$(4)Faintly, one can sense the life within."
+      "text": "A liquid used to build the Vitality Core. Creatures immersed in it constantly gain Regeneration and Speed. Drinking it grants 20s of Regeneration and Speed.$(br)Obtained from the Witch Condenser.$(br)$(4)\"Faintly, one can sense the life within.\"$()"
     }
   ]
 }

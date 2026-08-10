@@ -7,7 +7,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "goetymech:hunger_liquid_bucket",
-      "text": "A liquid used to build the Hunger Core. Creatures immersed in it constantly suffer Hunger and Poison. Drinking it grants 20s of Hunger and Poison.\n\nObtained from the Witch Condenser.\n\n$(4)It certainly doesn't look fit to drink."
+      "text": "A liquid used to build the Hunger Core. Creatures immersed in it constantly suffer Hunger and Poison. Drinking it grants 20s of Hunger and Poison.$(br)Obtained from the Witch Condenser.$(br)$(4)\"It certainly doesn't look fit to drink.\"$()"
     }
   ]
 }
