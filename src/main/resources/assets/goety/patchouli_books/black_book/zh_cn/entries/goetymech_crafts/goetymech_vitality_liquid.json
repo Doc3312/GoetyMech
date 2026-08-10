@@ -1,0 +1,13 @@
+{
+  "name": "活力之液",
+  "icon": "goetymech:vitality_liquid_bucket",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "goetymech:vitality_liquid_bucket",
+      "text": "可用于构建活力核心的液体，在其中的生物持续获得生命恢复、迅捷效果。饮用后可获得20s生命恢复、迅捷效果。\n\n通过巫术冷凝机获得。\n\n$(4)「隐约能感到其中的生命力。」"
+    }
+  ]
+}

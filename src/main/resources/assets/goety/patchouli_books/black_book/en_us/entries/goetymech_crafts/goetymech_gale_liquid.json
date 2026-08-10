@@ -1,0 +1,13 @@
+{
+  "name": "Gale Liquid",
+  "icon": "goetymech:gale_liquid_bucket",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "goetymech:gale_liquid_bucket",
+      "text": "A liquid used to build the Wind Core. Creatures immersed in it constantly gain Levitation. Drinking it grants 20s of Levitation.\n\nObtained from the Witch Condenser.\n\n$(4)It will make one feel awfully light."
+    }
+  ]
+}

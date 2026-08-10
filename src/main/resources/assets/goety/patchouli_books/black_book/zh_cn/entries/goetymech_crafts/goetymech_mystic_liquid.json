@@ -1,0 +1,13 @@
+{
+  "name": "神秘之液",
+  "icon": "goetymech:mystic_liquid_bucket",
+  "category": "goety:goetymech_crafts",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "goetymech:mystic_liquid_bucket",
+      "text": "可用于构建神秘核心的液体，浸泡在其中没有效果。饮用后可随机获得20s炽热气场、排斥、凛寒气场、引力脉冲其中之一的效果。\n\n通过巫术冷凝机获得。\n\n$(4)「饮用会带来神奇的效果。」"
+    }
+  ]
+}
