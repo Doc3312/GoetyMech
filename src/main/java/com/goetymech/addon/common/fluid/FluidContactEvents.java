@@ -1,7 +1,6 @@
 package com.goetymech.addon.common.fluid;
 
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.goetymech.addon.GoetyMechMod;
@@ -16,8 +15,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * 液体浸泡效果。1.20.1 中 Block#entityInside 仅在实体 onGround 时被调用，
- * 玩家在液体中游泳/漂浮时不会触发，故改用每 tick 的 LivingTickEvent 检测流体。
+ * 液体浸泡效果。参照原版熔岩着火机制（Entity#tick 每 tick 检测 isInLava 立即生效），
+ * 每 tick 检测实体所在流体并立即施效，无 onGround 限制、无延迟。
+ * 1.20.1 中 Block#entityInside 仅在实体 onGround 时被调用，故不采用。
  */
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID)
 public class FluidContactEvents {
@@ -36,7 +36,7 @@ public class FluidContactEvents {
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity.level().isClientSide || entity.tickCount % 20 != 0) {
+        if (entity.level().isClientSide) {
             return;
         }
         ContactEffect effect = CONTACT_EFFECTS.get(immersedFluid(entity));
@@ -48,11 +48,13 @@ public class FluidContactEvents {
     private static Fluid immersedFluid(LivingEntity entity) {
         Level level = entity.level();
         BlockPos pos = entity.blockPosition();
-        for (BlockPos candidate : List.of(pos, pos.above())) {
-            Fluid fluid = level.getFluidState(candidate).getType();
-            if (!fluid.isSame(Fluids.EMPTY)) {
-                return fluid;
-            }
+        Fluid foot = level.getFluidState(pos).getType();
+        if (!foot.isSame(Fluids.EMPTY)) {
+            return foot;
+        }
+        Fluid body = level.getFluidState(pos.above()).getType();
+        if (!body.isSame(Fluids.EMPTY)) {
+            return body;
         }
         return Fluids.EMPTY;
     }

@@ -285,25 +285,22 @@ public class ModFluids {
         registerImmersion(VITALITY_LIQUID_SOURCE.get(), VITALITY_LIQUID_FLOWING.get(), VITALITY_IMMERSION);
         registerImmersion(HUNGER_LIQUID_SOURCE.get(), HUNGER_LIQUID_FLOWING.get(), HUNGER_IMMERSION);
         registerImmersion(GALE_LIQUID_SOURCE.get(), GALE_LIQUID_FLOWING.get(), GALE_IMMERSION);
-        FluidContactEvents.register(SOUL_LIQUID_SOURCE.get(), entity -> {
-            if (entity instanceof Player player) {
+        FluidContactEvents.ContactEffect soulEffect = entity -> {
+            if (entity.tickCount % 20 == 0 && entity instanceof Player player) {
                 SEHelper.increaseSouls(player, 50);
             }
-        });
-        FluidContactEvents.register(SOUL_LIQUID_FLOWING.get(), entity -> {
-            if (entity instanceof Player player) {
-                SEHelper.increaseSouls(player, 50);
-            }
-        });
+        };
+        FluidContactEvents.register(SOUL_LIQUID_SOURCE.get(), soulEffect);
+        FluidContactEvents.register(SOUL_LIQUID_FLOWING.get(), soulEffect);
     }
 
     private static void registerImmersion(Fluid source, Fluid flowing, List<MobEffectInstance> effects) {
         FluidContactEvents.ContactEffect apply = entity -> {
             for (MobEffectInstance effect : effects) {
-                boolean added = entity.addEffect(
-                        new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier()));
-                if (!added) {
-                    GoetyMechMod.LOGGER.warn("[FLUID] addEffect failed: {} on {}", effect.getEffect(), entity);
+                MobEffectInstance current = entity.getEffect(effect.getEffect());
+                if (current == null || current.getDuration() <= 40) {
+                    entity.addEffect(
+                            new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier()));
                 }
             }
         };
