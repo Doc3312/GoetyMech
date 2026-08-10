@@ -141,6 +141,8 @@ public class ModConfig {
     public static int cachedLinkRange;
     public static int cachedFurnaceCookingTime;
     public static int cachedNestMaxEnergy;
+    public static int cachedTimeStopLimitMode;
+    public static int cachedTimeStopRange;
 
     @SubscribeEvent
     public static void onConfigLoad(ModConfigEvent.Loading event) {
@@ -156,6 +158,8 @@ public class ModConfig {
         cachedLinkRange = LINK_RANGE.get();
         cachedFurnaceCookingTime = FLESH_FURNACE_COOKING_TIME.get();
         cachedNestMaxEnergy = NEST_MAX_ENERGY.get();
+        cachedTimeStopLimitMode = TIME_STOP_LIMIT_MODE.get();
+        cachedTimeStopRange = TIME_STOP_RANGE.get();
     }
 
     // ====== Prototype 配置 ======
@@ -295,6 +299,12 @@ public class ModConfig {
     /** 时停默认时长（tick） */
     public static final ForgeConfigSpec.IntValue TIME_STOP_DEFAULT_DURATION;
 
+    /** 时停范围限制模式：0=始终全维度 / 1=自动(≥2玩家在线限制) / 2=始终限制 */
+    public static final ForgeConfigSpec.IntValue TIME_STOP_LIMIT_MODE;
+
+    /** 时停限制范围（格），6 区块 = 96 */
+    public static final ForgeConfigSpec.IntValue TIME_STOP_RANGE;
+
     // ====== Flesh Casket 配置 ======
 
     /** Type C 自动施法触发阈值百分比 */
@@ -387,6 +397,14 @@ public class ModConfig {
         TIME_STOP_DEFAULT_DURATION = BUILDER
                 .comment("Default time stop duration in ticks (20 ticks = 1 second)", "仅在 countdown 启用时生效", "范围: 20-72000，默认 180（9秒）")
                 .defineInRange("time_stop_default_duration", 180, 20, 72000);
+
+        TIME_STOP_LIMIT_MODE = BUILDER
+                .comment("时停范围限制模式", "0 = 始终全维度（旧行为）", "1 = 自动：服务端在线玩家 ≥2 时限制范围，单人全维度", "2 = 始终限制范围", "范围: 0-2，默认 1")
+                .defineInRange("time_stop_limit_mode", 1, 0, 2);
+
+        TIME_STOP_RANGE = BUILDER
+                .comment("时停限制范围（格）", "以开袋玩家为中心的球体半径，6 区块 = 96", "范围: 16-512，默认 96")
+                .defineInRange("time_stop_range", 96, 16, 512);
 
         BUILDER.pop();
 
