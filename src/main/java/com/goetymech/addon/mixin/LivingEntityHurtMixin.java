@@ -18,7 +18,7 @@ public class LivingEntityHurtMixin {
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
     private void gp$cancelHurtIfFrozen(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(self.level())) {
+        if (TimeStopUtils.isTimeStop && TimeStopUtils.isInRange(self)) {
             if (!(self instanceof Player)) {
                 cir.setReturnValue(false);
             }

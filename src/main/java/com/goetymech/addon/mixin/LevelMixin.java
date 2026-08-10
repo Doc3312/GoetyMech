@@ -17,7 +17,7 @@ public class LevelMixin {
 
     @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)
     private <T extends Entity> void gp$guardEntityTick(Consumer<T> consumer, T entity, CallbackInfo ci) {
-        if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension((Level) (Object) this)) {
+        if (TimeStopUtils.isTimeStop && TimeStopUtils.isInRange(entity)) {
             if (entity == null) {
                 ci.cancel();
                 return;

@@ -43,8 +43,10 @@ public abstract class EntityMixin {
         if (level.isClientSide) return;
         Entity self = (Entity) (Object) this;
         if (self instanceof Player) return;
-        if (TimeStopUtils.isTimeStop && !TimeStopUtils.canMove(self)) {
-            ci.cancel();
+        if (TimeStopUtils.isTimeStop && TimeStopUtils.isInRange(self)) {
+            if (!TimeStopUtils.canMove(self)) {
+                ci.cancel();
+            }
         }
     }
 
@@ -53,8 +55,10 @@ public abstract class EntityMixin {
         if (level.isClientSide) return;
         Entity self = (Entity) (Object) this;
         if (self instanceof Player) return;
-        if (TimeStopUtils.isTimeStop && !TimeStopUtils.canMove(self)) {
-            ci.cancel();
+        if (TimeStopUtils.isTimeStop && TimeStopUtils.isInRange(self)) {
+            if (!TimeStopUtils.canMove(self)) {
+                ci.cancel();
+            }
         }
     }
 }
