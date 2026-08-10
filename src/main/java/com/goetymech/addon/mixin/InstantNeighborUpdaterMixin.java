@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.InstantNeighborUpdater;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,12 +28,6 @@ public abstract class InstantNeighborUpdaterMixin {
 
     @Inject(method = "neighborChanged", at = @At("HEAD"), cancellable = true)
     private void gp$cancelNeighborChanged(BlockPos pos, Block block, BlockPos neighborPos, boolean isMoving, CallbackInfo ci) {
-        gp$cancelWhenTimeFrozen(pos, ci);
-    }
-
-    @Inject(method = "neighborChangedForState", at = @At("HEAD"), cancellable = true)
-    private void gp$cancelNeighborChangedForState(BlockState state, BlockPos pos, Block block,
-                                                  BlockPos neighborPos, boolean isMoving, CallbackInfo ci) {
         gp$cancelWhenTimeFrozen(pos, ci);
     }
 
