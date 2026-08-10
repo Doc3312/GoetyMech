@@ -1,10 +1,9 @@
 package com.goetymech.addon.common.net.s2c;
 
-import com.goetymech.addon.client.SlamGroundTiltHandler;
-import net.minecraft.core.BlockPos;
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -51,41 +50,8 @@ public class S2CSlamImpactPacket {
     }
 
     public static void handle(S2CSlamImpactPacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Level level = net.minecraft.client.Minecraft.getInstance().level;
-            if (level == null) return;
-
-            Vec3 pos = new Vec3(packet.x, packet.y, packet.z);
-
-            SlamGroundTiltHandler.startEffect(pos, packet.groundDeformRadius);
-
-            // 播放冲击音效
-            level.playLocalSound(
-                    packet.x, packet.y, packet.z,
-                    net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE,
-                    net.minecraft.sounds.SoundSource.PLAYERS,
-                    2.0F, 0.8F + level.random.nextFloat() * 0.4F, false);
-
-            // 雾化粒子：大量 block 破裂粒子，密度随半径动态调整
-            int particleCount = Math.max(30, (int)(packet.radius * 8));
-            for (int i = 0; i < particleCount; i++) {
-                double ox = (level.random.nextDouble() - 0.5) * packet.radius * 2;
-                double oz = (level.random.nextDouble() - 0.5) * packet.radius * 2;
-                if (Math.sqrt(ox * ox + oz * oz) > packet.radius) continue;
-
-                BlockPos bp = BlockPos.containing(packet.x + ox, packet.y - 0.5, packet.z + oz);
-                var state = level.getBlockState(bp);
-                if (state.isAir()) continue;
-
-                level.addParticle(
-                        new net.minecraft.core.particles.BlockParticleOption(
-                                net.minecraft.core.particles.ParticleTypes.BLOCK, state),
-                        bp.getX() + 0.5, bp.getY() + 1.0, bp.getZ() + 0.5,
-                        (level.random.nextDouble() - 0.5) * 2,
-                        level.random.nextDouble() * 1.5,
-                        (level.random.nextDouble() - 0.5) * 2);
-            }
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> ClientPacketHandlers.handleSlamImpact(packet)));
         ctx.get().setPacketHandled(true);
     }
 

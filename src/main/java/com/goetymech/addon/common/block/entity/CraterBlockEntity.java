@@ -1,10 +1,8 @@
 package com.goetymech.addon.common.block.entity;
 
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import com.goetymech.addon.init.ModBlocks;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -55,16 +53,7 @@ public class CraterBlockEntity extends BlockEntity {
         }
 
         if (be.originalState.shouldSpawnParticlesOnBreak() && be.maxLifetime - be.lifetime < 10) {
-            if (level instanceof ClientLevel cl && cl.random.nextInt(3) == 0) {
-                cl.addParticle(
-                        new BlockParticleOption(ParticleTypes.BLOCK, be.originalState),
-                        pos.getX() + cl.random.nextDouble(),
-                        pos.getY() + 0.5,
-                        pos.getZ() + cl.random.nextDouble(),
-                        (cl.random.nextDouble() - 0.5) * 0.3,
-                        cl.random.nextDouble() * 0.5,
-                        (cl.random.nextDouble() - 0.5) * 0.3);
-            }
+            ClientPacketHandlers.spawnCraterBreakParticles(level, pos, be.originalState, be.maxLifetime, be.lifetime);
         }
     }
 }

@@ -1,8 +1,9 @@
 package com.goetymech.addon.common.net.s2c;
 
-import com.goetymech.addon.common.capabilities.StressShieldProvider;
-import net.minecraft.client.Minecraft;
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -41,18 +42,28 @@ public class S2CStressShieldUpdatePacket {
     }
 
     public static void handle(S2CStressShieldUpdatePacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            var level = Minecraft.getInstance().level;
-            if (level == null) return;
-            var entity = level.getEntity(packet.entityId);
-            if (entity == null) return;
-            entity.getCapability(StressShieldProvider.CAPABILITY).ifPresent(cap -> {
-                cap.setShield(packet.shield);
-                cap.setMaxShield(packet.maxShield);
-                cap.setExpireTick(packet.expireTick);
-                cap.setLastHurtTick(packet.lastHurtTick);
-            });
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> ClientPacketHandlers.handleStressShieldUpdate(packet)));
         ctx.get().setPacketHandled(true);
+    }
+
+    public int getEntityId() {
+        return entityId;
+    }
+
+    public float getShield() {
+        return shield;
+    }
+
+    public float getMaxShield() {
+        return maxShield;
+    }
+
+    public long getExpireTick() {
+        return expireTick;
+    }
+
+    public long getLastHurtTick() {
+        return lastHurtTick;
     }
 }

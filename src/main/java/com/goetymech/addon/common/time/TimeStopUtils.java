@@ -14,6 +14,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.PacketDistributor;
 
 /**
@@ -27,7 +29,8 @@ public class TimeStopUtils {
     public static boolean andSameDimension(Level level) {
         if (level == null) return false;
         if (level.isClientSide) {
-            return ClientContext.isTimeStop_andSameDimension;
+            return Boolean.TRUE.equals(DistExecutor.unsafeCallWhenOn(Dist.CLIENT,
+                    () -> () -> ClientContext.isTimeStop_andSameDimension));
         }
         if (!isTimeStop) return false;
         TimeStopSavedData saved = TimeStopSavedData.readOrCreate(((ServerLevel) level).getServer());

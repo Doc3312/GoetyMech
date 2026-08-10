@@ -1,7 +1,9 @@
 package com.goetymech.addon.common.net.s2c;
 
-import com.goetymech.addon.client.PrototypeRenderEvents;
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -26,9 +28,12 @@ public class S2CSlamStatePacket {
     }
 
     public static void handle(S2CSlamStatePacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            PrototypeRenderEvents.setClientSlamming(packet.slamming);
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> ClientPacketHandlers.handleSlamState(packet)));
         ctx.get().setPacketHandled(true);
+    }
+
+    public boolean isSlamming() {
+        return slamming;
     }
 }

@@ -1,9 +1,9 @@
 package com.goetymech.addon.common.net.s2c;
 
-import com.goetymech.addon.common.item.PrototypeItem;
-import net.minecraft.client.Minecraft;
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -28,14 +28,12 @@ public class S2CAssimilationDataPacket {
     }
 
     public static void handle(S2CAssimilationDataPacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player player = Minecraft.getInstance().player;
-            if (player != null) {
-                PrototypeItem.setAssimilationKills(player, packet.kills);
-            }
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> ClientPacketHandlers.handleAssimilationData(packet)));
         ctx.get().setPacketHandled(true);
     }
 
-    public int getKills() { return kills; }
+    public int getKills() {
+        return kills;
+    }
 }

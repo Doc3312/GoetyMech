@@ -1,7 +1,9 @@
 package com.goetymech.addon.common.net.s2c;
 
-import com.goetymech.addon.client.ModClientEvents;
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -25,7 +27,12 @@ public class S2CSetFreecamPacket {
     }
 
     public static void handle(S2CSetFreecamPacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> ModClientEvents.freecamActive = packet.active);
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> ClientPacketHandlers.handleSetFreecam(packet)));
         ctx.get().setPacketHandled(true);
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

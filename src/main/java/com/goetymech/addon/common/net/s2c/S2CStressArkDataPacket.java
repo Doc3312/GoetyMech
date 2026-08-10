@@ -1,8 +1,9 @@
 package com.goetymech.addon.common.net.s2c;
 
-import com.goetymech.addon.client.StressArkHUD;
-import net.minecraft.client.Minecraft;
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
@@ -34,13 +35,24 @@ public class S2CStressArkDataPacket {
     }
 
     public static void handle(S2CStressArkDataPacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (packet.totalCapacity < 0) {
-                StressArkHUD.clearData();
-            } else {
-                StressArkHUD.onData(packet.totalCapacity, packet.totalStress, packet.networkCount, packet.engineConsumption);
-            }
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> ClientPacketHandlers.handleStressArkData(packet)));
         ctx.get().setPacketHandled(true);
+    }
+
+    public float getTotalCapacity() {
+        return totalCapacity;
+    }
+
+    public float getTotalStress() {
+        return totalStress;
+    }
+
+    public int getNetworkCount() {
+        return networkCount;
+    }
+
+    public float getEngineConsumption() {
+        return engineConsumption;
     }
 }

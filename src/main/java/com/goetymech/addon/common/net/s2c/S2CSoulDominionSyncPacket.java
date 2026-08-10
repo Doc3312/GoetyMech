@@ -1,8 +1,9 @@
 package com.goetymech.addon.common.net.s2c;
 
-import com.goetymech.addon.common.capabilities.SoulDominionProvider;
-import net.minecraft.client.Minecraft;
+import com.goetymech.addon.client.net.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
@@ -58,19 +59,32 @@ public class S2CSoulDominionSyncPacket {
     }
 
     public static void handle(S2CSoulDominionSyncPacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            var level = Minecraft.getInstance().level;
-            if (level == null) return;
-            var entity = level.getEntity(packet.entityId);
-            if (entity == null) return;
-            entity.getCapability(SoulDominionProvider.CAPABILITY).ifPresent(cap -> {
-                cap.setActive(packet.active);
-                cap.setExpireTick(packet.expireTick);
-                cap.setLinkedServants(packet.linkedServants);
-                cap.setRange(packet.range);
-                cap.setDuration(packet.duration);
-            });
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> ClientPacketHandlers.handleSoulDominionSync(packet)));
         ctx.get().setPacketHandled(true);
+    }
+
+    public int getEntityId() {
+        return entityId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public long getExpireTick() {
+        return expireTick;
+    }
+
+    public List<UUID> getLinkedServants() {
+        return linkedServants;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }
