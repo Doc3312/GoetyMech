@@ -26,6 +26,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.UUID;
+
 @Mod.EventBusSubscriber(modid = GoetyMechMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 /**
  * 魂灵丰碑事件。TaglockKit 交互、村民献祭、仆从掉落拦截。
@@ -113,17 +115,17 @@ public class SoulMonumentEvents {
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.WITHER_DEATH, SoundSource.NEUTRAL, 2.0F, 1.0F);
     }
 
-    private static boolean isValidServantForPlayer(Level level, java.util.UUID entityUUID, Player player) {
-        if (!(level instanceof ServerLevel serverLevel)) return false;
+    private static Entity findValidServant(Level level, UUID entityUUID, Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return null;
         for (Entity entity : serverLevel.getAllEntities()) {
             if (entity.getUUID().equals(entityUUID)) {
-                if (!entity.isAlive()) return false;
-                if (!(entity instanceof IOwned owned)) return false;
-                java.util.UUID ownerId = owned.getOwnerId();
-                return ownerId != null && ownerId.equals(player.getUUID());
+                if (!entity.isAlive()) return null;
+                if (!(entity instanceof IOwned owned)) return null;
+                if (!player.getUUID().equals(owned.getOwnerId())) return null;
+                return entity;
             }
         }
-        return false;
+        return null;
     }
 
     @SubscribeEvent
@@ -187,10 +189,19 @@ public class SoulMonumentEvents {
         if (!held.hasTag() || !held.getTag().contains(TaglockKit.TAG_ENTITY)) return;
         java.util.UUID targetUUID = held.getTag().getUUID(TaglockKit.TAG_ENTITY);
 
-        if (!isValidServantForPlayer(level, targetUUID, player)) {
+        Entity target = findValidServant(level, targetUUID, player);
+        if (target == null) {
             if (player instanceof ServerPlayer sp) {
                 sp.sendSystemMessage(
                         net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.not_a_servant"), true);
+            }
+            return;
+        }
+
+        if (target instanceof IOwned owned && !SoulMonumentBlockEntity.isMonumentBindable(target, owned)) {
+            if (player instanceof ServerPlayer sp) {
+                sp.sendSystemMessage(
+                        net.minecraft.network.chat.Component.translatable("info.goetymech.soul_monument.bindable_temp_servant"), true);
             }
             return;
         }

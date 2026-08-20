@@ -192,6 +192,11 @@ public class SoulMonumentBlockEntity extends BlockEntity {
 
         if (!isServantOwnedByMonument(target)) return;
 
+        if (target instanceof IOwned owned && !isMonumentBindable(target, owned)) {
+            cancelRecording();
+            return;
+        }
+
         CompoundTag entityData = new CompoundTag();
         target.save(entityData);
         entityData.putUUID("MonumentRecordedUUID", UUID.randomUUID());
@@ -231,10 +236,23 @@ public class SoulMonumentBlockEntity extends BlockEntity {
             if (entity.getUUID().equals(targetUUID)) {
                 if (!entity.isAlive()) return false;
                 if (!(entity instanceof IOwned owned)) return false;
-                return player.getUUID().equals(owned.getOwnerId());
+                if (!player.getUUID().equals(owned.getOwnerId())) return false;
+                return isMonumentBindable(entity, owned);
             }
         }
         return false;
+    }
+
+    /**
+     * 临时召唤物排除。丰碑/点将台召唤的仆从、带 lifespan 的限时仆从、
+     * 已被记录过的仆从，均不可二次录入丰碑。
+     */
+    public static boolean isMonumentBindable(Entity entity, IOwned owned) {
+        CompoundTag data = entity.getPersistentData();
+        if (data.getBoolean("goetymech.monument_summoned")) return false;
+        if (data.contains("goetymech.squad_summoner")) return false;
+        if (owned.hasLifespan()) return false;
+        return !data.getBoolean("goetymech.recorded");
     }
 
     private boolean isServantOwnedByMonument(LivingEntity entity) {

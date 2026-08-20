@@ -153,6 +153,7 @@
   "info.goetymech.soul_monument.clear_done": "§aCleared monument entities.",
   "info.goetymech.soul_monument.clear_too_fast": "§cToo fast, please wait",
   "info.goetymech.soul_monument.not_a_servant": "§cThis creature is not a servant",
+  "info.goetymech.soul_monument.bindable_temp_servant": "§cThat creature is a temporary servant and cannot be bound",
   "info.goetymech.squad_focus.bound_success_monument": "§aBound to Soul Monument",
   "info.goetymech.squad_focus.block_missing_monument": "§cBound Soul Monument was destroyed",
   "info.goetymech.squad_focus.not_owner_monument": "§cYou are not the owner of this Soul Monument",

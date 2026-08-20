@@ -153,6 +153,7 @@
   "info.goetymech.soul_monument.clear_done": "§a已清除丰碑内部实体。",
   "info.goetymech.soul_monument.clear_too_fast": "§c操作过快，请稍后",
   "info.goetymech.soul_monument.not_a_servant": "§c该生物非仆从",
+  "info.goetymech.soul_monument.bindable_temp_servant": "§c该生物为临时仆从，无法绑定",
   "info.goetymech.squad_focus.bound_success_monument": "§a已绑定至魂灵丰碑",
   "info.goetymech.squad_focus.block_missing_monument": "§c绑定的魂灵丰碑已被破坏",
   "info.goetymech.squad_focus.not_owner_monument": "§c你不是此魂灵丰碑的拥有者",
