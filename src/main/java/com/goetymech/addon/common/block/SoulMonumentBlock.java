@@ -2,6 +2,8 @@ package com.goetymech.addon.common.block;
 
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.common.item.SquadFocus;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -42,6 +44,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * 魂灵丰碑。记录绑定灵魂并召唤小队傀儡。
@@ -53,7 +56,7 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
-    private static final VoxelShape SHAPE_LOWER = Shapes.or(
+    private static final VoxelShape LOWER_NORTH = Shapes.or(
             // foundation (y 0 ~ 0.125)
             Shapes.box(1.0 / 16.0, 0.0, 3.0 / 16.0, 15.0 / 16.0, 2.0 / 16.0, 13.0 / 16.0),
             // tier1 ~ tier3 台阶 (y 0.125 ~ 0.375)
@@ -62,7 +65,17 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
             Shapes.box(5.0 / 16.0, 6.0 / 16.0, 7.0 / 16.0, 11.0 / 16.0, 1.0, 9.0 / 16.0)
     );
 
-    private static final VoxelShape SHAPE_UPPER = Shapes.or(
+    private static final VoxelShape LOWER_EAST = Shapes.or(
+            Shapes.box(3.0 / 16.0, 0.0, 1.0 / 16.0, 13.0 / 16.0, 2.0 / 16.0, 15.0 / 16.0),
+            Shapes.box(4.0 / 16.0, 2.0 / 16.0, 2.0 / 16.0, 12.0 / 16.0, 6.0 / 16.0, 14.0 / 16.0),
+            Shapes.box(7.0 / 16.0, 6.0 / 16.0, 5.0 / 16.0, 9.0 / 16.0, 1.0, 11.0 / 16.0)
+    );
+
+    private static final VoxelShape LOWER_SOUTH = LOWER_NORTH;
+
+    private static final VoxelShape LOWER_WEST = LOWER_EAST;
+
+    private static final VoxelShape UPPER_NORTH = Shapes.or(
             // shaft 上段 (UPPER 格内 y 0 ~ 0.625)
             Shapes.box(5.0 / 16.0, 0.0, 7.0 / 16.0, 11.0 / 16.0, 10.0 / 16.0, 9.0 / 16.0),
             // neck (y 0.625 ~ 0.75)
@@ -72,6 +85,31 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
             // finial (y 0.875 ~ 1.0)
             Shapes.box(6.0 / 16.0, 14.0 / 16.0, 7.0 / 16.0, 10.0 / 16.0, 1.0, 9.0 / 16.0)
     );
+
+    private static final VoxelShape UPPER_EAST = Shapes.or(
+            Shapes.box(7.0 / 16.0, 0.0, 5.0 / 16.0, 9.0 / 16.0, 10.0 / 16.0, 11.0 / 16.0),
+            Shapes.box(7.0 / 16.0, 10.0 / 16.0, 5.0 / 16.0, 9.0 / 16.0, 12.0 / 16.0, 11.0 / 16.0),
+            Shapes.box(6.0 / 16.0, 12.0 / 16.0, 4.0 / 16.0, 10.0 / 16.0, 14.0 / 16.0, 12.0 / 16.0),
+            Shapes.box(7.0 / 16.0, 14.0 / 16.0, 6.0 / 16.0, 9.0 / 16.0, 1.0, 10.0 / 16.0)
+    );
+
+    private static final VoxelShape UPPER_SOUTH = UPPER_NORTH;
+
+    private static final VoxelShape UPPER_WEST = UPPER_EAST;
+
+    private static final Map<Direction, VoxelShape> SHAPE_LOWER = Maps.newEnumMap(ImmutableMap.of(
+            Direction.NORTH, LOWER_NORTH,
+            Direction.SOUTH, LOWER_SOUTH,
+            Direction.EAST, LOWER_EAST,
+            Direction.WEST, LOWER_WEST
+    ));
+
+    private static final Map<Direction, VoxelShape> SHAPE_UPPER = Maps.newEnumMap(ImmutableMap.of(
+            Direction.NORTH, UPPER_NORTH,
+            Direction.SOUTH, UPPER_SOUTH,
+            Direction.EAST, UPPER_EAST,
+            Direction.WEST, UPPER_WEST
+    ));
 
     public SoulMonumentBlock() {
         super(Properties.of()
@@ -89,7 +127,8 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        return state.getValue(HALF) == DoubleBlockHalf.UPPER ? SHAPE_UPPER : SHAPE_LOWER;
+        Direction facing = state.getValue(FACING);
+        return (state.getValue(HALF) == DoubleBlockHalf.UPPER ? SHAPE_UPPER : SHAPE_LOWER).get(facing);
     }
 
     @Override

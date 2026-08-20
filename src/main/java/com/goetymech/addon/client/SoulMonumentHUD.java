@@ -43,6 +43,12 @@ public class SoulMonumentHUD {
         BlockState state = player.level().getBlockState(pos);
         if (!(state.getBlock() instanceof com.goetymech.addon.common.block.SoulMonumentBlock)) return;
 
+        if (state.getValue(com.goetymech.addon.common.block.SoulMonumentBlock.HALF)
+                == net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER) {
+            pos = pos.below();
+            state = player.level().getBlockState(pos);
+        }
+
         if (!(player.level().getBlockEntity(pos) instanceof SoulMonumentBlockEntity monument)) return;
 
         GuiGraphics gui = event.getGuiGraphics();
