@@ -29,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
@@ -158,6 +159,16 @@ public class SoulMonumentBlockEntity extends BlockEntity {
             }
         }
             return;
+        }
+
+        BlockState blockState = be.getBlockState();
+        if (blockState.getBlock() instanceof SoulMonumentBlock
+                && blockState.getValue(SoulMonumentBlock.HALF) == DoubleBlockHalf.LOWER
+                && pos.getY() < level.getMaxBuildHeight() - 1) {
+            BlockState above = level.getBlockState(pos.above());
+            if (above.isAir()) {
+                level.setBlock(pos.above(), blockState.setValue(SoulMonumentBlock.HALF, DoubleBlockHalf.UPPER), 2);
+            }
         }
 
         if (be.recording) {

@@ -19,8 +19,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,6 +33,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -40,12 +45,33 @@ import javax.annotation.Nullable;
 
 /**
  * 魂灵丰碑。记录绑定灵魂并召唤小队傀儡。
+ * 双格结构（DoubleBlockHalf）：LOWER 渲染完整 2 格模型并承载 BE；
+ * UPPER 隐形占位（INVISIBLE），提供可点击的第二格，交互归位到 LOWER。
  */
 public abstract class SoulMonumentBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
-    private static final VoxelShape SHAPE = Shapes.box(1.0 / 16.0, 0.0, 3.0 / 16.0, 15.0 / 16.0, 2.0, 13.0 / 16.0);
+    private static final VoxelShape SHAPE_LOWER = Shapes.or(
+            // foundation (y 0 ~ 0.125)
+            Shapes.box(1.0 / 16.0, 0.0, 3.0 / 16.0, 15.0 / 16.0, 2.0 / 16.0, 13.0 / 16.0),
+            // tier1 ~ tier3 台阶 (y 0.125 ~ 0.375)
+            Shapes.box(2.0 / 16.0, 2.0 / 16.0, 4.0 / 16.0, 14.0 / 16.0, 6.0 / 16.0, 12.0 / 16.0),
+            // shaft 下段 (y 0.375 ~ 1.0)
+            Shapes.box(5.0 / 16.0, 6.0 / 16.0, 7.0 / 16.0, 11.0 / 16.0, 1.0, 9.0 / 16.0)
+    );
+
+    private static final VoxelShape SHAPE_UPPER = Shapes.or(
+            // shaft 上段 (UPPER 格内 y 0 ~ 0.625)
+            Shapes.box(5.0 / 16.0, 0.0, 7.0 / 16.0, 11.0 / 16.0, 10.0 / 16.0, 9.0 / 16.0),
+            // neck (y 0.625 ~ 0.75)
+            Shapes.box(5.0 / 16.0, 10.0 / 16.0, 7.0 / 16.0, 11.0 / 16.0, 12.0 / 16.0, 9.0 / 16.0),
+            // cap (y 0.75 ~ 0.875)
+            Shapes.box(4.0 / 16.0, 12.0 / 16.0, 6.0 / 16.0, 12.0 / 16.0, 14.0 / 16.0, 10.0 / 16.0),
+            // finial (y 0.875 ~ 1.0)
+            Shapes.box(6.0 / 16.0, 14.0 / 16.0, 7.0 / 16.0, 10.0 / 16.0, 1.0, 9.0 / 16.0)
+    );
 
     public SoulMonumentBlock() {
         super(Properties.of()
@@ -54,28 +80,69 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
                 .sound(SoundType.NETHERITE_BLOCK)
                 .noOcclusion()
         );
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
     public abstract int getCapacity();
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        return SHAPE;
+        return state.getValue(HALF) == DoubleBlockHalf.UPPER ? SHAPE_UPPER : SHAPE_LOWER;
+    }
+
+    @Override
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+        BlockPos pos = ctx.getClickedPos();
+        if (pos.getY() < ctx.getLevel().getMaxBuildHeight() - 1
+                && ctx.getLevel().getBlockState(pos.above()).canBeReplaced(ctx)) {
+            return this.defaultBlockState()
+                    .setValue(FACING, ctx.getHorizontalDirection().getOpposite())
+                    .setValue(HALF, DoubleBlockHalf.LOWER);
+        }
+        return null;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, HALF);
+    }
+
+    @Override
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockState belowState = level.getBlockState(pos.below());
+        return state.getValue(HALF) == DoubleBlockHalf.LOWER
+                ? super.canSurvive(state, level, pos)
+                : belowState.is(this);
+    }
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction facing, BlockState facingState,
+                                  LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+        DoubleBlockHalf half = state.getValue(HALF);
+        if (facing.getAxis() == Direction.Axis.Y && half == DoubleBlockHalf.LOWER == (facing == Direction.UP)) {
+            return facingState.is(this) && facingState.getValue(HALF) != half
+                    ? state
+                    : Blocks.AIR.defaultBlockState();
+        }
+        if (half == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canSurvive(level, currentPos)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
+            pos = pos.below();
+            state = level.getBlockState(pos);
+        }
         if (!hand.equals(InteractionHand.MAIN_HAND)) return InteractionResult.PASS;
 
         BlockEntity be = level.getBlockEntity(pos);
@@ -146,6 +213,7 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
                 }
             }
         }
+        level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
     }
 
     @Override
@@ -173,12 +241,13 @@ public abstract class SoulMonumentBlock extends BaseEntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return state.getValue(HALF) == DoubleBlockHalf.UPPER ? RenderShape.INVISIBLE : RenderShape.MODEL;
     }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER) return null;
         return new SoulMonumentBlockEntity(pos, state);
     }
 

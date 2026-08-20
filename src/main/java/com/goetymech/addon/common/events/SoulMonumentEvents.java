@@ -1,6 +1,7 @@
 package com.goetymech.addon.common.events;
 
 import com.goetymech.addon.GoetyMechMod;
+import com.goetymech.addon.common.block.SoulMonumentBlock;
 import com.goetymech.addon.common.block.entity.SoulMonumentBlockEntity;
 import com.goetymech.addon.init.ModParticleTypes;
 import com.Polarice3.Goety.api.entities.IOwned;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -136,7 +138,13 @@ public class SoulMonumentEvents {
         if (!player.isShiftKeyDown()) return;
         if (!player.getMainHandItem().isEmpty()) return;
 
-        var blockEntity = level.getBlockEntity(event.getPos());
+        BlockPos pos = event.getPos();
+        if (level.getBlockState(pos).getBlock() instanceof SoulMonumentBlock
+                && level.getBlockState(pos).getValue(SoulMonumentBlock.HALF) == DoubleBlockHalf.UPPER) {
+            pos = pos.below();
+        }
+
+        var blockEntity = level.getBlockEntity(pos);
         if (!(blockEntity instanceof SoulMonumentBlockEntity monument)) return;
         if (!monument.isOwner(player)) return;
 
@@ -167,7 +175,13 @@ public class SoulMonumentEvents {
 
         if (!TaglockKit.hasEntity(held)) return;
 
-        var blockEntity = level.getBlockEntity(event.getPos());
+        BlockPos pos = event.getPos();
+        if (level.getBlockState(pos).getBlock() instanceof SoulMonumentBlock
+                && level.getBlockState(pos).getValue(SoulMonumentBlock.HALF) == DoubleBlockHalf.UPPER) {
+            pos = pos.below();
+        }
+
+        var blockEntity = level.getBlockEntity(pos);
         if (!(blockEntity instanceof SoulMonumentBlockEntity monument)) return;
 
         if (monument.isRecording()) {

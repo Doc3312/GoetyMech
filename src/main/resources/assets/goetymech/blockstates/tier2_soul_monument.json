@@ -1,17 +1,32 @@
 {
   "variants": {
-    "facing=north": {
+    "facing=north,half=lower": {
       "model": "goetymech:block/soul_monument_tier2"
     },
-    "facing=east": {
+    "facing=east,half=lower": {
       "model": "goetymech:block/soul_monument_tier2",
       "y": 90
     },
-    "facing=south": {
+    "facing=south,half=lower": {
       "model": "goetymech:block/soul_monument_tier2",
       "y": 180
     },
-    "facing=west": {
+    "facing=west,half=lower": {
+      "model": "goetymech:block/soul_monument_tier2",
+      "y": 270
+    },
+    "facing=north,half=upper": {
+      "model": "goetymech:block/soul_monument_tier2"
+    },
+    "facing=east,half=upper": {
+      "model": "goetymech:block/soul_monument_tier2",
+      "y": 90
+    },
+    "facing=south,half=upper": {
+      "model": "goetymech:block/soul_monument_tier2",
+      "y": 180
+    },
+    "facing=west,half=upper": {
       "model": "goetymech:block/soul_monument_tier2",
       "y": 270
     }
