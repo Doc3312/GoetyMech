@@ -174,17 +174,27 @@ public class WitchCondenserBlockEntity extends KineticBlockEntity {
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        if (fluidBehaviour == null) {
+            return false;
+        }
+
+        SmartFluidTankBehaviour.TankSegment[] tanks = fluidBehaviour.getTanks();
+        boolean hasFluid = false;
+        for (SmartFluidTankBehaviour.TankSegment tank : tanks) {
+            if (!tank.getRenderedFluid().isEmpty()) {
+                hasFluid = true;
+                break;
+            }
+        }
+        if (!hasFluid) {
+            return false;
+        }
+
         CreateLang.translate("gui.goggles.condenser_contents")
             .forGoggles(tooltip);
 
-        if (fluidBehaviour == null) {
-            return true;
-        }
-
-        boolean isEmpty = true;
-        SmartFluidTankBehaviour.TankSegment[] tanks = fluidBehaviour.getTanks();
-        for (int i = 0; i < tanks.length; i++) {
-            FluidStack stack = tanks[i].getRenderedFluid();
+        for (SmartFluidTankBehaviour.TankSegment tank : tanks) {
+            FluidStack stack = tank.getRenderedFluid();
             if (stack.isEmpty()) {
                 continue;
             }
@@ -196,11 +206,6 @@ public class WitchCondenserBlockEntity extends KineticBlockEntity {
                     .add(CreateLang.translate("generic.unit.millibuckets"))
                     .style(ChatFormatting.BLUE))
                 .forGoggles(tooltip, 1);
-            isEmpty = false;
-        }
-
-        if (isEmpty) {
-            tooltip.remove(0);
         }
         return true;
     }
