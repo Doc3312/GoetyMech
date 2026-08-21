@@ -9,7 +9,6 @@ import net.createmod.catnip.platform.ForgeCatnipServices;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,7 +34,8 @@ public class WitchCondenserRenderer extends KineticBlockEntityRenderer<WitchCond
 
         SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, blockState, facing.getOpposite());
         standardKineticRotationTransform(shaft, be, light);
-        shaft.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        shaft.translate(facing.getStepX() * 2 / 16f, facing.getStepY() * 2 / 16f, facing.getStepZ() * 2 / 16f);
+        shaft.renderInto(ms, buffer.getBuffer(getRenderType(be, blockState)));
 
         SmartFluidTankBehaviour fluidBehaviour = be.getFluidBehaviour();
         if (fluidBehaviour != null) {

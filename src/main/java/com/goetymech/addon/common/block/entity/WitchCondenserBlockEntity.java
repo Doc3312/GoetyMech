@@ -6,6 +6,9 @@ import com.goetymech.addon.init.ModBlocks;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
+import com.simibubi.create.foundation.utility.CreateLang;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -167,6 +170,39 @@ public class WitchCondenserBlockEntity extends KineticBlockEntity {
 
     public SmartFluidTankBehaviour getFluidBehaviour() {
         return fluidBehaviour;
+    }
+
+    @Override
+    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        CreateLang.translate("gui.goggles.condenser_contents")
+            .forGoggles(tooltip);
+
+        if (fluidBehaviour == null) {
+            return true;
+        }
+
+        boolean isEmpty = true;
+        SmartFluidTankBehaviour.TankSegment[] tanks = fluidBehaviour.getTanks();
+        for (int i = 0; i < tanks.length; i++) {
+            FluidStack stack = tanks[i].getRenderedFluid();
+            if (stack.isEmpty()) {
+                continue;
+            }
+            CreateLang.text("")
+                .add(CreateLang.fluidName(stack)
+                    .style(ChatFormatting.GRAY))
+                .add(CreateLang.text(" "))
+                .add(CreateLang.number(stack.getAmount())
+                    .add(CreateLang.translate("generic.unit.millibuckets"))
+                    .style(ChatFormatting.BLUE))
+                .forGoggles(tooltip, 1);
+            isEmpty = false;
+        }
+
+        if (isEmpty) {
+            tooltip.remove(0);
+        }
+        return true;
     }
 
     @Override
