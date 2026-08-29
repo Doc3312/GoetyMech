@@ -38,7 +38,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
 import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.lib.model.Models;
@@ -137,11 +136,11 @@ public class ModClientEvents {
             Minecraft.getInstance().options.keyMappings =
                     ArrayUtils.add(Minecraft.getInstance().options.keyMappings, freecamExitKey);
 
-                        // 巫术冷凝机：双轨 Flywheel Visual（正面 flush 半轴，与 BER 同源）
+                        // 巫术冷凝机：双轨 Flywheel Visual（正面 1px 自定义 stub，与 BER 同源）
             SimpleBlockEntityVisualizer.builder(ModBlocks.WITCH_CONDENSER_ENTITY.get())
                     .factory((context, be, pt) -> {
                         Direction facing = be.getBlockState().getValue(BlockStateProperties.FACING);
-                        Model shaftModel = Models.partial(AllPartialModels.SHAFT_HALF);
+                        Model shaftModel = Models.partial(GoetyMechPartialModels.WITCH_CONDENSER_SHAFT_STUB);
                         return new OrientedRotatingVisual<>(context, be, pt, Direction.SOUTH, facing, shaftModel);
                     })
                     .skipVanillaRender(be -> true)
