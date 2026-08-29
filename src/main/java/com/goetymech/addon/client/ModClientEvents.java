@@ -37,6 +37,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.commons.lang3.ArrayUtils;
+
+import com.goetymech.addon.client.GoetyMechPartialModels;
+import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
+import dev.engine_room.flywheel.lib.model.Models;
+import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,6 +131,17 @@ public class ModClientEvents {
                     GLFW.GLFW_KEY_R, "key.goetymech.category");
             Minecraft.getInstance().options.keyMappings =
                     ArrayUtils.add(Minecraft.getInstance().options.keyMappings, freecamExitKey);
+
+            // 巫术冷凝机：双轨 Flywheel Visual（背面 2px 短轴帽，与 BER 同源）
+            SimpleBlockEntityVisualizer.builder(ModBlocks.WITCH_CONDENSER_ENTITY.get())
+                    .factory((context, be, pt) -> {
+                        Direction facing = be.getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
+                        return new OrientedRotatingVisual<>(context, be, pt, Direction.SOUTH, facing,
+                                Models.partial(GoetyMechPartialModels.WITCH_CONDENSER_SHAFT_STUB));
+                    })
+                    .skipVanillaRender(be -> true)
+                    .apply();
+
         });
 
         LOGGER.info("[MOD_CLIENT] Flywheel Visuals DISABLED for diagnosis - using BESR only");
