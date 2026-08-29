@@ -33,7 +33,7 @@ public class WitchCondenserRenderer extends KineticBlockEntityRenderer<WitchCond
 
         BlockState blockState = be.getBlockState();
         Direction facing = blockState.getValue(BlockStateProperties.FACING);
-        Direction shaftDir = facing;
+        Direction shaftDir = facing.getOpposite();
 
         SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, blockState, shaftDir);
         // SHAFT_HALF 为 8px，缩短到 2px 避免穿透玻璃：沿轴 scale(0.25)，正向侧再平移 12px
