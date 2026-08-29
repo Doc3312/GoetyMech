@@ -37,6 +37,7 @@ logs/
 openspec/
 .scratch/
 /com/
+/net/
 /META-INF/
 /docs/
 /AGENTS.md

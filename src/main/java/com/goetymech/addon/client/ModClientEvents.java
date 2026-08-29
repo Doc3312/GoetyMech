@@ -40,6 +40,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import com.goetymech.addon.client.GoetyMechPartialModels;
 import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
+import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
 import net.minecraft.core.Direction;
@@ -140,8 +141,13 @@ public class ModClientEvents {
             SimpleBlockEntityVisualizer.builder(ModBlocks.WITCH_CONDENSER_ENTITY.get())
                     .factory((context, be, pt) -> {
                         Direction facing = be.getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
-                        return new OrientedRotatingVisual<>(context, be, pt, Direction.SOUTH, facing,
-                                Models.partial(GoetyMechPartialModels.WITCH_CONDENSER_SHAFT_STUB));
+                        Model shaftModel = Models.partial(AllPartialModels.SHAFT_HALF, (Object) null,
+                                (t, poseStack) -> {
+                                    // SHAFT_HALF 为 8px，缩短到 2px 避免穿透玻璃
+                                    poseStack.scale(1, 1, 0.25f);
+                                    poseStack.translate(0, 0, 0.75);
+                                });
+                        return new OrientedRotatingVisual<>(context, be, pt, Direction.SOUTH, facing, shaftModel);
                     })
                     .skipVanillaRender(be -> true)
                     .apply();
