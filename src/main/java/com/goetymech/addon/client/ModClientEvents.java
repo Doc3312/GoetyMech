@@ -137,16 +137,11 @@ public class ModClientEvents {
             Minecraft.getInstance().options.keyMappings =
                     ArrayUtils.add(Minecraft.getInstance().options.keyMappings, freecamExitKey);
 
-                        // 巫术冷凝机：双轨 Flywheel Visual（背面 2px 短轴帽，与 BER 同源）
+                        // 巫术冷凝机：双轨 Flywheel Visual（正面 flush 半轴，与 BER 同源）
             SimpleBlockEntityVisualizer.builder(ModBlocks.WITCH_CONDENSER_ENTITY.get())
                     .factory((context, be, pt) -> {
-                        Direction facing = be.getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
-                        Model shaftModel = Models.partial(AllPartialModels.SHAFT_HALF, (Object) null,
-                                (t, poseStack) -> {
-                                    // SHAFT_HALF 为 8px，缩短到 2px 避免穿透玻璃
-                                    poseStack.scale(1, 1, 0.25f);
-                                    poseStack.translate(0, 0, 0.75);
-                                });
+                        Direction facing = be.getBlockState().getValue(BlockStateProperties.FACING);
+                        Model shaftModel = Models.partial(AllPartialModels.SHAFT_HALF);
                         return new OrientedRotatingVisual<>(context, be, pt, Direction.SOUTH, facing, shaftModel);
                     })
                     .skipVanillaRender(be -> true)

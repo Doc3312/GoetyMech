@@ -31,7 +31,7 @@ public class WitchCondenserBlock extends DirectionalKineticBlock implements IBE<
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        return face == state.getValue(FACING).getOpposite();
+        return face == state.getValue(FACING);
     }
 
     @Override

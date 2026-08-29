@@ -33,20 +33,9 @@ public class WitchCondenserRenderer extends KineticBlockEntityRenderer<WitchCond
 
         BlockState blockState = be.getBlockState();
         Direction facing = blockState.getValue(BlockStateProperties.FACING);
-        Direction shaftDir = facing.getOpposite();
+        Direction shaftDir = facing;
 
         SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, blockState, shaftDir);
-        // SHAFT_HALF 为 8px，缩短到 2px 避免穿透玻璃：沿轴 scale(0.25)，正向侧再平移 12px
-        if (shaftDir.getAxis() == Direction.Axis.X) {
-            shaft.scale(0.25f, 1, 1);
-            if (shaftDir.getStepX() > 0) shaft.translate(0.75, 0, 0);
-        } else if (shaftDir.getAxis() == Direction.Axis.Z) {
-            shaft.scale(1, 1, 0.25f);
-            if (shaftDir.getStepZ() > 0) shaft.translate(0, 0, 0.75);
-        } else {
-            shaft.scale(1, 0.25f, 1);
-            if (shaftDir.getStepY() > 0) shaft.translate(0, 0.75, 0);
-        }
         standardKineticRotationTransform(shaft, be, light);
         shaft.renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
