@@ -3,8 +3,6 @@ package com.goetymech.addon.client.render;
 import com.goetymech.addon.common.block.entity.WitchCondenserBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.base.IRotate;
-import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import net.createmod.catnip.platform.ForgeCatnipServices;
@@ -14,7 +12,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -36,8 +33,8 @@ public class WitchCondenserRenderer extends KineticBlockEntityRenderer<WitchCond
         Direction facing = blockState.getValue(BlockStateProperties.FACING);
 
         SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, blockState, facing.getOpposite());
-        shaft.renderInto(ms, buffer.getBuffer(getRenderType(be, blockState)));
-
+        standardKineticRotationTransform(shaft, be, light);
+        shaft.translate(facing.getStepX() * 2 / 16f, facing.getStepY() * 2 / 16f, facing.getStepZ() * 2 / 16f);
         shaft.renderInto(ms, buffer.getBuffer(getRenderType(be, blockState)));
 
         SmartFluidTankBehaviour fluidBehaviour = be.getFluidBehaviour();
