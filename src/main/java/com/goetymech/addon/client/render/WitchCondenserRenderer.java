@@ -2,7 +2,8 @@ package com.goetymech.addon.client.render;
 
 import com.goetymech.addon.common.block.entity.WitchCondenserBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllPartialModels;
+import com.goetymech.addon.client.GoetyMechPartialModels;
+import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import net.createmod.catnip.platform.ForgeCatnipServices;
@@ -27,14 +28,13 @@ public class WitchCondenserRenderer extends KineticBlockEntityRenderer<WitchCond
     @Override
     protected void renderSafe(WitchCondenserBlockEntity be, float partialTicks, PoseStack ms,
                               MultiBufferSource buffer, int light, int overlay) {
-        super.renderSafe(be, partialTicks, ms, buffer, light, overlay);
+        if (VisualizationManager.supportsVisualization(be.getLevel())) return;
 
         BlockState blockState = be.getBlockState();
         Direction facing = blockState.getValue(BlockStateProperties.FACING);
 
-        SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, blockState, facing.getOpposite());
+        SuperByteBuffer shaft = CachedBuffers.partialFacing(GoetyMechPartialModels.WITCH_CONDENSER_SHAFT_STUB, blockState, facing.getOpposite());
         standardKineticRotationTransform(shaft, be, light);
-        shaft.translate(facing.getStepX() * 2 / 16f, facing.getStepY() * 2 / 16f, facing.getStepZ() * 2 / 16f);
         shaft.renderInto(ms, buffer.getBuffer(getRenderType(be, blockState)));
 
         SmartFluidTankBehaviour fluidBehaviour = be.getFluidBehaviour();
