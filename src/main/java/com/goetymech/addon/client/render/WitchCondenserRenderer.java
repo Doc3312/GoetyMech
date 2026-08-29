@@ -2,14 +2,15 @@ package com.goetymech.addon.client.render;
 
 import com.goetymech.addon.common.block.entity.WitchCondenserBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.goetymech.addon.client.GoetyMechPartialModels;
-import dev.engine_room.flywheel.api.visualization.VisualizationManager;
+import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
+import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import net.createmod.catnip.platform.ForgeCatnipServices;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,10 +33,22 @@ public class WitchCondenserRenderer extends KineticBlockEntityRenderer<WitchCond
 
         BlockState blockState = be.getBlockState();
         Direction facing = blockState.getValue(BlockStateProperties.FACING);
+        Direction shaftDir = facing.getOpposite();
 
-        SuperByteBuffer shaft = CachedBuffers.partialFacing(GoetyMechPartialModels.WITCH_CONDENSER_SHAFT_STUB, blockState, facing.getOpposite());
+        SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, blockState, shaftDir);
+        // SHAFT_HALF 为 8px，缩短到 2px 避免穿透玻璃：沿轴 scale(0.25)，正向侧再平移 12px
+        if (shaftDir.getAxis() == Direction.Axis.X) {
+            shaft.scale(0.25f, 1, 1);
+            if (shaftDir.getStepX() > 0) shaft.translate(0.75, 0, 0);
+        } else if (shaftDir.getAxis() == Direction.Axis.Z) {
+            shaft.scale(1, 1, 0.25f);
+            if (shaftDir.getStepZ() > 0) shaft.translate(0, 0, 0.75);
+        } else {
+            shaft.scale(1, 0.25f, 1);
+            if (shaftDir.getStepY() > 0) shaft.translate(0, 0.75, 0);
+        }
         standardKineticRotationTransform(shaft, be, light);
-        shaft.renderInto(ms, buffer.getBuffer(getRenderType(be, blockState)));
+        shaft.renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
         SmartFluidTankBehaviour fluidBehaviour = be.getFluidBehaviour();
         if (fluidBehaviour != null) {

@@ -58,6 +58,10 @@ public class ModClientEvents {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
+        // 必须在资源重载（ModelEvent.RegisterAdditional/BakingCompleted）之前触发 PartialModel 静态注册，
+        // 否则 flywheel 内部 PartialModelEventHandler 扫描 ALL 时尚未包含本模组的 PartialModel，
+        // bakedModel 为 null → Visual 渲染出 16³ 缺失占位块（紫黑）。
+        GoetyMechPartialModels.init();
 
         event.enqueueWork(() -> {
             net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
