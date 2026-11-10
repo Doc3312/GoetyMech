@@ -42,8 +42,19 @@ node tools/premod/validate.mjs --warn                   # 只报告不返回失�
 | 文件 | 内容 |
 |---|---|
 | `index/goety.json` / `index/create.json` | `{ meta, entries, resources }`；`entries[id] = {domain, field, holder, javaType}` |
+| `index/own.json` | 本项目自己的注册表（`goetymech:` 命名空间，扫 `init/Mod*.java` 的 `register("id"`） |
 | `index/usage.json` | 本项目的反向引用：`"goety:ectoplasm" -> [{file,line,kind}]` |
 | `index/meta.json` | 版本戳（jar 文件名 / mtime / 各类计数）与跳过清单 |
+
+`validate.mjs` 对 `goetymech:` 用另一套规则（同一个前缀在不同键下含义不同）：
+
+| 所在键 | 期望 |
+|---|---|
+| `model` / `parent` | `assets/goetymech/models/<id>.json` |
+| `recipe` | `data/goetymech/recipes/<id>.json` |
+| `layer0` / `texture*` / 含 `/` | `assets/goetymech/textures/<id>.png` |
+| `predicate` | 跳过（物品模型谓词名，不是注册 id） |
+| 其它（`fluid` / `ritual_type` / `item` …） | 本 mod 的 `DeferredRegister` 注册项 |
 
 ## 升级前置的流程
 

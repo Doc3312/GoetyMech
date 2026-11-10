@@ -196,6 +196,14 @@ const REG_METHOD_DOMAIN = {
   fluid: "fluid_types", itemEntity: "entities", entity: "entities",
 };
 
+/** 本项目自己 DeferredRegister 字段 -> 域 */
+const OWN_REG_DOMAIN = {
+  ITEMS: "items", BLOCKS: "blocks", ENTITY_TYPE: "entities", ENTITIES: "entities",
+  FLUIDS: "fluids", FLUID_TYPES: "fluid_types", EFFECTS: "effects", RITUALS: "rituals",
+  RITUAL_TYPES: "ritual_types", RECIPE_SERIALIZERS: "recipe_types", PARTICLE_TYPES: "particles",
+  CREATIVE_TAB: "creative_tabs", CREATIVE_MODE_TABS: "creative_tabs", BLOCK_ENTITY: "block_entities",
+};
+
 function buildCreate(cfg, javaHome) {
   const fields = [];
   walkFiles(cfg.sourceDir, (f) => { if (f.endsWith(".java")) fields.push(f); });
@@ -286,6 +294,27 @@ function buildUsage(indexes, cfg) {
   return usage;
 }
 
+/** 本项目自己的注册表（goetymech 命名空间）：用于校验我们自己的 id 引用 */
+function buildOwn(cfg) {
+  const entries = {};
+  walkFiles(path.join(ROOT, cfg.javaDir), (f) => {
+    if (!f.endsWith(".java")) return;
+    const txt = fs.readFileSync(f, "utf8");
+    if (!txt.includes("DeferredRegister")) return;
+    const holder = path.relative(path.join(ROOT, cfg.javaDir), f).replace(/\\/g, ".").replace(/\.java$/, "");
+    for (const m of txt.matchAll(/([A-Za-z_][\w]*)\.register\(\s*"([a-z0-9_]+)"/g)) {
+      const [, regField, id] = m;
+      if (entries[id]) continue;
+      entries[id] = { domain: OWN_REG_DOMAIN[regField] ?? "other", field: regField, holder };
+    }
+  });
+  return {
+    meta: { mod: "goetymech", source: "source", generatedAt: new Date().toISOString(), counts: { registry: Object.keys(entries).length } },
+    entries,
+    resources: { tags: [], particles: [], textures: [] },
+  };
+}
+
 function main() {
   const javaHome = expand(CONF.javaHome) ?? process.env.JAVA_HOME;
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -303,9 +332,14 @@ function main() {
   const usage = buildUsage({ goety, create }, CONF.project);
   log(`  ${Object.keys(usage).length} 个前置 id 被引用，共 ${Object.values(usage).reduce((a, b) => a + b.length, 0)} 处`);
 
+  log("▶ 本项目自身注册表（goetymech）");
+  const own = buildOwn(CONF.project);
+  log(`  ${own.meta.counts.registry} 条`);
+
   const write = (name, data) => fs.writeFileSync(path.join(OUT_DIR, name), JSON.stringify(data, null, 1), "utf8");
   write("goety.json", goety);
   write("create.json", create);
+  write("own.json", own);
   write("usage.json", usage);
   write("meta.json", {
     generatedAt: new Date().toISOString(),

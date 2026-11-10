@@ -27,6 +27,8 @@ const load = (f) => JSON.parse(fs.readFileSync(path.join(IDX, f), "utf8"));
 const goety = load("goety.json");
 const create = load("create.json");
 const mods = { goety, create };
+// 本项目自己的注册表（可选：老索引没有 own.json 时自动跳过 goetymech 校验）
+if (fs.existsSync(path.join(IDX, "own.json"))) mods.goetymech = load("own.json");
 
 const TEXTURE_KEYS = new Set(["texture", "textures", "particle", "base", "overlay", "empty", "filled", "edge", "all"]);
 
@@ -39,13 +41,18 @@ function walk(dir, cb) {
   }
 }
 
-/** 我们自己写在 goety/create 命名空间下的资源（patchouli 书、纹理等） */
+/** 本项目自己的资源文件（assets + data，相对 src/main/resources） */
 const ownAssets = new Set();
 const ownBasenames = new Set();
+const ownRes = new Set();
 walk(path.join(RES, "assets"), (f) => {
   const rel = path.relative(RES, f).replace(/\\/g, "/");
   ownAssets.add(rel);
+  ownRes.add(rel);
   ownBasenames.add(path.basename(rel));
+});
+walk(path.join(RES, "data"), (f) => {
+  ownRes.add(path.relative(RES, f).replace(/\\/g, "/"));
 });
 const ownByMod = (mod, id) => {
   const needle = `assets/${mod}/`;
@@ -58,9 +65,36 @@ const ownByMod = (mod, id) => {
   );
 };
 
+/** goetymech 命名空间：按 key 判断引用的是模型 / 配方 / 纹理 / 谓词 / 注册项 */
+function checkOwn(id, key) {
+  const idx = mods.goetymech;
+  if (!idx) return null;
+  if (key === "predicate") return null; // 物品模型谓词名，不是注册 id
+  if (key === "model" || key === "parent") {
+    return ownRes.has(`assets/goetymech/models/${id}.json`)
+      ? null
+      : { mod: "goetymech", id, kind: "model", expect: `models/${id}.json` };
+  }
+  if (key === "recipe") {
+    return ownRes.has(`data/goetymech/recipes/${id}.json`)
+      ? null
+      : { mod: "goetymech", id, kind: "recipe", expect: `recipes/${id}.json` };
+  }
+  if (TEXTURE_KEYS.has(key) || id.includes("/")) {
+    const p = id.startsWith("textures/") ? id : `textures/${id}`;
+    if (ownRes.has(`assets/goetymech/${p}.png`)) return null;
+    if (ownByMod("goetymech", p)) return null;
+    return { mod: "goetymech", id, kind: "texture", expect: `${p}.png` };
+  }
+  if (idx.entries[id]) return null;
+  if (ownByMod("goetymech", id)) return null;
+  return { mod: "goetymech", id, kind: "registry", expect: "本 mod 的 DeferredRegister" };
+}
+
 const findings = [];
 
 function check(mod, id, key, file, line) {
+  if (mod === "goetymech") return checkOwn(id, key);
   const idx = mods[mod];
   const inParticlesJson = /\/particles\//.test(file);
   const isTextureKey = TEXTURE_KEYS.has(key) || id.includes("/");
@@ -109,9 +143,10 @@ function scanFile(f) {
   lines.forEach((line, i) => {
     const keyMatch = line.match(/"([A-Za-z0-9_]+)"\s*:/);
     if (keyMatch) lastKey = keyMatch[1];
-    for (const m of line.matchAll(/"(goety|create):([a-z0-9_./-]+)"/g)) {
+    for (const m of line.matchAll(/"(goety|create|goetymech):([a-z0-9_./-]+)"/g)) {
       const [, mod, id] = m;
       if (id === mod) continue;
+      if (!mods[mod]) continue;
       const localKey = keyMatch ? keyMatch[1] : lastKey;
       const bad = check(mod, id, localKey, rel, i + 1);
       if (bad) findings.push({ ...bad, file: rel, line: i + 1, key: localKey });
