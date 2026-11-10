@@ -1,0 +1,21 @@
+{
+  "javaHome": "D:\\jdk17",
+  "mods": {
+    "goety": {
+      "kind": "jar",
+      "jarRoot": "~/.gradle/caches/modules-2/files-2.1/curse.maven",
+      "jarDirPrefix": "goety-",
+      "sourceDir": "D:\\Libcode\\Goety-2-1.20\\Goety-2-1.20\\src\\main\\java"
+    },
+    "create": {
+      "kind": "source",
+      "sourceDir": "D:\\Libcode\\Create-mc1.20.1-dev\\Create-mc1.20.1-dev\\src\\main\\java",
+      "jarRoot": "~/.gradle/caches/modules-2/files-2.1/com.simibubi.create",
+      "jarDirPrefix": "create-"
+    }
+  },
+  "project": {
+    "javaDir": "src/main/java",
+    "resourcesDir": "src/main/resources"
+  }
+}

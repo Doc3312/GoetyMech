@@ -34,6 +34,8 @@ logs/
 *.iws
 *.ipr
 .opencode/
+.dsh/
+tools/premod/index/
 openspec/
 .scratch/
 /com/
@@ -106,3 +108,5 @@ secrets.properties
 test-output/
 test-results/
 *.class
+node_modules/
+node_modules.orig/
